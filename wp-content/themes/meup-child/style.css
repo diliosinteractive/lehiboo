@@ -61,3 +61,44 @@ Text Domain:  meup-child
     padding-top: 50px;
 }
 
+.event_item.type1 .event_detail {
+    padding: 0;
+    border: none;
+    border-radius: 0 0 5px 5px;
+}
+.event_item.type1 .event_thumbnail .thumbnail_figure a img {
+    height: 350px;
+    border-radius: 20px;
+}
+.event_item.type1 .event_detail .loop_title {
+    margin: 10px 0px;
+    line-height: 14px;
+}
+
+.event_item.type1 .event_detail .event-location-time .event-time .time {
+    font-size: 12px;
+    line-height: 16px;
+    color: #233e4c;
+}
+
+.event_item.type1 .event_detail .event-location-time .location-rating .event_location {
+    margin: 0px;
+    margin-right: 5px;
+    font-size: 12px;
+    line-height: 14px;
+    transition: 0.4s;
+}
+
+.event_item.type1 .event_detail .event-location-time .location-rating .event_location a {
+    font-size: 13px;
+    line-height: 14px;
+    transition: 0.4s;
+}
+
+.event_item.type1 .event_detail .event-location-time .event-time {
+    margin-bottom: 2px;
+}
+
+.event_item.type1 .event_detail .loop_title {
+    min-height: 40px;
+}

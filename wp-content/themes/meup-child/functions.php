@@ -17,6 +17,7 @@ add_action( 'after_setup_theme', 'meup_child_theme_setup' );
 add_action( 'wp_enqueue_scripts', 'meup_child_scripts', 100 );
 function meup_child_scripts() {
     wp_enqueue_style( 'meup-parent-style', get_template_directory_uri(). '/style.css' );
+    wp_enqueue_style( 'meup-airbnb-style', get_stylesheet_directory_uri() . '/airbnb-style.css', array('meup-parent-style'), '1.0.0' );
 }
 
 // ========================================
