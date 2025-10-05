@@ -1,0 +1,68 @@
+.vendor_wrap {
+	min-height: 100vh;
+	.vendor_sidebar {
+		width: 260px;
+		height: 100%;
+		position: relative;
+		@media( max-width: 991.98px ){
+			width: 100%;
+		}
+		.vendor_sidebar_inner {
+			position: fixed;
+			top: 87px;
+			bottom: 133px;
+			left: 0;
+			height: calc( 100vh - 200px );
+			width: 260px;
+			overflow-y: auto;
+			@media( max-width: 991.98px ){
+				position: relative;
+				width: 100%;
+				height: auto;
+				top: unset;
+				bottom: unset;
+				left: unset;
+			}
+			.dashboard_nav {
+				height: auto;
+				overflow: unset;
+			}
+		}
+	}
+	.contents {
+		width: calc( 100% - 260px );
+		margin-left: 0;
+		@media( max-width: 991.98px ){
+			width: 100%;
+		}
+		.modal {
+			.table {
+				tr, td, th {
+					border: 1px solid #e9ecef;
+				}
+			}
+			.form-control {
+				border-radius: 0;
+			}
+		}
+		.ticket_transfer_alert {
+			display: none;
+		}
+		.table-list-booking {
+			overflow: auto;
+		}
+	}
+}
+
+body {
+	&.rtl {
+		.vendor_wrap {
+			.vendor_sidebar {
+				.vendor_sidebar_inner {
+					left: unset;
+					right: 0;
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,123 @@
+.ova-blog-slider {
+	h3, p {
+		margin: 0px;
+	}
+	.blog-slider {
+		position: relative;
+		.item-blog {
+
+			.ui-widget.ui-widget-content{
+				background-color: transparent;
+			}
+			.ova-media {
+				margin-bottom: 20px;
+				position: relative;
+				img {
+					border-radius: 5px;
+				}
+			}
+			.content {
+				.post-meta-blog {
+					margin-bottom: 15px;
+					a{
+						font-size: 15px;
+						line-height: 25px;
+						color: #666666;
+					}
+					.author {
+						span {
+							font-size: 15px;
+							line-height: 25px;
+							color: #666666;
+						}
+					}
+					i {
+						margin-right: 7px;
+						display: inline-block;
+						line-height: 1;
+						color: var(--primary);
+						&:before {
+							margin: 0px;
+							font-size: 15px;
+						}
+					}
+					.meta-slash {
+						padding-left: 10px;
+						padding-right: 10px;
+						color: #eaeaea;
+					}
+				}
+				.title {
+					margin-bottom: 14px;
+					h3 {
+						a {
+							font-size: 24px;
+							line-height: 1.2;
+							font-weight: 600;
+							color: #222222;
+							text-transform: capitalize;
+							transition: 0.4s;
+						}
+					}
+				}
+				
+				.excerpt {
+					margin-bottom: 23px;
+					p {
+						font-size: 16px;
+						line-height: 26px;
+						color: #666666;
+					}
+				}
+			}
+		}
+
+		.owl-dots{
+			text-align: center;
+			margin-top: 14px;
+			.owl-dot{
+				outline: none;
+				
+				span{
+					margin: 0px 5px 0px 0px;
+					width: 10px;
+					height: 10px;
+					background: transparent;
+					display: block;
+					transition:.2s ;
+					background: #dddddd;
+					border-radius: 50%;
+					@media screen and (max-width: 767px) {
+						width: 24px;
+						height: 24px;
+					}
+				}
+			}
+		}
+	}
+	.owl-nav{
+		position: absolute;
+		right: 0;
+		top: -90px;
+		.owl-prev, .owl-next {
+			width: 30px;
+			height: 30px;
+			border: 2px solid #c5c5c5 !important;
+			background: transparent; 
+			i {
+				color: #c5c5c5;
+				font-size: 25px;
+			}
+			&:focus {
+				outline: none;
+			}
+			
+		}
+		.owl-next{
+			margin-left: 5px;
+		}
+		.owl-prev{
+			margin-right: 5px;
+		}
+	}
+}

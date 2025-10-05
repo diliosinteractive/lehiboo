@@ -1,0 +1,142 @@
+.event_item {
+	
+	&.type6 {
+		.event_thumbnail {
+
+			position: relative;
+
+			.thumbnail_figure {
+				a {
+					display: block;
+					img {
+						border-radius: 5px 5px 0 0;
+						display: block;
+						width: 100%;
+						height: 245px;
+						object-fit: cover;
+					}
+				}
+			}
+
+
+
+			.event_meta_cat {
+				position: absolute;
+				bottom: 20px;
+				left: 25px;
+				a {
+					display: inline-block;
+					font-size: 14px;
+					line-height: 20px;
+					color: #ffffff;
+					padding: 3px 12px 2px 12px;
+					transition: 0.4s;
+					border-radius: 3px;
+				}
+			}
+			.event-loop-favourite {
+				position: absolute;
+				right: 25px;
+				bottom: 21px;
+				i {
+					font-size: 18px;
+					font-weight: bold;
+					transition: 0.4s;
+				}
+				&.active{
+					i{
+						color: var(--primary);	
+					}
+					
+				}
+
+			}
+		}
+		.event_detail {
+			padding: 22px 30px 30px 30px;
+			border: 1px solid #eae9f3;
+			background-color: #fff;
+			border-top: none;
+			border-radius: 0 0 5px 5px;
+			.event-meta {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 8px;
+				@media (max-width: 425px) {
+					flex-direction: column;
+					align-items: flex-start;
+				}
+			}
+			.loop_title {
+				margin: 0px;
+				margin-bottom: 25px;
+				line-height: 1em;
+				a {
+					font-size: 22px;
+					font-weight: 600;
+					transition: 0.4s;
+				}
+			}
+			.event-location-time {
+				display: flex;
+				flex-direction: column;
+				margin-bottom: 24px;
+
+				.location-rating {
+					display: flex;
+					justify-content: space-between;
+					flex-wrap: wrap;
+					align-items: center;
+					.event_location {
+						margin: 0px;
+						margin-right: 5px;
+						font-size: 15px;
+						line-height: 26px;
+						transition: 0.4s;
+						a {
+							font-size: 15px;
+							line-height: 26px;
+							transition: 0.4s;
+						}
+					}
+				}
+				.event_ratting{
+					display: none;
+				}
+				.event-time {
+					margin-bottom: 6px;
+					.time {
+						font-size: 15px;
+						line-height: 26px;
+						color: var(--primary);
+					}
+					.timezone{
+						margin-left: 5px;
+					}
+					.event-icon {
+						color: var(--primary);
+					}
+				}
+				.event-icon {
+					margin-right: 3px;
+					i {
+						font-size: 16px;
+						font-weight: 600;
+						
+					}
+				}
+			}
+			.meta-footer {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				.event_loop_price {
+					font-size: 20px;
+					line-height: 26px;
+					font-weight: 600;
+				}
+			}
+		}
+	}
+}

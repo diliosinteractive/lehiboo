@@ -1,0 +1,153 @@
+.vendor_wrap {
+	.el_table_responsive {
+		overflow: auto;
+	}
+	table{
+		border: 1px solid #e5e5e5;
+		box-shadow: 0 1px 1px rgba(0,0,0,.04);
+		margin-bottom: 0;
+		word-wrap: break-word;
+    	table-layout: auto;
+		@media (max-width: 767px) {
+			table-layout: fixed;
+		}
+		tr {
+			td {
+				vertical-align: baseline;
+				border: none;
+				padding: 30px 15px;
+				@media (max-width: 991px) {
+					padding: 30px 10px;
+					word-wrap: break-word;
+				}
+				&.idcheck,
+				.idcheck{
+					text-align: center;
+				}
+				&.column-action, &.column-tickets {
+					vertical-align: middle;
+				}
+				
+			}
+		}
+
+		tbody.event_body{
+			>:nth-child(odd){
+				background-color: #f9f9f9;
+			}
+			tr{
+				background-color: #f1f1f1;
+			}
+			td {
+				.action {
+					ul {
+						list-style-type: none;
+						padding: 0px;
+						li {
+							display: inline-block;
+							border-right: 1px solid #ccc;
+							padding: 0px 10px;
+							line-height: 1em;
+						
+							.submit-load-more {
+							
+								background: #fff;
+								opacity: 0.1;
+								position: fixed; 
+							
+							
+
+								.load-more {
+									top: 50%;
+									transform: translateY(-50%);
+								
+									.lds-spinner {
+										margin-top: -6px;
+										margin-left: -10px;
+
+										div {
+
+											&:after {
+
+												background:#e86c60;
+											}
+										}
+									}
+								}
+							}
+				
+							&:first-child {
+								padding-left: 0;
+							}
+							&:last-child {
+								border-right: none;
+							}
+						}
+					}
+					
+				}
+			}
+			h4.title{
+				margin-top: 0px;
+				margin-bottom: 10px;
+				text-transform: capitalize;
+				
+			}
+			i{
+				color: #e86c60;
+				padding-right: 5px;
+			}
+			.date{
+				.slash, .time{
+					color: $text-color;
+					opacity: 0.6;
+				}
+			}
+		}
+
+		/* Table List Style */
+		.event_head{
+			background-color: #fff;
+			font-weight: bold;
+			text-transform: uppercase;
+			tr{
+				td{
+					padding: 5px 10px;
+					color: #333;
+					a{
+						color: #333;
+					}
+					@media (max-width: 767px) {
+						&:last-child, &:nth-last-child(2) {
+							display: none;
+						}
+					}
+					
+				}
+			}
+		}
+	}
+
+	.table-list-ticket-received {
+		overflow: auto;
+		table {
+			table-layout: auto;
+			thead {
+				background-color: #fff;
+				font-weight: bold;
+				text-transform: uppercase;
+				tr{
+					td{
+						padding: 5px 10px;
+						color: #333;
+						a{
+							color: #333;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+}
+

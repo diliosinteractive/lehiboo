@@ -1,0 +1,63 @@
+/* Theme Name: Meup Child Theme
+Theme URI: https://themeforest.net/user/ovatheme/portfolio
+Description: This is child theme of meup
+Author: Ovatheme
+Author URI: https://themeforest.net/user/ovatheme
+Template: meup
+Version: 1.0.0
+Tags: two-columns, three-columns, left-sidebar, right-sidebar, custom-menu, editor-style, featured-images, flexible-header, full-width-template, post-formats, rtl-language-support, sticky-post, translation-ready
+Text Domain:  meup-child
+*/
+
+.vendor_wrap .vendor_tab li.is-active {
+    background-color: #FF601F;
+}
+
+.wrap_form_search{
+    border-radius: 20px;
+}
+.wrap_form_search.type1 form .field_search:first-child,.wrap_form_search.type1 form .field_search input.form-control {
+    border-radius: 20px 0 0 20px;
+}
+.wrap_form_search.type1 form .el_submit_search input {
+    border-radius: 0 20px 20px 0;
+}
+
+.wrap_form_search form .select2 .select2-selection__rendered .select2-selection__placeholder {
+    color: #222222;
+    font-weight: 700;
+    opacity: 0.8;
+}
+
+.single-event .main_content {
+    max-width: 1280px;
+}
+
+
+.event_item.type1 .event_thumbnail .thumbnail_figure a img {
+    height: 500px;
+}
+
+.img-author {
+    display: none;
+}
+.event_item.type1 .event_thumbnail .event-loop-favourite {
+    top: 21px;
+}
+
+.info_user .top .user_image img {
+    width: auto;
+    height: 100px;
+    object-fit: cover;
+}
+
+.info_user .top .user_image {
+    border-radius: 10px;
+}
+
+.single-event .wrap_main_content {
+    background-color: #ffffff;
+    margin-top: 3px;
+    padding-top: 50px;
+}
+

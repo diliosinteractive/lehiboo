@@ -1,0 +1,44 @@
+.ova-icon-box-2 {
+	.ova-icon-box-list {
+		display: grid;
+		grid-gap: 35px;
+		.icon-box {
+			display: flex;
+			gap: 25px;
+			.icon {
+				flex: 0 0 40px;
+				i {
+					font-size: 40px;
+					display: inline-flex;
+					line-height: 1;
+					color: var(--primary);
+					transition: all .3s linear;
+				}
+				svg {
+					width: 40px;
+					height: 40px;
+					transition: all .3s linear;
+				}
+			}
+			.icon-box-content {
+				.title {
+					margin: 0;
+					a {
+						color: var(--vendor-color-four, #222);
+						transition: all .3s linear;
+						font-weight: 500;
+					}
+				}
+				.desc {
+					margin: 5px 0px 0px 0px;
+				}
+			}
+		}
+	}
+}
+// Right to left
+body.rtl {
+	.ova-icon-box-2 {
+		text-align: right;
+	}
+}

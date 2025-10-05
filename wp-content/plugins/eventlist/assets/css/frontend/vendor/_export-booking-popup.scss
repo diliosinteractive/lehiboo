@@ -1,0 +1,159 @@
+.el_export_popup_wrapper {
+	&.overlay {
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: rgba(0, 0, 0, 0.7);
+		z-index: 999;
+		transition: opacity 500ms;
+		// visibility: hidden;
+		// opacity: 0;
+	}
+	.el_export_container {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		padding: 30px 20px;
+		background: #fff;
+		border-radius: 5px;
+		width: 500px;
+		height: 300px;
+		transition: all 5s ease-in-out;
+		overflow: auto;
+		@media screen and (max-width: 500px) {
+			width: 100%;
+		}
+		.description {
+			margin: 0px;
+		}
+		.el_close_popup {
+			position: absolute;
+			top: 5px;
+    		right: 8px;
+			transition: all 200ms;
+			font-size: 30px;
+			font-weight: bold;
+			text-decoration: none;
+			color: #333;
+		}
+
+		.el_export_options {
+			margin: 20px 0px 0px 0px;
+			padding: 0px;
+			padding-left: 20px;
+			li {
+				margin-bottom: 10px;
+			}
+			a {
+				display: inline-block;
+				color: #22213f;
+				text-decoration: underline;
+				&:hover {
+					color: #82b440;
+				}
+			}
+		}
+		.el_enter_number_file {
+			display: none;
+			&.is-shown {
+				display: block;
+			}
+			.el_description {
+				margin: 0px;
+			}
+			.el_inner_group {
+				margin-top: 10px;
+				display: flex;
+				align-items: center;
+				input {
+					height: 40px;
+					width: 100px;
+					text-align: center;
+					border-top-left-radius: 4px;
+					border-bottom-left-radius: 4px;
+				}
+				button {
+					height: 40px;
+					cursor: pointer;
+					background: #343434;
+				    color: #fff;
+				    border: 0px;
+				    padding: 10px 15px;
+				    border-top-right-radius: 4px;
+				    border-bottom-right-radius: 4px;
+				}
+			}
+		}
+		.el_export_pagination {
+			margin-top: 10px;
+			.el_list_page {
+				margin: 0px;
+				padding: 0px;
+				.el_item {
+					display: inline-block;
+					margin: 5px;
+					.el_page_item {
+						display: inline-block;
+						padding: 5px 10px;
+						text-align: center;
+						border: 1px solid #ccc;
+						color: #222;
+						transition: all .3s linear;
+						&.is-active, &:hover {
+							color: #fff;
+							background: #28a745;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+body {
+	&.rtl {
+		.el_export_popup_wrapper {
+			.el_export_container {
+				.el_export_options {
+					padding-left: 0px;
+					padding-right: 20px;
+					li {
+						text-align: right;
+					}
+				}
+				.description {
+					text-align: right;
+				}
+				.el_close_popup {
+					right: unset;
+					left: 8px;
+				}
+				.el_enter_number_file {
+					.el_description {
+						text-align: right;
+					}
+					.el_inner_group {
+						input {
+							border-top-right-radius: 4px;
+    						border-bottom-right-radius: 4px;
+    						border-top-left-radius: 0px;
+    						border-bottom-left-radius: 0px;
+						}
+						button {
+							border-top-left-radius: 4px;
+    						border-bottom-left-radius: 4px;
+    						border-top-right-radius: 0px;
+    						border-bottom-right-radius: 0px;
+						}
+					}
+				}
+				.el_export_pagination {
+					text-align: right;
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,59 @@
+.ova-step-plan {
+	display: flex;
+	box-shadow: 1px 0 20px rgba(0,0,0,0.08);
+	padding: 30px 50px 45px 30px;
+	@media (max-width: 425px) {
+		display: block;
+	}
+	h3, p {
+		margin: 0px;
+	}
+	.number {
+		padding-right: 20px;
+		span {
+			width: 70px;
+			height: 70px;
+			background: #e86c60;
+			box-shadow: 1px 0px 20px rgba(0,0,0,0.08);
+			font-size: 24px;
+			line-height: 28px;
+			font-weight: 500;
+			color: #ffffff;
+			display: inline-flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 50%;
+		}
+	}
+	.content {
+		.title {
+			font-size: 26px;
+			line-height: 28px;
+			font-weight: 600;
+			color: #333333;
+			margin-top: 20px;
+			margin-bottom: 27px;
+		}
+		.sub-title {
+			font-size: 16px;
+			line-height: 28px;
+			color: #666666;
+			margin-bottom: 26px;
+		}
+		.button {
+			font-size: 15px;
+			line-height: 26px;
+			color: #e86c60;
+			border: 1px solid #e86c60;
+			border-radius: 3px;
+			display: inline-block;
+			padding: 7px 20px 6px 20px;
+			transition: 0.4s;
+			background: transparent;
+			&:hover {
+				color: #ffffff;
+				background: #e86c60;
+			}
+		}
+	}
+}

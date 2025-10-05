@@ -1,0 +1,93 @@
+$meupicon-font: "meupicon";
+
+@font-face {
+    font-family: $meupicon-font;
+    src: url("./meupicon.ttf?931671731cc764a8dbc220e66d866e77") format("truetype"),
+url("./meupicon.woff?931671731cc764a8dbc220e66d866e77") format("woff"),
+url("./meupicon.woff2?931671731cc764a8dbc220e66d866e77") format("woff2"),
+url("./meupicon.eot?931671731cc764a8dbc220e66d866e77#iefix") format("embedded-opentype"),
+url("./meupicon.svg?931671731cc764a8dbc220e66d866e77#meupicon") format("svg");
+}
+
+i[class^="meupicon-"]:before, i[class*=" meupicon-"]:before {
+    font-family: meupicon !important;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+$meupicon-map: (
+    "pin": "\f101",
+    "down-arrow": "\f102",
+    "search": "\f103",
+    "send": "\f104",
+    "lamp": "\f105",
+    "zoom-in": "\f106",
+    "clock": "\f107",
+    "search-interface-symbol": "\f108",
+    "next": "\f109",
+    "security": "\f10a",
+    "annual-report": "\f10b",
+    "qr-code": "\f10c",
+    "edit": "\f10d",
+    "shopping-cart": "\f10e",
+    "download": "\f10f",
+    "arrow-down-sign-to-navigate": "\f110",
+    "x": "\f111",
+);
+
+.meupicon-pin:before {
+    content: map-get($meupicon-map, "pin");
+}
+.meupicon-down-arrow:before {
+    content: map-get($meupicon-map, "down-arrow");
+}
+.meupicon-search:before {
+    content: map-get($meupicon-map, "search");
+}
+.meupicon-send:before {
+    content: map-get($meupicon-map, "send");
+}
+.meupicon-lamp:before {
+    content: map-get($meupicon-map, "lamp");
+}
+.meupicon-zoom-in:before {
+    content: map-get($meupicon-map, "zoom-in");
+}
+.meupicon-clock:before {
+    content: map-get($meupicon-map, "clock");
+}
+.meupicon-search-interface-symbol:before {
+    content: map-get($meupicon-map, "search-interface-symbol");
+}
+.meupicon-next:before {
+    content: map-get($meupicon-map, "next");
+}
+.meupicon-security:before {
+    content: map-get($meupicon-map, "security");
+}
+.meupicon-annual-report:before {
+    content: map-get($meupicon-map, "annual-report");
+}
+.meupicon-qr-code:before {
+    content: map-get($meupicon-map, "qr-code");
+}
+.meupicon-edit:before {
+    content: map-get($meupicon-map, "edit");
+}
+.meupicon-shopping-cart:before {
+    content: map-get($meupicon-map, "shopping-cart");
+}
+.meupicon-download:before {
+    content: map-get($meupicon-map, "download");
+}
+.meupicon-arrow-down-sign-to-navigate:before {
+    content: map-get($meupicon-map, "arrow-down-sign-to-navigate");
+}
+.meupicon-x:before {
+    content: map-get($meupicon-map, "x");
+}

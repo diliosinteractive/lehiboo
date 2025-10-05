@@ -1,0 +1,41 @@
+.ova_social {
+	.ui-widget-content {
+		background: transparent;
+		border: none;
+	}
+	h3.title {
+		font-size: 20px;
+		line-height: 24px;
+		color: #25282e;
+		margin-top: 0px;
+		margin-bottom: 20px;
+	}
+	.content {
+		a {
+			display: inline-block;
+			color: #cccccc;
+			border-radius: 50%;
+			&:not(:last-child) {
+				margin-right: 0;
+			}
+			i {
+				position: relative;
+				display: block;
+				font-size: 18px;
+				width: 38px;
+				height: 38px;
+				
+				&:before {
+					position: absolute;
+					left: 50%;
+					top: 50%;
+					transform: translate(-50%,-50%);
+				}
+			}
+			&:hover {
+				transition: 0.5s all;
+				color: #ffffff;
+			}
+		}
+	}
+}

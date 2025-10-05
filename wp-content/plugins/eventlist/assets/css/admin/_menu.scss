@@ -1,0 +1,17 @@
+#adminmenu {
+	a[href="admin.php?page=ova_el_custom_checkout_field"] {
+		display: none;
+	}
+	a[href="admin.php?page=el_replace_ticket_date"] {
+		display: none;
+	}
+	a[href="admin.php?page=ova_el_display_report_user"] {
+		display: none;
+	}
+	a[href="edit.php?post_type=payout_method"] {
+		display: none;
+	}
+	a[href="edit.php?post_type=manage_membership"] {
+		display: none;
+	}
+}

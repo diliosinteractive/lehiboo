@@ -1,0 +1,125 @@
+.packages_list{
+	display: flex;
+	margin-bottom: 30px;
+	@media( max-width: 991.98px ){
+		display: block;
+	}
+	.item{
+		width: 50%;
+		text-align: center;
+		background-color: #fff;
+		margin: 0px 30px;
+		border-radius: 5px;
+		font-size: 15px;
+		border: 1px solid rgba(224,224,224,1);
+		@media( max-width: 991.98px ){
+			width: 100%;
+			margin: 0 0px 30px 0;
+		}
+		h3{
+			text-transform: uppercase;
+		    margin-bottom: 0;
+		    font-weight: bold;
+		    margin-top: 0;
+		    background: #fff;
+		    padding: 30px 0px;
+		    border-top-left-radius: 5px;
+		    border-top-right-radius: 5px;
+		}
+		.price{
+			font-weight: bold;
+			font-size: 20px;
+			text-transform: uppercase;
+			padding-bottom: 10px;
+			background: #e0e0e0;
+			padding: 30px 0px;
+
+			.slash{
+				font-weight: normal;
+    			color: #bdbdbd;
+			}
+			.time{
+				font-weight: normal;
+			    font-size: 16px;
+			    text-transform: capitalize;
+			}
+		}
+		ul{
+			list-style: none;
+			padding-left: 0;
+			li{
+				list-style: none;
+				padding: 15px 0px;
+				border-bottom: 1px solid rgba(224, 224, 224, 0.4);
+
+				i{
+					
+					padding-right: 5px;
+					
+				}
+				.value{
+					color: #e86c60;
+					padding-top: 5px;
+					display: block;
+					font-weight: 600;
+					span{
+						color: #333;
+						padding: 0px 5px;
+					}
+				}
+			}
+		}	
+		.package_content{
+			margin-top: 30px;
+		}
+		button{
+
+    		&.button{
+    			margin-bottom: 30px;
+				text-transform: uppercase;
+	    		font-weight: 600;
+	    		font-size: 14px;
+				background-color: #343434;
+				border: none;
+				box-shadow: none;
+				border-radius: 5px;
+				padding: 15px 20px;
+				color: #fff;
+				&:hover{
+					background-color: #343434;
+					color: #fff;
+					cursor: pointer;
+				}
+			}
+    		
+			&.current{
+				background-color: #e0e0e0!important;
+				border-color: #e0e0e0!important;
+				color: #343434!important;
+				cursor: default!important;
+				&:hover{
+					background-color: #343434;
+					color: #fff;
+				}
+			}
+			
+		}
+		
+	}
+	
+	
+}
+
+#package_payment {
+	.package_payment_form {
+		.tab {
+			display: none;
+			&.tab-choose-payment-method {
+				display: block;
+			}
+		}
+		.el_loading {
+			display: none;
+		}
+	}
+}

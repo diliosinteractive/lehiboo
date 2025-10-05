@@ -1,0 +1,24 @@
+.elementor-widget-ova_logo .elementor-widget-container {
+	display: flex;
+}
+
+.desk-logo{
+	
+}
+.mobile-logo{
+	
+}
+.logo-fixed{
+	display: none;
+}
+
+.active_fixed{
+	.mobile-logo, 
+	.desk-logo{
+		display: none!important;
+	}
+	.logo-fixed{
+		display: block;
+	}
+}
+

@@ -1,0 +1,7 @@
+.fa.fa-twitter, .social_twitter_circle {
+    font-family:sans-serif !important;
+}
+.fa.fa-twitter::before, .social_twitter_circle::before{
+    content:"𝕏" !important;
+    font-size: 1.2em !important;
+}

@@ -1,0 +1,22 @@
+/*My Booking*/
+.wp-button-my-booking button{
+	margin-bottom: 5px;
+}
+
+#ticket_list_modal {
+	table {
+		table-layout: auto;
+	}
+}
+
+.ticket_qr_wrap {
+	.ticket_qr {
+		display: none;
+		word-break: break-all;
+	}
+	.ticket_qr_toggle {
+		border: 0;
+		cursor: pointer;
+		background: transparent;
+	}
+}

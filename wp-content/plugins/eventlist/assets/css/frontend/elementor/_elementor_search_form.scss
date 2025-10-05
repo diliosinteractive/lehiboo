@@ -1,0 +1,150 @@
+.elementor_search_form {
+	.wrap_form_search {
+		padding: 0;
+		box-shadow: none;
+		margin: 0;
+		&.type3 {
+			.el_submit_search {
+				margin-top: 0;
+			}
+
+			.field_search select{
+				padding: 0 20px 0 45px;
+			}
+
+			&.two_column {
+				form > div {
+					width: 50%;
+					@media (max-width: 768px) {
+						width: 100%;
+					}
+				}
+			}
+			&.three_column {
+				form > div {
+					width: 33.3333%;
+					@media (max-width: 768px) {
+						width: 100%;
+					}
+				}
+			}
+			&.four_column {
+				form > div {
+					width: 25%;
+					@media (max-width: 991.98px) {
+						width: 33.3333%;
+					}
+					@media (max-width: 768px) {
+						width: 100%;
+					}
+				}
+			}
+			&.five_column {
+				form > div {
+					width: 20%;
+					@media (max-width: 991.98px) {
+						width: 33.3333%;
+					}
+					@media (max-width: 768px) {
+						width: 100%;
+					}
+				}
+			}
+		}
+		&.type1 {
+			
+			.field_search select{
+				padding-left: 55px;
+			}
+
+			.field_search:first-child {
+				width: 40%;
+				@media (max-width: 768px) {
+					width: 100%;
+				}
+			}
+			.field_search:nth-last-child(2) {
+				border-right: 0;
+			}
+		}
+		&.type2 {
+			
+			.field_search select{
+				padding-left: 20px;
+			}
+
+			&.two_column {
+				form > div {
+					width: 50%;
+					@media (max-width: 768px) {
+						width: 100%;
+					}
+				}
+			}
+			&.three_column {
+				form > div {
+					width: 33.3333%;
+					@media (max-width: 768px) {
+						width: 100%;
+					}
+				}
+			}
+			&.four_column {
+				form > div {
+					width: 25%;
+					@media (max-width: 991.98px) {
+						width: 33.3333%;
+					}
+					@media (max-width: 768px) {
+						width: 100%;
+					}
+				}
+			}
+			&.five_column {
+				form > div {
+					width: 20%;
+					@media (max-width: 991.98px) {
+						width: 33.3333%;
+					}
+					@media (max-width: 768px) {
+						width: 100%;
+					}
+				}
+			}
+		}
+	}
+
+	.noUi-connect {
+		background: var(--primary);
+	}
+	.wrap_range_price {
+		.range_price_box {
+			.range_price_box_wrap {
+				display: flex;
+				align-items: flex-end;
+				min-height: 40px;
+				width: 100%;
+				#init_range_price {
+					width: 100%;
+				}
+				.noUi-horizontal {
+					height: 10px;
+					.noUi-handle {
+						width: 27px;
+    					height: 19px;
+    					&:before {
+    						content: none;
+    					}
+    					&:after {
+    						content: none;
+    					}
+					}
+				}
+				.noUi-tooltip {
+					border: none;
+				}
+			}
+		}
+	}
+
+}

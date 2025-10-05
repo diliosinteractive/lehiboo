@@ -1,0 +1,372 @@
+.wallet_list{
+	display: flex;
+	margin-bottom: 30px;
+	@media( max-width: 1200px ){
+		display: block;
+	}
+	.item{
+		width: 100%;
+		text-align: center;
+		background-color: #fff;
+		border-radius: 5px;
+		font-size: 15px;
+		border: 1px solid rgba(224,224,224,1);
+		align-items: center;
+		position: relative;
+		.icon{
+			position: absolute;
+			top: 30px;
+			right: 30px;
+			font-size: 65px;
+			color: #fff;
+			opacity: 0.3;
+		}
+		@media( max-width: 1200px ){
+			width: 100%;
+			margin: 0 0px 30px 0;
+		}
+		&.color_1{
+			background: #64bc36;
+			cursor: pointer;
+			margin-right: 15px;
+			@media( max-width: 1200px ){
+				margin-right: 15px;
+				margin-left: 0;
+			}
+			
+		}
+		&.color_2{
+			background: #ffae00;
+			margin-left: 15px;
+			margin-right: 15px;
+			@media( max-width: 1200px ){
+				margin-right: 15px;
+				margin-left: 0;
+			}
+			
+		}
+		&.color_3{
+			background: #363841;
+			margin-left: 15px;
+			@media( max-width: 1200px ){
+				margin-right: 15px;
+				margin-left: 0;
+			}
+			
+		}
+		.wallet_total{
+			color: #fff;
+			padding: 30px 60px 30px 30px;
+			text-align: left;
+			@media( max-width: 991.98px ){
+				padding: 30px;
+			}
+			h4{
+				font-size: 42px;
+				font-weight: 600;
+				padding: 0;
+				margin: 0;
+			}
+			span{
+				font-size: 18px;
+				line-height: 24px;
+				font-weight: 300;
+				margin-top: 4px;
+			}
+
+		}
+		
+	}
+
+	.Withdraw{
+		position: relative;
+		display: inline-block;
+		color:#343434;
+		font-weight: bold;
+		&:hover{
+			color:#fff;
+			&:before{
+				background-color:#fff;
+			};
+		};
+
+		&:before{
+			position: absolute;
+			content: '';
+			width: 100%;
+			left: 0;
+			background:#343434;
+			height: 2px;
+			bottom: -1px;
+		}
+	}
+
+	.withdraw_form {
+	display: none; 
+	position: fixed; 
+	z-index: 9999; 
+	padding-top: 100px; 
+	left: 0;
+	top: 0;
+	width: 100%; 
+	height: 100%; 
+	overflow: auto; 
+	background-color: rgb(0,0,0);
+	background-color: rgba(0,0,0,0.4); 
+
+
+	.modal-content {
+		background-color: #fff !important;
+		margin: auto;
+		padding: 20px;
+		width: 80% !important;
+		padding-bottom: 50px;
+		height: auto !important;
+
+		.set_payment_method{
+			text-decoration: underline!important;
+			color: #343434;
+			font-weight: 600;
+			padding-bottom: 30px;
+			display: block;
+		}
+		.form-Withdraw{
+			position: relative;
+
+			.payment_methods_info{
+				color: #343434;
+				font-weight: 600;
+				margin-bottom: 30px;
+				span{
+					font-weight: 600;
+				}
+			}
+			.fields{
+				display: flex;
+				margin-bottom: 15px;
+				input{
+					height: 50px;
+					border: 1px solid #cccccc;
+					max-width: auto;
+					width: 90%;
+				}
+				input[type="submit"]{
+					border-color: #343434;
+					border-radius: 0;
+					font-weight: bold;
+					letter-spacing: 0.1;
+					width: auto;
+					&:hover{
+						background-color:#64bc36;
+						border-color: #64bc36;
+						color: #fff;
+					};
+				}
+			}
+			
+			.withdraw_balance_info{
+				color: #343434;
+				
+			}
+			.submit-load-more {
+				background: #fff;
+				opacity: 0.7;
+				.load-more {
+					top: 50%;
+					transform: translateY(-50%);
+					.lds-spinner {
+						margin-top: -6px;
+						margin-left: -10px;
+						div {
+
+							&:after {
+
+								background:#e86c60;
+							}
+						}
+					}
+				}
+			}
+		}
+	
+		@media( min-width: 991.98px ){
+			width: 450px !important;
+			height: 300px !important;
+		}
+
+		.close {
+			color: #343434 !important;
+			float: right;
+			display: flex;
+			justify-content: flex-end;
+			font-size: 40px !important;
+			&:hover,
+			&:focus {
+				color: #000;
+				text-decoration: none;
+				cursor: pointer;
+			}
+
+		}
+
+	}
+}
+	
+
+
+}
+
+.list-box-wallet{
+	display: flex;
+	
+	@media( max-width: 1200px ){
+		display: block;
+	}
+	.list-payout-history{
+		margin: 50px 15px 0px 0px;
+		box-shadow: 0 0 12px 0 rgba(0,0,0,0.06);
+		border-radius: 4px;
+		width: calc(100% - 415px);
+		background: #fff;
+		text-align: left;
+		@media( max-width: 1200px ){
+			width: 100%;
+			margin: 0 0px 30px 0;
+		}
+		table{
+			border: none;
+			thead{
+				background: #e0e0e0;
+				tr{
+					border: none;
+					td{
+						font-weight: 600;
+						text-transform: uppercase;
+						padding: 15px 30px;
+						width: 33.33%;
+					}
+				}
+			}
+			tbody{
+				tr{
+					border: none;
+					border-bottom: 1px solid #eaeaea;
+					td{
+						width: 20%;
+						padding: 15px 30px;
+
+						&.price{
+							font-weight: 600;
+						}
+						
+						&:nth-child(2) {
+							width: 40%;
+						}
+					}	
+				}
+			}
+			tfoot{
+				tr{
+					border: none;
+					td{
+						.el-pagination{
+							margin: 10px;
+						}
+					}
+				}
+			}
+
+			@media only screen and (max-width: 768px) {
+				thead {
+					display: none;
+				}
+
+				tbody {
+					tr {
+						position: relative;
+						display: flex;
+						flex-direction: column;
+
+						td {
+							display: block;
+							width: 100% !important;
+							padding: 10px 0 10px 30%;
+
+							&:before {
+								position: absolute;
+							    left: 10px;
+							    display: block;
+							    overflow: hidden;
+							    width: 30%;
+							    content: attr(data-colname);
+							    white-space: nowrap;
+							    text-overflow: ellipsis;
+							    font-weight: bold;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		h4{
+			font-size: 18px;
+			font-weight: 600;
+			margin: 0;
+			padding: 25px 30px;
+			color: #333;
+			display: block;
+			border-bottom: 1px solid #eaeaea;
+		}
+		
+	}
+	.list-payment-menthod{
+		margin: 50px 0px 0px 15px;
+		padding: 30px;
+		box-shadow: 0 0 12px 0 rgba(0,0,0,0.06);
+		border-radius: 4px;
+		width: 415px;
+		max-height: 200px;
+		background: #fff;
+		@media( max-width: 1200px ){
+			width: 100%;
+			margin: 0 0px 30px 0;
+		}
+		.payment_method{
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			border-bottom: 1px solid #eaeaea;
+			padding: 0px 0px 20px 0px;
+			h4{
+				font-size: 18px;
+				font-weight: 600;
+				margin: 0;
+				padding: 0px 0px;
+				color: #333;
+				
+			}
+			.title_payment{
+				font-weight: bold;
+			}
+			
+		}
+		
+		.set_payment_method{
+			text-decoration: underline!important;
+			font-weight: 500;
+			text-align: right;
+			display: block;
+			padding: 30px 0px 0px 0px;
+			color: #343434;
+			
+		}
+	}
+
+}
+
+
+
+
+
+

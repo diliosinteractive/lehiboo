@@ -1,0 +1,140 @@
+.ova-event-special-grid-wrapper {
+	position: relative;
+	.event_archive {
+		margin-bottom: 0;
+		.event-notfound {
+			margin: 0px;
+			font-size: 22px;
+		}
+		&.type1, &.type2, &.type3, &.type4, &.type5, &.type6 {
+			grid-gap: 45px;
+			&.three_column {
+				grid-template-columns: 1fr 1fr 1fr;
+				@media (max-width: 991px) {
+					grid-template-columns: 1fr 1fr;
+				}
+				@media (max-width: 767px) {
+					grid-template-columns: 1fr;
+				}
+			}
+			&.two_column {
+				grid-template-columns: 1fr 1fr;
+				@media (max-width: 767px) {
+					grid-template-columns: 1fr;
+				}
+			}
+			
+			.event_entry {
+				.event_item {
+					.event_detail {
+						background: #fff;
+					}
+				}
+			}
+			.img-author {
+				a {
+					img {
+						width: 50px;
+					}
+				}
+			}
+		}
+
+		.wrap_loader {
+			display: none;
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			background-color: rgba(255,255,255, .9);
+			z-index: 999;
+			.loader {
+				position: absolute;
+				top: 100px;
+				left: 50%;
+				transform: translate(-50%);
+				stroke-linecap: round;
+				circle {
+					fill: none;
+					stroke-width: 1.5;
+
+					animation-duration: 1.5s;
+					animation-iteration-count: infinite;
+					animation-timing-function: linear;
+					transform-origin: 25px 25px;
+					will-change: transform;
+					stroke: #e86c60;
+
+					&:nth-of-type(1) {
+						stroke-dasharray: 40px;
+						animation-name: preloader_1;
+					}
+
+					&:nth-of-type(2) {
+						stroke-dasharray: 80px;
+						animation-name: preloader_2;
+					}
+				}
+
+				@keyframes preloader_1 {
+					100% {
+						transform: rotate(360deg);
+					}
+				}
+				@keyframes preloader_2 {
+					100% {
+						transform: rotate(-360deg);
+					}
+				}
+			}
+			.not_found {
+				display: none;
+			}
+		}
+	}
+
+
+	.ova-event-pagination {
+		.el_special_pagination {
+			margin: 48px 0 60px 0px;
+			.el_pa_list {
+				padding: 0px;
+				list-style-type: none;
+				margin: 0px;
+				display: flex;
+				justify-content: center;
+				flex-wrap: wrap;
+				.el_pa_item {
+					margin-top: 12px;
+					&:not(:last-child) {
+						margin-right: 12px;
+					}
+					.el_page {
+						color: #222222;
+						font-size: 16px;
+						line-height: 1.2;
+						border: 2px solid #ccc;
+						border-radius: 3px;
+						width: 40px;
+						height: 40px;
+						display: inline-flex;
+						justify-content: center;
+						align-items: center;
+						transition: 0.4s;
+						&.el_current_page,&:hover {
+							background-color: #e86c60;
+						    border-color: #e86c60;
+						    color: #fff;
+						}
+						&.next, &.prev {
+							width: 100%;
+							height: 40px;
+							padding: 0 14px;
+						}
+					}
+				}		
+			}
+		}
+	}
+}
+

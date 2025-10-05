@@ -1,0 +1,251 @@
+/*payment*/
+
+.manage_bank{
+	.payout-method-item {
+		display: inline-block;
+		margin-right: 30px;
+	}
+	label{
+		margin-right: 30px;
+	}
+
+	@media only screen and (max-width: 768px) {
+		label {
+			display: block;
+			margin-right: 0;
+		}
+	}
+}
+
+/*update to vendor*/
+#author_role{
+	margin-bottom: 30px;
+	border-bottom: 1px solid #eee;
+	padding-bottom: 30px;
+
+	input[name="el_update_role"]{
+		background: #dadada;
+		color: #333;
+		padding: 5px 10px;
+		margin: 0;
+		border: none;
+	}
+
+	#el_save_role {
+		.loader {
+			display: none;
+			&.is-active {
+				display: block;
+			}
+		}
+		.ova_result_update_to_vendor {
+			p {
+				&.success {
+					color: green;
+				}
+				&.error {
+					color: red;
+				}
+			}
+			
+		}
+	}
+}
+
+.vendor_profile {
+	background: #fff;
+	.ui-widget.ui-widget-content{
+		border: 1px solid #ddd!important;
+		padding: 0px!important;
+	}
+
+	#el_save_profile {
+		display: flex;
+		flex-direction: column;
+		.author_image {
+			.add_image, .remove_image {
+				display: block;
+				&:hover  {
+					transition: .3s all linear;
+				}
+			}
+			.wrap {
+				.image-preview {
+					width: 100px;
+					height: 100px;
+					border-radius: 100%;
+					object-fit: cover;
+					margin-top: 5px;
+				}
+				.remove_image {
+					display: block;
+					background-color: transparent;
+					text-decoration: underline;
+					border: none;
+					margin-top: 5px;
+					padding: 0 0px 10px 0px;
+					color: #343434;
+					cursor: pointer;
+				}
+			}
+		}
+		.ova_profile_custom_field_wrapper {
+			&.only_show_vendor {
+				border: 2px solid red;
+				padding: 10px;
+			}
+		}
+	}
+
+	#el_save_social {
+		.social_item {
+			display: flex;
+			flex-wrap: wrap;
+			margin: 10px 0;
+			input {
+				height: 40px;
+				margin-right: 30px;
+				margin-bottom: 5px;
+			}
+
+			.select2 {
+				width: 200px!important;
+				margin-right: 30px;
+				.select2-selection {
+					outline: none;
+					height: 40px;
+					border-radius: 0;
+					.select2-selection__rendered {
+						line-height: 38px;
+					}
+					.select2-selection__arrow {
+						height: 38px;
+					}
+				}
+				.select2-container--default .select2-selection--single{
+					border: 1px solid #ccc!important;
+					border-radius: 4px!important;		
+				}
+			}
+
+			.remove_social {
+				margin-bottom: 5px;
+			}
+			
+		}
+		
+	}
+
+	#el_save_password {
+		> div {
+			margin-bottom: 20px;
+			
+			.show_pass {
+				display: inline-block;
+				vertical-align: middle;
+				padding-right: 15px;
+				i {
+					display: block;
+				}
+			}
+			
+		}
+	}
+
+	#el_save_bank {
+		.heading {
+			margin: 0;
+			padding: 20px 0 0 0;
+			font-weight: bold;
+		}
+	}
+
+
+	textarea {
+		width: auto;
+		max-width: none !important;
+	}
+	.ova_remove_file {
+		display: inline-block;
+		margin: 0 5px;
+	}
+	.vendor_radio_field {
+		display: inline-block;
+		margin-right: 15px;
+		label {
+			margin: 0;
+			min-width: unset;
+		}
+	}
+	.checkbox_field_wrap {
+		display: inline-block;
+		label {
+			margin: 0;
+			min-width: unset;
+		}
+	}
+	.show_pass {
+		display: inline-block;
+		vertical-align: middle;
+		padding-right: 15px;
+		i {
+			display: block;
+			cursor: pointer;
+		}
+	}
+	.file__wrap {
+		margin-bottom: 10px;
+	}
+	.ova__loader {
+		display: none;
+	}
+	.ova__thumbnail {
+		width: 100px;
+		height: 100px;
+		object-fit: cover;
+		object-position: center;
+	}
+	.heading_section {
+		margin: 0;
+	}
+	.vendor_field {
+		&.textarea > label, &.checkbox > label, &.file_field > label {
+			vertical-align: top;
+			margin-top: 8px;
+		}
+		.ova_input_wrap {
+			display: inline-block;
+			position: relative;
+			@media screen and (max-width: 500px) {
+				display: block;
+				width: 100%;
+			}
+			.show_pass {
+				padding: 0;
+				position: absolute;
+				top: 50%;
+				right: 10px;
+				transform: translateY(-50%);
+			}
+			input {
+				padding-right: 40px;
+				max-width: 200px;
+				@media screen and (max-width: 500px) {
+					width: 100%;
+					max-width: 100%;
+				}
+			}
+		}
+		.vendor_file_field {
+			display: inline-block;
+		}
+	}
+}
+
+body.rtl {
+	.vendor_profile {
+		.ui-tabs .ui-tabs-nav li {
+			float: right;
+		}
+	}
+}

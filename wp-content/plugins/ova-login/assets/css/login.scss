@@ -1,0 +1,561 @@
+.ova-login-form-container {
+	h3.title {
+		text-transform: uppercase;
+		margin-bottom: 30px;
+		font-style: 20px;
+	}
+	.login-username {
+		margin-bottom: 20px;
+		&:after {
+			font-family: "Font Awesome 5 Free";
+			content: "\f007";
+			display: inline-block;
+			padding-right: 3px;
+			vertical-align: middle;
+			font-weight: 900;
+			position: absolute;
+			top: 55px;
+			left: 20px;
+			transform: translateY(-50%);
+			font-size: 18px;
+		}
+	}
+	.login-password {
+		margin-bottom: 20px;
+		&:after {
+			font-family: "Font Awesome 5 Free";
+			content: "\f007";
+			display: inline-block;
+			padding-right: 3px;
+			vertical-align: middle;
+			font-weight: 900;
+			position: absolute;
+			top: 55px;
+			left: 20px;
+			transform: translateY(-50%);
+			font-size: 18px;
+		}
+	}
+	.login-remember {
+		label {
+			font-weight: normal;
+			input {
+				margin-right: 5px;
+			}
+		}
+	}
+	.login-submit {
+		margin-top: 30px;
+		margin-bottom: 30px !important;
+		input {
+			width: 250px;
+		}
+	}
+	a.forget-password {
+		color: #4862c4;
+	}
+	#user_pass {
+		height: 50px;
+		border: 1px solid #e0e0e0;
+		box-shadow: none;
+		color: #242b46;
+		opacity: 1;
+		padding-left: 15px;
+		width: 250px;
+		&::-webkit-input-placeholder {
+			color: #242b46;
+			opacity: 0.7;
+		}
+		&::-moz-placeholder {
+			color: #242b46;
+			opacity: 0.7;
+		}
+		&:-ms-input-placeholder {
+			color: #242b46;
+			opacity: 0.7;
+		}
+		&:-moz-placeholder {
+			color: #242b46;
+			opacity: 0.7;
+		}
+	}
+	#user_login {
+		height: 50px;
+		border: 1px solid #e0e0e0;
+		box-shadow: none;
+		color: #242b46;
+		opacity: 1;
+		padding-left: 15px;
+		width: 250px;
+		&::-webkit-input-placeholder {
+			color: #242b46;
+			opacity: 0.7;
+		}
+		&::-moz-placeholder {
+			color: #242b46;
+			opacity: 0.7;
+		}
+		&:-ms-input-placeholder {
+			color: #242b46;
+			opacity: 0.7;
+		}
+		&:-moz-placeholder {
+			color: #242b46;
+			opacity: 0.7;
+		}
+	}
+	#loginform {
+		p {
+			label {
+				display: block;
+			}
+		}
+	}
+	p.login-submit {
+		#wp-submit {
+			cursor: pointer;
+			border: none;
+			background-color: #343434;
+			color: #fff;
+			font-size: 14px;
+			line-height: 24px;
+			text-transform: uppercase;
+			font-weight: 500;
+			padding: 11.5px 40px;
+			position: relative;
+		}
+	}
+	p.login-submit.resetpass-submit {
+		#wp-submit {
+			width: 200px;
+		}
+	}
+	.form-user_pass {
+		margin-bottom: 25px;
+		position: relative;
+		i {
+			position: absolute;
+			top: 55px;
+			left: 20px;
+			transform: translateY(-50%);
+			color: #e86c60;
+			font-size: 18px;
+		}
+	}
+	input {
+		height: 50px;
+		border: 1px solid #e3e1f1;
+		box-shadow: none;
+		color: #333333;
+		opacity: 1;
+		padding-left: 50px;
+		padding-right: 10px;
+		width: 100%;
+		border-radius: 4px;
+		background: #fcfcfe;
+	}
+	[type=checkbox] {
+		width: auto;
+	}
+}
+.ova_register_user {
+	h3.title {
+		text-transform: uppercase;
+		margin-bottom: 30px;
+		font-style: 20px;
+	}
+	input {
+		height: 50px;
+		border: 1px solid #e0e0e0;
+		box-shadow: none;
+		color: #242b46;
+		opacity: 1;
+		padding-left: 15px;
+		width: 250px;
+		&::-webkit-input-placeholder {
+			color: #242b46;
+			opacity: 0.7;
+		}
+		&::-moz-placeholder {
+			color: #242b46;
+			opacity: 0.7;
+		}
+		&:-ms-input-placeholder {
+			color: #242b46;
+			opacity: 0.7;
+		}
+		&:-moz-placeholder {
+			color: #242b46;
+			opacity: 0.7;
+		}
+	}
+	.ova-btn {
+		text-align: center;
+		padding-left: 30px;
+		padding-right: 30px;
+	}
+	p.form-row.el-register-dcma {
+		display: flex;
+		align-items: center;
+	}
+	.form-row.el-register-dcma {
+		input {
+			width: 15px;
+			height: 15px;
+			margin-right: 15px;
+		}
+	}
+	p.form-row.ova-email-icon {
+		&:after {
+			font-family: "Font Awesome 5 Free";
+			content: "\f0e0";
+			display: inline-block;
+			padding-right: 3px;
+			vertical-align: middle;
+			font-weight: 900;
+		}
+	}
+	p.form-row.ova-user-icon {
+		&:after {
+			font-family: "Font Awesome 5 Free";
+			content: "\f007";
+			display: inline-block;
+			padding-right: 3px;
+			vertical-align: middle;
+			font-weight: 900;
+		}
+	}
+	p.form-row.password {
+		&:after {
+			font-family: "Font Awesome 5 Free";
+			content: "\f084";
+			display: inline-block;
+			padding-right: 3px;
+			vertical-align: middle;
+			font-weight: 900;
+		}
+	}
+	p.form-row.ova-phone-icon {
+		&:after {
+			font-family: "Font Awesome 5 Free";
+			content: "\f87b";
+			display: inline-block;
+			padding-right: 3px;
+			vertical-align: middle;
+			font-weight: 900;
+		}
+	}
+	p.form-row.ova-url-icon {
+		&:after {
+			font-family: "Font Awesome 5 Free";
+			content: "\f0c1";
+			display: inline-block;
+			padding-right: 3px;
+			vertical-align: middle;
+			font-weight: 900;
+		}
+	}
+	p.form-row.ova-job-icon {
+		&:after {
+			content: "\f0b1";
+			display: inline-block;
+			padding-right: 3px;
+			vertical-align: middle;
+			font-weight: 900;
+		}
+	}
+	p.form-row.ova-address-icon {
+		&:after {
+			font-family: "Font Awesome 5 Free";
+			content: "\f3c5";
+			display: inline-block;
+			padding-right: 3px;
+			vertical-align: middle;
+			font-weight: 900;
+		}
+	}
+	p.form-row.ova-desc-icon {
+		&:after {
+			content: "\f05a";
+			display: inline-block;
+			padding-right: 3px;
+			font-weight: 900;
+			top: 27px;
+		}
+	}
+	#user_description {
+		width: 100%;
+		border: 1px solid #e3e1f1;
+		border-radius: 4px;
+		background: #fcfcfe;
+		padding-left: 50px;
+		padding-right: 10px;
+		height: 150px;
+		padding-top: 15px;
+		&:focus {
+			outline: none;
+		}
+		&::-webkit-input-placeholder {
+			display: block;
+		}
+	}
+}
+#password-lost-form.ova-login-form-container {
+	.login-username {
+		&:after {
+			content: "\f0e0";
+			font-family: "Font Awesome 5 Free";
+		}
+	}
+}
+
+
+.ova_register_user {
+	.ova_field_wrap {
+		margin-bottom: 25px;
+		.text-err {
+			display: block;
+			color: red;
+			&.select {
+				margin-top: 5px;
+			}
+		}
+		.description {
+			display: block;
+			font-size: 14px;
+			font-style: italic;
+			color: #555555;
+		}
+	}
+	.form-row {
+		.invalid {
+			border-color: red;
+		}
+	}
+}
+
+// Frontend custom field register
+.ova_register_user {
+	label {
+		margin: 0;
+	}
+	.label {
+		font-weight: 500;
+		padding-bottom: 5px;
+	}
+	.form-row {
+		i {
+			position: absolute;
+			top: 50%;
+			left: 0;
+			transform: translateY(-50%);
+			color: var(--primary);
+			font-size: 18px;
+			z-index: 9;
+		}
+		textarea {
+			width: 100%;
+			border: 1px solid #e3e1f1;
+			border-radius: 4px;
+			background: #fcfcfe;
+			padding-left: 50px;
+			padding-right: 10px;
+			height: 150px;
+			padding-top: 15px;
+			&:focus {
+				outline: none;
+			}
+			&::-webkit-input-placeholder {
+				display: block;
+			}
+		}
+		&.textarea {
+			i {
+				top: 27px;
+			}
+		}
+		&.select {
+			i {
+				margin-top: 3px;
+			}
+		}
+
+		.select2-container--default {
+			.select2-selection--single {
+				border: 1px solid #e3e1f1 !important;
+				background: #fcfcfe !important;
+				padding-left: 40px !important;
+				border-radius: 4px !important;
+				height: 50px;
+				&.invalid {
+					border: 1px solid red !important;
+				}
+				.select2-selection__rendered {
+					line-height: 50px !important;
+				}
+				.select2-selection__arrow {
+					height: 50px !important;
+				}
+				.select2-selection__placeholder {
+					color: #242b46 !important;
+					opacity: 0.7;
+				}
+			}
+		}
+
+
+		&.checkbox-field {
+			display: flex;
+			align-items: center;
+			input {
+				width: 15px;
+				height: 15px;
+				margin-right: 15px;
+			}
+		}
+
+	}
+	.uploadfile-field {
+		display: block;
+		text-align: center;
+		font-size: 1.25rem;
+		background-color: #fcfcfe;
+		position: relative;
+		padding: 80px 20px;
+		cursor: pointer;
+		@media screen and (max-width: 767px) {
+			padding: 70px 20px;
+		}
+		@media screen and (max-width: 512px) {
+			padding: 30px 20px;
+		}
+		.box__file {
+			width: 0.1px;
+			height: 0.1px;
+			opacity: 0;
+			overflow: hidden;
+			position: absolute;
+			z-index: -1;
+		}
+		.box__dragndrop {
+			display: none;
+		}
+
+		.box__error {
+			font-size: 16px;
+			font-style: italic;
+			color: red;
+			text-decoration: underline;
+		}
+
+		.file__format {
+			margin-top: 10px;
+			font-size: 14px;
+		}
+
+		&.has-advanced-upload {
+			outline: 2px dashed var(--primary);
+			outline-offset: -10px;
+			-webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+			transition: outline-offset .15s ease-in-out, background-color .15s linear;
+			.box__dragndrop {
+				display: inline;
+			}
+		}
+
+		.box__file + label {
+			font-size: 25px;
+			display: inline-block;
+			cursor: pointer;
+			transition: all .3s linear;
+			word-break: break-word;
+			@media screen and (max-width: 767px) {
+				font-size: 22px;
+			}
+		}
+
+		.box__file + label * {
+			pointer-events: none;
+		}
+
+		.box__file:focus + label,
+		.box__file + label:hover strong {
+			color: var(--primary);
+		}
+		.box__file:focus + label {
+			outline: 1px dotted var(--primary);
+		}
+		.box__icon {
+			width: 100%;
+			height: 90px;
+			display: block;
+			margin-bottom: 30px;
+			@media screen and (max-width: 767px) {
+				height: 70px;
+			}
+			@media screen and (max-width: 512px) {
+				height: 50px;
+			}
+			i {
+				font-size: 90px;
+				position: relative;
+				color: var(--primary);
+				display: inline-flex;
+				line-height: 1;
+				@media screen and (max-width: 767px) {
+					font-size: 70px;
+				}
+				@media screen and (max-width: 512px) {
+					font-size: 50px;
+				}
+				&::before {
+					font-size: 90px;
+					margin: 0;
+					@media screen and (max-width: 767px) {
+						font-size: 70px;
+					}
+					@media screen and (max-width: 512px) {
+						font-size: 50px;
+					}
+				}
+			}
+		}
+		&.is-dragover {
+			background-color: #fff;
+			outline-offset: -20px;
+		}
+		&.is-uploading {
+			.box__input {
+				visibility: none;
+			}
+			.box__uploading {
+				display: block;
+			}
+		}
+	}
+
+	.ova_custom_register_field {
+		.form-row {
+			i {
+				font-size: 20px;
+				margin-left: 20px;
+				&::before {
+					margin-left: 0;
+				}
+			}
+		}
+	}
+	.ovalg-recaptcha-wrapper {
+		margin-bottom: 25px;
+	}
+}
+// reCAPCHA
+.grecaptcha-badge {
+	bottom: 70px !important;
+	z-index: 9;
+}
+.login-form-container {
+	.ovalg-recaptcha-wrapper {
+		margin-bottom: 25px;
+	}
+}

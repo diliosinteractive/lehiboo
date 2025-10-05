@@ -1,0 +1,2084 @@
+@media (max-width: 1170px) {
+  .ova-pl-10 {
+    padding-left: 10px;
+  }
+  .ova-pr-10 {
+    padding-right: 10px;
+  }
+}
+.elementor-widget-ova_logo .elementor-widget-container {
+  display: flex;
+}
+
+.logo-fixed {
+  display: none;
+}
+
+.active_fixed .mobile-logo,
+.active_fixed .desk-logo {
+  display: none !important;
+}
+.active_fixed .logo-fixed {
+  display: block;
+}
+
+/* DeskTop *********************************************************************/
+/* Fix when menu is full width */
+.align_right > .elementor-container {
+  float: right;
+  width: 100%;
+}
+
+/* Button Open Canvas */
+.ova_openNav {
+  display: none;
+}
+
+.ova_nav {
+  width: 100%;
+  /* Sub Menu */
+  /* Parent Menu */
+}
+.ova_nav .ova_closeNav {
+  display: none;
+}
+.ova_nav .dropdown-menu {
+  padding: 0px;
+  margin: 0;
+}
+.ova_nav .dropdown-menu > li {
+  width: 100%;
+  position: relative;
+}
+.ova_nav .dropdown-menu > li > a {
+  color: #343434;
+  display: block;
+  font-weight: 500;
+  font-size: 14px;
+}
+.ova_nav ul.menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* Dropdown arrow */
+}
+.ova_nav ul.menu > li {
+  padding: 0px 15px;
+}
+.ova_nav ul.menu > li > a {
+  color: #343434;
+  font-weight: 500;
+  font-size: 14px;
+  display: inline-block;
+}
+.ova_nav ul.menu button.dropdown-toggle {
+  display: none;
+}
+.ova_nav ul.menu button.dropdown-toggle:after {
+  display: none;
+}
+
+/* Fix Sub Menu Direction */
+.sub_menu_dir_left .dropdown-menu li {
+  text-align: right;
+  position: relative;
+  /* Menu level 3 */
+}
+.sub_menu_dir_left .dropdown-menu li.dropdown a i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  margin-top: -10px;
+}
+.sub_menu_dir_left .dropdown-menu li.dropdown a i:before {
+  content: "4";
+  font-family: "eleganticons";
+}
+.sub_menu_dir_left .dropdown-menu li .dropdown-menu {
+  position: absolute;
+  left: auto;
+  right: 100%;
+  top: 0;
+}
+
+.sub_menu_dir_right .dropdown-menu li {
+  text-align: left;
+  /* Menu level 3 */
+}
+.sub_menu_dir_right .dropdown-menu li.dropdown a i {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  margin-top: -10px;
+}
+.sub_menu_dir_right .dropdown-menu li.dropdown a i:before {
+  content: "5";
+  font-family: "eleganticons";
+}
+.sub_menu_dir_right .dropdown-menu li .dropdown-menu {
+  position: absolute;
+  right: auto;
+  left: 100%;
+  top: 0;
+}
+
+/* Cover page when open canvas */
+.ova_closeCanvas {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  overflow-y: auto;
+  overflow-x: hidden;
+  text-align: center;
+  transition: opacity 1s;
+}
+
+@media (min-width: 1025px) {
+  /* Vertical Menu Desktop */
+  .ova_wrap_nav.column ul.menu.sub_menu_dir_right > li.dropdown > a i:before {
+    content: "5";
+    font-family: "eleganticons";
+  }
+  .ova_wrap_nav.column ul.menu > li {
+    width: 100%;
+  }
+  .ova_wrap_nav.column ul.menu > li > .dropdown-menu {
+    left: 100%;
+    top: 0 !important;
+  }
+  .ova_nav ul.menu {
+    /* Sub Menu */
+  }
+  .ova_nav ul.menu .dropdown-menu {
+    visibility: hidden;
+    display: block;
+    top: 110%;
+    z-index: -1;
+  }
+  .ova_nav ul.menu > li:hover > .dropdown-menu {
+    display: block;
+    z-index: 9999;
+    webkit-transition: all 0.3s ease-in;
+    -moz-transition: all 0.3s ease-in;
+    -ms-transition: all 0.3s ease-in;
+    -o-transition: all 0.3s ease-in;
+    transition: all 0.3s ease-in;
+    visibility: visible;
+    top: 100%;
+  }
+  .ova_nav ul.menu > li:hover > .dropdown-menu > li:hover > .dropdown-menu {
+    display: block;
+    opacity: 1;
+    z-index: 9999;
+    webkit-transition: all 0.3s ease-in;
+    -moz-transition: all 0.3s ease-in;
+    -ms-transition: all 0.3s ease-in;
+    -o-transition: all 0.3s ease-in;
+    transition: all 0.3s ease-in;
+    visibility: visible;
+    top: 0;
+  }
+}
+/* Mobile *********************************************************************/
+@media (max-width: 1024px) {
+  /*transition when display nav*/
+  .ova-wrapp {
+    transition: margin-left 0.5s;
+  }
+  .ova_openNav {
+    display: block;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background: transparent;
+  }
+  .ova_openNav:focus {
+    outline: none;
+  }
+  /* Align Menu Button */
+  .NavBtn_right {
+    float: right;
+    margin: 0;
+    padding: 0;
+  }
+  .NavBtn_left {
+    float: left;
+  }
+  .NavBtn_center {
+    justify-content: center;
+  }
+  /* Close Button in menu */
+  .ova_nav.canvas_left .ova_closeNav {
+    display: block;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+    color: #fff;
+    text-align: right;
+  }
+  .ova_nav.canvas_right .ova_closeNav {
+    display: block;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 10px;
+    color: #fff;
+    text-align: left;
+  }
+  /* Hide Menu */
+  .logged-in .ova_nav {
+    padding-top: 60px;
+  }
+  .ova_nav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 4;
+    top: 0;
+    overflow-x: hidden;
+    padding-top: 30px;
+    transition: 0.5s;
+    /* Canvas direction */
+    /* Background Canvas */
+    /* Show/hide Canvas */
+    /* Always display column in mobile */
+  }
+  .ova_nav ul.menu li {
+    width: 100%;
+    display: block;
+    align-items: center;
+    /* Dropdown arrow */
+  }
+  .ova_nav ul.menu li a {
+    width: 100%;
+  }
+  .ova_nav ul.menu li a i {
+    display: none;
+  }
+  .ova_nav ul.menu li button.dropdown-toggle {
+    display: block;
+    position: absolute;
+    top: 3px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    outline: none;
+  }
+  .ova_nav ul.menu li.active_sub > .dropdown-menu {
+    display: block;
+  }
+  .ova_nav ul.menu li.active_sub > button.dropdown-toggle > i:before {
+    content: "2";
+    font-family: "eleganticons";
+  }
+  .ova_nav ul.menu .dropdown-menu {
+    position: relative !important;
+    transform: none !important;
+    left: 0;
+    top: 0;
+    right: auto;
+    border: none !important;
+    background: transparent !important;
+    display: none;
+    opacity: 1;
+    visibility: visible;
+    width: 100%;
+  }
+  .ova_nav.canvas_left {
+    left: 0;
+  }
+  .ova_nav.canvas_left ul.menu {
+    align-items: flex-start;
+    text-align: left;
+    /* Dropdown arrow */
+    /* level 2 */
+  }
+  .ova_nav.canvas_left ul.menu button.dropdown-toggle {
+    right: 10px;
+  }
+  .ova_nav.canvas_left ul.menu .dropdown-menu {
+    /* level 3 */
+  }
+  .ova_nav.canvas_left ul.menu .dropdown-menu li {
+    text-align: left;
+    border: none !important;
+    background: transparent !important;
+    clear: both;
+  }
+  .ova_nav.canvas_left ul.menu .dropdown-menu .dropdown-menu {
+    padding-left: 15px;
+  }
+  .ova_nav.canvas_right {
+    right: 0;
+  }
+  .ova_nav.canvas_right ul.menu {
+    align-items: flex-end;
+    text-align: right;
+    /* Dropdown arrow */
+    /* level 2 */
+  }
+  .ova_nav.canvas_right ul.menu button.dropdown-toggle {
+    left: 10px;
+  }
+  .ova_nav.canvas_right ul.menu .dropdown-menu {
+    /* level 3 */
+  }
+  .ova_nav.canvas_right ul.menu .dropdown-menu li {
+    text-align: right;
+    border: none !important;
+    background: transparent !important;
+  }
+  .ova_nav.canvas_right ul.menu .dropdown-menu .dropdown-menu {
+    padding-right: 15px;
+  }
+  .ova_nav.canvas_bg_gray {
+    background-color: #343434;
+  }
+  .ova_nav.canvas_bg_gray ul.menu li a,
+  .ova_nav.canvas_bg_gray ul.menu li .dropdown-toggle {
+    color: #fff !important;
+  }
+  .ova_nav.canvas_bg_white {
+    background-color: #fff;
+  }
+  .ova_nav.canvas_bg_white ul.menu li a,
+  .ova_nav.canvas_bg_white ul.menu li .dropdown-toggle {
+    color: #343434 !important;
+  }
+  .ova_nav.show {
+    width: 250px;
+  }
+  .ova_nav.hide {
+    width: 0;
+  }
+  .ova_nav ul.menu {
+    flex-direction: column !important;
+  }
+}
+@media (max-width: 767px) {
+  /* Align Menu Button */
+  .NavBtn_right, .NavBtn_left {
+    float: none;
+    margin: 0;
+    padding: 0;
+  }
+  .NavBtn_right_m {
+    float: right;
+    margin: 0;
+    padding: 0;
+  }
+  .NavBtn_left_m {
+    float: left;
+  }
+  .NavBtn_center_m {
+    justify-content: center;
+  }
+  .mobi_no_shrink {
+    position: relative !important;
+  }
+}
+.wrap_ova_header {
+  width: 100%;
+  position: relative;
+  /*Breadcrumbs*/
+  /*title*/
+}
+.wrap_ova_header.left #breadcrumbs .breadcrumb {
+  justify-content: flex-start;
+}
+.wrap_ova_header.right #breadcrumbs .breadcrumb {
+  justify-content: flex-end;
+}
+.wrap_ova_header.center #breadcrumbs .breadcrumb {
+  justify-content: center;
+}
+.wrap_ova_header.bg_feature_img {
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+}
+.wrap_ova_header.bg_feature_img .ovatheme_breadcrumbs_el .breadcrumb {
+  color: #fff;
+}
+.wrap_ova_header.bg_feature_img .ovatheme_breadcrumbs_el .breadcrumb a {
+  color: #fff;
+}
+.wrap_ova_header .cover_color {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.wrap_ova_header .ova_header_el {
+  position: relative;
+  z-index: 1;
+}
+.wrap_ova_header .ovatheme_breadcrumbs_el {
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+}
+.wrap_ova_header .ovatheme_breadcrumbs_el .breadcrumb {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+}
+.wrap_ova_header .ovatheme_breadcrumbs_el .breadcrumb a {
+  color: #343434;
+  display: inline-block;
+  transition: all 0.3s linear;
+}
+.wrap_ova_header .header_title {
+  margin: 0;
+  padding: 0;
+  font-size: 26px;
+  text-transform: uppercase;
+  line-height: 1.1em;
+  font-weight: 500;
+}
+
+/********** Fix Group **********/
+.menu-none-fixed {
+  display: none;
+}
+.menu-none-fixed.active_fixed {
+  display: block;
+}
+
+.header_group .elementor-widget-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.header_group .elementor-widget-wrap .elementor-element {
+  margin: 0px;
+}
+.header_group.dir_left .elementor-widget-wrap {
+  justify-content: flex-start;
+}
+.header_group.dir_center .elementor-widget-wrap {
+  justify-content: center;
+}
+
+.meup_footer_link.contact_footer .elementor-text-editor ul li {
+  font-size: 16px;
+  line-height: 32px;
+  color: #cccccc;
+}
+.meup_footer_link.contact_footer .elementor-text-editor ul li a {
+  line-height: 32px;
+}
+.meup_footer_link .elementor-text-editor ul {
+  list-style-type: none;
+  padding: 0px;
+}
+.meup_footer_link .elementor-text-editor ul li a {
+  font-size: 16px;
+  line-height: 38px;
+  color: #cccccc;
+  transition: 0.4s;
+}
+
+.button-register .elementor-button-wrapper {
+  position: relative;
+}
+.button-register .elementor-button-wrapper:before {
+  position: absolute;
+  content: "|";
+  top: 50%;
+  right: calc(100% + 10px);
+  transform: translateY(-50%);
+  color: #d1d1d1;
+}
+
+.button-create-event .elementor-button-text {
+  position: relative;
+}
+.button-create-event .elementor-button-text:before {
+  font-family: "ElegantIcons";
+  content: "L";
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 2px);
+  transform: translateY(-50%);
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  .visible-mobile {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .visible-mobile {
+    display: block;
+  }
+}
+
+.ova-subcrible {
+  position: relative;
+}
+.ova-subcrible .input input[type=email] {
+  padding: 10px 115px 10px 0px;
+  height: unset;
+  width: 100%;
+  font-size: 16px;
+  line-height: 26px;
+  color: #333333;
+  border: none;
+  border-bottom: 1px solid #dadada;
+  background: transparent;
+}
+.ova-subcrible .input input[type=email]::placeholder {
+  color: #666666;
+}
+.ova-subcrible .submit input[type=submit] {
+  background: transparent;
+  position: absolute;
+  right: 0;
+  top: 5px;
+  padding: 5px 27px 5px 0px;
+  height: unset;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.4s;
+  border: none;
+  z-index: 2;
+}
+.ova-subcrible .submit input[type=submit]:hover {
+  color: #333333;
+}
+.ova-subcrible .submit input[type=submit]:hover + i {
+  color: #333333;
+}
+.ova-subcrible .submit i {
+  position: absolute;
+  right: 0;
+  top: 10px;
+  font-size: 18px;
+  z-index: 1;
+  transition: 0.4s;
+}
+
+.meup-counter .elementor-counter .elementor-counter-number-wrapper .elementor-counter-number-prefix, .meup-counter .elementor-counter .elementor-counter-number-wrapper .elementor-counter-number {
+  font-family: Asap;
+  font-size: 56px;
+  line-height: 1.2;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+.meup-counter .elementor-counter .elementor-counter-title {
+  font-size: 22px;
+  line-height: 1.2;
+  color: #333333;
+}
+
+.according-meup .elementor-accordion .elementor-accordion-item {
+  border: 1px solid #e3e1f1;
+  background: #fcfcfe;
+}
+.according-meup .elementor-accordion .elementor-accordion-item:not(:first-child) {
+  border-top: 1px solid #e3e1f1;
+}
+.according-meup .elementor-accordion .elementor-accordion-item:not(:last-child) {
+  margin-bottom: 20px;
+}
+.according-meup .elementor-accordion .elementor-accordion-item .elementor-tab-title {
+  padding: 13px 5px 10px 30px;
+  position: relative;
+}
+.according-meup .elementor-accordion .elementor-accordion-item .elementor-tab-title .elementor-accordion-icon {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+}
+.according-meup .elementor-accordion .elementor-accordion-item .elementor-tab-title .elementor-accordion-icon i {
+  color: #333333;
+  font-size: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  position: relative;
+}
+.according-meup .elementor-accordion .elementor-accordion-item .elementor-tab-title .elementor-accordion-icon i:before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.according-meup .elementor-accordion .elementor-accordion-item .elementor-tab-title a {
+  font-family: Asap;
+  font-size: 16px;
+  line-height: 25px;
+  font-weight: 600;
+  color: #222222;
+}
+.according-meup .elementor-accordion .elementor-accordion-item .elementor-tab-content {
+  background: #fcfcfe;
+  border-top: 1px solid #e3e1f1;
+  padding: 22px 60px 29px 30px;
+  margin-top: -2px;
+  font-size: 15px;
+  line-height: 28px;
+  color: #333333;
+}
+.according-meup .elementor-accordion .elementor-accordion-item .elementor-tab-content p {
+  font-size: 15px;
+  line-height: 28px;
+  color: #333333;
+}
+
+div.wpcf7-response-output {
+  background-color: #e86c60;
+  margin: 20px 0 20px 0;
+  color: #fff;
+  border: 2px solid transparent;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+div.wpcf7-mail-sent-ok {
+  background-color: #e86c60;
+  margin: 20px 0 20px 0;
+  color: #fff;
+  border: 2px solid transparent;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.meup-contact-form-1 p {
+  margin: 0px;
+}
+.meup-contact-form-1 .input {
+  position: relative;
+}
+.meup-contact-form-1 .input:not(:last-child) {
+  margin-bottom: 25px;
+}
+.meup-contact-form-1 .input i {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translate(0, -50%);
+  font-size: 16px;
+  z-index: 1;
+}
+.meup-contact-form-1 .input input, .meup-contact-form-1 .input textarea {
+  background: #fcfcfe;
+  padding: 0;
+  width: 100%;
+  height: unset;
+  border: 1px solid #e3e1f1;
+  font-size: 15px;
+  line-height: 28px;
+  font-weight: 400;
+  color: #333333;
+  padding: 9px 20px 10px 50px;
+  border-radius: 3px;
+}
+.meup-contact-form-1 .input input::placeholder, .meup-contact-form-1 .input textarea::placeholder {
+  color: #666666;
+}
+.meup-contact-form-1 .input textarea {
+  padding: 11px 20px 10px 20px;
+  outline: none;
+  height: 145px;
+}
+.meup-contact-form-1 .input .wpcf7-form-control-wrap {
+  display: block;
+}
+.meup-contact-form-1 .input .wpcf7-form-control-wrap .wpcf7-not-valid-tip {
+  position: absolute;
+  bottom: -25px;
+}
+.meup-contact-form-1 input[type=submit] {
+  background: transparent;
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 600;
+  font-family: Asap;
+  height: unset;
+  border: 2px solid;
+  padding: 10px 25px 10px 25px;
+  transition: 0.4s;
+}
+
+.ova-login-form-container {
+  box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
+  padding: 41px 45px 40px 45px;
+}
+.ova-login-form-container h3.title {
+  margin: 0px;
+  font-size: 26px;
+  line-height: 28px;
+  font-weight: 600;
+  color: #333333;
+  position: relative;
+  text-transform: capitalize;
+  margin-bottom: 49px;
+}
+.ova-login-form-container h3.title:after {
+  position: absolute;
+  bottom: -14px;
+  left: 0;
+  content: "";
+  width: 30px;
+  height: 1px;
+  background: #e86c60;
+}
+.ova-login-form-container #user_login, .ova-login-form-container #user_pass {
+  height: 50px;
+  border: 1px solid #e3e1f1;
+  box-shadow: none;
+  color: #333333;
+  opacity: 1;
+  padding-left: 50px;
+  padding-right: 10px;
+  width: 100%;
+  border-radius: 4px;
+  background: #fcfcfe;
+}
+.ova-login-form-container .login-username, .ova-login-form-container .login-password {
+  margin-bottom: 25px;
+  position: relative;
+}
+.ova-login-form-container .login-password {
+  margin-bottom: 27px;
+}
+.ova-login-form-container .login-password:after {
+  content: "\f084";
+}
+.ova-login-form-container #loginform p.login-remember input {
+  margin-right: 10px;
+  width: auto;
+}
+.ova-login-form-container #loginform p.login-remember label {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  line-height: 28px;
+  font-weight: 300;
+  color: #666666;
+}
+.ova-login-form-container p.login-submit {
+  margin-top: 18px;
+}
+.ova-login-form-container p.login-submit #wp-submit {
+  background: transparent;
+  font-family: Asap;
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 600;
+  color: #e86c60;
+  border: 2px solid #e86c60;
+  border-radius: 3px;
+  height: 50px;
+  padding: 10px 10px 10px 10px;
+  width: 155px;
+  transition: 0.4s;
+}
+.ova-login-form-container p.login-submit #wp-submit:hover {
+  background: #e86c60;
+  color: #ffffff;
+}
+.ova-login-form-container .forgot-password {
+  font-size: 15px;
+  line-height: 28px;
+  font-weight: 300;
+  color: #666666;
+  transition: 0.4s;
+}
+.ova-login-form-container .forgot-password:hover {
+  color: #e86c60;
+}
+
+.ova_register_user {
+  box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
+  padding: 41px 45px 55px 45px;
+}
+.ova_register_user h3.title {
+  margin: 0px;
+  font-size: 26px;
+  line-height: 28px;
+  font-weight: 600;
+  color: #333333;
+  position: relative;
+  text-transform: capitalize;
+  margin-bottom: 49px;
+}
+.ova_register_user h3.title:after {
+  position: absolute;
+  bottom: -14px;
+  left: 0;
+  content: "";
+  width: 30px;
+  height: 1px;
+  background: #e86c60;
+}
+.ova_register_user p.form-row {
+  display: block;
+  margin: 0px;
+  position: relative;
+  font-size: 15px;
+  line-height: 28px;
+  font-weight: 300;
+  color: #666666;
+}
+.ova_register_user p.form-row:after {
+  font-family: "Font Awesome 5 Free";
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  color: #e86c60;
+  font-size: 18px;
+}
+.ova_register_user p.form-row input {
+  height: 50px;
+  border: 1px solid #e3e1f1;
+  box-shadow: none;
+  color: #333333;
+  opacity: 1;
+  padding-left: 50px;
+  padding-right: 10px;
+  width: 100%;
+  border-radius: 4px;
+  background: #fcfcfe;
+}
+.ova_register_user p.form-row .raido_input {
+  display: inline-flex;
+  align-items: center;
+}
+.ova_register_user p.form-row .raido_input label {
+  margin: 0px;
+  cursor: pointer;
+}
+.ova_register_user p.form-row .raido_input input {
+  cursor: pointer;
+  height: 18px;
+  width: 18px;
+  margin-right: 10px;
+}
+.ova_register_user p.form-row .raido_input:not(:last-child) {
+  margin-right: 20px;
+}
+.ova_register_user .signup-submit {
+  margin: 0px;
+}
+.ova_register_user .signup-submit .ova-btn {
+  background: #e86c60;
+  width: 115px;
+  height: 50px;
+  font-family: Asap;
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 600;
+  color: #ffffff;
+  border-radius: 3px;
+  border: 2px solid #e86c60;
+  padding: 8px 10px 10px 10px;
+  transition: 0.4s;
+}
+.ova_register_user .signup-submit .ova-btn:hover {
+  background: transparent;
+  color: #e86c60;
+}
+
+@media (max-width: 767px) {
+  .fix-flex-start-767 .elementor-widget-wrap {
+    flex-direction: row;
+    justify-content: space-between !important;
+  }
+}
+
+.ova-blog-slider h3, .ova-blog-slider p {
+  margin: 0px;
+}
+.ova-blog-slider .blog-slider {
+  position: relative;
+}
+.ova-blog-slider .blog-slider .item-blog .ui-widget.ui-widget-content {
+  background-color: transparent;
+}
+.ova-blog-slider .blog-slider .item-blog .ova-media {
+  margin-bottom: 20px;
+  position: relative;
+}
+.ova-blog-slider .blog-slider .item-blog .ova-media img {
+  border-radius: 5px;
+}
+.ova-blog-slider .blog-slider .item-blog .content .post-meta-blog {
+  margin-bottom: 15px;
+}
+.ova-blog-slider .blog-slider .item-blog .content .post-meta-blog a {
+  font-size: 15px;
+  line-height: 25px;
+  color: #666666;
+}
+.ova-blog-slider .blog-slider .item-blog .content .post-meta-blog .author span {
+  font-size: 15px;
+  line-height: 25px;
+  color: #666666;
+}
+.ova-blog-slider .blog-slider .item-blog .content .post-meta-blog i {
+  margin-right: 7px;
+  display: inline-block;
+  line-height: 1;
+  color: var(--primary);
+}
+.ova-blog-slider .blog-slider .item-blog .content .post-meta-blog i:before {
+  margin: 0px;
+  font-size: 15px;
+}
+.ova-blog-slider .blog-slider .item-blog .content .post-meta-blog .meta-slash {
+  padding-left: 10px;
+  padding-right: 10px;
+  color: #eaeaea;
+}
+.ova-blog-slider .blog-slider .item-blog .content .title {
+  margin-bottom: 14px;
+}
+.ova-blog-slider .blog-slider .item-blog .content .title h3 a {
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: #222222;
+  text-transform: capitalize;
+  transition: 0.4s;
+}
+.ova-blog-slider .blog-slider .item-blog .content .excerpt {
+  margin-bottom: 23px;
+}
+.ova-blog-slider .blog-slider .item-blog .content .excerpt p {
+  font-size: 16px;
+  line-height: 26px;
+  color: #666666;
+}
+.ova-blog-slider .blog-slider .owl-dots {
+  text-align: center;
+  margin-top: 14px;
+}
+.ova-blog-slider .blog-slider .owl-dots .owl-dot {
+  outline: none;
+}
+.ova-blog-slider .blog-slider .owl-dots .owl-dot span {
+  margin: 0px 5px 0px 0px;
+  width: 10px;
+  height: 10px;
+  background: transparent;
+  display: block;
+  transition: 0.2s;
+  background: #dddddd;
+  border-radius: 50%;
+}
+@media screen and (max-width: 767px) {
+  .ova-blog-slider .blog-slider .owl-dots .owl-dot span {
+    width: 24px;
+    height: 24px;
+  }
+}
+.ova-blog-slider .owl-nav {
+  position: absolute;
+  right: 0;
+  top: -90px;
+}
+.ova-blog-slider .owl-nav .owl-prev, .ova-blog-slider .owl-nav .owl-next {
+  width: 30px;
+  height: 30px;
+  border: 2px solid #c5c5c5 !important;
+  background: transparent;
+}
+.ova-blog-slider .owl-nav .owl-prev i, .ova-blog-slider .owl-nav .owl-next i {
+  color: #c5c5c5;
+  font-size: 25px;
+}
+.ova-blog-slider .owl-nav .owl-prev:focus, .ova-blog-slider .owl-nav .owl-next:focus {
+  outline: none;
+}
+.ova-blog-slider .owl-nav .owl-next {
+  margin-left: 5px;
+}
+.ova-blog-slider .owl-nav .owl-prev {
+  margin-right: 5px;
+}
+
+.ova_social .ui-widget-content {
+  background: transparent;
+  border: none;
+}
+.ova_social h3.title {
+  font-size: 20px;
+  line-height: 24px;
+  color: #25282e;
+  margin-top: 0px;
+  margin-bottom: 20px;
+}
+.ova_social .content a {
+  display: inline-block;
+  color: #cccccc;
+  border-radius: 50%;
+}
+.ova_social .content a:not(:last-child) {
+  margin-right: 0;
+}
+.ova_social .content a i {
+  position: relative;
+  display: block;
+  font-size: 18px;
+  width: 38px;
+  height: 38px;
+}
+.ova_social .content a i:before {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.ova_social .content a:hover {
+  transition: 0.5s all;
+  color: #ffffff;
+}
+
+.ova-instagram {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 10px;
+}
+.ova-instagram a {
+  position: relative;
+  border-radius: 5px;
+}
+.ova-instagram a img {
+  border-radius: 5px;
+}
+.ova-instagram a:before {
+  position: absolute;
+  font-family: fontAwesome;
+  content: "\f16d";
+  font-size: 18px;
+  color: #fff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: 0.4s;
+  z-index: 2;
+}
+.ova-instagram a:after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.4);
+  top: 0px;
+  left: 0px;
+  opacity: 0;
+  transition: 0.4s;
+  z-index: 1;
+  border-radius: 5px;
+}
+.ova-instagram a:hover:before, .ova-instagram a:hover:after {
+  opacity: 1;
+}
+
+.ova-heading .title {
+  margin: 0px;
+  font-size: 36px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #222222;
+  margin-bottom: 7px;
+}
+.ova-heading .sub-title {
+  margin: 0px;
+  font-size: 18px;
+  line-height: 1.2;
+  color: #666666;
+  margin-bottom: 6px;
+}
+.ova-heading .line {
+  display: inline-block;
+  width: 50px;
+  height: 2px;
+}
+.ova-heading .line.not-line {
+  display: none;
+}
+
+.ova-feature:hover .ova-media .wp-media {
+  transform: scale(1.1, 1.1);
+}
+.ova-feature .ova-media {
+  margin-bottom: 24px;
+}
+.ova-feature .ova-media .wp-media {
+  width: 168px;
+  height: 168px;
+  background-color: #f7f7f7;
+  border-radius: 5px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.4s;
+  border-radius: 100%;
+}
+.ova-feature .ova-media .wp-media i {
+  display: inline-block;
+  line-height: 1;
+}
+.ova-feature .ova-media .wp-media i:before {
+  margin: 0px;
+  font-size: 70px;
+  color: #e86c60;
+}
+.ova-feature .info .title {
+  margin: 0px;
+  margin-bottom: 12px;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: #222222;
+  transition: 0.4s;
+}
+.ova-feature .info .title a {
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: #222222;
+  transition: 0.4s;
+}
+.ova-feature .info .sub-title {
+  margin: 0px;
+  font-size: 16px;
+  line-height: 26px;
+  color: #666666;
+}
+
+.ova-feature-2 {
+  box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
+  padding: 60px 30px 53px 30px;
+}
+.ova-feature-2:hover .ova-media .wp-media {
+  transform: scaleX(-1);
+}
+.ova-feature-2 .ova-media {
+  margin-bottom: 24px;
+}
+.ova-feature-2 .ova-media .wp-media {
+  text-align: center;
+  transition: 0.4s;
+}
+.ova-feature-2 .ova-media .wp-media i {
+  display: inline-block;
+  line-height: 1;
+}
+.ova-feature-2 .ova-media .wp-media i:before {
+  margin: 0px;
+  font-size: 70px;
+  color: #e86c60;
+}
+.ova-feature-2 .content .title {
+  margin: 0px;
+  margin-bottom: 14px;
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: #333333;
+}
+.ova-feature-2 .content .title a {
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: #333333;
+  transition: 0.4s;
+}
+.ova-feature-2 .content .title a:hover {
+  color: #e86c60 !important;
+}
+.ova-feature-2 .content .sub-title {
+  margin: 0px;
+  font-size: 20px;
+  line-height: 28px;
+  color: #666666;
+}
+
+.ova-testimonial.version_1 {
+  position: relative;
+}
+.ova-testimonial.version_1:hover .owl-nav {
+  visibility: visible;
+}
+.ova-testimonial.version_1 > span {
+  position: absolute;
+  top: 50%;
+  left: 200px;
+  transform: translateY(-50%);
+  display: inline-block;
+  line-height: 1;
+}
+.ova-testimonial.version_1 > span:before {
+  margin-left: 0px;
+  font-size: 110px;
+  color: #fff1f0;
+}
+@media (max-width: 1024px) {
+  .ova-testimonial.version_1 > span {
+    left: 130px;
+  }
+}
+@media (max-width: 767px) {
+  .ova-testimonial.version_1 > span {
+    left: 0px;
+  }
+}
+.ova-testimonial.version_1 p {
+  margin: 0px;
+}
+.ova-testimonial.version_1 .wp-testimonial {
+  text-align: center;
+}
+.ova-testimonial.version_1 .wp-testimonial .ova-media {
+  margin-bottom: 36px;
+}
+.ova-testimonial.version_1 .wp-testimonial .ova-media .image {
+  display: inline-block;
+  width: 105px;
+  height: 105px;
+}
+.ova-testimonial.version_1 .wp-testimonial .ova-media .image img {
+  border-radius: 50%;
+}
+.ova-testimonial.version_1 .wp-testimonial .content-testimonial {
+  padding: 0px 180px;
+}
+@media (max-width: 1024px) {
+  .ova-testimonial.version_1 .wp-testimonial .content-testimonial {
+    padding: 0px 100px;
+  }
+}
+@media (max-width: 767px) {
+  .ova-testimonial.version_1 .wp-testimonial .content-testimonial {
+    padding: 0;
+  }
+}
+.ova-testimonial.version_1 .wp-testimonial .content-testimonial .desc {
+  font-size: 22px;
+  line-height: 32px;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 38px;
+}
+.ova-testimonial.version_1 .wp-testimonial .content-testimonial .name-author {
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #222222;
+  margin-bottom: 9px;
+}
+.ova-testimonial.version_1 .wp-testimonial .content-testimonial .job {
+  font-size: 18px;
+  line-height: 1.2;
+  color: #888888;
+}
+.ova-testimonial.version_1 .owl-nav {
+  visibility: hidden;
+  transition: 0.4s;
+}
+@media (max-width: 767px) {
+  .ova-testimonial.version_1 .owl-nav {
+    display: none;
+  }
+}
+.ova-testimonial.version_1 .owl-nav .owl-prev, .ova-testimonial.version_1 .owl-nav .owl-next {
+  background: transparent;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.ova-testimonial.version_1 .owl-nav .owl-prev i, .ova-testimonial.version_1 .owl-nav .owl-next i {
+  color: #c9c9c9;
+  font-size: 32px;
+  transition: 0.4s;
+}
+.ova-testimonial.version_1 .owl-nav .owl-prev:focus, .ova-testimonial.version_1 .owl-nav .owl-next:focus {
+  outline: none;
+}
+.ova-testimonial.version_1 .owl-nav .owl-prev {
+  left: 0px;
+}
+.ova-testimonial.version_1 .owl-nav .owl-next {
+  right: 0px;
+}
+.ova-testimonial.version_2:hover .owl-nav {
+  visibility: visible;
+}
+.ova-testimonial.version_2 p {
+  margin: 0px 0px 30px 0px;
+}
+.ova-testimonial.version_2 .item .content {
+  margin-bottom: 35px;
+}
+.ova-testimonial.version_2 .item .content .desc {
+  font-size: 18px;
+  line-height: 32px;
+  color: #333333;
+}
+.ova-testimonial.version_2 .item .ova-media {
+  display: flex;
+}
+.ova-testimonial.version_2 .item .ova-media .image {
+  flex: 0 0 85px;
+}
+.ova-testimonial.version_2 .item .ova-media .image img {
+  border-radius: 50%;
+}
+.ova-testimonial.version_2 .item .ova-media .wp-title {
+  flex: 0 0 calc(100% - 85px);
+  padding-left: 30px;
+}
+.ova-testimonial.version_2 .item .ova-media .wp-title .name-author {
+  font-size: 22px;
+  line-height: 1.2;
+  color: #333333;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+.ova-testimonial.version_2 .item .ova-media .wp-title .job {
+  font-size: 16px;
+  line-height: 1.2;
+  color: #999999;
+}
+.ova-testimonial.version_2 .owl-nav {
+  position: absolute;
+  right: 0;
+  top: -60px;
+  visibility: hidden;
+  transition: 0.4s;
+}
+@media (max-width: 767px) {
+  .ova-testimonial.version_2 .owl-nav {
+    display: none;
+  }
+}
+.ova-testimonial.version_2 .owl-nav .owl-prev, .ova-testimonial.version_2 .owl-nav .owl-next {
+  width: 30px;
+  height: 30px;
+  background: transparent;
+}
+.ova-testimonial.version_2 .owl-nav .owl-prev i, .ova-testimonial.version_2 .owl-nav .owl-next i {
+  color: #c5c5c5;
+  font-size: 25px;
+}
+.ova-testimonial.version_2 .owl-nav .owl-prev:focus, .ova-testimonial.version_2 .owl-nav .owl-next:focus {
+  outline: none;
+}
+.ova-testimonial.version_2 .owl-nav .owl-next {
+  margin-left: 5px;
+}
+.ova-testimonial.version_2 .owl-nav .owl-prev {
+  margin-right: 5px;
+}
+.ova-testimonial .owl-dots {
+  position: absolute;
+  right: 0;
+  bottom: 30px;
+}
+@media screen and (max-width: 479px) {
+  .ova-testimonial .owl-dots {
+    position: static;
+    right: unset;
+    bottom: unset;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+  }
+}
+.ova-testimonial .owl-dots .owl-dot {
+  outline: none;
+}
+.ova-testimonial .owl-dots .owl-dot:not(:last-child) span {
+  margin-right: 15px;
+}
+.ova-testimonial .owl-dots .owl-dot span {
+  width: 27px;
+  height: 27px;
+  background: transparent;
+  display: block;
+  transition: 0.2s;
+  background: #dddddd;
+  border-radius: 50%;
+}
+
+.ova-offer-banner1 {
+  padding: 31px 0 21px 38px;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.ova-offer-banner1 .text-1 {
+  font-size: 48px;
+  line-height: 1;
+  font-weight: 600;
+  font-style: italic;
+  color: #fff;
+}
+.ova-offer-banner1 .text-1.text-2 {
+  margin-top: -6px;
+  display: inline-block;
+}
+.ova-offer-banner1 .wp-text-345 {
+  display: flex;
+  margin-top: 5px;
+}
+.ova-offer-banner1 .wp-text-345 .text-3 {
+  font-size: 80px;
+  line-height: 1;
+  font-weight: 600;
+  color: #ffffff;
+  font-style: italic;
+}
+.ova-offer-banner1 .wp-text-345 .wp-text-4 {
+  display: inline-flex;
+  flex-wrap: wrap;
+  margin-left: 8px;
+}
+.ova-offer-banner1 .wp-text-345 .wp-text-4 .text-4 {
+  font-size: 50px;
+  line-height: 1;
+  font-weight: 600;
+  color: #ffffff;
+  font-style: italic;
+  flex: 0 0 100%;
+  margin-top: 6px;
+}
+.ova-offer-banner1 .wp-text-345 .wp-text-4 .text-5 {
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 600;
+  color: #ffffff;
+  font-style: italic;
+  flex: 0 0 100%;
+  margin-top: -6px;
+}
+
+.ova-offer-banner2 {
+  display: flex;
+  flex-wrap: wrap;
+  text-align: right;
+  padding: 27px 34px 24px 20px;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.ova-offer-banner2 p {
+  margin: 0px;
+}
+@media (max-width: 767px) {
+  .ova-offer-banner2 {
+    text-align: left;
+  }
+}
+.ova-offer-banner2 .content-1 {
+  flex: 0 0 calc(100% - 200px);
+}
+@media (max-width: 767px) {
+  .ova-offer-banner2 .content-1 {
+    flex: 0 0 100%;
+    order: 2;
+  }
+}
+.ova-offer-banner2 .content-1 .title-1 {
+  font-size: 30px;
+  line-height: 44px;
+  font-weight: 500;
+  color: #ffffff;
+  text-transform: uppercase;
+  position: relative;
+}
+.ova-offer-banner2 .content-1 .title-1:after {
+  position: absolute;
+  top: 11px;
+  right: -24px;
+  content: "";
+  background: #ffd13c;
+  width: 1px;
+  height: 120px;
+}
+@media (max-width: 767px) {
+  .ova-offer-banner2 .content-1 .title-1:after {
+    display: none;
+  }
+}
+.ova-offer-banner2 .content-1 .sub-title-1 {
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: 500;
+  color: #fff6da;
+  text-transform: uppercase;
+  margin-bottom: 29px;
+  position: relative;
+}
+.ova-offer-banner2 .content-1 .sub-title-1:after {
+  position: absolute;
+  bottom: -11px;
+  right: 0px;
+  content: "";
+  background: #ffd13c;
+  width: 42px;
+  height: 1px;
+}
+@media (max-width: 767px) {
+  .ova-offer-banner2 .content-1 .sub-title-1:after {
+    display: none;
+  }
+}
+.ova-offer-banner2 .content-1 .sub-title-2 {
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 500;
+  color: #fff6da;
+}
+.ova-offer-banner2 .content-2 {
+  flex: 0 0 200px;
+}
+@media (max-width: 767px) {
+  .ova-offer-banner2 .content-2 {
+    flex: 0 0 100%;
+    order: 1;
+    margin-bottom: 20px;
+  }
+}
+.ova-offer-banner2 .content-2 .title-2 {
+  font-size: 42px;
+  line-height: 44px;
+  font-weight: 500;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.ova-skill-bar .text-skill-bar {
+  font-size: 20px;
+  line-height: 28px;
+  color: #222222;
+  margin-bottom: 23px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.ova-skill-bar .cove-killbar {
+  background: #ebebeb;
+  border-radius: 10px;
+}
+.ova-skill-bar .cove-killbar .skillbar-bar {
+  height: 5px;
+  width: 0px;
+  background: #e86c60;
+  border-radius: 10px;
+}
+.ova-skill-bar .skillbar {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+.ova-skill-bar .skillbar:not(:last-child) {
+  margin-bottom: 33px;
+}
+.ova-skill-bar .percent {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.ova-skill-bar .percent .relative {
+  position: relative;
+}
+.ova-skill-bar .percent .relative span {
+  font-size: 20px;
+  line-height: 28px;
+  color: #333333;
+  background: transparent;
+  position: absolute;
+  left: -27px;
+}
+
+.ova-about-team {
+  text-align: center;
+}
+.ova-about-team:hover .ova-media .image:after {
+  opacity: 1;
+}
+.ova-about-team:hover .ova-media .image .social {
+  opacity: 1;
+}
+.ova-about-team .ova-media {
+  margin-bottom: 36px;
+}
+.ova-about-team .ova-media .image {
+  display: block;
+  position: relative;
+}
+.ova-about-team .ova-media .image:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "";
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  z-index: 1;
+  transition: 0.4s;
+  opacity: 0;
+}
+.ova-about-team .ova-media .image img {
+  border-radius: 5px;
+}
+.ova-about-team .ova-media .image .social {
+  padding: 0px;
+  margin: 0px;
+  list-style-type: none;
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  transition: 0.4s;
+  opacity: 0;
+}
+.ova-about-team .ova-media .image .social li:not(:last-child) {
+  margin-right: 18px;
+}
+.ova-about-team .ova-media .image .social li a i {
+  font-size: 18px;
+  color: #ffffff;
+  transition: 0.4s;
+}
+.ova-about-team .content .name {
+  margin: 0px;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 14px;
+}
+.ova-about-team .content .job {
+  margin: 0px;
+  font-size: 16px;
+  line-height: 1.2;
+  color: #888888;
+}
+
+.ova-contact {
+  display: flex;
+  align-items: center;
+}
+.ova-contact .icon {
+  display: inline-flex;
+}
+.ova-contact .icon i {
+  display: inline-block;
+  line-height: 1;
+  margin-right: 15px;
+}
+.ova-contact .icon i:before {
+  margin: 0px;
+  font-size: 18px;
+}
+.ova-contact .address {
+  margin: 0px;
+  font-size: 16px;
+  line-height: 24px;
+  color: #333333;
+  font-weight: 400;
+}
+.ova-contact .address a {
+  font-size: 16px;
+  line-height: 24px;
+  color: #333333;
+  transition: 0.4s;
+}
+
+.ova-step-plan {
+  display: flex;
+  box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
+  padding: 30px 50px 45px 30px;
+}
+@media (max-width: 425px) {
+  .ova-step-plan {
+    display: block;
+  }
+}
+.ova-step-plan h3, .ova-step-plan p {
+  margin: 0px;
+}
+.ova-step-plan .number {
+  padding-right: 20px;
+}
+.ova-step-plan .number span {
+  width: 70px;
+  height: 70px;
+  background: #e86c60;
+  box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.08);
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 500;
+  color: #ffffff;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+.ova-step-plan .content .title {
+  font-size: 26px;
+  line-height: 28px;
+  font-weight: 600;
+  color: #333333;
+  margin-top: 20px;
+  margin-bottom: 27px;
+}
+.ova-step-plan .content .sub-title {
+  font-size: 16px;
+  line-height: 28px;
+  color: #666666;
+  margin-bottom: 26px;
+}
+.ova-step-plan .content .button {
+  font-size: 15px;
+  line-height: 26px;
+  color: #e86c60;
+  border: 1px solid #e86c60;
+  border-radius: 3px;
+  display: inline-block;
+  padding: 7px 20px 6px 20px;
+  transition: 0.4s;
+  background: transparent;
+}
+.ova-step-plan .content .button:hover {
+  color: #ffffff;
+  background: #e86c60;
+}
+
+.ova-menu-acount {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.ova-menu-acount .login, .ova-menu-acount .register, .ova-menu-acount .my-account {
+  display: flex;
+  align-items: center;
+}
+.ova-menu-acount .login i, .ova-menu-acount .register i, .ova-menu-acount .my-account i {
+  font-size: 14px;
+  margin-right: 8px;
+}
+.ova-menu-acount .login a, .ova-menu-acount .register a, .ova-menu-acount .my-account a {
+  font-size: 14px;
+  line-height: 1.2;
+  color: #333333;
+  transition: 0.4s;
+  padding: 22px 0px 22px 0px;
+}
+.ova-menu-acount .login a:hover, .ova-menu-acount .register a:hover, .ova-menu-acount .my-account a:hover {
+  color: #e86c60;
+}
+.ova-menu-acount .my-account img {
+  border-radius: 100%;
+  margin-right: 8px;
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+}
+@media (max-width: 767.98px) {
+  .ova-menu-acount .register {
+    display: none;
+  }
+}
+.ova-menu-acount .slash {
+  font-size: 12px;
+  color: #d1d1d1;
+  padding: 0 9px;
+}
+@media (max-width: 767.98px) {
+  .ova-menu-acount .slash {
+    display: none;
+  }
+}
+.ova-menu-acount:hover .my-account-dropdown {
+  display: block;
+  opacity: 1;
+  z-index: 9999;
+  visibility: visible;
+  top: 100%;
+}
+@media screen and (max-width: 1023px) {
+  .ova-menu-acount:hover .my-account-dropdown {
+    display: none;
+  }
+}
+.ova-menu-acount .my-account-dropdown {
+  position: absolute;
+  list-style: none;
+  min-width: 11rem;
+  visibility: hidden;
+  top: 110%;
+  z-index: -1;
+  padding: 0px;
+  margin: 0;
+  font-size: 1rem;
+  color: #212529;
+  text-align: left;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  webkit-transition: all 0.3s ease-in;
+  -moz-transition: all 0.3s ease-in;
+  -ms-transition: all 0.3s ease-in;
+  -o-transition: all 0.3s ease-in;
+  transition: all 0.3s ease-in;
+}
+@media screen and (max-width: 1023px) {
+  .ova-menu-acount .my-account-dropdown {
+    right: 0;
+    display: none;
+  }
+}
+.ova-menu-acount .my-account-dropdown .item {
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
+  border-color: rgba(204, 204, 204, 0.28);
+  text-align: left;
+  width: 100%;
+  position: relative;
+}
+.ova-menu-acount .my-account-dropdown .item a {
+  padding: 10px 15px 10px 15px;
+  font-size: 14px;
+  text-transform: capitalize;
+  border-style: solid;
+  border-width: 0px 0px 0px 0px;
+  border-color: rgba(255, 255, 255, 0.06);
+  color: #343434;
+  display: block;
+  font-weight: 500;
+}
+.ova-menu-acount .my-account-dropdown .item a:hover {
+  color: #e86c60;
+}
+.ova-menu-acount .my-account-dropdown .item.active a {
+  color: #e86c60;
+}
+
+.ova-icon-box .ova-icon-box-grid {
+  display: grid;
+  grid-gap: 56px;
+}
+.ova-icon-box .ova-icon-box-grid.four_columns {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+@media screen and (max-width: 1023px) {
+  .ova-icon-box .ova-icon-box-grid.four_columns {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media screen and (max-width: 767px) {
+  .ova-icon-box .ova-icon-box-grid.four_columns {
+    grid-template-columns: 1fr;
+  }
+}
+.ova-icon-box .ova-icon-box-grid.three_columns {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+@media screen and (max-width: 1023px) {
+  .ova-icon-box .ova-icon-box-grid.three_columns {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media screen and (max-width: 767px) {
+  .ova-icon-box .ova-icon-box-grid.three_columns {
+    grid-template-columns: 1fr;
+  }
+}
+.ova-icon-box .ova-icon-box-grid.two_columns {
+  grid-template-columns: 1fr 1fr;
+}
+@media screen and (max-width: 767px) {
+  .ova-icon-box .ova-icon-box-grid.two_columns {
+    grid-template-columns: 1fr;
+  }
+}
+.ova-icon-box .ova-icon-box-grid .icon-box {
+  border-radius: 5px;
+  border: 1px solid #E8E8E8;
+  padding: 25px;
+  position: relative;
+  transition: all 0.3s linear;
+}
+.ova-icon-box .ova-icon-box-grid .icon-box .number {
+  position: absolute;
+  top: -30px;
+  right: -27px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  border: 1px solid #E8E8E8;
+  font-size: 22px;
+  font-weight: normal;
+  color: var(--primary);
+  background: #fff;
+}
+@media screen and (max-width: 1250px) {
+  .ova-icon-box .ova-icon-box-grid .icon-box .number {
+    display: none;
+  }
+}
+.ova-icon-box .ova-icon-box-grid .icon-box .icon {
+  font-size: 45px;
+  display: inline-flex;
+  line-height: 1;
+  color: var(--primary);
+}
+.ova-icon-box .ova-icon-box-grid .icon-box .icon i, .ova-icon-box .ova-icon-box-grid .icon-box .icon svg {
+  transition: all 0.3s linear;
+}
+.ova-icon-box .ova-icon-box-grid .icon-box .icon svg {
+  width: 45px;
+  height: 45px;
+}
+.ova-icon-box .ova-icon-box-grid .icon-box .title {
+  margin: 15px 0px 0px 0px;
+}
+.ova-icon-box .ova-icon-box-grid .icon-box .title a {
+  color: var(--vendor-color-four, #222);
+  font-size: 20px;
+  font-weight: 500;
+  transition: all 0.3s linear;
+}
+.ova-icon-box .ova-icon-box-grid .icon-box .title a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+.ova-icon-box .ova-icon-box-grid .icon-box .desc {
+  margin: 20px 0px 0px 0px;
+  color: var(--vendor-color-five, #333);
+}
+
+body.rtl .ova-icon-box {
+  text-align: right;
+}
+body.rtl .ova-icon-box .ova-icon-box-grid .icon-box .number {
+  right: unset;
+  left: -27px;
+}
+
+.ova-icon-box-2 .ova-icon-box-list {
+  display: grid;
+  grid-gap: 35px;
+}
+.ova-icon-box-2 .ova-icon-box-list .icon-box {
+  display: flex;
+  gap: 25px;
+}
+.ova-icon-box-2 .ova-icon-box-list .icon-box .icon {
+  flex: 0 0 40px;
+}
+.ova-icon-box-2 .ova-icon-box-list .icon-box .icon i {
+  font-size: 40px;
+  display: inline-flex;
+  line-height: 1;
+  color: var(--primary);
+  transition: all 0.3s linear;
+}
+.ova-icon-box-2 .ova-icon-box-list .icon-box .icon svg {
+  width: 40px;
+  height: 40px;
+  transition: all 0.3s linear;
+}
+.ova-icon-box-2 .ova-icon-box-list .icon-box .icon-box-content .title {
+  margin: 0;
+}
+.ova-icon-box-2 .ova-icon-box-list .icon-box .icon-box-content .title a {
+  color: var(--vendor-color-four, #222);
+  transition: all 0.3s linear;
+  font-weight: 500;
+}
+.ova-icon-box-2 .ova-icon-box-list .icon-box .icon-box-content .desc {
+  margin: 5px 0px 0px 0px;
+}
+
+body.rtl .ova-icon-box-2 {
+  text-align: right;
+}
+
+.ova-images-grid {
+  display: grid;
+  grid-template-columns: 370px 270px;
+  grid-gap: 30px;
+}
+@media screen and (max-width: 767px) {
+  .ova-images-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+@media screen and (max-width: 480px) {
+  .ova-images-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+.ova-images-grid .grid-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 5px;
+}
+.ova-images-grid .grid-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  object-position: center;
+}
+.ova-images-grid .grid-item-1 {
+  grid-column: 1;
+  grid-row: 1/3;
+}
+@media screen and (max-width: 480px) {
+  .ova-images-grid .grid-item-1 {
+    grid-column: auto !important;
+    grid-row: auto/auto !important;
+  }
+}
+.ova-images-grid .grid-item-2 {
+  grid-column: 2;
+  grid-row: 1;
+}
+@media screen and (max-width: 480px) {
+  .ova-images-grid .grid-item-2 {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+}
+.ova-images-grid .grid-item-3 {
+  grid-column: 2;
+  grid-row: 2;
+}
+@media screen and (max-width: 480px) {
+  .ova-images-grid .grid-item-3 {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+}
+
+@media screen and (max-width: 1300px) and (min-width: 1024px) {
+  .ova_hide_el_fr_1024px_to_1300px {
+    display: none;
+  }
+}

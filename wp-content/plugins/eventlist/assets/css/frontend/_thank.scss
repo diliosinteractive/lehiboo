@@ -1,0 +1,50 @@
+.el_booking_detail_wrapper {
+	table {
+		td {
+			word-break: break-word;
+		}
+	}
+	.el_booking_detail_table {
+		th {
+			font-weight: 600;
+			text-transform: inherit;
+		}
+	}
+	.el_booking_cart_table {
+		th {
+			font-weight: 600;
+			text-transform: inherit;
+		}
+	}
+	.el_booking_cart_total {
+		margin-bottom: 0px;
+		th {
+			font-weight: 600;
+			text-transform: inherit;
+		}
+		.cart_total_left {
+			width: 60%;
+			@media screen and (max-width: 767px) {
+				width: 20%;
+			}
+		}
+	}
+	.el_booking_action {
+		padding-top: 20px;
+		border-top: 1px solid #ededed;
+		.el_download_invoice {
+			display: inline-block;
+			padding: 15px;
+			background: var(--primary);
+			color: #fff;
+			border-radius: 5px;
+		}
+		.el_download_tickets {
+			display: inline-block;
+			background: #82b440;
+			padding: 15px;
+			color: #fff;
+			border-radius: 5px;
+		}
+	}
+}

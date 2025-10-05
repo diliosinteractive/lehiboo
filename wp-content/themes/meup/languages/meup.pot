@@ -1,0 +1,1053 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: MeUp\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-12-11 08:05+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.6; wp-6.4.2\n"
+"X-Domain: meup"
+
+#: content/define_blocks_content.php:306 content/define_blocks_content.php:310
+msgid " at "
+msgstr ""
+
+#. 1: plugin name.
+#: inc/vendor/class-tgm-plugin-activation.php:3594
+#, php-format
+msgid "%1$s installed and activated successfully."
+msgstr ""
+
+#. 1: plugin name.
+#: inc/vendor/class-tgm-plugin-activation.php:3602
+#, php-format
+msgid "%1$s installed successfully."
+msgstr ""
+
+#: comments.php:31
+msgid "&larr; Older Comments"
+msgstr ""
+
+#: content/define_blocks_content.php:317
+msgid "(Edit)"
+msgstr ""
+
+#: 404.php:6
+msgid "404"
+msgstr ""
+
+#: customize/render-style.php:47 customize/render-style.php:48
+msgctxt ": on or off"
+msgid "on"
+msgstr ""
+
+#: inc/init.php:105
+msgid "</ul></div>"
+msgstr ""
+
+#. Author of the theme
+msgid "<a href=\"https://themeforest.net/user/ovatheme\">Ovatheme</a>"
+msgstr ""
+
+#: inc/init.php:69
+msgid "<div class=\"blog_pagination\"><ul class=\"pagination\">"
+msgstr ""
+
+#: inc/init.php:82 inc/init.php:95
+msgid "<li><span class=\"pagi_dots\">...</span></li>"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2811
+msgid "Activate"
+msgstr ""
+
+#. %2$s: plugin name in screen reader markup
+#: inc/vendor/class-tgm-plugin-activation.php:2699
+#, php-format
+msgid "Activate %2$s"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2406
+msgid "Active"
+msgstr ""
+
+#: inc/ova_walker_nav_menu.php:197
+msgid "Add a menu"
+msgstr ""
+
+#: comments.php:50
+msgid "Add A Review"
+msgstr ""
+
+#: customize/class-customize.php:311
+msgid "Add Button color"
+msgstr ""
+
+#: customize/class-customize.php:351
+msgid "Add to Cart Button color"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:3595
+msgid "All installations and activations have been completed."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:3603
+msgid "All installations have been completed."
+msgstr ""
+
+#. 1: dashboard link.
+#: inc/vendor/class-tgm-plugin-activation.php:401
+#, php-format
+msgid "All plugins installed and activated successfully. %1$s"
+msgstr ""
+
+#. 1: plugin name, 2: error message.
+#: inc/vendor/class-tgm-plugin-activation.php:3586
+#, php-format
+msgid "An error occurred while installing %1$s: <strong>%2$s</strong>."
+msgstr ""
+
+#: customize/class-customize.php:841 customize/class-customize.php:946
+#: customize/class-customize.php:1085
+msgid "Archive"
+msgstr ""
+
+#: extend/breadcrumbs.php:56
+msgid "Archive by date"
+msgstr ""
+
+#: extend/breadcrumbs.php:61
+msgid "Archive by month"
+msgstr ""
+
+#: extend/breadcrumbs.php:121
+msgid "Archive by tag"
+msgstr ""
+
+#: extend/breadcrumbs.php:65
+msgid "Archive by year"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2567
+msgctxt "as in: \"version nr unknown\""
+msgid "unknown"
+msgstr ""
+
+#: customize/class-customize.php:1034
+msgid "Author"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2595
+msgid "Available version:"
+msgstr ""
+
+#: woocommerce/single-product/product-image.php:45
+msgid "Awaiting product image"
+msgstr ""
+
+#: customize/class-customize.php:870
+msgid "Background Archive Event"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:387
+msgid "Begin activating plugin"
+msgid_plural "Begin activating plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:377
+msgid "Begin installing plugin"
+msgid_plural "Begin installing plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:382
+msgid "Begin updating plugin"
+msgid_plural "Begin updating plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: extend/breadcrumbs.php:127 inc/init.php:237
+#: customize/class-customize.php:1080
+msgid "Blog"
+msgstr ""
+
+#: customize/class-customize.php:1106
+msgid "Blog Version 2"
+msgstr ""
+
+#: inc/class_hook.php:335
+msgid "Boxed"
+msgstr ""
+
+#: customize/class-customize.php:751
+msgid "Boxed Container Width (px)"
+msgstr ""
+
+#: customize/class-customize.php:767
+msgid "Boxed Offset (px)"
+msgstr ""
+
+#: content/define_blocks_content.php:133
+msgid "Categories: "
+msgstr ""
+
+#: customize/class-customize.php:453
+msgid "Chart Color"
+msgstr ""
+
+#: customize/class-customize.php:371 customize/class-customize.php:391
+msgid "Color error cart"
+msgstr ""
+
+#: comments.php:13 comments.php:69
+msgid "Comment"
+msgstr ""
+
+#: comments.php:30
+msgid "Comment navigation"
+msgstr ""
+
+#: comments.php:13
+msgid "Comments"
+msgstr ""
+
+#: comments.php:37
+msgid "Comments are closed."
+msgstr ""
+
+#: install_resource/active_plugins.php:65
+msgid "Contact Form 7"
+msgstr ""
+
+#: customize/class-customize.php:164
+msgid "Content Color"
+msgstr ""
+
+#: customize/class-customize.php:601 customize/class-customize.php:613
+#: customize/class-customize.php:630
+msgid "Custom Font"
+msgstr ""
+
+#: inc/class_hook.php:197 inc/class_hook.php:228
+#: customize/class-customize.php:1105
+msgid "Default"
+msgstr ""
+
+#: footer/footer-default.php:3
+msgid "Design and Develop by Ovatheme"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:402
+msgid "Dismiss this notice"
+msgstr ""
+
+#: install_resource/active_plugins.php:60
+msgid "Elementor"
+msgstr ""
+
+#: customize/class-customize.php:836
+msgid "Event"
+msgstr ""
+
+#: install_resource/active_plugins.php:109
+msgid "Event List"
+msgstr ""
+
+#: extend/breadcrumbs.php:125
+msgid "Events posted by"
+msgstr ""
+
+#: customize/class-customize.php:143
+msgid "Example: 0px, 0.5em"
+msgstr ""
+
+#: customize/class-customize.php:104
+msgid "Example: 16px, 1.2em"
+msgstr ""
+
+#: customize/class-customize.php:123
+msgid "Example: 23px, 1.6em"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2380
+msgid "External Source"
+msgstr ""
+
+#: customize/class-customize.php:201
+msgid "Font"
+msgstr ""
+
+#: customize/class-customize.php:103
+msgid "Font Size"
+msgstr ""
+
+#: customize/class-customize.php:808 customize/class-customize.php:885
+#: customize/class-customize.php:928 customize/class-customize.php:978
+#: customize/class-customize.php:1021 customize/class-customize.php:1066
+#: customize/class-customize.php:1177 customize/class-customize.php:1272
+msgid "Footer"
+msgstr ""
+
+#: customize/class-customize.php:822
+msgid "Footer Default"
+msgstr ""
+
+#: customize/class-customize.php:227
+msgid "General Color"
+msgstr ""
+
+#: customize/class-customize.php:65
+msgid "General Typo"
+msgstr ""
+
+#: 404.php:12
+msgid "GO BACK HOME"
+msgstr ""
+
+#: customize/class-customize.php:780 customize/class-customize.php:855
+#: customize/class-customize.php:911 customize/class-customize.php:961
+#: customize/class-customize.php:1004 customize/class-customize.php:1049
+#: customize/class-customize.php:1160 customize/class-customize.php:1255
+msgid "Header"
+msgstr ""
+
+#: customize/class-customize.php:794
+msgid "Header Default"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:3594
+msgid "Hide Details"
+msgstr ""
+
+#: extend/breadcrumbs.php:13 extend/breadcrumbs.php:25 inc/init.php:229
+#: inc/init.php:233
+msgid "Home"
+msgstr ""
+
+#. URI of the theme
+msgid "https://themeforest.net/user/ovatheme/portfolio"
+msgstr ""
+
+#: install_resource/active_plugins.php:117
+msgid "Image Map Pro WordPress"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2802
+msgid "Install"
+msgstr ""
+
+#. %2$s: plugin name in screen reader markup
+#: inc/vendor/class-tgm-plugin-activation.php:2688
+#, php-format
+msgid "Install %2$s"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:335
+msgid "Install Plugins"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:334
+msgid "Install Required Plugins"
+msgstr ""
+
+#. 1: install status, 2: update status
+#: inc/vendor/class-tgm-plugin-activation.php:2427
+#, php-format
+msgctxt "Install/Update Status"
+msgid "%1$s, %2$s"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2404
+msgid "Installed But Not Activated"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2575
+msgid "Installed version:"
+msgstr ""
+
+#. 1: plugin name, 2: action number 3: total number of actions.
+#: inc/vendor/class-tgm-plugin-activation.php:3597
+#, php-format
+msgid "Installing and Activating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#. 1: plugin name, 2: action number 3: total number of actions.
+#: inc/vendor/class-tgm-plugin-activation.php:3605
+#, php-format
+msgid "Installing Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#. %s: plugin name.
+#: inc/vendor/class-tgm-plugin-activation.php:337
+#, php-format
+msgid "Installing Plugin: %s"
+msgstr ""
+
+#: content/content-none.php:17
+msgid ""
+"It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps "
+"searching can help."
+msgstr ""
+
+#: customize/class-customize.php:648 customize/class-customize.php:683
+#: customize/class-customize.php:1120 customize/class-customize.php:1219
+msgid "Layout"
+msgstr ""
+
+#: comments.php:56
+msgid "Leave a reply"
+msgstr ""
+
+#: inc/class_hook.php:261
+msgid "Left Sidebar"
+msgstr ""
+
+#: customize/class-customize.php:142
+msgid "Letter Spacing"
+msgstr ""
+
+#: customize/class-customize.php:122
+msgid "Line height"
+msgstr ""
+
+#: customize/class-customize.php:268
+msgid "Link color"
+msgstr ""
+
+#: customize/custom-control/google-font.php:120
+msgid "Load Font Weight"
+msgstr ""
+
+#: inc/init.php:294
+msgid "Logo Default"
+msgstr ""
+
+#: install_resource/active_plugins.php:85
+msgid "Mailchimp for wp"
+msgstr ""
+
+#: extend/register_menu_widget.php:16 extend/register_menu_widget.php:18
+msgid "Main Sidebar"
+msgstr ""
+
+#: install_resource/active_plugins.php:75
+msgid "Metabox"
+msgstr ""
+
+#. Name of the theme
+msgid "MeUp"
+msgstr ""
+
+#. Description of the theme
+msgid ""
+"Meup is a modernized take on an ever-popular WordPress. It has custom color "
+"options with beautiful default color schemes, a harmonious fluid grid using "
+"a mobile-first approach, and impeccable polish in every detail. Meup will "
+"make your WordPress look beautiful everywhere. Created by <a href=\"https:"
+"//themeforest.net/user/ovatheme\">Ovatheme</a>"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2583
+msgid "Minimum required version:"
+msgstr ""
+
+#: customize/class-customize.php:290
+msgid "My Account Color"
+msgstr ""
+
+#: comments.php:51
+msgid "Name*"
+msgstr ""
+
+#: comments.php:32
+msgid "Newer Comments &rarr;"
+msgstr ""
+
+#: inc/init.php:103
+msgid "Next"
+msgstr ""
+
+#: content/post-default.php:120
+msgid "Next Post"
+msgstr ""
+
+#: customize/class-customize.php:669
+msgid "No"
+msgstr ""
+
+#. 1: plugin name.
+#: inc/vendor/class-tgm-plugin-activation.php:397
+#, php-format
+msgid "No action taken. Plugin %1$s was already active."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:3019
+msgid "No plugins are available to be activated at this time."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2885
+msgid "No plugins are available to be installed at this time."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2887
+msgid "No plugins are available to be updated at this time."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2618
+msgid "No plugins to install, update or activate."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2993
+msgid "No plugins were selected to be activated. No action taken."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2842
+msgid "No plugins were selected to be installed. No action taken."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2844
+msgid "No plugins were selected to be updated. No action taken."
+msgstr ""
+
+#: inc/class_hook.php:259
+msgid "No Sidebar"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2400
+msgid "Not Installed"
+msgstr ""
+
+#: content/content-none.php:2
+msgid "Nothing Found"
+msgstr ""
+
+#: customize/class-customize.php:1195
+msgid "Number tex desciption blog version 2"
+msgstr ""
+
+#: install_resource/active_plugins.php:90
+msgid "One click demo import"
+msgstr ""
+
+#: 404.php:7
+msgid "Oops, Sorry We Can't Find That Page"
+msgstr ""
+
+#: install_resource/active_plugins.php:101
+msgid "OvaTheme Framework"
+msgstr ""
+
+#: install_resource/active_plugins.php:125
+msgid "Ovatheme Login"
+msgstr ""
+
+#: content/content-page.php:20
+msgid "Page"
+msgstr ""
+
+#: content/content-page.php:16 content/define_blocks_content.php:94
+msgid "Pages:"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:404
+msgid "Please contact the administrator of this site for help."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:1019
+#: inc/vendor/class-tgm-plugin-activation.php:1022
+msgid ""
+"Please contact the plugin provider and ask them to package their plugin "
+"according to the WordPress guidelines."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2632
+msgid "Plugin"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:1206
+#: inc/vendor/class-tgm-plugin-activation.php:3033
+msgctxt "plugin A *and* plugin B"
+msgid "and"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:394
+#: inc/vendor/class-tgm-plugin-activation.php:3244
+msgid "Plugin activated successfully."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:3243
+msgid "Plugin activation failed."
+msgstr ""
+
+#. 1: plugin name.
+#: inc/vendor/class-tgm-plugin-activation.php:399
+#, php-format
+msgid ""
+"Plugin not activated. A higher version of %s is needed for this theme. "
+"Please update the plugin."
+msgstr ""
+
+#. 1: number of plugins.
+#: inc/vendor/class-tgm-plugin-activation.php:2473
+#, php-format
+msgctxt "plugins"
+msgid "All <span class=\"count\">(%s)</span>"
+msgid_plural "All <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: comments.php:70
+msgid "Post Comment"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2383
+msgid "Pre-Packaged"
+msgstr ""
+
+#: customize/class-customize.php:663
+msgid "Preload"
+msgstr ""
+
+#: content/post-default.php:103
+msgid "Prev Post"
+msgstr ""
+
+#: inc/init.php:73
+msgid "Previous"
+msgstr ""
+
+#: customize/class-customize.php:248
+msgid "Primary color"
+msgstr ""
+
+#: customize/class-customize.php:81
+msgid "Primary Font"
+msgstr ""
+
+#: extend/register_menu_widget.php:6
+msgid "Primary Menu"
+msgstr ""
+
+#: content/define_blocks_content.php:298
+msgid "purchased"
+msgstr ""
+
+#: content/define_blocks_content.php:114
+msgid "Read More"
+msgstr ""
+
+#: content/content-none.php:8
+#, php-format
+msgid ""
+"Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr ""
+
+#: install_resource/active_plugins.php:95
+msgid "Recent post widget"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2361
+msgid "Recommended"
+msgstr ""
+
+#: customize/class-customize.php:331
+msgid "Remove/Active Button color"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2358
+msgid "Required"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2412
+msgid "Required Update not Available"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2415
+msgid "Requires Update"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:392
+msgid "Return to Required Plugins Installer"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:393
+#: inc/vendor/class-tgm-plugin-activation.php:912
+#: inc/vendor/class-tgm-plugin-activation.php:2618
+#: inc/vendor/class-tgm-plugin-activation.php:3665
+msgid "Return to the Dashboard"
+msgstr ""
+
+#: comments.php:11
+msgid "Review"
+msgstr ""
+
+#: comments.php:11
+msgid "Reviews"
+msgstr ""
+
+#: inc/class_hook.php:260
+msgid "Right Sidebar"
+msgstr ""
+
+#: comments.php:53 comments.php:59
+msgid ""
+"Save my name, email, and website in this browser for the next time I comment."
+msgstr ""
+
+#: 404.php:10 inc/init.php:241
+msgid "Search"
+msgstr ""
+
+#: 404.php:9
+msgid "Search for:"
+msgstr ""
+
+#: 404.php:9
+msgid "Search here"
+msgstr ""
+
+#: extend/breadcrumbs.php:82
+msgid "Search results for"
+msgstr ""
+
+#: search.php:8
+msgid "Search Results for: "
+msgstr ""
+
+#: customize/class-customize.php:186
+msgid "Second Font"
+msgstr ""
+
+#: content/define_blocks_content.php:140 content/define_blocks_content.php:163
+msgid "Share: "
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:3594
+msgid "Show Details"
+msgstr ""
+
+#: customize/class-customize.php:700 customize/class-customize.php:1137
+#: customize/class-customize.php:1236
+msgid "Sidebar Width (px)"
+msgstr ""
+
+#: customize/class-customize.php:895 customize/class-customize.php:988
+#: customize/class-customize.php:1204
+msgid "Single"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:340
+msgid "Something went wrong with the plugin API."
+msgstr ""
+
+#: content/content-none.php:12
+msgid ""
+"Sorry, but nothing matched your search terms. Please try again with some "
+"different keywords."
+msgstr ""
+
+#: page.php:10
+msgid "Sorry, no pages matched your criteria."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2633
+msgid "Source"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2639
+msgid "Status"
+msgstr ""
+
+#: customize/class-customize.php:631
+msgid ""
+"Step 1: Insert font-face in style.css file: Refer https://www.w3schools."
+"com/cssref/css3_pr_font-face_rule.asp. Step 2: Insert font-family and font-"
+"weight like format: \n"
+"\t\t\t\t\t\t[\"Perpetua\", \"Regular:Bold:Italic:Light\"]. Step 3: Refresh "
+"customize page to display new font in dropdown font field."
+msgstr ""
+
+#: inc/init.php:249
+msgid "Tags"
+msgstr ""
+
+#: content/define_blocks_content.php:126 content/define_blocks_content.php:155
+msgid "Tags: "
+msgstr ""
+
+#. %s: version number
+#: inc/vendor/class-tgm-plugin-activation.php:2067
+#, php-format
+msgid "TGMPA v%s"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:353
+#, php-format
+msgid ""
+"The following plugin needs to be updated to its latest version to ensure "
+"maximum compatibility with this theme: %1$s."
+msgid_plural ""
+"The following plugins need to be updated to their latest version to ensure "
+"maximum compatibility with this theme: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:395
+#: inc/vendor/class-tgm-plugin-activation.php:3037
+msgid "The following plugin was activated successfully:"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:371
+#, php-format
+msgid "The following recommended plugin is currently inactive: %1$s."
+msgid_plural "The following recommended plugins are currently inactive: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:365
+#, php-format
+msgid "The following required plugin is currently inactive: %1$s."
+msgid_plural "The following required plugins are currently inactive: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:3592
+msgid ""
+"The installation and activation process is starting. This process may take a "
+"while on some hosts, so please be patient."
+msgstr ""
+
+#. 1: plugin name.
+#: inc/vendor/class-tgm-plugin-activation.php:3588
+#, php-format
+msgid "The installation of %1$s failed."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:3600
+msgid ""
+"The installation process is starting. This process may take a while on some "
+"hosts, so please be patient."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:1022
+msgid ""
+"The remote plugin package consists of more than one file, but the files are "
+"not packaged in a folder."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:1019
+msgid ""
+"The remote plugin package does not contain a folder with the desired slug "
+"and renaming did not work."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:403
+msgid ""
+"There are one or more required or recommended plugins to install, update or "
+"activate."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:359
+#, php-format
+msgid "There is an update available for: %1$s."
+msgid_plural "There are updates available for the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: customize/class-customize.php:795 customize/class-customize.php:823
+msgid "This isn't effect in Blog"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:607
+msgid "This plugin needs to be updated to be compatible with your theme."
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:347
+#, php-format
+msgid "This theme recommends the following plugin: %1$s."
+msgid_plural "This theme recommends the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:341
+#, php-format
+msgid "This theme requires the following plugin: %1$s."
+msgid_plural "This theme requires the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#. 1: number of plugins.
+#: inc/vendor/class-tgm-plugin-activation.php:2485
+#, php-format
+msgid "To Activate <span class=\"count\">(%s)</span>"
+msgid_plural "To Activate <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#. 1: number of plugins.
+#: inc/vendor/class-tgm-plugin-activation.php:2477
+#, php-format
+msgid "To Install <span class=\"count\">(%s)</span>"
+msgid_plural "To Install <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: header/header-default.php:13
+msgid "Toggle navigation"
+msgstr ""
+
+#: customize/class-customize.php:1100
+#: inc/vendor/class-tgm-plugin-activation.php:2634
+msgid "Type"
+msgstr ""
+
+#: comments.php:51 comments.php:57
+msgid "Type your name here"
+msgstr ""
+
+#: customize/class-customize.php:47
+msgid "Typography"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2808
+msgid "Update"
+msgstr ""
+
+#. %2$s: plugin name in screen reader markup
+#: inc/vendor/class-tgm-plugin-activation.php:2693
+#, php-format
+msgid "Update %2$s"
+msgstr ""
+
+#. 1: number of plugins.
+#: inc/vendor/class-tgm-plugin-activation.php:2481
+#, php-format
+msgid "Update Available <span class=\"count\">(%s)</span>"
+msgid_plural "Update Available <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2418
+msgid "Update recommended"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:608
+msgid "Update Required"
+msgstr ""
+
+#. 1: plugin name, 2: action number 3: total number of actions.
+#: inc/vendor/class-tgm-plugin-activation.php:3583
+#, php-format
+msgid "Updating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#. %s: plugin name.
+#: inc/vendor/class-tgm-plugin-activation.php:339
+#, php-format
+msgid "Updating Plugin: %s"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2769
+msgid "Upgrade message from the plugin author:"
+msgstr ""
+
+#: customize/class-customize.php:474
+msgid "Vendor Color 1"
+msgstr ""
+
+#: customize/class-customize.php:494
+msgid "Vendor Color 2"
+msgstr ""
+
+#: customize/class-customize.php:514
+msgid "Vendor Color 3"
+msgstr ""
+
+#: customize/class-customize.php:534
+msgid "Vendor Color 4"
+msgstr ""
+
+#: customize/class-customize.php:554
+msgid "Vendor Color 5"
+msgstr ""
+
+#: customize/class-customize.php:574
+msgid "Vendor Color 6"
+msgstr ""
+
+#: customize/class-customize.php:412
+msgid "Vendor Sidebar Background Color"
+msgstr ""
+
+#: customize/class-customize.php:432
+msgid "Vendor Sidebar Color"
+msgstr ""
+
+#: customize/class-customize.php:941
+msgid "Venue"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2638
+msgid "Version"
+msgstr ""
+
+#: inc/class_hook.php:334
+msgid "Wide"
+msgstr ""
+
+#: install_resource/active_plugins.php:70
+msgid "Widget importer exporter"
+msgstr ""
+
+#: customize/class-customize.php:717
+msgid "Width Content (px)"
+msgstr ""
+
+#: customize/class-customize.php:734
+msgid "Width Site"
+msgstr ""
+
+#: install_resource/active_plugins.php:80
+msgid "Woocommerce"
+msgstr ""
+
+#: inc/vendor/class-tgm-plugin-activation.php:2377
+msgid "WordPress Repository"
+msgstr ""
+
+#: customize/class-customize.php:668
+msgid "Yes"
+msgstr ""
+
+#: extend/breadcrumbs.php:129
+msgid "You got it Error 404 not Found"
+msgstr ""
+
+#: comments.php:69
+msgid "Your comment"
+msgstr ""
+
+#: content/define_blocks_content.php:336
+msgid "Your comment is awaiting moderation."
+msgstr ""
+
+#: comments.php:52 comments.php:58
+msgid "Your email"
+msgstr ""
+
+#: comments.php:52
+msgid "Your Email*"
+msgstr ""
+
+#: content/define_blocks_content.php:57 content/define_blocks_content.php:78
+msgid "|"
+msgstr ""

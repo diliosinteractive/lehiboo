@@ -1,0 +1,137 @@
+.ova-event-recent {
+	.event_archive {
+		margin-bottom: 0;
+		.event-notfound {
+			margin: 0px;
+			font-size: 22px;
+		}
+		&.type1, &.type2, &.type4, &.type5, &.type6 {
+			grid-template-columns: 1fr 1fr 1fr;
+			grid-gap: 45px;
+			&.three_column {
+				grid-template-columns: 1fr 1fr 1fr;
+				@media (max-width: 991px) {
+					grid-template-columns: 1fr 1fr;
+				}
+				@media (max-width: 767px) {
+					grid-template-columns: 1fr;
+				}
+			}
+			&.two_column {
+				grid-template-columns: 1fr 1fr;
+				@media (max-width: 767px) {
+					grid-template-columns: 1fr;
+				}
+			}
+			
+			.event_entry {
+				.event_item {
+					.event_detail {
+						background: #fff;
+					}
+				}
+			}
+			.img-author {
+				a {
+					img {
+						width: 50px;
+					}
+				}
+			}
+		}
+		.event_entry {
+			position: relative;
+			&:hover {
+				.event_remove {
+					transform: translateX(-50%) scale(1);
+				}
+			}
+			
+			.event_remove {
+				cursor: pointer;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				width: 41px;
+				height: 41px;
+				border: 1px solid #FF3926;
+				border-radius: 50%;
+				background: #fff;
+				position: absolute;
+				top: -20px;
+				left: 50%;
+				z-index: 9;
+				transition: all .3s linear;
+				transform: translateX(-50%) scale(0);
+				i {
+					font-size: 15px;
+					color: #FF3926;
+					display: inline-flex;
+					line-height: 1;
+					transition: all .3s linear;
+				}
+				&:hover {
+					background: #FF3926;
+					i {
+						color: #fff;
+					}
+				}
+				@media screen and (max-width: 767px) {
+					transform: translateX(-50%) scale(1);
+				}
+			}
+		}
+		.wrap_loader {
+			display: none;
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			background-color: rgba(255,255,255, .9);
+			z-index: 999;
+			.loader {
+				position: absolute;
+				top: 100px;
+				left: 50%;
+				transform: translate(-50%);
+				stroke-linecap: round;
+				circle {
+					fill: none;
+					stroke-width: 1.5;
+
+					animation-duration: 1.5s;
+					animation-iteration-count: infinite;
+					animation-timing-function: linear;
+					transform-origin: 25px 25px;
+					will-change: transform;
+					// stroke: #e86c60;
+
+					&:nth-of-type(1) {
+						stroke-dasharray: 40px;
+						animation-name: preloader_1;
+					}
+
+					&:nth-of-type(2) {
+						stroke-dasharray: 80px;
+						animation-name: preloader_2;
+					}
+				}
+
+				@keyframes preloader_1 {
+					100% {
+						transform: rotate(360deg);
+					}
+				}
+				@keyframes preloader_2 {
+					100% {
+						transform: rotate(-360deg);
+					}
+				}
+			}
+			.not_found {
+				display: none;
+			}
+		}
+	}
+}
+

@@ -1,0 +1,170 @@
+/**
+  * Sidebar blog
+ */
+.rtl{
+
+
+   #sidebar{
+   	padding-left: 0!important;
+   	padding-right: 45px!important;
+   }
+   .sidebar .widget.widget_archive li > a,
+   .sidebar .widget.widget_categories li > a{
+   	padding-left: 0;
+     	&::before{
+     		content: none;	
+     	}
+   	
+    }
+
+ }
+
+ /**
+  * Blog deafult
+  */
+ .rtl{
+   .default{
+  	article.post-wrap{
+  		.post-title h2.post-title{
+  			text-align: right;	
+  		}
+  		.post-meta{
+  			text-align: right;	
+  			.post-meta-content {
+  				.general-meta.categories i{
+  					margin-right: 0;
+  					margin-left: 7px;	
+  				}
+  				.general-meta i{
+  					margin-right: 0;
+  					margin-left: 7px;
+  				}
+  				
+  			}
+  		}
+
+  		.post-body{
+  			text-align: right;
+  		}
+
+  		.post-footer{
+  			text-align: right;	
+  		}
+  		
+  	}
+
+    }
+  }
+
+  .rtl .blog_v2{
+ 	
+ 	article.post-wrap{
+ 		text-align: right;
+ 	}
+ }
+
+.rtl{ 
+   /**
+    * Pagination
+    */
+   .pagination-wrapper .blog_pagination .pagination li{
+   	margin-left: 6px;
+   	margin-right: 6px;
+   }
+   .pagination-wrapper .blog_pagination .pagination li:not(:last-child){
+   	margin-right: 6px;
+   }
+ }
+
+ /**
+  * Detail
+  */
+ .rtl.single-post article.post-wrap .post-title h1.post-title{
+ 	text-align: right;
+ }
+ .rtl.single-post article.post-wrap .post-meta{
+ 	text-align: right;
+ }
+ .rtl article.post-wrap .post-meta .post-meta-content .general-meta i{
+ 	margin-left: 7px;
+ 	margin-right: 0;
+ }
+ .rtl.single-post article.post-wrap .post-body .post-excerpt p{
+ 	text-align: right;
+ }
+ .rtl.single-post article.post-wrap .post-body .qoute-post-meup i{
+ 	margin-left: 14px;
+ 	margin-right: 0;
+ }
+ .rtl.single-post article.post-wrap .post-tag-constrau{
+ 	text-align: right;
+ }
+ .rtl.single-post article.post-wrap .post-tag-constrau .socials-inner .share-social .text-social{
+ 	margin-left: 10px;
+ 	margin-right: 0;
+ }
+ .rtl.single-post article.post-wrap .post-tag-constrau .post-tags-constrau > a:not(:last-child){
+ 	margin-left: 15px;
+ 	margin-right: 10px;
+ }
+ .rtl.single-post article.post-wrap .pagination-detail .pre .num-1{
+ 	margin-right: 0;
+ 	margin-left: 15px;
+ }
+ .rtl.single-post article.post-wrap .pagination-detail .next .num-1{
+ 	margin-right: 15px;
+ 	margin-left: 0px;	
+ }
+
+.rtl{
+  .content_comments .comments .wrap_comment_form .comment-respond .title-comment{
+    text-align: right;
+   }
+   .content_comments .comments .wrap_comment_form .comment-respond .title-comment:after{
+    right: 0;
+   }
+   .content_comments .comments .wrap_comment_form .form-submit{
+    text-align: right;
+   }
+
+  .content_comments .comments .wrap_comment_form .comment-form-cookies-consent input{
+    margin-left: 10px!important;
+  }
+  .ovatheme_breadcrumbs .separator:before{
+    content: "\34";
+  } 
+}
+ 
+
+
+/**
+ * Widget Thumbnail
+ */
+.rtl{
+  .rpwwt-post-date:before{
+  	content: "\7b"!important;
+  	margin-right: 0;
+  	margin-left: 8px;
+  }
+  .sidebar .widget.recent-posts-widget-with-thumbnails ul li{
+  	text-align: right;
+  }
+}
+
+/**
+ * Contact Form 7
+ */
+.rtl{
+  .wpcf7 form .wpcf7-response-output{
+  	text-align: right;
+  }
+  .meup-contact-form-1 .input input, .meup-contact-form-1 .input textarea{
+  	text-align: right;
+  }
+  .meup-contact-form-1 input[type=submit]{
+  	float: right;
+  }
+  .meup-contact-form-1 .input .wpcf7-form-control-wrap .wpcf7-not-valid-tip{
+  	right: 0;
+  }
+}

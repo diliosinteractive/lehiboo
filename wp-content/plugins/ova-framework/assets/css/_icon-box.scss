@@ -1,0 +1,100 @@
+.ova-icon-box {
+	.ova-icon-box-grid {
+		display: grid;
+		grid-gap: 56px;
+		&.four_columns {
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+			@media screen and (max-width: 1023px) {
+				grid-template-columns: 1fr 1fr;
+			}
+			@media screen and (max-width: 767px) {
+				grid-template-columns: 1fr;
+			}
+		}
+		&.three_columns {
+			grid-template-columns: 1fr 1fr 1fr;
+			@media screen and (max-width: 1023px) {
+				grid-template-columns: 1fr 1fr;
+			}
+			@media screen and (max-width: 767px) {
+				grid-template-columns: 1fr;
+			}
+		}
+		&.two_columns {
+			grid-template-columns: 1fr 1fr;
+			@media screen and (max-width: 767px) {
+				grid-template-columns: 1fr;
+			}
+		}
+		.icon-box {
+			border-radius: 5px;
+			border: 1px solid #E8E8E8;
+			padding: 25px;
+			position: relative;
+			transition: all .3s linear;
+			.number {
+				position: absolute;
+				top: -30px;
+				right: -27px;
+				display: inline-flex;
+				justify-content: center;
+				align-items: center;
+				width: 74px;
+				height: 74px;
+				border-radius: 50%;
+				border: 1px solid #E8E8E8;
+				font-size: 22px;
+				font-weight: normal;
+				color: var(--primary);
+				background: #fff;
+				@media screen and (max-width: 1250px) {
+					display: none;
+				}
+			}
+			.icon {
+				font-size: 45px;
+				display: inline-flex;
+				line-height: 1;
+				color: var(--primary);
+				i, svg {
+					transition: all .3s linear;
+				}
+				svg {
+					width: 45px;
+					height: 45px;
+				}
+			}
+			.title {
+				margin: 15px 0px 0px 0px;
+				a {
+					color: var(--vendor-color-four, #222);
+					font-size: 20px;
+					font-weight: 500;
+					transition: all .3s linear;
+					&:hover {
+						color: var(--primary);
+						text-decoration: underline;
+					}
+				}
+			}
+			.desc {
+				margin: 20px 0px 0px 0px;
+				color: var(--vendor-color-five, #333);
+			}
+		}
+	}
+}
+// Right to left
+body.rtl {
+	.ova-icon-box {
+		text-align: right;
+		.ova-icon-box-grid {
+			.icon-box {
+				.number {
+					right: unset;
+					left: -27px;
+				}
+			}
+		}
+	}
+}

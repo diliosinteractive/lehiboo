@@ -1,0 +1,221 @@
+.ova-list-register-field table {
+  margin: 0px;
+  width: 100%;
+}
+
+.ova-list-register-field tbody tr:nth-child(odd) {
+  background: #f9f9f9;
+}
+
+.ova-list-register-field tbody tr:nth-child(even) {
+  background: #fff;
+}
+
+#adminmenu a[href="admin.php?page=ovareg_custom_field_settings"] {
+  display: none;
+}
+#adminmenu a[href="admin.php?page=ovalg_vendor_approve"] {
+  display: none;
+}
+
+.ova-list-register-field {
+  position: relative;
+}
+.ova-list-register-field .wrap_loader {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.5);
+  width: 100%;
+  height: 100%;
+  z-index: 9;
+}
+.ova-list-register-field .loader {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 7px solid;
+  border-color: rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.35) rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  animation: ovalg_rotation 1s linear infinite;
+}
+@keyframes ovalg_rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.ova-wrap-popup-register-field {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  height: 120vh;
+  display: none;
+}
+
+.ova-wrap-popup-register-field .ova-popup-wrapper .close_popup {
+  font-size: 16px;
+  color: #333;
+  text-decoration: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.ova-wrap-popup-register-field .ova-popup-wrapper {
+  position: relative;
+  margin: 150px auto;
+  width: 40%;
+  height: auto;
+  background: #fff;
+  padding: 40px;
+}
+
+.ova-wrap-popup-register-field .ova-popup-wrapper table {
+  border-spacing: 0 20px;
+}
+
+.ova-wrap-popup-register-field .ova-popup-wrapper tr {
+  margin-bottom: 20px;
+}
+.ova-wrap-popup-register-field .ova-popup-wrapper tr.ova-row-type .file-format {
+  display: none;
+}
+.ova-wrap-popup-register-field .ova-popup-wrapper tr.max-file-size {
+  display: none;
+}
+
+.ova-wrap-popup-register-field .ova-popup-wrapper tr td select, .ova-wrap-popup-register-field .ova-popup-wrapper tr td input[type=text] {
+  width: 100%;
+  min-width: 100%;
+}
+
+.ova-wrap-popup-register-field .ova-popup-wrapper tr td.label {
+  font-size: 16px;
+  color: #333333;
+}
+
+.ova-wrap-popup-register-field .ova-popup-wrapper tr.row-required input[type=checkbox] {
+  margin-bottom: 10px;
+  margin-right: 5px;
+}
+
+.ova-wrap-popup-register-field .ova-popup-wrapper tr.row-required label {
+  margin-bottom: 10px;
+  display: inline-block;
+  font-size: 15px;
+  color: #333;
+}
+
+.ova-wrap-popup-register-field .ova-popup-wrapper .ova-sub-table {
+  border-spacing: 0px;
+}
+
+.ova-wrap-popup-register-field .ova-popup-wrapper .ova-sub-table tr {
+  display: table;
+  margin-bottom: 10px;
+}
+
+.ova-list-register-field {
+  text-align: left;
+}
+
+.ova-list-register-field table tbody tr td.ova-checkbox {
+  opacity: 1 !important;
+}
+
+.ova-list-register-field table tbody tr.ova-disable td {
+  opacity: 0.4;
+}
+
+.ova-wrap-popup-register-field .ova-popup-wrapper tr.row-options, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-radio, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-checkbox {
+  display: none;
+}
+.ova-wrap-popup-register-field .ova-popup-wrapper tr.row-options table.ova-sub-table td, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-radio table.ova-sub-table td, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-checkbox table.ova-sub-table td {
+  width: 30%;
+  padding-right: 10px;
+}
+.ova-wrap-popup-register-field .ova-popup-wrapper tr.row-options table.ova-sub-table td input, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-radio table.ova-sub-table td input, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-checkbox table.ova-sub-table td input {
+  width: 100%;
+}
+.ova-wrap-popup-register-field .ova-popup-wrapper tr.row-options table.ova-sub-table td.ova-box, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-radio table.ova-sub-table td.ova-box, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-checkbox table.ova-sub-table td.ova-box {
+  width: 5%;
+  padding-right: 0px;
+}
+.ova-wrap-popup-register-field .ova-popup-wrapper tr.row-options table.ova-sub-table td.ova-box.sort span, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-radio table.ova-sub-table td.ova-box.sort span, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-checkbox table.ova-sub-table td.ova-box.sort span {
+  cursor: pointer;
+}
+.ova-wrap-popup-register-field .ova-popup-wrapper tr.row-options table.ova-sub-table td.ova-box a, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-radio table.ova-sub-table td.ova-box a, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-checkbox table.ova-sub-table td.ova-box a {
+  color: #FFFFFF;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 12px;
+  text-decoration: none;
+}
+.ova-wrap-popup-register-field .ova-popup-wrapper tr.row-options table.ova-sub-table td.ova-box a.btn-blue, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-radio table.ova-sub-table td.ova-box a.btn-blue, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-checkbox table.ova-sub-table td.ova-box a.btn-blue {
+  background-color: #00A0D2;
+  border: 1px solid #0073AA;
+}
+.ova-wrap-popup-register-field .ova-popup-wrapper tr.row-options table.ova-sub-table td.ova-box a.btn-red, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-radio table.ova-sub-table td.ova-box a.btn-red, .ova-wrap-popup-register-field .ova-popup-wrapper tr.row-checkbox table.ova-sub-table td.ova-box a.btn-red {
+  background-color: #ff6666;
+  border: 1px solid #ff4c4c;
+}
+
+.event_type {
+  display: flex;
+  align-items: center;
+  margin-left: 30px;
+}
+.event_type input {
+  margin-right: 5px;
+}
+.event_type span {
+  margin-right: 30px;
+}
+
+.private_desc_ticket {
+  width: 100%;
+  margin-top: 30px;
+}
+.private_desc_ticket textarea {
+  width: 100%;
+}
+
+#ova-dialog-user-info .ova__thumbnail {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  object-position: center;
+}
+
+#wp-mail_new_vendor_content-wrap, #wp-mail_vendor_reject_content-wrap, #wp-mail_vendor_approve_content-wrap {
+  max-width: 600px;
+}
+
+.ova_vendor_approve_table_wrapper.loading {
+  position: relative;
+}
+.ova_vendor_approve_table_wrapper.loading:before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3);
+  top: 0;
+  left: 0;
+}
+
+.ova_vendor_approve_loader {
+  display: none;
+}

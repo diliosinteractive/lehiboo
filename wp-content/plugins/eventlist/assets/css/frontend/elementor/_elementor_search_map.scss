@@ -1,0 +1,118 @@
+.elementor_search_map {
+	.wrap_search_map .wrap_search #result_search {
+		padding-left: 0;
+
+		select{
+			-webkit-appearance: none;
+		   -moz-appearance: none;
+		   appearance: none;       /* Remove default arrow */	
+		}
+		
+
+		.wrap_load_more {
+			width: 100%;
+			display: none;
+			position: relative;
+			padding: 30px 0;
+			.loader {
+				position: absolute;
+				bottom: 0;
+				left: 50%;
+				transform: translate(-50%);
+				stroke-linecap: round;
+				circle {
+					fill: none;
+					stroke-width: 1.5;
+					animation-duration: 1.5s;
+					animation-iteration-count: infinite;
+					animation-timing-function: linear;
+					transform-origin: 25px 25px;
+					will-change: transform;
+					stroke: #e86c60;
+
+					&:nth-of-type(1) {
+						stroke-dasharray: 40px;
+						animation-name: preloader_1;
+					}
+
+					&:nth-of-type(2) {
+						stroke-dasharray: 80px;
+						animation-name: preloader_2;
+					}
+				}
+
+				@keyframes preloader_1 {
+					100% {
+						transform: rotate(360deg);
+					}
+				}
+				@keyframes preloader_2 {
+					100% {
+						transform: rotate(-360deg);
+					}
+				}
+			}
+		}
+	}
+	.wrap_search {
+		flex-wrap: wrap;
+	}
+	.wrap_show_map {
+		width: 40%;
+		@media (max-width: 991.98px) {
+			width: 100%;
+		}
+	}
+
+	.select2-container {
+		.select2-selection--single {
+			line-height: 40px;
+		}
+	}
+	.select2-container--default {
+		.select2-selection--single {
+			height: 40px;
+			.select2-selection__rendered {
+				line-height: 40px;
+			}
+			.select2-selection__arrow {
+				height: 40px;
+			}
+		}
+	}
+
+	
+	.noUi-connect {
+		background: var(--primary);
+	}
+	.wrap_range_price {
+		.range_price_box {
+			.range_price_box_wrap {
+				display: flex;
+				align-items: flex-end;
+				min-height: 40px;
+				width: 100%;
+				#init_range_price {
+					width: 100%;
+				}
+				.noUi-horizontal {
+					height: 10px;
+					.noUi-handle {
+						width: 27px;
+    					height: 19px;
+    					&:before {
+    						content: none;
+    					}
+    					&:after {
+    						content: none;
+    					}
+					}
+				}
+				.noUi-tooltip {
+					border: none;
+				}
+			}
+		}
+	}
+
+}

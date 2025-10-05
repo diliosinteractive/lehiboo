@@ -1,0 +1,71 @@
+@font-face {
+    font-family: "meupicon";
+    src: url("./meupicon.ttf?931671731cc764a8dbc220e66d866e77") format("truetype"),
+url("./meupicon.woff?931671731cc764a8dbc220e66d866e77") format("woff"),
+url("./meupicon.woff2?931671731cc764a8dbc220e66d866e77") format("woff2"),
+url("./meupicon.eot?931671731cc764a8dbc220e66d866e77#iefix") format("embedded-opentype"),
+url("./meupicon.svg?931671731cc764a8dbc220e66d866e77#meupicon") format("svg");
+}
+
+i[class^="meupicon-"]:before, i[class*=" meupicon-"]:before {
+    font-family: meupicon !important;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.meupicon-pin:before {
+    content: "\f101";
+}
+.meupicon-down-arrow:before {
+    content: "\f102";
+}
+.meupicon-search:before {
+    content: "\f103";
+}
+.meupicon-send:before {
+    content: "\f104";
+}
+.meupicon-lamp:before {
+    content: "\f105";
+}
+.meupicon-zoom-in:before {
+    content: "\f106";
+}
+.meupicon-clock:before {
+    content: "\f107";
+}
+.meupicon-search-interface-symbol:before {
+    content: "\f108";
+}
+.meupicon-next:before {
+    content: "\f109";
+}
+.meupicon-security:before {
+    content: "\f10a";
+}
+.meupicon-annual-report:before {
+    content: "\f10b";
+}
+.meupicon-qr-code:before {
+    content: "\f10c";
+}
+.meupicon-edit:before {
+    content: "\f10d";
+}
+.meupicon-shopping-cart:before {
+    content: "\f10e";
+}
+.meupicon-download:before {
+    content: "\f10f";
+}
+.meupicon-arrow-down-sign-to-navigate:before {
+    content: "\f110";
+}
+.meupicon-x:before {
+    content: "\f111";
+}

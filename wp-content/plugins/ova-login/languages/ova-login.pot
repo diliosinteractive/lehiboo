@@ -1,0 +1,797 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Ova Login\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-12-11 08:06+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.6; wp-6.4.2\n"
+"X-Domain: ova-login"
+
+#: templates/register_form.php:418
+msgid " or drag it here"
+msgstr ""
+
+#: ova-login-functions.php:860
+#, php-format
+msgid "%s"
+msgstr ""
+
+#: ova-login-functions.php:176 ova-login-functions.php:194
+#: ova-login-functions.php:222 ova-login-functions.php:250
+#: ova-login-functions.php:278
+msgid "---Select page---"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:181
+msgid "Add field"
+msgstr ""
+
+#: templates/register_form.php:149
+msgid "Address"
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:45
+msgid "An account exists with this username. please try again"
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:108
+msgid "An unknown error occurred. Please try again later."
+msgstr ""
+
+#: templates/admin/custom_register_field.php:352
+msgid "Both"
+msgstr ""
+
+#: templates/login_form.php:32
+msgid "Check your email for a link to reset your password."
+msgstr ""
+
+#: templates/admin/custom_register_field.php:242
+msgid "Checkbox"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:337
+msgid "Class"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:343
+msgid "Class Icon"
+msgstr ""
+
+#: templates/register_form.php:29
+msgid "Confirm Email *"
+msgstr ""
+
+#: templates/register_form.php:88
+msgid "Confirm Password *"
+msgstr ""
+
+#: ova-login-functions.php:308
+msgid "Custom Register Field"
+msgstr ""
+
+#. Description of the plugin
+msgid ""
+"Customize Login/Register in WordPress. You can override template in child "
+"theme."
+msgstr ""
+
+#: templates/register_form.php:166
+#: templates/admin/custom_register_field.php:325
+msgid "Description"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:190
+msgid "Disable"
+msgstr ""
+
+#: ova-login-functions.php:865 templates/admin/custom_register_field.php:202
+msgid "Edit"
+msgstr ""
+
+#: templates/password_lost_form.php:36
+#: templates/admin/custom_register_field.php:237
+msgid "Email"
+msgstr ""
+
+#: templates/register_form.php:22
+msgid "Email *"
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:54
+msgid "Email address exists. Please try again"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:187
+#: templates/admin/custom_register_field.php:365
+msgid "Enable"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:295
+msgid "Enable for Cart Event"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:264
+msgid "Enable for Comment Form"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:287
+msgid "Enable for Create Event"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:232
+msgid "Enable for Login"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:248
+msgid "Enable for Lost Password"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:240
+msgid "Enable for Register"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:256
+msgid "Enable for Reset Password"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:279
+msgid "Enable for Send Mail Vendor"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:201
+msgid "Enabled"
+msgstr ""
+
+#: templates/password_lost_form.php:7
+msgid ""
+"Enter your email address and we'll send you a link you can use to pick a new "
+"password."
+msgstr ""
+
+#: inc/class-ovalg-recapcha.php:177 inc/class-ovalg-recapcha.php:188
+msgid "Error"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:272
+msgid "Event Settings"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:243
+msgid "File"
+msgstr ""
+
+#: templates/register_form.php:413
+msgid "File is too large!"
+msgstr ""
+
+#: templates/register_form.php:51
+msgid "First name"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:82
+msgid "Forgot Your Password Page"
+msgstr ""
+
+#: templates/password_lost_form.php:5
+msgid "Forgot Your Password?"
+msgstr ""
+
+#: templates/login_form.php:104
+msgid "Forgot your password?"
+msgstr ""
+
+#: templates/register_form.php:419
+#: templates/admin/custom_register_field.php:246
+msgid "Formats: .jpg, .jpeg, .png, .pdf, .doc"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:51
+msgid "General Setting"
+msgstr ""
+
+#: settings/admin_settings.php:467
+msgid "General Settings"
+msgstr ""
+
+#: inc/class-ovalg-recapcha.php:92 inc/class-ovalg-recapcha.php:104
+#: inc/class-ovalg-err-message.php:102
+msgid "Google reCAPTCHA verification failed."
+msgstr ""
+
+#: inc/class-ovalg-register.php:399
+msgid "Hello!"
+msgstr ""
+
+#: templates/account_info.php:21
+msgid "Hello: "
+msgstr ""
+
+#: templates/register_form.php:471
+msgid "I have read and agree to the website."
+msgstr ""
+
+#: inc/class-ovalg-register.php:401
+msgid ""
+"If this was a mistake, or you didn't ask for a password reset, just ignore "
+"this email and nothing will happen."
+msgstr ""
+
+#: settings/admin_settings.php:338
+msgid "Include shortcode in page: [custom-login-form]"
+msgstr ""
+
+#: settings/admin_settings.php:422
+msgid "Include shortcode in page: [custom-password-lost-form]"
+msgstr ""
+
+#: settings/admin_settings.php:450
+msgid "Include shortcode in page: [custom-password-reset-form]"
+msgstr ""
+
+#: settings/admin_settings.php:393
+msgid "Include shortcode in page: [custom-register-form]"
+msgstr ""
+
+#: templates/register_form.php:414
+msgid "Invalid file format!"
+msgstr ""
+
+#: inc/class-ovalg-shortcode.php:184
+msgid "Invalid password reset link."
+msgstr ""
+
+#: inc/class-ovalg-register.php:521
+msgid "Invalid request."
+msgstr ""
+
+#: templates/register_form.php:133
+msgid "Job"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:194
+msgid "Key Settings"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:197
+#: templates/admin/custom_register_field.php:319
+msgid "Label"
+msgstr ""
+
+#: templates/register_form.php:65
+msgid "Last name"
+msgstr ""
+
+#: templates/login_form.php:85
+msgid "Log In"
+msgstr ""
+
+#: ova-login-functions.php:306
+msgid "Login Settings"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:305
+msgid "Maximum file size"
+msgstr ""
+
+#: templates/password_reset_form.php:35
+msgid "New password"
+msgstr ""
+
+#: ova-login-functions.php:84 ova-login-functions.php:126
+msgid "New User"
+msgstr ""
+
+#: ova-login-functions.php:82 ova-login-functions.php:122
+msgid "New Vendor"
+msgstr ""
+
+#: settings/admin_settings.php:532 settings/admin_settings.php:542
+#: settings/admin_settings.php:552 settings/admin_settings.php:562
+#: settings/admin_settings.php:572 settings/admin_settings.php:582
+#: settings/admin_settings.php:592 settings/admin_settings.php:602
+#: settings/admin_settings.php:612
+msgid "No"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:251
+#: templates/admin/custom_register_field.php:269
+#: templates/admin/custom_register_field.php:287
+msgid "Options"
+msgstr ""
+
+#. Name of the plugin
+msgid "Ova Login"
+msgstr ""
+
+#. Author of the plugin
+msgid "Ovatheme"
+msgstr ""
+
+#: templates/login_form.php:83 templates/admin/custom_register_field.php:236
+msgid "Password"
+msgstr ""
+
+#: templates/register_form.php:78
+msgid "Password *"
+msgstr ""
+
+#: templates/register_form.php:80 templates/register_form.php:90
+msgid ""
+"Password is greater than 8 characters and must include at least one number "
+"and must include at least one letter."
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:61
+msgid ""
+"Password is greater than 8 characters and must include at least one number "
+"and must include at least one letter. Please try again"
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:64
+msgid "Password not match. Please try again"
+msgstr ""
+
+#: templates/register_form.php:102
+#: templates/admin/custom_register_field.php:238
+msgid "Phone"
+msgstr ""
+
+#: templates/password_reset_form.php:5
+msgid "Pick a New Password"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:90
+msgid "Pick a New Password Page"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:198
+#: templates/admin/custom_register_field.php:331
+msgid "Placeholder"
+msgstr ""
+
+#: templates/register_form.php:466
+msgid "Please check terms and conditions."
+msgstr ""
+
+#: templates/register_form.php:293
+#, php-format
+msgid "Please enter a valid %s."
+msgstr ""
+
+#: templates/register_form.php:30
+msgid "Please enter a valid confirm email address."
+msgstr ""
+
+#: templates/register_form.php:22
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: templates/register_form.php:107
+msgid "Please enter a valid phone number."
+msgstr ""
+
+#: templates/register_form.php:153
+msgid "Please enter Address."
+msgstr ""
+
+#: templates/register_form.php:22
+msgid "Please enter an email address."
+msgstr ""
+
+#: templates/register_form.php:89
+msgid "Please enter Confirm Password."
+msgstr ""
+
+#: templates/register_form.php:165
+msgid "Please enter Description."
+msgstr ""
+
+#: templates/register_form.php:52
+msgid "Please enter First name."
+msgstr ""
+
+#: templates/register_form.php:137
+msgid "Please enter Job."
+msgstr ""
+
+#: templates/register_form.php:66
+msgid "Please enter Last name."
+msgstr ""
+
+#: templates/register_form.php:79
+msgid "Please enter Password."
+msgstr ""
+
+#: templates/register_form.php:106
+msgid "Please enter Phone."
+msgstr ""
+
+#: templates/register_form.php:40
+msgid "Please enter Username."
+msgstr ""
+
+#: templates/register_form.php:122
+msgid "Please enter website."
+msgstr ""
+
+#: templates/admin/custom_register_field.php:241
+msgid "Radio"
+msgstr ""
+
+#: settings/admin_settings.php:470
+msgid "reCAPTCHA Settings"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:201
+msgid "reCAPTCHA Type"
+msgstr ""
+
+#: templates/login_form.php:100 templates/register_form.php:491
+msgid "Register"
+msgstr ""
+
+#: templates/register_form.php:17
+msgid "Register User"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:111 settings/admin_settings.php:469
+msgid "Register User Form Settings"
+msgstr ""
+
+#: ova-login-functions.php:37
+msgid "Register user successlly"
+msgstr ""
+
+#: inc/class-ovalg-shortcode.php:114 inc/class-ovalg-err-message.php:67
+msgid "Registering new users is currently not allowed."
+msgstr ""
+
+#: templates/login_form.php:84
+msgid "Remember Me"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:184
+msgid "Remove"
+msgstr ""
+
+#: templates/password_reset_form.php:40
+msgid "Repeat new password"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:200
+#: templates/admin/custom_register_field.php:362
+msgid "Required"
+msgstr ""
+
+#: templates/password_lost_form.php:42 templates/password_reset_form.php:51
+msgid "Reset Password"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:371
+msgid "save"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:217
+msgid "Secret Key"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:240
+msgid "Select"
+msgstr ""
+
+#: templates/login_form.php:26
+msgid "Sending email failed. Please try again later."
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:174
+msgid "Show Address"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:118
+msgid "Show Confirm Email"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:182
+msgid "Show Description"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:126
+msgid "Show First Name"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:166
+msgid "Show Job"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:134
+msgid "Show Last Name"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:142
+msgid "Show Password"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:150
+msgid "Show Phone"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:158
+msgid "Show Website"
+msgstr ""
+
+#: templates/login_form.php:64 templates/login_form.php:82
+msgid "Sign In"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:58
+msgid "Sign In Page"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:66
+msgid "Sign in Successfully Page"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:74
+msgid "Sign up Page"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:209
+msgid "Site Key"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:195
+#: templates/admin/custom_register_field.php:312
+msgid "Slug"
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:96
+msgid "Sorry, only JPG, JPEG, PNG, PDF and DOC files are allowed."
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:57
+msgid "Sorry, that email address is already used!"
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:99
+msgid "Sorry, there was an error uploading your file."
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:81
+msgid "Sorry, we don't accept empty passwords."
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:93
+msgid "Sorry, your file is too large."
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:225
+msgid "Status Settings"
+msgstr ""
+
+#. ID
+#: settings/admin_settings.php:99
+msgid "Term Condition Page"
+msgstr ""
+
+#: templates/register_form.php:476
+msgid "terms and conditions"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:235
+msgid "Text"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:239
+msgid "Textarea"
+msgstr ""
+
+#: inc/class-ovalg-register.php:404
+msgid "Thanks!"
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:90
+#, php-format
+msgid "The %s field is required."
+msgstr ""
+
+#: templates/register_form.php:31
+msgid "The Confirmation Email must match your Email Address."
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:48
+msgid "The email address you entered is not valid."
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:51
+msgid "The email confirm not match."
+msgstr ""
+
+#: templates/register_form.php:267
+msgid "The field is invalid."
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:87 templates/register_form.php:217
+#: templates/register_form.php:241 templates/register_form.php:266
+#: templates/register_form.php:292 templates/register_form.php:313
+#: templates/register_form.php:338 templates/register_form.php:384
+#: templates/register_form.php:416
+msgid "The field is required."
+msgstr ""
+
+#: templates/register_form.php:53
+msgid "The first name is invalid."
+msgstr ""
+
+#: templates/register_form.php:67
+msgid "The last name is invalid."
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:75
+msgid "The password reset link you used is not valid anymore."
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:33
+#, php-format
+msgid ""
+"The password you entered wasn't quite right. <a href='%s'>Did you forget "
+"your password</a>?"
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:78
+msgid "The two passwords you entered don't match."
+msgstr ""
+
+#: templates/register_form.php:41
+msgid "The username is invalid."
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:42
+msgid "The username you entered is not valid."
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:71
+msgid "There are no users registered with this email address."
+msgstr ""
+
+#: inc/class-ovalg-register.php:402
+msgid "To reset your password, visit the following address:"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:196
+#: templates/admin/custom_register_field.php:232
+msgid "Type"
+msgstr ""
+
+#: templates/register_form.php:415
+msgid "Upload file again!"
+msgstr ""
+
+#: templates/admin/custom_register_field.php:199
+#: templates/admin/custom_register_field.php:349
+msgid "Used for"
+msgstr ""
+
+#: templates/register_form.php:455
+#: templates/admin/custom_register_field.php:354
+msgid "User"
+msgstr ""
+
+#: templates/login_form.php:81
+msgid "Username"
+msgstr ""
+
+#: templates/register_form.php:39
+msgid "Username *"
+msgstr ""
+
+#: templates/register_form.php:446
+#: templates/admin/custom_register_field.php:353
+msgid "Vendor"
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:27
+msgid ""
+"We don't have any users with that email address. Maybe you used a different "
+"one when signing up?"
+msgstr ""
+
+#: templates/register_form.php:118
+msgid "Website"
+msgstr ""
+
+#: settings/admin_settings.php:531 settings/admin_settings.php:541
+#: settings/admin_settings.php:551 settings/admin_settings.php:561
+#: settings/admin_settings.php:571 settings/admin_settings.php:581
+#: settings/admin_settings.php:591 settings/admin_settings.php:601
+#: settings/admin_settings.php:611
+msgid "Yes"
+msgstr ""
+
+#: inc/class-ovalg-shortcode.php:55 inc/class-ovalg-shortcode.php:112
+#: inc/class-ovalg-shortcode.php:150 inc/class-ovalg-shortcode.php:165
+msgid "You are already signed in."
+msgstr ""
+
+#: inc/class-ovalg-register.php:400
+#, php-format
+msgid ""
+"You asked us to reset your password for your account using the email address "
+"%s."
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:21
+msgid "You do have an email address, right?"
+msgstr ""
+
+#: templates/login_form.php:48
+msgid "You have signed out. Would you like to sign in again?"
+msgstr ""
+
+#: templates/login_form.php:16
+#, php-format
+msgid "You have successfully registered to <strong>%s</strong>."
+msgstr ""
+
+#: templates/login_form.php:13
+msgid ""
+"You have successfully registered. Check your email for a link to reset your "
+"password."
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:84
+msgid "You have to tick terms and conditions"
+msgstr ""
+
+#: inc/class-ovalg-err-message.php:24
+msgid "You need to enter a password to login."
+msgstr ""
+
+#: ova-login-functions.php:13 ova-login-functions.php:17
+#: ova-login-functions.php:68 ova-login-functions.php:72
+msgid ""
+"You registered user [el_link_profile] successfully at [el_link_home_page]"
+msgstr ""
+
+#: templates/login_form.php:40
+msgid "Your password has been changed. You can sign in now."
+msgstr ""

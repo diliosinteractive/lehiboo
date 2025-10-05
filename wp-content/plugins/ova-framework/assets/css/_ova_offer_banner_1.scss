@@ -1,0 +1,51 @@
+.ova-offer-banner1 {
+	padding: 31px 0 21px 38px;
+	background-position: center center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	.text-1 {
+		font-size: 48px;
+		line-height: 1;
+		font-weight: 600;
+		font-style: italic;
+		color: #fff;
+		&.text-2 {
+			margin-top: -6px;
+			display: inline-block;
+		}
+	}
+	.wp-text-345 {
+		display: flex;
+		margin-top: 5px;
+		.text-3 {
+			font-size: 80px;
+			line-height: 1;
+			font-weight: 600;
+			color: #ffffff;
+			font-style: italic;
+		}
+		.wp-text-4 {
+			display: inline-flex;
+			flex-wrap: wrap;
+			margin-left: 8px;
+			.text-4 {
+				font-size: 50px;
+				line-height: 1;
+				font-weight: 600;
+				color:#ffffff;
+				font-style: italic;
+				flex: 0 0 100%;
+				margin-top: 6px;
+			}
+			.text-5 {
+				font-size: 20px;
+				line-height: 26px;
+				font-weight: 600;
+				color: #ffffff;
+				font-style: italic;
+				flex: 0 0 100%;
+				margin-top: -6px;
+			}
+		}
+	}
+}

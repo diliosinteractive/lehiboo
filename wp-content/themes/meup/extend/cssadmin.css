@@ -1,0 +1,6 @@
+div#setting-error-tgmpa.update-nag.settings-error.notice.is-dismissible,
+.wp-core-ui .notice.is-dismissible,
+.update-nag.notice.is-dismissible,
+#setting-error-tgmpa{
+	width: 96%!important;
+}

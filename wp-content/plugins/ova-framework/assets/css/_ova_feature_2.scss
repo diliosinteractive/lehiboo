@@ -1,0 +1,53 @@
+.ova-feature-2 {
+	box-shadow: 1px 0 20px rgba(0,0,0,0.08);
+	padding: 60px 30px 53px 30px;
+	&:hover {
+		.ova-media {
+			.wp-media {
+				transform: scaleX(-1)
+			}
+		}
+	}
+	.ova-media {
+		margin-bottom: 24px;
+		.wp-media {
+			text-align: center;
+			transition: 0.4s;
+			i {
+				display: inline-block;
+				line-height: 1;
+				&:before {
+					margin: 0px;
+					font-size: 70px;
+					color: #e86c60;
+				}
+			}
+		}
+	}
+	.content {
+		.title {
+			margin: 0px;
+			margin-bottom: 14px;
+			font-size: 30px;
+			line-height: 1.2;
+			font-weight: 600;
+			color: #333333;
+			a {
+				font-size: 30px;
+				line-height: 1.2;
+				font-weight: 600;
+				color: #333333;
+				transition: 0.4s;
+				&:hover {
+					color: #e86c60 !important;
+				}
+			}
+		}
+		.sub-title {
+			margin: 0px;
+			font-size: 20px;
+			line-height: 28px;
+			color: #666666;
+		}
+	}
+}

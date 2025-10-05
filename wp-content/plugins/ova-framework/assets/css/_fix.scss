@@ -1,0 +1,505 @@
+/********** Fix Group **********/
+.menu-none-fixed {
+	display: none;
+	&.active_fixed {
+		display: block;
+	}
+}
+.header_group {
+	.elementor-widget-wrap {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		.elementor-element {
+			margin: 0px;
+		}
+	}
+	&.dir_left .elementor-widget-wrap {
+		justify-content: flex-start;
+	}
+	&.dir_center .elementor-widget-wrap {
+		justify-content: center;
+	}
+}
+.meup_footer_link {
+	&.contact_footer {
+		.elementor-text-editor {
+			ul {
+				li {
+					font-size: 16px;
+					line-height: 32px;
+					color: #cccccc;
+					a {
+						line-height: 32px;
+					}
+				}
+			}
+		}
+	}
+	.elementor-text-editor {
+		ul {
+			list-style-type: none;
+			padding: 0px;
+			li {
+				a {
+					font-size: 16px;
+					line-height: 38px;
+					color: #cccccc;
+					transition: 0.4s;
+				}
+			}
+		}
+	}
+}
+
+.button-register {
+	.elementor-button-wrapper {
+		position: relative;
+		&:before {
+			position: absolute;
+			content: "|";
+			top: 50%;
+			right: calc(100% + 10px);
+			transform: translateY(-50%);
+			color: #d1d1d1;
+		}
+	}
+}
+
+.button-create-event {
+	.elementor-button-text {
+		position: relative;
+		&:before {
+			font-family: 'ElegantIcons';
+			content: "\4c";
+			position: absolute;
+			top: 50%;
+			right: calc(100% + 2px);
+			transform: translateY(-50%);
+			font-size: 14px;
+		}
+	}
+}
+.visible-mobile {
+	@media (min-width: 768px) {
+		display: none;
+	}
+
+	@media (max-width: 767px) {
+		display: block;
+	}
+}
+.ova-subcrible {
+	position: relative;
+	.input {
+		input[type=email] {
+			padding: 10px 115px 10px 0px;
+			height: unset;
+			width: 100%;
+			font-size: 16px;
+			line-height: 26px;
+			color: #333333;
+			border: none;
+			border-bottom: 1px solid #dadada;
+			background: transparent;
+			&::placeholder {
+				color: #666666;
+			}
+		}
+	}
+	.submit {
+		
+		input[type=submit] {
+			background: transparent;
+			position: absolute;
+			right: 0;
+			top: 5px;
+			padding: 5px 27px 5px 0px;
+			height: unset;
+			font-size: 16px;
+			line-height: 1.2;
+			font-weight: 600;
+			cursor: pointer;
+			transition: 0.4s;
+			border: none;
+			z-index: 2;
+			&:hover {
+				color: #333333;
+				+ i {
+					color: #333333;
+				}
+			}
+		}
+		i {
+			position: absolute;
+			right: 0;
+			top: 10px;
+			font-size: 18px;
+			z-index: 1;
+			transition: 0.4s;
+		}
+	}
+}
+
+.meup-counter {
+	.elementor-counter {
+		.elementor-counter-number-wrapper {
+			.elementor-counter-number-prefix, .elementor-counter-number {
+				font-family: Asap;
+				font-size: 56px;
+				line-height: 1.2;
+				font-weight: 500;
+				margin-bottom: 2px;
+			}
+		}
+		.elementor-counter-title {
+			font-size: 22px;
+			line-height: 1.2;
+			color: #333333;
+		}
+	}
+}
+
+.according-meup {
+	.elementor-accordion {
+		.elementor-accordion-item {
+			border: 1px solid #e3e1f1;
+			background: #fcfcfe;
+			&:not(:first-child) {
+				border-top: 1px solid #e3e1f1;
+			}
+			&:not(:last-child) {
+				margin-bottom: 20px;
+			}
+			.elementor-tab-title {
+				padding: 13px 5px 10px 30px;
+				position: relative;
+				.elementor-accordion-icon {
+					position: absolute;
+					top: 50%;
+					right: 14px;
+					transform: translateY(-50%);
+					i {
+						color: #333333;
+						font-size: 10px;
+						width: 20px;
+						height: 20px;
+						border-radius: 50%;
+						position: relative;
+						&:before {
+							position: absolute;
+							top: 50%;
+							left: 50%;
+							transform: translate(-50%,-50%);
+						}
+					}
+				}
+				a {
+					font-family: Asap;
+					font-size: 16px;
+					line-height: 25px;
+					font-weight: 600;
+					color: #222222;
+				}
+			}
+			.elementor-tab-content {
+				background: #fcfcfe;
+				border-top: 1px solid #e3e1f1;
+				padding: 22px 60px 29px 30px;
+				margin-top: -2px;
+				font-size: 15px;
+				line-height: 28px;
+				color: #333333;
+				p {
+					font-size: 15px;
+					line-height: 28px;
+					color: #333333;
+				}
+			}
+		}
+	}
+}
+
+div.wpcf7-response-output {
+	background-color: #e86c60;
+	margin: 20px 0 20px 0;
+	color: #fff;
+	border: 2px solid transparent;
+	font-size: 14px;
+	line-height: 22px;
+}
+div.wpcf7-mail-sent-ok {
+	background-color: #e86c60;
+	margin: 20px 0 20px 0;
+	color: #fff;
+	border: 2px solid transparent;
+	font-size: 14px;
+	line-height: 22px;
+}
+.meup-contact-form-1 {
+
+	p {
+		margin: 0px;
+	}
+	.input {
+		position: relative;
+		&:not(:last-child) {
+			margin-bottom: 25px;
+		}
+		i {
+			position: absolute;
+			top: 50%;
+			left: 20px;
+			transform: translate(0, -50%);
+			font-size: 16px;
+			z-index: 1;
+		}
+		input, textarea {
+			background: #fcfcfe;
+			padding: 0;
+			width: 100%;
+			height: unset;
+			border: 1px solid #e3e1f1;
+			font-size: 15px;
+			line-height: 28px;
+			font-weight: 400;
+			color: #333333;
+			padding: 9px 20px 10px 50px;
+			border-radius: 3px;
+			&::placeholder {
+				color:  #666666;
+			}
+		}
+		textarea {
+			padding: 11px 20px 10px 20px;
+			outline: none;
+			height: 145px;
+		}
+		.wpcf7-form-control-wrap {
+			display: block;
+			.wpcf7-not-valid-tip {
+				position: absolute;
+				bottom: -25px;
+			}
+		}
+		
+	}
+	input[type=submit] {
+		background: transparent;
+		font-size: 16px;
+		line-height: 26px;
+		font-weight: 600;
+		font-family: Asap;
+		height: unset;
+		border: 2px solid;
+		padding: 10px 25px 10px 25px;
+		transition: 0.4s;
+		// &:hover {
+		// 	background: #e86c60;
+		// 	color: #fff;
+		// }
+	}
+}
+
+.ova-login-form-container {
+	box-shadow: 1px 0 20px rgba(0,0,0,0.08);
+	padding: 41px 45px 40px 45px;
+	h3.title {
+		margin: 0px;
+		font-size: 26px;
+		line-height: 28px;
+		font-weight: 600;
+		color: #333333;
+		position: relative;
+		text-transform: capitalize;
+		margin-bottom: 49px;
+		&:after {
+			position: absolute;
+			bottom: -14px;
+			left: 0;
+			content: "";
+			width: 30px;
+			height: 1px;
+			background: #e86c60;
+		}
+	}
+	
+	#user_login, #user_pass {
+		height: 50px;
+		border: 1px solid #e3e1f1;
+		box-shadow: none;
+		color: #333333;
+		opacity: 1;
+		padding-left: 50px;
+		padding-right: 10px;
+		width: 100%;
+		border-radius: 4px;
+		background: #fcfcfe;
+	}
+	.login-username, .login-password {
+		margin-bottom: 25px;
+		position: relative;
+		
+	}
+	.login-password {
+		margin-bottom: 27px;
+		&:after {
+			content: "\f084";
+		}
+	}
+	#loginform {
+		
+		p.login-remember {
+			input {
+				margin-right: 10px;
+				width: auto;
+			}
+			label {
+				display: flex;
+				align-items: center;
+				font-size: 15px;
+				line-height: 28px;
+				font-weight: 300;
+				color: #666666;
+			}
+		}
+	}
+
+	p.login-submit {
+		margin-top: 18px;
+		#wp-submit {
+			background: transparent;
+			font-family: Asap;
+			font-size: 16px;
+			line-height: 26px;
+			font-weight: 600;
+			color: #e86c60;
+			border: 2px solid #e86c60;
+			border-radius: 3px;
+			height: 50px;
+			padding: 10px 10px 10px 10px;
+			width: 155px;
+			transition: 0.4s;
+			&:hover {
+				background: #e86c60;
+				color: #ffffff;
+			}
+		}
+	}
+	.forgot-password {
+		font-size: 15px;
+		line-height: 28px;
+		font-weight: 300;
+		color: #666666;
+		transition: 0.4s;
+		&:hover {
+			color: #e86c60;
+		}
+	}
+	
+}
+
+.ova_register_user {
+	box-shadow: 1px 0 20px rgba(0,0,0,0.08);
+	padding: 41px 45px 55px 45px;
+	h3.title {
+		margin: 0px;
+		font-size: 26px;
+		line-height: 28px;
+		font-weight: 600;
+		color: #333333;
+		position: relative;
+		text-transform: capitalize;
+		margin-bottom: 49px;
+		&:after {
+			position: absolute;
+			bottom: -14px;
+			left: 0;
+			content: "";
+			width: 30px;
+			height: 1px;
+			background: #e86c60;
+		}
+	}
+	p.form-row {
+		display: block;
+		margin: 0px;
+		position: relative;
+		font-size: 15px;
+		line-height: 28px;
+		font-weight: 300;
+		color: #666666;
+		&:after {
+			font-family: "Font Awesome 5 Free";
+			position: absolute;
+			top: 50%;
+			left: 20px;
+			transform: translateY(-50%);
+			color: #e86c60;
+			font-size: 18px;
+		}
+		
+		
+		input {
+			height: 50px;
+			border: 1px solid #e3e1f1;
+			box-shadow: none;
+			color: #333333;
+			opacity: 1;
+			padding-left: 50px;
+			padding-right: 10px;
+			width: 100%;
+			border-radius: 4px;
+			background: #fcfcfe;
+		}
+		.raido_input {
+			display: inline-flex;
+			align-items: center;
+			label {
+				margin: 0px;
+				cursor: pointer;
+			}
+			input {
+				cursor: pointer;
+				height: 18px;
+				width: 18px;
+				margin-right: 10px;
+			}
+			&:not(:last-child) {
+				margin-right: 20px;
+			}
+		}
+	}
+	.signup-submit {
+		margin: 0px;
+		.ova-btn {
+			background: #e86c60;
+			width: 115px;
+			height: 50px;
+			font-family: Asap;
+			font-size: 16px;
+			line-height: 26px;
+			font-weight: 600;
+			color: #ffffff;
+			border-radius: 3px;
+			border: 2px solid #e86c60;
+			padding: 8px 10px 10px 10px;
+			transition: 0.4s;
+			&:hover {
+				background: transparent;
+				color: #e86c60;
+			}
+		}
+	}
+}
+
+.fix-flex-start-767 {
+	.elementor-widget-wrap {
+		@media(max-width: 767px) {
+			flex-direction: row;
+    		justify-content: space-between!important;
+		}
+	}
+}
+
+

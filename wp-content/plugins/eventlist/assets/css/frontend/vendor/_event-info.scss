@@ -1,0 +1,24 @@
+.event_info{
+	.meta_event{
+		margin-bottom: 10px;
+		font-size: 16px;
+		list-style: none;
+		padding-left: 0;
+		li{
+			padding: 5px 0px;
+			text-transform: capitalize;
+			&.date{
+				.eslash,
+				.time{
+					opacity: 0.7;
+				}
+			}
+			i{
+				font-weight: 600;
+				padding-right: 10px;
+				color: #e86c60;
+			}
+		}
+		
+	}
+}

@@ -1,0 +1,138 @@
+.el-event-venue {
+	.event-venue-slide {
+		.item-venue {
+			position: relative;
+			&:hover {
+				.el-media {
+					a {
+						&:after {
+							height: 100%;
+						}
+					}
+				}
+				.el-content {
+					.count-event {
+						line-height: 1.2;
+						visibility: visible;
+						opacity: 1;
+					}
+				}
+			}
+			.el-media {
+				a {
+					display: block;
+					position: relative;
+				}
+				img {
+					border-radius: 5px;
+				}
+				
+			}
+			.el-content {
+				position: absolute;
+			    bottom: 0;
+			    left: 0;
+			    width: 100%;
+			    padding-left: 30px;
+			    padding-top: 30px;
+			    padding-bottom: 18px;
+			    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.9));
+				.venue-name {
+					margin: 0;
+					line-height: 22px;
+					a {
+						font-size: 20px;
+						color: #fff;
+						line-height: 22px;
+						font-weight: 600;
+						transition: 0.4s;
+						&:hover {
+							color: #e86c60;
+						}
+					}
+				}
+				.count-event {
+					margin: 0px;
+					font-size: 15px;
+					color: #fff;
+					line-height: 0;
+					opacity: 0;
+					visibility: hidden;
+					transition: 0.4s;
+					margin-top: 6px;
+					span {
+						margin-left: 5px;
+					}
+				}
+				
+			}
+		}
+	}
+
+
+	.owl-nav {
+		margin: 0;
+		button {
+			position: absolute;
+			top: 50%;
+			display: flex;
+			margin: 0;
+			transition: .3s ease;
+			outline: none;
+
+			&:hover {
+				background-color: transparent;
+			}
+			i {
+				font-size: 36px;
+				color: #c9c9c9;
+				transition: .3s ease;
+			}
+			@media (max-width: 1250px) {
+				display: none;
+			}
+		}
+		.owl-prev {
+			left: -45px;
+			transform: translate(-100%, -50%);
+			
+			@media (max-width: 1400px) {
+				left: 0px;
+			}
+
+		}
+		.owl-next {
+			right: -45px;
+			transform: translate(100%);
+			// margin-left: 50px;
+			@media (max-width: 1400px) {
+				right: 0px;
+			}
+		}
+	}
+	.owl-dots{
+		text-align: center;
+		margin-top: 10px;
+		.owl-dot{
+			outline: none;
+			&:not(:last-child) {
+				span {
+					margin-right: 5px;
+				}
+			}
+			span{
+				width: 10px;
+				height: 10px;
+				background: transparent;
+				display: block;
+				transition:.2s ;
+				background: #dddddd;
+				border-radius: 50%;
+				@media screen and (max-width: 767px) {
+					width: 24px;
+					height: 24px;
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,19 @@
+.el-my-wishlist {
+	overflow-x: auto;
+	table {
+		@media (max-width: 767px) {
+			table-layout: auto;
+		}
+		.event_head {
+			tr {
+				td {
+					@media (max-width: 767px) {
+						&:last-child, &:nth-last-child(2) {
+							display: table-cell;
+						}
+					}
+				}
+			}
+		}
+	}
+}

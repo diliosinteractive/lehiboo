@@ -1,0 +1,25 @@
+.ova-heading {
+	.title {
+		margin: 0px;
+		font-size: 36px;
+		line-height: 1.2;
+		font-weight: 700;
+		color: #222222;
+		margin-bottom: 7px;
+	}
+	.sub-title {
+		margin: 0px;
+		font-size: 18px;
+		line-height: 1.2;
+		color: #666666;
+		margin-bottom: 6px;
+	}
+	.line {
+		display: inline-block;
+		width: 50px;
+		height: 2px;
+		&.not-line {
+			display: none;
+		}
+	}
+}

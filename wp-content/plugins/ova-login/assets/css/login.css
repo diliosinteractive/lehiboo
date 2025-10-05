@@ -1,0 +1,511 @@
+.ova-login-form-container h3.title {
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  font-style: 20px;
+}
+.ova-login-form-container .login-username {
+  margin-bottom: 20px;
+}
+.ova-login-form-container .login-username:after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f007";
+  display: inline-block;
+  padding-right: 3px;
+  vertical-align: middle;
+  font-weight: 900;
+  position: absolute;
+  top: 55px;
+  left: 20px;
+  transform: translateY(-50%);
+  font-size: 18px;
+}
+.ova-login-form-container .login-password {
+  margin-bottom: 20px;
+}
+.ova-login-form-container .login-password:after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f007";
+  display: inline-block;
+  padding-right: 3px;
+  vertical-align: middle;
+  font-weight: 900;
+  position: absolute;
+  top: 55px;
+  left: 20px;
+  transform: translateY(-50%);
+  font-size: 18px;
+}
+.ova-login-form-container .login-remember label {
+  font-weight: normal;
+}
+.ova-login-form-container .login-remember label input {
+  margin-right: 5px;
+}
+.ova-login-form-container .login-submit {
+  margin-top: 30px;
+  margin-bottom: 30px !important;
+}
+.ova-login-form-container .login-submit input {
+  width: 250px;
+}
+.ova-login-form-container a.forget-password {
+  color: #4862c4;
+}
+.ova-login-form-container #user_pass {
+  height: 50px;
+  border: 1px solid #e0e0e0;
+  box-shadow: none;
+  color: #242b46;
+  opacity: 1;
+  padding-left: 15px;
+  width: 250px;
+}
+.ova-login-form-container #user_pass::-webkit-input-placeholder {
+  color: #242b46;
+  opacity: 0.7;
+}
+.ova-login-form-container #user_pass::-moz-placeholder {
+  color: #242b46;
+  opacity: 0.7;
+}
+.ova-login-form-container #user_pass:-ms-input-placeholder {
+  color: #242b46;
+  opacity: 0.7;
+}
+.ova-login-form-container #user_pass:-moz-placeholder {
+  color: #242b46;
+  opacity: 0.7;
+}
+.ova-login-form-container #user_login {
+  height: 50px;
+  border: 1px solid #e0e0e0;
+  box-shadow: none;
+  color: #242b46;
+  opacity: 1;
+  padding-left: 15px;
+  width: 250px;
+}
+.ova-login-form-container #user_login::-webkit-input-placeholder {
+  color: #242b46;
+  opacity: 0.7;
+}
+.ova-login-form-container #user_login::-moz-placeholder {
+  color: #242b46;
+  opacity: 0.7;
+}
+.ova-login-form-container #user_login:-ms-input-placeholder {
+  color: #242b46;
+  opacity: 0.7;
+}
+.ova-login-form-container #user_login:-moz-placeholder {
+  color: #242b46;
+  opacity: 0.7;
+}
+.ova-login-form-container #loginform p label {
+  display: block;
+}
+.ova-login-form-container p.login-submit #wp-submit {
+  cursor: pointer;
+  border: none;
+  background-color: #343434;
+  color: #fff;
+  font-size: 14px;
+  line-height: 24px;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 11.5px 40px;
+  position: relative;
+}
+.ova-login-form-container p.login-submit.resetpass-submit #wp-submit {
+  width: 200px;
+}
+.ova-login-form-container .form-user_pass {
+  margin-bottom: 25px;
+  position: relative;
+}
+.ova-login-form-container .form-user_pass i {
+  position: absolute;
+  top: 55px;
+  left: 20px;
+  transform: translateY(-50%);
+  color: #e86c60;
+  font-size: 18px;
+}
+.ova-login-form-container input {
+  height: 50px;
+  border: 1px solid #e3e1f1;
+  box-shadow: none;
+  color: #333333;
+  opacity: 1;
+  padding-left: 50px;
+  padding-right: 10px;
+  width: 100%;
+  border-radius: 4px;
+  background: #fcfcfe;
+}
+.ova-login-form-container [type=checkbox] {
+  width: auto;
+}
+
+.ova_register_user h3.title {
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  font-style: 20px;
+}
+.ova_register_user input {
+  height: 50px;
+  border: 1px solid #e0e0e0;
+  box-shadow: none;
+  color: #242b46;
+  opacity: 1;
+  padding-left: 15px;
+  width: 250px;
+}
+.ova_register_user input::-webkit-input-placeholder {
+  color: #242b46;
+  opacity: 0.7;
+}
+.ova_register_user input::-moz-placeholder {
+  color: #242b46;
+  opacity: 0.7;
+}
+.ova_register_user input:-ms-input-placeholder {
+  color: #242b46;
+  opacity: 0.7;
+}
+.ova_register_user input:-moz-placeholder {
+  color: #242b46;
+  opacity: 0.7;
+}
+.ova_register_user .ova-btn {
+  text-align: center;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.ova_register_user p.form-row.el-register-dcma {
+  display: flex;
+  align-items: center;
+}
+.ova_register_user .form-row.el-register-dcma input {
+  width: 15px;
+  height: 15px;
+  margin-right: 15px;
+}
+.ova_register_user p.form-row.ova-email-icon:after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f0e0";
+  display: inline-block;
+  padding-right: 3px;
+  vertical-align: middle;
+  font-weight: 900;
+}
+.ova_register_user p.form-row.ova-user-icon:after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f007";
+  display: inline-block;
+  padding-right: 3px;
+  vertical-align: middle;
+  font-weight: 900;
+}
+.ova_register_user p.form-row.password:after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f084";
+  display: inline-block;
+  padding-right: 3px;
+  vertical-align: middle;
+  font-weight: 900;
+}
+.ova_register_user p.form-row.ova-phone-icon:after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f87b";
+  display: inline-block;
+  padding-right: 3px;
+  vertical-align: middle;
+  font-weight: 900;
+}
+.ova_register_user p.form-row.ova-url-icon:after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f0c1";
+  display: inline-block;
+  padding-right: 3px;
+  vertical-align: middle;
+  font-weight: 900;
+}
+.ova_register_user p.form-row.ova-job-icon:after {
+  content: "\f0b1";
+  display: inline-block;
+  padding-right: 3px;
+  vertical-align: middle;
+  font-weight: 900;
+}
+.ova_register_user p.form-row.ova-address-icon:after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f3c5";
+  display: inline-block;
+  padding-right: 3px;
+  vertical-align: middle;
+  font-weight: 900;
+}
+.ova_register_user p.form-row.ova-desc-icon:after {
+  content: "\f05a";
+  display: inline-block;
+  padding-right: 3px;
+  font-weight: 900;
+  top: 27px;
+}
+.ova_register_user #user_description {
+  width: 100%;
+  border: 1px solid #e3e1f1;
+  border-radius: 4px;
+  background: #fcfcfe;
+  padding-left: 50px;
+  padding-right: 10px;
+  height: 150px;
+  padding-top: 15px;
+}
+.ova_register_user #user_description:focus {
+  outline: none;
+}
+.ova_register_user #user_description::-webkit-input-placeholder {
+  display: block;
+}
+
+#password-lost-form.ova-login-form-container .login-username:after {
+  content: "\f0e0";
+  font-family: "Font Awesome 5 Free";
+}
+
+.ova_register_user .ova_field_wrap {
+  margin-bottom: 25px;
+}
+.ova_register_user .ova_field_wrap .text-err {
+  display: block;
+  color: red;
+}
+.ova_register_user .ova_field_wrap .text-err.select {
+  margin-top: 5px;
+}
+.ova_register_user .ova_field_wrap .description {
+  display: block;
+  font-size: 14px;
+  font-style: italic;
+  color: #555555;
+}
+.ova_register_user .form-row .invalid {
+  border-color: red;
+}
+
+.ova_register_user label {
+  margin: 0;
+}
+.ova_register_user .label {
+  font-weight: 500;
+  padding-bottom: 5px;
+}
+.ova_register_user .form-row i {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-size: 18px;
+  z-index: 9;
+}
+.ova_register_user .form-row textarea {
+  width: 100%;
+  border: 1px solid #e3e1f1;
+  border-radius: 4px;
+  background: #fcfcfe;
+  padding-left: 50px;
+  padding-right: 10px;
+  height: 150px;
+  padding-top: 15px;
+}
+.ova_register_user .form-row textarea:focus {
+  outline: none;
+}
+.ova_register_user .form-row textarea::-webkit-input-placeholder {
+  display: block;
+}
+.ova_register_user .form-row.textarea i {
+  top: 27px;
+}
+.ova_register_user .form-row.select i {
+  margin-top: 3px;
+}
+.ova_register_user .form-row .select2-container--default .select2-selection--single {
+  border: 1px solid #e3e1f1 !important;
+  background: #fcfcfe !important;
+  padding-left: 40px !important;
+  border-radius: 4px !important;
+  height: 50px;
+}
+.ova_register_user .form-row .select2-container--default .select2-selection--single.invalid {
+  border: 1px solid red !important;
+}
+.ova_register_user .form-row .select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 50px !important;
+}
+.ova_register_user .form-row .select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 50px !important;
+}
+.ova_register_user .form-row .select2-container--default .select2-selection--single .select2-selection__placeholder {
+  color: #242b46 !important;
+  opacity: 0.7;
+}
+.ova_register_user .form-row.checkbox-field {
+  display: flex;
+  align-items: center;
+}
+.ova_register_user .form-row.checkbox-field input {
+  width: 15px;
+  height: 15px;
+  margin-right: 15px;
+}
+.ova_register_user .uploadfile-field {
+  display: block;
+  text-align: center;
+  font-size: 1.25rem;
+  background-color: #fcfcfe;
+  position: relative;
+  padding: 80px 20px;
+  cursor: pointer;
+}
+@media screen and (max-width: 767px) {
+  .ova_register_user .uploadfile-field {
+    padding: 70px 20px;
+  }
+}
+@media screen and (max-width: 512px) {
+  .ova_register_user .uploadfile-field {
+    padding: 30px 20px;
+  }
+}
+.ova_register_user .uploadfile-field .box__file {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+.ova_register_user .uploadfile-field .box__dragndrop {
+  display: none;
+}
+.ova_register_user .uploadfile-field .box__error {
+  font-size: 16px;
+  font-style: italic;
+  color: red;
+  text-decoration: underline;
+}
+.ova_register_user .uploadfile-field .file__format {
+  margin-top: 10px;
+  font-size: 14px;
+}
+.ova_register_user .uploadfile-field.has-advanced-upload {
+  outline: 2px dashed var(--primary);
+  outline-offset: -10px;
+  -webkit-transition: outline-offset 0.15s ease-in-out, background-color 0.15s linear;
+  transition: outline-offset 0.15s ease-in-out, background-color 0.15s linear;
+}
+.ova_register_user .uploadfile-field.has-advanced-upload .box__dragndrop {
+  display: inline;
+}
+.ova_register_user .uploadfile-field .box__file + label {
+  font-size: 25px;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.3s linear;
+  word-break: break-word;
+}
+@media screen and (max-width: 767px) {
+  .ova_register_user .uploadfile-field .box__file + label {
+    font-size: 22px;
+  }
+}
+.ova_register_user .uploadfile-field .box__file + label * {
+  pointer-events: none;
+}
+.ova_register_user .uploadfile-field .box__file:focus + label,
+.ova_register_user .uploadfile-field .box__file + label:hover strong {
+  color: var(--primary);
+}
+.ova_register_user .uploadfile-field .box__file:focus + label {
+  outline: 1px dotted var(--primary);
+}
+.ova_register_user .uploadfile-field .box__icon {
+  width: 100%;
+  height: 90px;
+  display: block;
+  margin-bottom: 30px;
+}
+@media screen and (max-width: 767px) {
+  .ova_register_user .uploadfile-field .box__icon {
+    height: 70px;
+  }
+}
+@media screen and (max-width: 512px) {
+  .ova_register_user .uploadfile-field .box__icon {
+    height: 50px;
+  }
+}
+.ova_register_user .uploadfile-field .box__icon i {
+  font-size: 90px;
+  position: relative;
+  color: var(--primary);
+  display: inline-flex;
+  line-height: 1;
+}
+@media screen and (max-width: 767px) {
+  .ova_register_user .uploadfile-field .box__icon i {
+    font-size: 70px;
+  }
+}
+@media screen and (max-width: 512px) {
+  .ova_register_user .uploadfile-field .box__icon i {
+    font-size: 50px;
+  }
+}
+.ova_register_user .uploadfile-field .box__icon i::before {
+  font-size: 90px;
+  margin: 0;
+}
+@media screen and (max-width: 767px) {
+  .ova_register_user .uploadfile-field .box__icon i::before {
+    font-size: 70px;
+  }
+}
+@media screen and (max-width: 512px) {
+  .ova_register_user .uploadfile-field .box__icon i::before {
+    font-size: 50px;
+  }
+}
+.ova_register_user .uploadfile-field.is-dragover {
+  background-color: #fff;
+  outline-offset: -20px;
+}
+.ova_register_user .uploadfile-field.is-uploading .box__input {
+  visibility: none;
+}
+.ova_register_user .uploadfile-field.is-uploading .box__uploading {
+  display: block;
+}
+.ova_register_user .ova_custom_register_field .form-row i {
+  font-size: 20px;
+  margin-left: 20px;
+}
+.ova_register_user .ova_custom_register_field .form-row i::before {
+  margin-left: 0;
+}
+.ova_register_user .ovalg-recaptcha-wrapper {
+  margin-bottom: 25px;
+}
+
+.grecaptcha-badge {
+  bottom: 70px !important;
+  z-index: 9;
+}
+
+.login-form-container .ovalg-recaptcha-wrapper {
+  margin-bottom: 25px;
+}
