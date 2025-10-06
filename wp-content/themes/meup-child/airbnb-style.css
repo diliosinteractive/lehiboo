@@ -1,7 +1,11 @@
 /* ===============================================
-   GRILLE 4 COLONNES UNIQUEMENT
-   Pas de modification des styles existants
+   AIRBNB STYLE - LEHIBOO
+   Version ultra-minimaliste
    =============================================== */
+
+/* ========================================
+   PAGE LISTE - GRILLE 4 COLONNES
+   ======================================== */
 
 /* Grille 4 colonnes pour type1 */
 .event_archive.type1 {
@@ -24,7 +28,7 @@
 }
 
 /* ========================================
-   RESPONSIVE
+   RESPONSIVE LISTE
    ======================================== */
 
 /* Large Desktop (1440px+) */
@@ -64,4 +68,69 @@
         grid-template-columns: 1fr !important;
         gap: 24px !important;
     }
+}
+
+/* ========================================
+   PAGE DETAIL - AMÉLIORATIONS SUBTILES
+   ======================================== */
+
+/* Taxonomies en badges modernes */
+.single-event .event_taxonomy .content_tax {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.single-event .event_taxonomy .content_tax a {
+    display: inline-flex;
+    padding: 8px 16px;
+    background: #F7F7F7;
+    border: 1px solid #DDDDDD;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #222222;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.single-event .event_taxonomy .content_tax a:hover {
+    background: #222222;
+    color: #FFFFFF;
+    border-color: #222222;
+}
+
+/* Tags en badges */
+.single-event .event_tag .content_tag {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.single-event .event_tag .content_tag a {
+    display: inline-flex;
+    padding: 6px 14px;
+    background: #F7F7F7;
+    border: 1px solid #DDDDDD;
+    border-radius: 16px;
+    font-size: 13px;
+    color: #717171;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.single-event .event_tag .content_tag a:hover {
+    background: #EBEBEB;
+    border-color: #B0B0B0;
+}
+
+/* Card Admin avec border-radius */
+.single-event .info_user {
+    border-radius: 12px;
+}
+
+/* Map avec border-radius */
+.single-event .event_map {
+    border-radius: 12px;
+    overflow: hidden;
 }
