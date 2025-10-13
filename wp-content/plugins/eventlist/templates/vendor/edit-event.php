@@ -203,10 +203,13 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 						<?php endif; ?>
 						<?php echo apply_filters( 'meup_send_create_event_recapcha', '' ); ?>
 
-						<!-- Loader pour la sticky bar -->
-						<div class="submit-load-more sendmail" style="display: none;">
-							<div class="load-more">
-								<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+						<!-- Bouton submit original (caché) nécessaire pour le JavaScript -->
+						<div class="wrap_btn_submit" style="display: none;">
+							<input class="el_edit_event_submit el_btn_add" name="el_edit_event_submit" type="submit" value="<?php esc_html_e( 'Save Event', 'eventlist' ); ?>" />
+							<div class="submit-load-more sendmail">
+								<div class="load-more">
+									<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+								</div>
 							</div>
 						</div>
 

@@ -92,6 +92,16 @@
             });
         }
 
+        // Le bouton de la sticky bar déclenche le clic sur le bouton caché
+        // (le bouton caché contient la logique AJAX d'origine)
+        $('.event_form_sticky_bar .btn_save_event').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Déclencher le clic sur le bouton caché qui gère l'AJAX
+            $('.wrap_btn_submit .el_edit_event_submit').trigger('click');
+        });
+
     });
 
 })(jQuery);
