@@ -121,6 +121,9 @@ final class EventList{
 		// V1 Le Hiboo - Installation des taxonomies
 		require_once EL_PLUGIN_INC . 'class-el-install-taxonomies.php';
 
+		// V1 Le Hiboo - Filters and Hooks
+		require_once EL_PLUGIN_INC . 'class-el-v1-lehiboo-filters.php';
+
 		// Template Loader
 		require_once EL_PLUGIN_INC . 'class-el-template-loader.php';
 		require_once EL_PLUGIN_INC . 'el-template-functions.php';

@@ -92,8 +92,48 @@ class EL_Post_Types{
 
 				register_taxonomy( $args['labels']['type'], array( 'event' ), $args );
 			}
+
+			// V1 Le Hiboo - Ajouter nos taxonomies natives dans la liste
+			$native_taxonomies = array(
+				array(
+					'slug' => 'event_thematique',
+					'name' => __( 'Thématiques', 'eventlist' )
+				),
+				array(
+					'slug' => 'event_special',
+					'name' => __( 'Événements Spéciaux', 'eventlist' )
+				),
+				array(
+					'slug' => 'event_saison',
+					'name' => __( 'Saisons', 'eventlist' )
+				),
+			);
+
+			// Fusionner avec les taxonomies personnalisées
+			if ( ! empty( $name_taxonomy ) ) {
+				$name_taxonomy = array_merge( $name_taxonomy, $native_taxonomies );
+			} else {
+				$name_taxonomy = $native_taxonomies;
+			}
+
 			return $name_taxonomy;
 		}
+
+		// V1 Le Hiboo - Toujours retourner les taxonomies natives même si $number_taxonomy = 0
+		return array(
+			array(
+				'slug' => 'event_thematique',
+				'name' => __( 'Thématiques', 'eventlist' )
+			),
+			array(
+				'slug' => 'event_special',
+				'name' => __( 'Événements Spéciaux', 'eventlist' )
+			),
+			array(
+				'slug' => 'event_saison',
+				'name' => __( 'Saisons', 'eventlist' )
+			),
+		);
 
 	}
 

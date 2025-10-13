@@ -172,13 +172,19 @@ $time_zone = get_post_meta( $post_id, $_prefix.'time_zone', true) ? get_post_met
 						<span> *</span>
 					<?php endif; ?>
 				</label>
-				<select name="<?php echo esc_attr( $taxonomy['slug'] ) ?>" id="<?php echo esc_attr( $taxonomy['slug'] ); ?>" class="selectpicker" multiple="multiple" >
+				<?php
+				// V1 Le Hiboo - Sélection unique pour thématique et saison, multiple pour événements spéciaux
+				$single_select_taxonomies = array( 'event_thematique', 'event_saison' );
+				$is_single = in_array( $taxonomy['slug'], $single_select_taxonomies );
+				$multiple_attr = $is_single ? '' : 'multiple="multiple"';
+				?>
+				<select name="<?php echo esc_attr( $taxonomy['slug'] ) ?>" id="<?php echo esc_attr( $taxonomy['slug'] ); ?>" class="selectpicker" <?php echo $multiple_attr; ?> >
 					<option value="" ><?php esc_html_e( '--- Select Taxonomy ---', 'eventlist' ); ?></option>
 				<?php foreach ( $taxonomys as $tax ) {
 
 					if ( $get_taxonomy_select != '' ) { ?>
 						<option value="<?php echo esc_attr( $tax->term_id ); ?>" <?php echo in_array($tax->term_id, $tax_selected) ? esc_attr( 'selected' ) : ''; ?> ><?php echo esc_html( $tax->name ); ?></option>
-					<?php } else { ?> 
+					<?php } else { ?>
 						<option value="<?php echo esc_attr( $tax->term_id ); ?>" ><?php echo esc_html( $tax->name ); ?></option>
 					<?php }
 
