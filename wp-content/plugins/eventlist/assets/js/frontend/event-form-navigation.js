@@ -96,12 +96,21 @@
         $('#trigger_save_event').on('click', function(e) {
             e.preventDefault();
 
+            var $stickyBtn = $(this);
             var $realButton = $('.el_edit_event_submit');
 
             if ($realButton.length) {
+                // Afficher le loader sur le bouton sticky
+                $stickyBtn.addClass('loading');
+
                 // Déclencher le clic sur le vrai bouton qui est dans le formulaire
                 $realButton.trigger('click');
             }
+        });
+
+        // Enlever le loader quand la requête AJAX est terminée
+        $(document).ajaxComplete(function() {
+            $('#trigger_save_event').removeClass('loading');
         });
 
     });

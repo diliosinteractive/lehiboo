@@ -8880,6 +8880,7 @@ input.submit_bulk_action {
   background: #FF6B35;
   color: #fff;
   border: 1px solid #FF6B35;
+  position: relative;
 }
 .event_form_sticky_bar .btn_save_event:hover {
   background: #e55a25;
@@ -8887,6 +8888,32 @@ input.submit_bulk_action {
 }
 .event_form_sticky_bar .btn_save_event:active {
   transform: scale(0.98);
+}
+.event_form_sticky_bar .btn_save_event.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+.event_form_sticky_bar .btn_save_event.loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spinner 0.6s linear infinite;
+}
+.event_form_sticky_bar .btn_save_event.loading span, .event_form_sticky_bar .btn_save_event.loading i {
+  opacity: 0;
+}
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .vendor_edit_event .event_form_wrapper {
@@ -10794,6 +10821,44 @@ body.rtl .vendor_edit_event #mb_ticket .ticket_external_link label, body.rtl .ve
 body.rtl .vendor_edit_event #mb_ticket .ticket_map .middle_content .date_ticket .date_ticket_row input:last-child {
   margin-left: 0;
   margin-right: 10px;
+}
+body.rtl .wrap_btn_submit {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 20px 0;
+  gap: 15px;
+}
+body.rtl .wrap_btn_submit .el_edit_event_submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 30px;
+  background: #ff6a3d;
+  color: #fff;
+  border: 2px solid #ff6a3d;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+body.rtl .wrap_btn_submit .el_edit_event_submit::before {
+  content: "\e603";
+  font-family: "eleganticons";
+  font-size: 18px;
+}
+body.rtl .wrap_btn_submit .el_edit_event_submit:hover {
+  background: #e55a25;
+  border-color: #e55a25;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 106, 61, 0.3);
+}
+body.rtl .wrap_btn_submit .el_edit_event_submit:active {
+  transform: scale(0.98);
+}
+body.rtl .wrap_btn_submit .submit-load-more {
+  display: none;
 }
 
 /*manage tickets*/

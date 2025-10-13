@@ -122,6 +122,7 @@
 		background: #FF6B35;
 		color: #fff;
 		border: 1px solid #FF6B35;
+		position: relative;
 
 		&:hover {
 			background: #e55a25;
@@ -131,6 +132,35 @@
 		&:active {
 			transform: scale(0.98);
 		}
+
+		// Loader sur le bouton sticky
+		&.loading {
+			pointer-events: none;
+			opacity: 0.7;
+
+			&::after {
+				content: "";
+				position: absolute;
+				width: 16px;
+				height: 16px;
+				top: 50%;
+				left: 50%;
+				margin-left: -8px;
+				margin-top: -8px;
+				border: 2px solid #ffffff;
+				border-radius: 50%;
+				border-top-color: transparent;
+				animation: spinner 0.6s linear infinite;
+			}
+
+			span, i {
+				opacity: 0;
+			}
+		}
+	}
+
+	@keyframes spinner {
+		to { transform: rotate(360deg); }
 	}
 }
 
@@ -2332,6 +2362,51 @@ body.rtl {
 					}
 				}
 			}
+		}
+	}
+
+	// Style pour le bouton submit en bas du formulaire
+	.wrap_btn_submit {
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		padding: 20px 0;
+		gap: 15px;
+
+		.el_edit_event_submit {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 12px 30px;
+			background: #ff6a3d;
+			color: #fff;
+			border: 2px solid #ff6a3d;
+			border-radius: 6px;
+			font-size: 16px;
+			font-weight: 500;
+			cursor: pointer;
+			transition: all 0.3s ease;
+
+			&::before {
+				content: "\e603"; // icon_check
+				font-family: 'eleganticons';
+				font-size: 18px;
+			}
+
+			&:hover {
+				background: #e55a25;
+				border-color: #e55a25;
+				transform: translateY(-1px);
+				box-shadow: 0 4px 12px rgba(255, 106, 61, 0.3);
+			}
+
+			&:active {
+				transform: scale(0.98);
+			}
+		}
+
+		.submit-load-more {
+			display: none; // On utilise le loader du bouton sticky
 		}
 	}
 }
