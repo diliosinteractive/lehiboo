@@ -268,7 +268,9 @@
 	}
 }
 
-.vendor_edit_event{
+// Wrapper pour augmenter la spécificité CSS
+.vendor_wrap .contents .vendor_edit_event,
+.vendor_edit_event {
 	background: #fff;
 
 	.el_req {

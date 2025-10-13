@@ -7711,12 +7711,6 @@ body.rtl .cart_detail .cart-customer-input .input_ticket_receiver li.rental_item
     padding: 15px 0 !important;
   }
 }
-.vendor_wrap input {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  display: inline-block;
-  max-width: 320px;
-}
 .vendor_wrap h3.vendor_heading {
   font-size: 25px;
   margin-bottom: 30px;
@@ -7756,24 +7750,6 @@ body.rtl .cart_detail .cart-customer-input .input_ticket_receiver li.rental_item
 .vendor_wrap .vendor_field .select2-container--default.select2-container--disabled .select2-selection--single {
   opacity: 0.5;
   background-color: transparent;
-}
-.vendor_wrap .vendor_field input[type=number], .vendor_wrap .vendor_field input[type=password], .vendor_wrap .vendor_field input[type=url], .vendor_wrap .vendor_field input[type=text], .vendor_wrap .vendor_field textarea, .vendor_wrap .vendor_field select {
-  min-width: 200px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  display: inline-block;
-  max-width: 320px;
-}
-@media only screen and (max-width: 500px) {
-  .vendor_wrap .vendor_field input[type=number], .vendor_wrap .vendor_field input[type=password], .vendor_wrap .vendor_field input[type=url], .vendor_wrap .vendor_field input[type=text], .vendor_wrap .vendor_field textarea, .vendor_wrap .vendor_field select {
-    max-width: 100%;
-    width: 100%;
-    min-width: unset;
-  }
-}
-.vendor_wrap .vendor_field textarea {
-  max-width: 100%;
-  height: 120px;
 }
 .vendor_wrap .readonly {
   opacity: 0.5;
@@ -9007,14 +8983,26 @@ input.submit_bulk_action {
     transform: translateY(0);
   }
 }
+.vendor_wrap .contents .vendor_edit_event,
 .vendor_edit_event {
   background: #fff;
   /*event type class or online*/
 }
+.vendor_wrap .contents .vendor_edit_event .el_req,
 .vendor_edit_event .el_req {
   color: #ff6a3d;
   font-weight: 500;
 }
+.vendor_wrap .contents .vendor_edit_event input[type=text],
+.vendor_wrap .contents .vendor_edit_event input[type=email],
+.vendor_wrap .contents .vendor_edit_event input[type=url],
+.vendor_wrap .contents .vendor_edit_event input[type=number],
+.vendor_wrap .contents .vendor_edit_event input[type=tel],
+.vendor_wrap .contents .vendor_edit_event input[type=password],
+.vendor_wrap .contents .vendor_edit_event input[type=date],
+.vendor_wrap .contents .vendor_edit_event input[type=time],
+.vendor_wrap .contents .vendor_edit_event textarea,
+.vendor_wrap .contents .vendor_edit_event select,
 .vendor_edit_event input[type=text],
 .vendor_edit_event input[type=email],
 .vendor_edit_event input[type=url],
@@ -9037,6 +9025,16 @@ input.submit_bulk_action {
   max-width: 100%;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
+.vendor_wrap .contents .vendor_edit_event input[type=text]:hover,
+.vendor_wrap .contents .vendor_edit_event input[type=email]:hover,
+.vendor_wrap .contents .vendor_edit_event input[type=url]:hover,
+.vendor_wrap .contents .vendor_edit_event input[type=number]:hover,
+.vendor_wrap .contents .vendor_edit_event input[type=tel]:hover,
+.vendor_wrap .contents .vendor_edit_event input[type=password]:hover,
+.vendor_wrap .contents .vendor_edit_event input[type=date]:hover,
+.vendor_wrap .contents .vendor_edit_event input[type=time]:hover,
+.vendor_wrap .contents .vendor_edit_event textarea:hover,
+.vendor_wrap .contents .vendor_edit_event select:hover,
 .vendor_edit_event input[type=text]:hover,
 .vendor_edit_event input[type=email]:hover,
 .vendor_edit_event input[type=url]:hover,
@@ -9050,6 +9048,16 @@ input.submit_bulk_action {
   border-color: #cbd5e0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
 }
+.vendor_wrap .contents .vendor_edit_event input[type=text]:focus,
+.vendor_wrap .contents .vendor_edit_event input[type=email]:focus,
+.vendor_wrap .contents .vendor_edit_event input[type=url]:focus,
+.vendor_wrap .contents .vendor_edit_event input[type=number]:focus,
+.vendor_wrap .contents .vendor_edit_event input[type=tel]:focus,
+.vendor_wrap .contents .vendor_edit_event input[type=password]:focus,
+.vendor_wrap .contents .vendor_edit_event input[type=date]:focus,
+.vendor_wrap .contents .vendor_edit_event input[type=time]:focus,
+.vendor_wrap .contents .vendor_edit_event textarea:focus,
+.vendor_wrap .contents .vendor_edit_event select:focus,
 .vendor_edit_event input[type=text]:focus,
 .vendor_edit_event input[type=email]:focus,
 .vendor_edit_event input[type=url]:focus,
@@ -9065,6 +9073,16 @@ input.submit_bulk_action {
   box-shadow: 0 0 0 3px rgba(255, 106, 61, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08);
   background-color: #ffffff;
 }
+.vendor_wrap .contents .vendor_edit_event input[type=text]::placeholder,
+.vendor_wrap .contents .vendor_edit_event input[type=email]::placeholder,
+.vendor_wrap .contents .vendor_edit_event input[type=url]::placeholder,
+.vendor_wrap .contents .vendor_edit_event input[type=number]::placeholder,
+.vendor_wrap .contents .vendor_edit_event input[type=tel]::placeholder,
+.vendor_wrap .contents .vendor_edit_event input[type=password]::placeholder,
+.vendor_wrap .contents .vendor_edit_event input[type=date]::placeholder,
+.vendor_wrap .contents .vendor_edit_event input[type=time]::placeholder,
+.vendor_wrap .contents .vendor_edit_event textarea::placeholder,
+.vendor_wrap .contents .vendor_edit_event select::placeholder,
 .vendor_edit_event input[type=text]::placeholder,
 .vendor_edit_event input[type=email]::placeholder,
 .vendor_edit_event input[type=url]::placeholder,
@@ -9078,7 +9096,27 @@ input.submit_bulk_action {
   color: #a0aec0;
   opacity: 1;
 }
-.vendor_edit_event input[type=text]:disabled, .vendor_edit_event input[type=text][readonly],
+.vendor_wrap .contents .vendor_edit_event input[type=text]:disabled, .vendor_wrap .contents .vendor_edit_event input[type=text][readonly],
+.vendor_wrap .contents .vendor_edit_event input[type=email]:disabled,
+.vendor_wrap .contents .vendor_edit_event input[type=email][readonly],
+.vendor_wrap .contents .vendor_edit_event input[type=url]:disabled,
+.vendor_wrap .contents .vendor_edit_event input[type=url][readonly],
+.vendor_wrap .contents .vendor_edit_event input[type=number]:disabled,
+.vendor_wrap .contents .vendor_edit_event input[type=number][readonly],
+.vendor_wrap .contents .vendor_edit_event input[type=tel]:disabled,
+.vendor_wrap .contents .vendor_edit_event input[type=tel][readonly],
+.vendor_wrap .contents .vendor_edit_event input[type=password]:disabled,
+.vendor_wrap .contents .vendor_edit_event input[type=password][readonly],
+.vendor_wrap .contents .vendor_edit_event input[type=date]:disabled,
+.vendor_wrap .contents .vendor_edit_event input[type=date][readonly],
+.vendor_wrap .contents .vendor_edit_event input[type=time]:disabled,
+.vendor_wrap .contents .vendor_edit_event input[type=time][readonly],
+.vendor_wrap .contents .vendor_edit_event textarea:disabled,
+.vendor_wrap .contents .vendor_edit_event textarea[readonly],
+.vendor_wrap .contents .vendor_edit_event select:disabled,
+.vendor_wrap .contents .vendor_edit_event select[readonly],
+.vendor_edit_event input[type=text]:disabled,
+.vendor_edit_event input[type=text][readonly],
 .vendor_edit_event input[type=email]:disabled,
 .vendor_edit_event input[type=email][readonly],
 .vendor_edit_event input[type=url]:disabled,
@@ -9102,6 +9140,16 @@ input.submit_bulk_action {
   color: #718096;
   cursor: not-allowed;
 }
+.vendor_wrap .contents .vendor_edit_event input[type=text].error,
+.vendor_wrap .contents .vendor_edit_event input[type=email].error,
+.vendor_wrap .contents .vendor_edit_event input[type=url].error,
+.vendor_wrap .contents .vendor_edit_event input[type=number].error,
+.vendor_wrap .contents .vendor_edit_event input[type=tel].error,
+.vendor_wrap .contents .vendor_edit_event input[type=password].error,
+.vendor_wrap .contents .vendor_edit_event input[type=date].error,
+.vendor_wrap .contents .vendor_edit_event input[type=time].error,
+.vendor_wrap .contents .vendor_edit_event textarea.error,
+.vendor_wrap .contents .vendor_edit_event select.error,
 .vendor_edit_event input[type=text].error,
 .vendor_edit_event input[type=email].error,
 .vendor_edit_event input[type=url].error,
@@ -9115,11 +9163,13 @@ input.submit_bulk_action {
   border-color: #fc8181;
   background-color: #fff5f5;
 }
+.vendor_wrap .contents .vendor_edit_event textarea,
 .vendor_edit_event textarea {
   min-height: 120px;
   resize: vertical;
   font-family: inherit;
 }
+.vendor_wrap .contents .vendor_edit_event label,
 .vendor_edit_event label {
   display: block;
   font-size: 14px;
@@ -9128,17 +9178,23 @@ input.submit_bulk_action {
   margin-bottom: 8px;
   line-height: 1.4;
 }
-.vendor_edit_event label.required::after, .vendor_edit_event label:has(+ input:required)::after {
+.vendor_wrap .contents .vendor_edit_event label.required::after, .vendor_wrap .contents .vendor_edit_event label:has(+ input:required)::after,
+.vendor_edit_event label.required::after,
+.vendor_edit_event label:has(+ input:required)::after {
   content: " *";
   color: #ff6a3d;
   font-weight: 600;
 }
+.vendor_wrap .contents .vendor_edit_event .vendor_field,
 .vendor_edit_event .vendor_field {
   margin-bottom: 24px;
 }
+.vendor_wrap .contents .vendor_edit_event .vendor_field:last-child,
 .vendor_edit_event .vendor_field:last-child {
   margin-bottom: 0;
 }
+.vendor_wrap .contents .vendor_edit_event .vendor_field .field-description,
+.vendor_wrap .contents .vendor_edit_event .vendor_field .helper-text,
 .vendor_edit_event .vendor_field .field-description,
 .vendor_edit_event .vendor_field .helper-text {
   display: block;
@@ -9147,6 +9203,7 @@ input.submit_bulk_action {
   margin-top: 6px;
   line-height: 1.5;
 }
+.vendor_wrap .contents .vendor_edit_event .heading_section,
 .vendor_edit_event .heading_section {
   font-size: 18px;
   font-weight: 700;
@@ -9155,9 +9212,11 @@ input.submit_bulk_action {
   padding-bottom: 12px;
   border-bottom: 2px solid #e2e8f0;
 }
+.vendor_wrap .contents .vendor_edit_event .heading_section:first-child,
 .vendor_edit_event .heading_section:first-child {
   margin-top: 0;
 }
+.vendor_wrap .contents .vendor_edit_event .heading_explain,
 .vendor_edit_event .heading_explain {
   font-size: 14px;
   color: #718096;
@@ -9165,18 +9224,22 @@ input.submit_bulk_action {
   margin-bottom: 20px;
   line-height: 1.6;
 }
+.vendor_wrap .contents .vendor_edit_event .error,
 .vendor_edit_event .error {
   color: #e53e3e;
   font-size: 13px;
   margin-top: 6px;
   display: block;
 }
+.vendor_wrap .contents .vendor_edit_event .error::before,
 .vendor_edit_event .error::before {
   content: "⚠ ";
 }
+.vendor_wrap .contents .vendor_edit_event .select2-container,
 .vendor_edit_event .select2-container {
   width: 100% !important;
 }
+.vendor_wrap .contents .vendor_edit_event .select2-container .select2-selection,
 .vendor_edit_event .select2-container .select2-selection {
   border: 2px solid #e1e8ed !important;
   border-radius: 8px !important;
@@ -9185,10 +9248,12 @@ input.submit_bulk_action {
   transition: all 0.3s ease !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
 }
+.vendor_wrap .contents .vendor_edit_event .select2-container .select2-selection:hover,
 .vendor_edit_event .select2-container .select2-selection:hover {
   border-color: #cbd5e0 !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06) !important;
 }
+.vendor_wrap .contents .vendor_edit_event .select2-container .select2-selection .select2-selection__rendered,
 .vendor_edit_event .select2-container .select2-selection .select2-selection__rendered {
   padding-left: 8px !important;
   padding-right: 8px !important;
@@ -9196,32 +9261,40 @@ input.submit_bulk_action {
   color: #2c3e50 !important;
   font-size: 15px !important;
 }
+.vendor_wrap .contents .vendor_edit_event .select2-container .select2-selection .select2-selection__arrow,
 .vendor_edit_event .select2-container .select2-selection .select2-selection__arrow {
   height: 46px !important;
   right: 8px !important;
 }
+.vendor_wrap .contents .vendor_edit_event .select2-container.select2-container--open .select2-selection,
 .vendor_edit_event .select2-container.select2-container--open .select2-selection {
   border-color: #ff6a3d !important;
   box-shadow: 0 0 0 3px rgba(255, 106, 61, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
 }
+.vendor_wrap .contents .vendor_edit_event .select2-dropdown,
 .vendor_edit_event .select2-dropdown {
   border: 2px solid #ff6a3d !important;
   border-radius: 8px !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
   margin-top: 4px !important;
 }
+.vendor_wrap .contents .vendor_edit_event .select2-results__option,
 .vendor_edit_event .select2-results__option {
   padding: 10px 16px !important;
   font-size: 15px !important;
 }
+.vendor_wrap .contents .vendor_edit_event .select2-results__option--highlighted,
 .vendor_edit_event .select2-results__option--highlighted {
   background-color: #fff5f0 !important;
   color: #ff6a3d !important;
 }
+.vendor_wrap .contents .vendor_edit_event .select2-results__option[aria-selected=true],
 .vendor_edit_event .select2-results__option[aria-selected=true] {
   background-color: #ff6a3d !important;
   color: #ffffff !important;
 }
+.vendor_wrap .contents .vendor_edit_event .button,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit),
 .vendor_edit_event .button,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit) {
   display: inline-flex;
@@ -9237,7 +9310,21 @@ input.submit_bulk_action {
   text-decoration: none;
   line-height: 1.5;
 }
-.vendor_edit_event .button.add_image, .vendor_edit_event .button.add_ticket, .vendor_edit_event .button.add_calendar, .vendor_edit_event .button.add_social, .vendor_edit_event .button.add_schedules_time, .vendor_edit_event .button.add_coupon, .vendor_edit_event .button[class*=add_],
+.vendor_wrap .contents .vendor_edit_event .button.add_image, .vendor_wrap .contents .vendor_edit_event .button.add_ticket, .vendor_wrap .contents .vendor_edit_event .button.add_calendar, .vendor_wrap .contents .vendor_edit_event .button.add_social, .vendor_wrap .contents .vendor_edit_event .button.add_schedules_time, .vendor_wrap .contents .vendor_edit_event .button.add_coupon, .vendor_wrap .contents .vendor_edit_event .button[class*=add_],
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_image,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_ticket,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_calendar,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_social,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_schedules_time,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_coupon,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=add_],
+.vendor_edit_event .button.add_image,
+.vendor_edit_event .button.add_ticket,
+.vendor_edit_event .button.add_calendar,
+.vendor_edit_event .button.add_social,
+.vendor_edit_event .button.add_schedules_time,
+.vendor_edit_event .button.add_coupon,
+.vendor_edit_event .button[class*=add_],
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_image,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_ticket,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_calendar,
@@ -9249,7 +9336,21 @@ input.submit_bulk_action {
   color: #ffffff;
   border-color: #48bb78;
 }
-.vendor_edit_event .button.add_image i, .vendor_edit_event .button.add_ticket i, .vendor_edit_event .button.add_calendar i, .vendor_edit_event .button.add_social i, .vendor_edit_event .button.add_schedules_time i, .vendor_edit_event .button.add_coupon i, .vendor_edit_event .button[class*=add_] i,
+.vendor_wrap .contents .vendor_edit_event .button.add_image i, .vendor_wrap .contents .vendor_edit_event .button.add_ticket i, .vendor_wrap .contents .vendor_edit_event .button.add_calendar i, .vendor_wrap .contents .vendor_edit_event .button.add_social i, .vendor_wrap .contents .vendor_edit_event .button.add_schedules_time i, .vendor_wrap .contents .vendor_edit_event .button.add_coupon i, .vendor_wrap .contents .vendor_edit_event .button[class*=add_] i,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_image i,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_ticket i,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_calendar i,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_social i,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_schedules_time i,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_coupon i,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=add_] i,
+.vendor_edit_event .button.add_image i,
+.vendor_edit_event .button.add_ticket i,
+.vendor_edit_event .button.add_calendar i,
+.vendor_edit_event .button.add_social i,
+.vendor_edit_event .button.add_schedules_time i,
+.vendor_edit_event .button.add_coupon i,
+.vendor_edit_event .button[class*=add_] i,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_image i,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_ticket i,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_calendar i,
@@ -9259,7 +9360,21 @@ input.submit_bulk_action {
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=add_] i {
   font-size: 16px;
 }
-.vendor_edit_event .button.add_image:hover, .vendor_edit_event .button.add_ticket:hover, .vendor_edit_event .button.add_calendar:hover, .vendor_edit_event .button.add_social:hover, .vendor_edit_event .button.add_schedules_time:hover, .vendor_edit_event .button.add_coupon:hover, .vendor_edit_event .button[class*=add_]:hover,
+.vendor_wrap .contents .vendor_edit_event .button.add_image:hover, .vendor_wrap .contents .vendor_edit_event .button.add_ticket:hover, .vendor_wrap .contents .vendor_edit_event .button.add_calendar:hover, .vendor_wrap .contents .vendor_edit_event .button.add_social:hover, .vendor_wrap .contents .vendor_edit_event .button.add_schedules_time:hover, .vendor_wrap .contents .vendor_edit_event .button.add_coupon:hover, .vendor_wrap .contents .vendor_edit_event .button[class*=add_]:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_image:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_ticket:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_calendar:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_social:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_schedules_time:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_coupon:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=add_]:hover,
+.vendor_edit_event .button.add_image:hover,
+.vendor_edit_event .button.add_ticket:hover,
+.vendor_edit_event .button.add_calendar:hover,
+.vendor_edit_event .button.add_social:hover,
+.vendor_edit_event .button.add_schedules_time:hover,
+.vendor_edit_event .button.add_coupon:hover,
+.vendor_edit_event .button[class*=add_]:hover,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_image:hover,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_ticket:hover,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_calendar:hover,
@@ -9272,7 +9387,21 @@ input.submit_bulk_action {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
 }
-.vendor_edit_event .button.add_image:active, .vendor_edit_event .button.add_ticket:active, .vendor_edit_event .button.add_calendar:active, .vendor_edit_event .button.add_social:active, .vendor_edit_event .button.add_schedules_time:active, .vendor_edit_event .button.add_coupon:active, .vendor_edit_event .button[class*=add_]:active,
+.vendor_wrap .contents .vendor_edit_event .button.add_image:active, .vendor_wrap .contents .vendor_edit_event .button.add_ticket:active, .vendor_wrap .contents .vendor_edit_event .button.add_calendar:active, .vendor_wrap .contents .vendor_edit_event .button.add_social:active, .vendor_wrap .contents .vendor_edit_event .button.add_schedules_time:active, .vendor_wrap .contents .vendor_edit_event .button.add_coupon:active, .vendor_wrap .contents .vendor_edit_event .button[class*=add_]:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_image:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_ticket:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_calendar:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_social:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_schedules_time:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_coupon:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=add_]:active,
+.vendor_edit_event .button.add_image:active,
+.vendor_edit_event .button.add_ticket:active,
+.vendor_edit_event .button.add_calendar:active,
+.vendor_edit_event .button.add_social:active,
+.vendor_edit_event .button.add_schedules_time:active,
+.vendor_edit_event .button.add_coupon:active,
+.vendor_edit_event .button[class*=add_]:active,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_image:active,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_ticket:active,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_calendar:active,
@@ -9282,7 +9411,19 @@ input.submit_bulk_action {
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=add_]:active {
   transform: scale(0.98);
 }
-.vendor_edit_event .button.remove_image, .vendor_edit_event .button.delete_ticket, .vendor_edit_event .button.remove_calendar, .vendor_edit_event .button.remove_social, .vendor_edit_event .button[class*=remove_], .vendor_edit_event .button[class*=delete_],
+.vendor_wrap .contents .vendor_edit_event .button.remove_image, .vendor_wrap .contents .vendor_edit_event .button.delete_ticket, .vendor_wrap .contents .vendor_edit_event .button.remove_calendar, .vendor_wrap .contents .vendor_edit_event .button.remove_social, .vendor_wrap .contents .vendor_edit_event .button[class*=remove_], .vendor_wrap .contents .vendor_edit_event .button[class*=delete_],
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_image,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).delete_ticket,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_calendar,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_social,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=remove_],
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=delete_],
+.vendor_edit_event .button.remove_image,
+.vendor_edit_event .button.delete_ticket,
+.vendor_edit_event .button.remove_calendar,
+.vendor_edit_event .button.remove_social,
+.vendor_edit_event .button[class*=remove_],
+.vendor_edit_event .button[class*=delete_],
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_image,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).delete_ticket,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_calendar,
@@ -9293,7 +9434,19 @@ input.submit_bulk_action {
   color: #ffffff;
   border-color: #f56565;
 }
-.vendor_edit_event .button.remove_image i, .vendor_edit_event .button.delete_ticket i, .vendor_edit_event .button.remove_calendar i, .vendor_edit_event .button.remove_social i, .vendor_edit_event .button[class*=remove_] i, .vendor_edit_event .button[class*=delete_] i,
+.vendor_wrap .contents .vendor_edit_event .button.remove_image i, .vendor_wrap .contents .vendor_edit_event .button.delete_ticket i, .vendor_wrap .contents .vendor_edit_event .button.remove_calendar i, .vendor_wrap .contents .vendor_edit_event .button.remove_social i, .vendor_wrap .contents .vendor_edit_event .button[class*=remove_] i, .vendor_wrap .contents .vendor_edit_event .button[class*=delete_] i,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_image i,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).delete_ticket i,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_calendar i,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_social i,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=remove_] i,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=delete_] i,
+.vendor_edit_event .button.remove_image i,
+.vendor_edit_event .button.delete_ticket i,
+.vendor_edit_event .button.remove_calendar i,
+.vendor_edit_event .button.remove_social i,
+.vendor_edit_event .button[class*=remove_] i,
+.vendor_edit_event .button[class*=delete_] i,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_image i,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).delete_ticket i,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_calendar i,
@@ -9302,7 +9455,19 @@ input.submit_bulk_action {
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=delete_] i {
   font-size: 16px;
 }
-.vendor_edit_event .button.remove_image:hover, .vendor_edit_event .button.delete_ticket:hover, .vendor_edit_event .button.remove_calendar:hover, .vendor_edit_event .button.remove_social:hover, .vendor_edit_event .button[class*=remove_]:hover, .vendor_edit_event .button[class*=delete_]:hover,
+.vendor_wrap .contents .vendor_edit_event .button.remove_image:hover, .vendor_wrap .contents .vendor_edit_event .button.delete_ticket:hover, .vendor_wrap .contents .vendor_edit_event .button.remove_calendar:hover, .vendor_wrap .contents .vendor_edit_event .button.remove_social:hover, .vendor_wrap .contents .vendor_edit_event .button[class*=remove_]:hover, .vendor_wrap .contents .vendor_edit_event .button[class*=delete_]:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_image:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).delete_ticket:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_calendar:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_social:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=remove_]:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=delete_]:hover,
+.vendor_edit_event .button.remove_image:hover,
+.vendor_edit_event .button.delete_ticket:hover,
+.vendor_edit_event .button.remove_calendar:hover,
+.vendor_edit_event .button.remove_social:hover,
+.vendor_edit_event .button[class*=remove_]:hover,
+.vendor_edit_event .button[class*=delete_]:hover,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_image:hover,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).delete_ticket:hover,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_calendar:hover,
@@ -9314,7 +9479,19 @@ input.submit_bulk_action {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
 }
-.vendor_edit_event .button.remove_image:active, .vendor_edit_event .button.delete_ticket:active, .vendor_edit_event .button.remove_calendar:active, .vendor_edit_event .button.remove_social:active, .vendor_edit_event .button[class*=remove_]:active, .vendor_edit_event .button[class*=delete_]:active,
+.vendor_wrap .contents .vendor_edit_event .button.remove_image:active, .vendor_wrap .contents .vendor_edit_event .button.delete_ticket:active, .vendor_wrap .contents .vendor_edit_event .button.remove_calendar:active, .vendor_wrap .contents .vendor_edit_event .button.remove_social:active, .vendor_wrap .contents .vendor_edit_event .button[class*=remove_]:active, .vendor_wrap .contents .vendor_edit_event .button[class*=delete_]:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_image:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).delete_ticket:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_calendar:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_social:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=remove_]:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=delete_]:active,
+.vendor_edit_event .button.remove_image:active,
+.vendor_edit_event .button.delete_ticket:active,
+.vendor_edit_event .button.remove_calendar:active,
+.vendor_edit_event .button.remove_social:active,
+.vendor_edit_event .button[class*=remove_]:active,
+.vendor_edit_event .button[class*=delete_]:active,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_image:active,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).delete_ticket:active,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_calendar:active,
@@ -9323,14 +9500,22 @@ input.submit_bulk_action {
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=delete_]:active {
   transform: scale(0.98);
 }
-.vendor_edit_event .button.preview_event, .vendor_edit_event .button[class*=view_],
+.vendor_wrap .contents .vendor_edit_event .button.preview_event, .vendor_wrap .contents .vendor_edit_event .button[class*=view_],
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).preview_event,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=view_],
+.vendor_edit_event .button.preview_event,
+.vendor_edit_event .button[class*=view_],
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).preview_event,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=view_] {
   background: #4299e1;
   color: #ffffff;
   border-color: #4299e1;
 }
-.vendor_edit_event .button.preview_event:hover, .vendor_edit_event .button[class*=view_]:hover,
+.vendor_wrap .contents .vendor_edit_event .button.preview_event:hover, .vendor_wrap .contents .vendor_edit_event .button[class*=view_]:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).preview_event:hover,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=view_]:hover,
+.vendor_edit_event .button.preview_event:hover,
+.vendor_edit_event .button[class*=view_]:hover,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).preview_event:hover,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=view_]:hover {
   background: #3182ce;
@@ -9338,11 +9523,24 @@ input.submit_bulk_action {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
 }
-.vendor_edit_event .button.preview_event:active, .vendor_edit_event .button[class*=view_]:active,
+.vendor_wrap .contents .vendor_edit_event .button.preview_event:active, .vendor_wrap .contents .vendor_edit_event .button[class*=view_]:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).preview_event:active,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=view_]:active,
+.vendor_edit_event .button.preview_event:active,
+.vendor_edit_event .button[class*=view_]:active,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).preview_event:active,
 .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=view_]:active {
   transform: scale(0.98);
 }
+.vendor_wrap .contents .vendor_edit_event .image_feature .image_box,
+.vendor_wrap .contents .vendor_edit_event .image_feature .gallery_item,
+.vendor_wrap .contents .vendor_edit_event .image_feature .wrap_image_banner,
+.vendor_wrap .contents .vendor_edit_event .image_gallery .image_box,
+.vendor_wrap .contents .vendor_edit_event .image_gallery .gallery_item,
+.vendor_wrap .contents .vendor_edit_event .image_gallery .wrap_image_banner,
+.vendor_wrap .contents .vendor_edit_event .wrap_image_banner .image_box,
+.vendor_wrap .contents .vendor_edit_event .wrap_image_banner .gallery_item,
+.vendor_wrap .contents .vendor_edit_event .wrap_image_banner .wrap_image_banner,
 .vendor_edit_event .image_feature .image_box,
 .vendor_edit_event .image_feature .gallery_item,
 .vendor_edit_event .image_feature .wrap_image_banner,
@@ -9358,6 +9556,15 @@ input.submit_bulk_action {
   transition: all 0.3s ease;
   background-color: #f7fafc;
 }
+.vendor_wrap .contents .vendor_edit_event .image_feature .image_box:hover,
+.vendor_wrap .contents .vendor_edit_event .image_feature .gallery_item:hover,
+.vendor_wrap .contents .vendor_edit_event .image_feature .wrap_image_banner:hover,
+.vendor_wrap .contents .vendor_edit_event .image_gallery .image_box:hover,
+.vendor_wrap .contents .vendor_edit_event .image_gallery .gallery_item:hover,
+.vendor_wrap .contents .vendor_edit_event .image_gallery .wrap_image_banner:hover,
+.vendor_wrap .contents .vendor_edit_event .wrap_image_banner .image_box:hover,
+.vendor_wrap .contents .vendor_edit_event .wrap_image_banner .gallery_item:hover,
+.vendor_wrap .contents .vendor_edit_event .wrap_image_banner .wrap_image_banner:hover,
 .vendor_edit_event .image_feature .image_box:hover,
 .vendor_edit_event .image_feature .gallery_item:hover,
 .vendor_edit_event .image_feature .wrap_image_banner:hover,
@@ -9370,6 +9577,12 @@ input.submit_bulk_action {
   border-color: #ff6a3d;
   background-color: #fff5f0;
 }
+.vendor_wrap .contents .vendor_edit_event .image_feature .add_image,
+.vendor_wrap .contents .vendor_edit_event .image_feature .add_image_banner,
+.vendor_wrap .contents .vendor_edit_event .image_gallery .add_image,
+.vendor_wrap .contents .vendor_edit_event .image_gallery .add_image_banner,
+.vendor_wrap .contents .vendor_edit_event .wrap_image_banner .add_image,
+.vendor_wrap .contents .vendor_edit_event .wrap_image_banner .add_image_banner,
 .vendor_edit_event .image_feature .add_image,
 .vendor_edit_event .image_feature .add_image_banner,
 .vendor_edit_event .image_gallery .add_image,
@@ -9384,6 +9597,12 @@ input.submit_bulk_action {
   border-radius: 8px;
   transition: all 0.3s ease;
 }
+.vendor_wrap .contents .vendor_edit_event .image_feature .add_image:hover,
+.vendor_wrap .contents .vendor_edit_event .image_feature .add_image_banner:hover,
+.vendor_wrap .contents .vendor_edit_event .image_gallery .add_image:hover,
+.vendor_wrap .contents .vendor_edit_event .image_gallery .add_image_banner:hover,
+.vendor_wrap .contents .vendor_edit_event .wrap_image_banner .add_image:hover,
+.vendor_wrap .contents .vendor_edit_event .wrap_image_banner .add_image_banner:hover,
 .vendor_edit_event .image_feature .add_image:hover,
 .vendor_edit_event .image_feature .add_image_banner:hover,
 .vendor_edit_event .image_gallery .add_image:hover,
@@ -9394,6 +9613,12 @@ input.submit_bulk_action {
   color: #ff6a3d;
   background-color: #fff5f0;
 }
+.vendor_wrap .contents .vendor_edit_event .image_feature .add_image i,
+.vendor_wrap .contents .vendor_edit_event .image_feature .add_image_banner i,
+.vendor_wrap .contents .vendor_edit_event .image_gallery .add_image i,
+.vendor_wrap .contents .vendor_edit_event .image_gallery .add_image_banner i,
+.vendor_wrap .contents .vendor_edit_event .wrap_image_banner .add_image i,
+.vendor_wrap .contents .vendor_edit_event .wrap_image_banner .add_image_banner i,
 .vendor_edit_event .image_feature .add_image i,
 .vendor_edit_event .image_feature .add_image_banner i,
 .vendor_edit_event .image_gallery .add_image i,
@@ -9404,6 +9629,8 @@ input.submit_bulk_action {
   font-size: 32px;
   margin-bottom: 8px;
 }
+.vendor_wrap .contents .vendor_edit_event .input_radio_group,
+.vendor_wrap .contents .vendor_edit_event .radio_seat_option,
 .vendor_edit_event .input_radio_group,
 .vendor_edit_event .radio_seat_option {
   display: flex;
@@ -9411,6 +9638,8 @@ input.submit_bulk_action {
   flex-wrap: wrap;
   margin: 12px 0;
 }
+.vendor_wrap .contents .vendor_edit_event .input_radio_group label,
+.vendor_wrap .contents .vendor_edit_event .radio_seat_option label,
 .vendor_edit_event .input_radio_group label,
 .vendor_edit_event .radio_seat_option label {
   display: inline-flex;
@@ -9424,24 +9653,35 @@ input.submit_bulk_action {
   margin-bottom: 0;
   font-weight: 500;
 }
+.vendor_wrap .contents .vendor_edit_event .input_radio_group label:hover,
+.vendor_wrap .contents .vendor_edit_event .radio_seat_option label:hover,
 .vendor_edit_event .input_radio_group label:hover,
 .vendor_edit_event .radio_seat_option label:hover {
   border-color: #cbd5e0;
   background-color: #f7fafc;
 }
+.vendor_wrap .contents .vendor_edit_event .input_radio_group label input[type=radio],
+.vendor_wrap .contents .vendor_edit_event .input_radio_group label input[type=checkbox],
+.vendor_wrap .contents .vendor_edit_event .radio_seat_option label input[type=radio],
+.vendor_wrap .contents .vendor_edit_event .radio_seat_option label input[type=checkbox],
 .vendor_edit_event .input_radio_group label input[type=radio],
 .vendor_edit_event .input_radio_group label input[type=checkbox],
 .vendor_edit_event .radio_seat_option label input[type=radio],
 .vendor_edit_event .radio_seat_option label input[type=checkbox] {
   margin-right: 8px;
 }
-input[type=radio]:checked ~ .vendor_edit_event .input_radio_group label, input[type=checkbox]:checked ~ .vendor_edit_event .input_radio_group label,
+input[type=radio]:checked ~ .vendor_wrap .contents .vendor_edit_event .input_radio_group label, input[type=checkbox]:checked ~ .vendor_wrap .contents .vendor_edit_event .input_radio_group label,
+input[type=radio]:checked ~ .vendor_wrap .contents .vendor_edit_event .radio_seat_option label,
+input[type=checkbox]:checked ~ .vendor_wrap .contents .vendor_edit_event .radio_seat_option label,
+input[type=radio]:checked ~ .vendor_edit_event .input_radio_group label,
+input[type=checkbox]:checked ~ .vendor_edit_event .input_radio_group label,
 input[type=radio]:checked ~ .vendor_edit_event .radio_seat_option label,
 input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   border-color: #ff6a3d;
   background-color: #fff5f0;
   color: #ff6a3d;
 }
+.vendor_wrap .contents .vendor_edit_event .event_basic_block,
 .vendor_edit_event .event_basic_block {
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -9450,9 +9690,11 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   margin-bottom: 24px;
   transition: all 0.3s ease;
 }
+.vendor_wrap .contents .vendor_edit_event .event_basic_block:hover,
 .vendor_edit_event .event_basic_block:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
+.vendor_wrap .contents .vendor_edit_event .event_basic_block:last-child,
 .vendor_edit_event .event_basic_block:last-child {
   margin-bottom: 0;
 }
@@ -9474,16 +9716,22 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
     opacity: 1;
   }
 }
+.vendor_wrap .contents .vendor_edit_event .ticket_item,
+.vendor_wrap .contents .vendor_edit_event .item_calendar,
+.vendor_wrap .contents .vendor_edit_event .social_item,
+.vendor_wrap .contents .vendor_edit_event .item_coupon,
 .vendor_edit_event .ticket_item,
 .vendor_edit_event .item_calendar,
 .vendor_edit_event .social_item,
 .vendor_edit_event .item_coupon {
   animation: slideInDown 0.3s ease;
 }
+.vendor_wrap .contents .vendor_edit_event *:focus-visible,
 .vendor_edit_event *:focus-visible {
   outline: 3px solid #ff6a3d;
   outline-offset: 2px;
 }
+.vendor_wrap .contents .vendor_edit_event .skip-to-content,
 .vendor_edit_event .skip-to-content {
   position: absolute;
   top: -40px;
@@ -9495,13 +9743,16 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   border-radius: 0 0 4px 0;
   z-index: 100;
 }
+.vendor_wrap .contents .vendor_edit_event .skip-to-content:focus,
 .vendor_edit_event .skip-to-content:focus {
   top: 0;
 }
+.vendor_wrap .contents .vendor_edit_event [data-tooltip],
 .vendor_edit_event [data-tooltip] {
   position: relative;
   cursor: help;
 }
+.vendor_wrap .contents .vendor_edit_event [data-tooltip]::after,
 .vendor_edit_event [data-tooltip]::after {
   content: attr(data-tooltip);
   position: absolute;
@@ -9519,6 +9770,7 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   transition: opacity 0.3s ease, transform 0.3s ease;
   z-index: 1000;
 }
+.vendor_wrap .contents .vendor_edit_event [data-tooltip]::before,
 .vendor_edit_event [data-tooltip]::before {
   content: "";
   position: absolute;
@@ -9532,10 +9784,13 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   transition: opacity 0.3s ease;
   z-index: 1000;
 }
-.vendor_edit_event [data-tooltip]:hover::after, .vendor_edit_event [data-tooltip]:hover::before {
+.vendor_wrap .contents .vendor_edit_event [data-tooltip]:hover::after, .vendor_wrap .contents .vendor_edit_event [data-tooltip]:hover::before,
+.vendor_edit_event [data-tooltip]:hover::after,
+.vendor_edit_event [data-tooltip]:hover::before {
   opacity: 1;
   transform: translateX(-50%) translateY(-4px);
 }
+.vendor_wrap .contents .vendor_edit_event .loading-overlay,
 .vendor_edit_event .loading-overlay {
   position: absolute;
   top: 0;
@@ -9549,6 +9804,7 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   border-radius: 8px;
   z-index: 10;
 }
+.vendor_wrap .contents .vendor_edit_event .loading-overlay::after,
 .vendor_edit_event .loading-overlay::after {
   content: "";
   width: 40px;
@@ -9563,6 +9819,8 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
     transform: rotate(360deg);
   }
 }
+.vendor_wrap .contents .vendor_edit_event .notice,
+.vendor_wrap .contents .vendor_edit_event .message,
 .vendor_edit_event .notice,
 .vendor_edit_event .message {
   padding: 16px 20px;
@@ -9574,56 +9832,82 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   font-size: 14px;
   animation: fadeIn 0.3s ease;
 }
+.vendor_wrap .contents .vendor_edit_event .notice::before,
+.vendor_wrap .contents .vendor_edit_event .message::before,
 .vendor_edit_event .notice::before,
 .vendor_edit_event .message::before {
   font-family: "eleganticons";
   font-size: 20px;
 }
+.vendor_wrap .contents .vendor_edit_event .notice.success,
+.vendor_wrap .contents .vendor_edit_event .message.success,
 .vendor_edit_event .notice.success,
 .vendor_edit_event .message.success {
   background: #f0fdf4;
   border: 2px solid #86efac;
   color: #166534;
 }
+.vendor_wrap .contents .vendor_edit_event .notice.success::before,
+.vendor_wrap .contents .vendor_edit_event .message.success::before,
 .vendor_edit_event .notice.success::before,
 .vendor_edit_event .message.success::before {
   content: "\e080";
   color: #22c55e;
 }
+.vendor_wrap .contents .vendor_edit_event .notice.error,
+.vendor_wrap .contents .vendor_edit_event .message.error,
 .vendor_edit_event .notice.error,
 .vendor_edit_event .message.error {
   background: #fef2f2;
   border: 2px solid #fca5a5;
   color: #991b1b;
 }
+.vendor_wrap .contents .vendor_edit_event .notice.error::before,
+.vendor_wrap .contents .vendor_edit_event .message.error::before,
 .vendor_edit_event .notice.error::before,
 .vendor_edit_event .message.error::before {
   content: "\e078";
   color: #ef4444;
 }
+.vendor_wrap .contents .vendor_edit_event .notice.warning,
+.vendor_wrap .contents .vendor_edit_event .message.warning,
 .vendor_edit_event .notice.warning,
 .vendor_edit_event .message.warning {
   background: #fffbeb;
   border: 2px solid #fcd34d;
   color: #92400e;
 }
+.vendor_wrap .contents .vendor_edit_event .notice.warning::before,
+.vendor_wrap .contents .vendor_edit_event .message.warning::before,
 .vendor_edit_event .notice.warning::before,
 .vendor_edit_event .message.warning::before {
   content: "\e002";
   color: #f59e0b;
 }
+.vendor_wrap .contents .vendor_edit_event .notice.info,
+.vendor_wrap .contents .vendor_edit_event .message.info,
 .vendor_edit_event .notice.info,
 .vendor_edit_event .message.info {
   background: #eff6ff;
   border: 2px solid #93c5fd;
   color: #1e40af;
 }
+.vendor_wrap .contents .vendor_edit_event .notice.info::before,
+.vendor_wrap .contents .vendor_edit_event .message.info::before,
 .vendor_edit_event .notice.info::before,
 .vendor_edit_event .message.info::before {
   content: "\e0a6";
   color: #3b82f6;
 }
 @media (max-width: 768px) {
+  .vendor_wrap .contents .vendor_edit_event input[type=text],
+  .vendor_wrap .contents .vendor_edit_event input[type=email],
+  .vendor_wrap .contents .vendor_edit_event input[type=url],
+  .vendor_wrap .contents .vendor_edit_event input[type=number],
+  .vendor_wrap .contents .vendor_edit_event input[type=tel],
+  .vendor_wrap .contents .vendor_edit_event input[type=password],
+  .vendor_wrap .contents .vendor_edit_event textarea,
+  .vendor_wrap .contents .vendor_edit_event select,
   .vendor_edit_event input[type=text],
   .vendor_edit_event input[type=email],
   .vendor_edit_event input[type=url],
@@ -9634,105 +9918,130 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   .vendor_edit_event select {
     font-size: 16px;
   }
+  .vendor_wrap .contents .vendor_edit_event .event_basic_block,
   .vendor_edit_event .event_basic_block {
     padding: 16px;
   }
+  .vendor_wrap .contents .vendor_edit_event .button,
+  .vendor_wrap .contents .vendor_edit_event button,
   .vendor_edit_event .button,
   .vendor_edit_event button {
     padding: 12px 16px;
     font-size: 14px;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic input[type=text],
 .vendor_edit_event #mb_basic input[type=text] {
   min-width: 300px;
 }
 @media (max-width: 767px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_basic input[type=text],
   .vendor_edit_event #mb_basic input[type=text] {
     min-width: 150px;
     left: 0px !important;
     top: 50px !important;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .wrap_name_event label:after,
 .vendor_edit_event #mb_basic .wrap_name_event label:after {
   content: "*";
   color: red;
   margin-left: 5px;
   font-size: 18px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .wrap_name_event input,
 .vendor_edit_event #mb_basic .wrap_name_event input {
   min-width: 300px;
 }
 @media (max-width: 480px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_basic .wrap_name_event input,
   .vendor_edit_event #mb_basic .wrap_name_event input {
     min-width: 100%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .wrap_cat label:after,
 .vendor_edit_event #mb_basic .wrap_cat label:after {
   content: "*";
   color: red;
   margin-left: 5px;
   font-size: 18px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic input[type=radio],
 .vendor_edit_event #mb_basic input[type=radio] {
   margin: 0 5px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .contact .ova_mb_event_info_organizer,
 .vendor_edit_event #mb_basic .contact .ova_mb_event_info_organizer {
   display: inline-block;
   vertical-align: middle;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .contact #show_rewrite,
 .vendor_edit_event #mb_basic .contact #show_rewrite {
   background: #eee;
   padding: 20px 30px 30px 30px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .contact #show_rewrite #social_organizer .social_item,
 .vendor_edit_event #mb_basic .contact #show_rewrite #social_organizer .social_item {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   margin: 10px 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .contact #show_rewrite #social_organizer .social_item input,
 .vendor_edit_event #mb_basic .contact #show_rewrite #social_organizer .social_item input {
   min-width: 50%;
   margin-right: 30px;
   margin-bottom: 5px;
   height: 40px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .contact #show_rewrite #social_organizer .social_item .select2,
 .vendor_edit_event #mb_basic .contact #show_rewrite #social_organizer .social_item .select2 {
   width: 200px !important;
   margin-right: 30px;
   height: 40px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .contact #show_rewrite #social_organizer .social_item .select2.select2-container--default .select2-selection--single,
 .vendor_edit_event #mb_basic .contact #show_rewrite #social_organizer .social_item .select2.select2-container--default .select2-selection--single {
   border: 1px solid #ccc !important;
   border-radius: 4px !important;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .contact #show_rewrite #social_organizer .social_item .remove_social:hover,
 .vendor_edit_event #mb_basic .contact #show_rewrite #social_organizer .social_item .remove_social:hover {
   color: red;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .image_feature .add_image,
 .vendor_edit_event #mb_basic .image_feature .add_image {
   margin-bottom: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .image_feature .remove_image,
 .vendor_edit_event #mb_basic .image_feature .remove_image {
   display: block;
   width: fit-content;
   padding: 0px;
   background-color: transparent;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .date_time label,
 .vendor_edit_event #mb_basic .date_time label {
   display: inline-block;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .date_time input,
 .vendor_edit_event #mb_basic .date_time input {
   margin-right: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .wrap_event_password,
 .vendor_edit_event #mb_basic .wrap_event_password {
   display: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .wrap_event_password.is-active,
 .vendor_edit_event #mb_basic .wrap_event_password.is-active {
   display: block;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .wrap_event_password .input_group,
 .vendor_edit_event #mb_basic .wrap_event_password .input_group {
   display: inline-flex;
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .wrap_event_password .input_group .show_hide_password,
 .vendor_edit_event #mb_basic .wrap_event_password .input_group .show_hide_password {
   display: inline-flex;
   cursor: pointer;
@@ -9744,87 +10053,107 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   right: 5px;
   transform: translateY(-50%);
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .wrap_event_password .input_group input,
 .vendor_edit_event #mb_basic .wrap_event_password .input_group input {
   padding-right: 30px;
   max-width: 215px;
   min-width: 215px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .input_radio_group,
 .vendor_edit_event #mb_basic .input_radio_group {
   display: inline-block;
 }
 @media screen and (max-width: 479px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_basic .input_radio_group,
   .vendor_edit_event #mb_basic .input_radio_group {
     display: block;
     width: 100%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .input_radio_group label,
 .vendor_edit_event #mb_basic .input_radio_group label {
   min-width: auto;
   display: inline-block;
   cursor: pointer;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .input_radio_group label:not(:first-child),
 .vendor_edit_event #mb_basic .input_radio_group label:not(:first-child) {
   margin-left: 10px;
 }
 @media screen and (max-width: 479px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_basic .input_radio_group label:not(:first-child),
   .vendor_edit_event #mb_basic .input_radio_group label:not(:first-child) {
     margin-left: 0;
   }
 }
 @media screen and (max-width: 479px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_basic .input_radio_group label,
   .vendor_edit_event #mb_basic .input_radio_group label {
     display: block;
     width: 100%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location,
 .vendor_edit_event #mb_basic .location {
   padding: 30px;
   background-color: #eee;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .country_city,
 .vendor_edit_event #mb_basic .location .country_city {
   display: flex;
   margin-bottom: 10px;
   flex-wrap: wrap;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .country_city .get_country,
 .vendor_edit_event #mb_basic .location .country_city .get_country {
   margin-right: 30px;
   margin-bottom: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .country_city .select2,
 .vendor_edit_event #mb_basic .location .country_city .select2 {
   width: 200px !important;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .country_city .select2 .select2-selection,
 .vendor_edit_event #mb_basic .location .country_city .select2 .select2-selection {
   outline: none;
   height: 40px;
   border-radius: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .country_city .select2 .select2-selection .select2-selection__rendered,
 .vendor_edit_event #mb_basic .location .country_city .select2 .select2-selection .select2-selection__rendered {
   line-height: 38px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .country_city .select2 .select2-selection .select2-selection__arrow,
 .vendor_edit_event #mb_basic .location .country_city .select2 .select2-selection .select2-selection__arrow {
   height: 38px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location #mb_venue #data_venue,
 .vendor_edit_event #mb_basic .location #mb_venue #data_venue {
   display: flex;
   padding: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location #mb_venue #data_venue li,
 .vendor_edit_event #mb_basic .location #mb_venue #data_venue li {
   display: flex;
   align-items: center;
   margin-right: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location #mb_venue #data_venue li .remove_venue,
 .vendor_edit_event #mb_basic .location #mb_venue #data_venue li .remove_venue {
   color: #0073aa;
   cursor: pointer;
   transition: 0.3s all ease;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location #mb_venue #data_venue li .remove_venue:hover,
 .vendor_edit_event #mb_basic .location #mb_venue #data_venue li .remove_venue:hover {
   color: #c00;
   transition: 0.3s all ease;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location #mb_venue #data_venue li span,
 .vendor_edit_event #mb_basic .location #mb_venue #data_venue li span {
   text-transform: capitalize;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .el_map #place-autocomplete-card,
 .vendor_edit_event #mb_basic .location .el_map #place-autocomplete-card {
   background-color: #fff;
   border-radius: 5px;
@@ -9835,49 +10164,61 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   font-size: large;
   font-weight: bold;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .el_map #place-autocomplete-card p,
 .vendor_edit_event #mb_basic .location .el_map #place-autocomplete-card p {
   font-size: 16px;
   margin: 0px 0px 10px 0px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .el_map .gmp-place-autocomplete,
 .vendor_edit_event #mb_basic .location .el_map .gmp-place-autocomplete {
   width: 300px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .el_map #infowindow-content .title,
 .vendor_edit_event #mb_basic .location .el_map #infowindow-content .title {
   font-weight: bold;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .el_map #admin_show_map #infowindow-content,
 .vendor_edit_event #mb_basic .location .el_map #admin_show_map #infowindow-content {
   display: inline;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_latlng,
 .vendor_edit_event #mb_basic .location .edit_latlng {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_latlng .wrap_lnglat,
 .vendor_edit_event #mb_basic .location .edit_latlng .wrap_lnglat {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
 }
 @media (max-width: 767px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_latlng .wrap_lnglat,
   .vendor_edit_event #mb_basic .location .edit_latlng .wrap_lnglat {
     width: 100%;
     margin: 0 -15px;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_latlng .wrap_lnglat label,
 .vendor_edit_event #mb_basic .location .edit_latlng .wrap_lnglat label {
   min-width: fit-content;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_latlng .wrap_lnglat input,
 .vendor_edit_event #mb_basic .location .edit_latlng .wrap_lnglat input {
   min-width: 200px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_latlng .wrap_lnglat .vendor_field,
 .vendor_edit_event #mb_basic .location .edit_latlng .wrap_lnglat .vendor_field {
   margin: 0 15px;
 }
 @media (max-width: 767px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_latlng .wrap_lnglat .vendor_field,
   .vendor_edit_event #mb_basic .location .edit_latlng .wrap_lnglat .vendor_field {
     margin: 5px 15px;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_address,
 .vendor_edit_event #mb_basic .location .edit_address {
   display: flex;
   align-items: center;
@@ -9885,39 +10226,49 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   flex-wrap: wrap;
   width: fit-content;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_address label,
 .vendor_edit_event #mb_basic .location .edit_address label {
   margin: 10px 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_address .edit_full_address,
 .vendor_edit_event #mb_basic .location .edit_address .edit_full_address {
   margin: 0 15px;
   width: 16px;
   height: 16px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_address .edit_full_address:checked ~ .address,
 .vendor_edit_event #mb_basic .location .edit_address .edit_full_address:checked ~ .address {
   display: block;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_address .address,
 .vendor_edit_event #mb_basic .location .edit_address .address {
   min-width: 280px;
 }
 @media only screen and (max-width: 768px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_address,
   .vendor_edit_event #mb_basic .location .edit_address {
     width: 100%;
   }
+  .vendor_wrap .contents .vendor_edit_event #mb_basic .location .edit_address .address,
   .vendor_edit_event #mb_basic .location .edit_address .address {
     min-width: auto;
     width: 100%;
     max-width: 100%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .radio_single_banner label,
 .vendor_edit_event #mb_basic .radio_single_banner label {
   min-width: auto;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_basic .radio_single_banner .single_banner_gallery_field,
 .vendor_edit_event #mb_basic .radio_single_banner .single_banner_gallery_field {
   margin-left: 5px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .image_gallery .gallery_list,
 .vendor_edit_event #mb_gallery .image_gallery .gallery_list {
   display: inline-block;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .image_gallery .gallery_list .gallery_item,
 .vendor_edit_event #mb_gallery .image_gallery .gallery_list .gallery_item {
   display: inline-block;
   margin: 0px 30px 30px 0px;
@@ -9926,18 +10277,22 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   width: 150px;
   height: 150px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .image_gallery .gallery_list .gallery_item img,
 .vendor_edit_event #mb_gallery .image_gallery .gallery_list .gallery_item img {
   display: block;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .image_gallery .gallery_list .gallery_item a,
 .vendor_edit_event #mb_gallery .image_gallery .gallery_list .gallery_item a {
   display: inline-block !important;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .image_gallery .gallery_list .gallery_item .image_box,
 .vendor_edit_event #mb_gallery .image_gallery .gallery_list .gallery_item .image_box {
   display: inline-flex;
   position: relative;
   padding: 5px;
   border: 1px solid #eee;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .image_gallery .gallery_list .gallery_item .remove_image,
 .vendor_edit_event #mb_gallery .image_gallery .gallery_list .gallery_item .remove_image {
   position: absolute;
   width: fit-content;
@@ -9952,52 +10307,64 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   text-decoration: underline !important;
   height: auto;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .image_gallery .gallery_list .gallery_item .remove_image:hover,
 .vendor_edit_event #mb_gallery .image_gallery .gallery_list .gallery_item .remove_image:hover {
   color: #ff775a;
   transition: 0.3s all ease;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .link_video .wrap_link,
 .vendor_edit_event #mb_gallery .link_video .wrap_link {
   display: flex;
   flex-wrap: wrap;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .link_video input,
 .vendor_edit_event #mb_gallery .link_video input {
   height: 40px;
   min-width: 350px;
   margin-right: 20px;
 }
 @media (max-width: 767.98px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_gallery .link_video input,
   .vendor_edit_event #mb_gallery .link_video input {
     margin-right: 0;
     min-width: 100%;
     margin-bottom: 5px;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .link_video .select2,
 .vendor_edit_event #mb_gallery .link_video .select2 {
   margin-top: 0px;
   width: 100px !important;
   display: inline-block;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .link_video .select2 .select2-selection,
 .vendor_edit_event #mb_gallery .link_video .select2 .select2-selection {
   outline: none;
   height: 40px;
   border-radius: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .link_video .select2 .select2-selection .select2-selection__rendered,
 .vendor_edit_event #mb_gallery .link_video .select2 .select2-selection .select2-selection__rendered {
   line-height: 38px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .link_video .select2 .select2-selection .select2-selection__arrow,
 .vendor_edit_event #mb_gallery .link_video .select2 .select2-selection .select2-selection__arrow {
   height: 38px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .wrap_single_banner .wrap_image_banner,
 .vendor_edit_event #mb_gallery .wrap_single_banner .wrap_image_banner {
   display: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .wrap_single_banner .wrap_image_banner .content_image .image-preview-banner,
 .vendor_edit_event #mb_gallery .wrap_single_banner .wrap_image_banner .content_image .image-preview-banner {
   padding: 30px 0px 5px 0px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .wrap_single_banner .wrap_image_banner .add_image_banner,
 .vendor_edit_event #mb_gallery .wrap_single_banner .wrap_image_banner .add_image_banner {
   padding: 10px 20px;
   margin-bottom: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .wrap_single_banner .wrap_image_banner .remove_image_banner,
 .vendor_edit_event #mb_gallery .wrap_single_banner .wrap_image_banner .remove_image_banner {
   display: block;
   background-color: transparent;
@@ -10005,67 +10372,84 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   padding: 0;
   text-decoration: underline !important;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .wrap_single_banner .wrap_image_banner .remove_image_banner:hover,
 .vendor_edit_event #mb_gallery .wrap_single_banner .wrap_image_banner .remove_image_banner:hover {
   color: #ff775a;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket,
 .vendor_edit_event #mb_ticket {
   margin: 0px auto;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .person_type_wrapper .person_type_list .item,
 .vendor_edit_event #mb_ticket .person_type_wrapper .person_type_list .item {
   margin-bottom: 15px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .person_type_seat_wrap .person_type_seat .item,
 .vendor_edit_event #mb_ticket .person_type_seat_wrap .person_type_seat .item {
   margin-bottom: 15px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .wrap_seat_option,
 .vendor_edit_event #mb_ticket .wrap_seat_option {
   margin-bottom: 20px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .wrap_seat_option .radio_seat_option,
 .vendor_edit_event #mb_ticket .wrap_seat_option .radio_seat_option {
   display: inline-block;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .wrap_seat_option .radio_seat_option label:not(:first-child),
 .vendor_edit_event #mb_ticket .wrap_seat_option .radio_seat_option label:not(:first-child) {
   margin-left: 10px;
 }
 @media screen and (max-width: 768px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .wrap_seat_option .radio_seat_option label:not(:first-child),
   .vendor_edit_event #mb_ticket .wrap_seat_option .radio_seat_option label:not(:first-child) {
     margin-left: 0;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .wrap_seat_option textarea,
 .vendor_edit_event #mb_ticket .wrap_seat_option textarea {
   display: none;
   width: 100%;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .seating_map_wrapper,
 .vendor_edit_event #mb_ticket .seating_map_wrapper {
   margin: 15px 0px;
   display: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .seating_map_wrapper.is-active,
 .vendor_edit_event #mb_ticket .seating_map_wrapper.is-active {
   display: flex;
   flex-wrap: wrap;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .seating_map_wrapper label,
 .vendor_edit_event #mb_ticket .seating_map_wrapper label {
   display: inline-block;
   min-width: 150px;
   margin: 0px 30px 8px 0px;
 }
 @media screen and (max-width: 768px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .seating_map_wrapper label,
   .vendor_edit_event #mb_ticket .seating_map_wrapper label {
     display: block;
     width: 100%;
     margin: 0 30px 8px 0px;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .seating_map_wrapper .el-add-image-wrap .image-wrap,
 .vendor_edit_event #mb_ticket .seating_map_wrapper .el-add-image-wrap .image-wrap {
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .seating_map_wrapper .el-add-image-wrap .image-wrap .item,
 .vendor_edit_event #mb_ticket .seating_map_wrapper .el-add-image-wrap .image-wrap .item {
   max-width: 150px;
   margin: 0px 0px 15px 0px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .seating_map_wrapper .el-add-image-wrap .image-wrap .item img,
 .vendor_edit_event #mb_ticket .seating_map_wrapper .el-add-image-wrap .image-wrap .item img {
   display: block;
   width: 100%;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .seating_map_wrapper .el-add-image-wrap .image-wrap .el_remove_seating_map,
 .vendor_edit_event #mb_ticket .seating_map_wrapper .el-add-image-wrap .image-wrap .el_remove_seating_map {
   position: absolute;
   top: -15px;
@@ -10073,25 +10457,31 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   z-index: 999;
   text-decoration: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .seating_map_wrapper .el-add-image-wrap .image-wrap .el_remove_seating_map span,
 .vendor_edit_event #mb_ticket .seating_map_wrapper .el-add-image-wrap .image-wrap .el_remove_seating_map span {
   font-size: 25px;
   color: #F08378;
   transition: all 0.3s linear;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .seating_map_wrapper .el-add-image-wrap .image-wrap .el_remove_seating_map:hover span,
 .vendor_edit_event #mb_ticket .seating_map_wrapper .el-add-image-wrap .image-wrap .el_remove_seating_map:hover span {
   color: #f35444;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .wrap,
 .vendor_edit_event #mb_ticket .wrap {
   margin: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_item,
 .vendor_edit_event #mb_ticket .ticket_item {
   background-color: #eee;
   border-radius: 10px;
   margin-bottom: 30px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_item textarea,
 .vendor_edit_event #mb_ticket .ticket_item textarea {
   padding: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket,
 .vendor_edit_event #mb_ticket .heading_ticket {
   display: flex;
   align-items: center;
@@ -10100,6 +10490,7 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   background-color: #808080;
   border-radius: 10px 10px 0 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket input,
 .vendor_edit_event #mb_ticket .heading_ticket input {
   box-shadow: none;
   border: 0;
@@ -10111,78 +10502,100 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   font-size: 20px;
   padding: 5px 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket input:hover,
 .vendor_edit_event #mb_ticket .heading_ticket input:hover {
   cursor: pointer;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket input:focus,
 .vendor_edit_event #mb_ticket .heading_ticket input:focus {
   background-color: #fff;
   color: #000;
   border: 1px solid #e86c60;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket input::placeholder,
 .vendor_edit_event #mb_ticket .heading_ticket input::placeholder {
   color: #fff;
 }
-.vendor_edit_event #mb_ticket .heading_ticket .left, .vendor_edit_event #mb_ticket .heading_ticket .right {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket .left, .vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket .right,
+.vendor_edit_event #mb_ticket .heading_ticket .left,
+.vendor_edit_event #mb_ticket .heading_ticket .right {
   display: flex;
   align-items: center;
 }
-.vendor_edit_event #mb_ticket .heading_ticket .left i, .vendor_edit_event #mb_ticket .heading_ticket .right i {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket .left i, .vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket .right i,
+.vendor_edit_event #mb_ticket .heading_ticket .left i,
+.vendor_edit_event #mb_ticket .heading_ticket .right i {
   font-size: 22px;
   color: #fff;
   width: auto;
   height: auto;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket .left,
 .vendor_edit_event #mb_ticket .heading_ticket .left {
   width: calc(100% - 70px);
 }
 @media (max-width: 767.98px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket .left,
   .vendor_edit_event #mb_ticket .heading_ticket .left {
     width: calc(100% - 80px);
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket .left i,
 .vendor_edit_event #mb_ticket .heading_ticket .left i {
   margin-right: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket .right,
 .vendor_edit_event #mb_ticket .heading_ticket .right {
   width: 70px;
   justify-content: space-around;
 }
 @media (max-width: 767.98px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket .right,
   .vendor_edit_event #mb_ticket .heading_ticket .right {
     width: 80px;
   }
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket .right .move_ticket,
   .vendor_edit_event #mb_ticket .heading_ticket .right .move_ticket {
     display: none;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket .right i:hover,
 .vendor_edit_event #mb_ticket .heading_ticket .right i:hover {
   cursor: pointer;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket .right .delete_ticket,
 .vendor_edit_event #mb_ticket .heading_ticket .right .delete_ticket {
   transition: 0.3s all ease;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .heading_ticket .right .delete_ticket:hover,
 .vendor_edit_event #mb_ticket .heading_ticket .right .delete_ticket:hover {
   color: #ff0b07;
   transition: 0.3s all ease;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket input[type=radio],
 .vendor_edit_event #mb_ticket input[type=radio] {
   margin: 0 5px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket,
 .vendor_edit_event #mb_ticket .content_ticket {
   display: flex;
   flex-direction: column;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .id_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .id_ticket {
   display: none;
   margin: 20px 0 10px 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .id_ticket label,
 .vendor_edit_event #mb_ticket .content_ticket .id_ticket label {
   margin-right: 15px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .id_ticket input,
 .vendor_edit_event #mb_ticket .content_ticket .id_ticket input {
   height: 40px;
   min-width: 250px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket {
   display: flex;
   flex-wrap: wrap;
@@ -10190,6 +10603,7 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   margin: 0 10px;
   border-bottom: 1px solid #ddd;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col {
   width: 25%;
   display: flex;
@@ -10200,48 +10614,62 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   border-right: 1px solid #ddd;
 }
 @media (max-width: 1200px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col,
   .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col {
     width: 50%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col:last-child,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col:last-child {
   border-right: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col .top,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col .top {
   text-align: center;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col input,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col input {
   box-shadow: none;
 }
-.vendor_edit_event #mb_ticket .content_ticket .top_ticket .col input[type=number], .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col input[type=text] {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col input[type=number], .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col input[type=text],
+.vendor_edit_event #mb_ticket .content_ticket .top_ticket .col input[type=number],
+.vendor_edit_event #mb_ticket .content_ticket .top_ticket .col input[type=text] {
   margin-top: 15px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col #price_ticket_external,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col #price_ticket_external {
   display: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col_total_number_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col_total_number_ticket {
   display: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col_total_number_ticket.is-active,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket .col_total_number_ticket.is-active {
   display: flex;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .radio_type_price,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket .radio_type_price {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket #ova_mb_event_price_ticket_external,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket #ova_mb_event_price_ticket_external {
   display: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .ova_wrap_price_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket .ova_wrap_price_ticket {
   position: relative;
   display: flex;
   justify-content: center;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket #price_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket #price_ticket {
   width: 100%;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .ova_price_ticket_err,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket .ova_price_ticket_err {
   position: absolute;
   display: none;
@@ -10256,6 +10684,7 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   transform: translateX(-50%);
   z-index: 1;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .top_ticket .ova_price_ticket_err:before,
 .vendor_edit_event #mb_ticket .content_ticket .top_ticket .ova_price_ticket_err:before {
   content: "";
   position: absolute;
@@ -10269,44 +10698,57 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   border-bottom: 10px solid #dc2626;
   z-index: 1;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket {
   display: flex;
   align-items: baseline;
   padding: 20px 10px;
 }
 @media (max-width: 1200px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket,
   .vendor_edit_event #mb_ticket .content_ticket .middle_ticket {
     flex-wrap: wrap;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket {
   width: 50%;
   padding-right: 30px;
 }
 @media (max-width: 1200px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket,
   .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket {
     width: 100%;
     padding-right: 0;
   }
 }
-.vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .start_date, .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .end_date {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .start_date, .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .end_date,
+.vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .start_date,
+.vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .end_date {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   margin: 10px 0;
 }
-.vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .start_date span, .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .end_date span {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .start_date span, .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .end_date span,
+.vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .start_date span,
+.vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .end_date span {
   min-width: 180px;
 }
-.vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .start_date input, .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .end_date input {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .start_date input, .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .end_date input,
+.vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .start_date input,
+.vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .end_date input {
   margin: 5px;
   width: calc(50% - 10px);
 }
-.vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .start_date div, .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .end_date div {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .start_date div, .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .end_date div,
+.vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .start_date div,
+.vendor_edit_event #mb_ticket .content_ticket .middle_ticket .date_ticket .end_date div {
   display: flex;
   flex-wrap: wrap;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket {
   width: 50%;
   display: flex;
@@ -10319,12 +10761,14 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   justify-content: space-between;
 }
 @media (max-width: 1200px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket,
   .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket {
     width: 100%;
     border: 0;
     padding-left: 0;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div {
   display: flex;
   flex-direction: column;
@@ -10333,10 +10777,12 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   width: calc(33.3333% - 20px);
 }
 @media (max-width: 600px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div,
   .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div {
     width: 100%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span9,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span9 {
   display: flex;
   flex-direction: column;
@@ -10344,19 +10790,24 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   align-items: center;
   width: 100%;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 {
   width: 100%;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container {
   width: 100%;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container button,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container button {
   width: 100%;
   margin: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container.wp-picker-active,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container.wp-picker-active {
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container.wp-picker-active .wp-picker-input-wrap,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container.wp-picker-active .wp-picker-input-wrap {
   display: flex;
   vertical-align: top;
@@ -10364,18 +10815,22 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   left: 0;
   top: 36px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container.wp-picker-active .wp-picker-input-wrap label,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container.wp-picker-active .wp-picker-input-wrap label {
   margin-bottom: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container.wp-picker-active .wp-picker-input-wrap .wp-picker-clear,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container.wp-picker-active .wp-picker-input-wrap .wp-picker-clear {
   width: auto;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container.wp-picker-active .wp-picker-holder,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket > div .span3 .wp-picker-container.wp-picker-active .wp-picker-holder {
   position: absolute;
   z-index: 1;
   left: 0;
   top: 66px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket .view_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .middle_ticket .wrap_color_ticket .view_ticket {
   text-decoration: none;
   width: fit-content;
@@ -10387,12 +10842,15 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   border-radius: 5px;
   box-shadow: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket {
   margin: 0 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .title_add_desc,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .title_add_desc {
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .title_add_desc:after,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .title_add_desc:after {
   position: absolute;
   content: "";
@@ -10402,32 +10860,38 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   background-color: #ddd;
   height: 1px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .title_add_desc .text_title,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .title_add_desc .text_title {
   position: relative;
   background: #eee;
   padding-right: 30px;
   z-index: 1;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .title_add_desc .text_title i,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .title_add_desc .text_title i {
   display: inline-block;
   margin-left: 5px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   margin-top: 30px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc textarea,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc textarea {
   width: calc(80% - 10px);
   margin-right: 10px;
 }
 @media (max-width: 480px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc textarea,
   .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc textarea {
     width: 100%;
     margin-right: 0;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket {
   display: flex;
   flex-direction: column;
@@ -10438,24 +10902,30 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   text-decoration: none;
 }
 @media (max-width: 480px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket,
   .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket {
     width: 100%;
     margin-top: 10px;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket .add_image_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket .add_image_ticket {
   cursor: pointer;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket .add_image_ticket i,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket .add_image_ticket i {
   display: block;
   text-align: center;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket .add_image_ticket .image-preview-ticket,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket .add_image_ticket .image-preview-ticket {
   width: 150px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket .remove_image_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket .remove_image_ticket {
   margin-top: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket .remove_image_ticket span,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket .remove_image_ticket span {
   border: 1px solid #ccc;
   box-shadow: 0 1px 0 #ccc;
@@ -10465,6 +10935,7 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   margin-top: 10px;
   transition: 0.3s all ease;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket .remove_image_ticket span:hover,
 .vendor_edit_event #mb_ticket .content_ticket .bottom_ticket .content_desc .image_ticket .remove_image_ticket span:hover {
   transition: 0.3s all ease;
   background: #fafafa;
@@ -10472,39 +10943,50 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   color: #23282d;
   cursor: pointer;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list {
   margin: 20px 10px 0;
   display: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list.is-active,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list.is-active {
   display: block;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list label,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list label {
   margin-right: 20px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list textarea,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list textarea {
   width: calc(100% - 140px);
 }
 @media (max-width: 480px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list textarea,
   .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list textarea {
     width: 100%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_manually,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_manually {
   display: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_manually.is-active,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_manually.is-active {
   display: block;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_manually textarea,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_manually textarea {
   width: 100%;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic {
   display: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic.is-active,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic.is-active {
   display: block;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup {
   margin: 0;
   padding: 0;
@@ -10512,10 +10994,12 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   max-width: 500px;
 }
 @media screen and (max-width: 670px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup,
   .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup {
     max-width: 270px;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -10524,24 +11008,30 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   margin: 10px 0px 0px 0px;
 }
 @media screen and (max-width: 670px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item,
   .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item {
     grid-template-columns: 1fr;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item label,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item label {
   display: block;
   margin: 0;
   padding: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item input,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item input {
   width: 100%;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item input::-ms-input-placeholder,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item input::-ms-input-placeholder { /* Edge 12-18 */
   opacity: 0.5;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item input::placeholder,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item input::placeholder {
   opacity: 0.5;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item .remove_seat_code_row,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item .remove_seat_code_row {
   position: absolute;
   top: 50%;
@@ -10552,34 +11042,43 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   text-decoration: none;
   transition: all 0.3s linear;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item .remove_seat_code_row:hover,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item .remove_seat_code_row:hover {
   color: #f35444;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item .remove_seat_code_row span,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup .setup_item .remove_seat_code_row span {
   font-size: 25px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup li:not(:first-child),
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .seat_code_setup li:not(:first-child) {
   border-top: 1px solid #d1d1d1;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .add_seat_code_row,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_seat_list .seat_code_wrap .seat_code_container .seat_code_automatic .add_seat_code_row {
   margin: 15px 0px 0px 0px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_setup_seat,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_setup_seat {
   display: none;
   margin: 20px 10px 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_setup_seat label,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_setup_seat label {
   margin-right: 20px;
   margin-bottom: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .wrap_setup_seat span,
 .vendor_edit_event #mb_ticket .content_ticket .wrap_setup_seat span {
   display: flex;
   align-items: center;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket {
   display: none;
   margin: 20px 10px 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket .image_ticket_seat_map,
 .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket .image_ticket_seat_map {
   display: flex;
   flex-direction: column;
@@ -10591,15 +11090,19 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   cursor: pointer;
   margin-left: 15px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket .image_ticket_seat_map .add_seat_map_ticket i,
 .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket .image_ticket_seat_map .add_seat_map_ticket i {
   margin-right: 5px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket .image_ticket_seat_map .add_seat_map_ticket .image-preview-ticket,
 .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket .image_ticket_seat_map .add_seat_map_ticket .image-preview-ticket {
   width: 150px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket .image_ticket_seat_map .remove_seat_map_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket .image_ticket_seat_map .remove_seat_map_ticket {
   margin-top: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket .image_ticket_seat_map .remove_seat_map_ticket span,
 .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket .image_ticket_seat_map .remove_seat_map_ticket span {
   border: 1px solid #ccc;
   box-shadow: 0 1px 0 #ccc;
@@ -10610,11 +11113,13 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   transition: 0.3s all ease;
   cursor: pointer;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket .image_ticket_seat_map .remove_seat_map_ticket span:hover,
 .vendor_edit_event #mb_ticket .content_ticket .seat_map_ticket .image_ticket_seat_map .remove_seat_map_ticket span:hover {
   background: #fafafa;
   border-color: #999;
   color: #23282d;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .content_ticket .save_ticket,
 .vendor_edit_event #mb_ticket .content_ticket .save_ticket {
   display: flex;
   justify-content: center;
@@ -10627,6 +11132,7 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   font-weight: bold;
   box-shadow: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .add_ticket,
 .vendor_edit_event #mb_ticket .add_ticket {
   display: block;
   margin: 0 auto;
@@ -10637,18 +11143,22 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   height: auto;
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .container_desc_seat_map,
 .vendor_edit_event #mb_ticket .ticket_map .container_desc_seat_map {
   margin-bottom: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .ova_row,
 .vendor_edit_event #mb_ticket .ticket_map .ova_row {
   margin: 10px 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .top_content,
 .vendor_edit_event #mb_ticket .ticket_map .top_content {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: end;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .top_content .item-col,
 .vendor_edit_event #mb_ticket .ticket_map .top_content .item-col {
   display: flex;
   align-items: center;
@@ -10659,48 +11169,59 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   padding: 10px 20px;
 }
 @media (max-width: 767px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .top_content .item-col,
   .vendor_edit_event #mb_ticket .ticket_map .top_content .item-col {
     width: 100%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .top_content .col_min_number_ticket,
 .vendor_edit_event #mb_ticket .ticket_map .top_content .col_min_number_ticket {
   border-right: 1px solid #ddd;
   border-left: 1px solid #ddd;
 }
 @media (max-width: 767px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .top_content .col_min_number_ticket,
   .vendor_edit_event #mb_ticket .ticket_map .top_content .col_min_number_ticket {
     border: 0;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .top_content input,
 .vendor_edit_event #mb_ticket .ticket_map .top_content input {
   margin-top: 10px;
   max-width: 100%;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content {
   display: flex;
   flex-wrap: wrap;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .date_ticket,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content .date_ticket {
   width: 40%;
   border-right: 1px solid #ddd;
   box-sizing: border-box;
 }
 @media (max-width: 1200px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .date_ticket,
   .vendor_edit_event #mb_ticket .ticket_map .middle_content .date_ticket {
     width: 100%;
     border: none;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .date_ticket .date_ticket_row input:last-child,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content .date_ticket .date_ticket_row input:last-child {
   margin-left: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .date_ticket .end_date,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content .date_ticket .end_date {
   margin-top: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content button,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content button {
   outline: none;
   box-shadow: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket {
   display: flex;
   justify-content: space-around;
@@ -10708,37 +11229,45 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   width: 60%;
 }
 @media (max-width: 1200px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket,
   .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket {
     width: 100%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket > div,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket > div {
   width: 33.333%;
   padding: 0 20px;
   box-sizing: border-box;
 }
 @media (max-width: 767.98px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket > div,
   .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket > div {
     width: 100%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .span9,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .span9 {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container {
   width: 100%;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container button,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container button {
   width: 100%;
   margin: 0;
   border: 1px solid #e2e2e2;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container.wp-picker-active,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container.wp-picker-active {
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container.wp-picker-active .wp-picker-input-wrap,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container.wp-picker-active .wp-picker-input-wrap {
   display: flex;
   vertical-align: top;
@@ -10746,22 +11275,27 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   left: 0;
   top: 36px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container.wp-picker-active .wp-picker-input-wrap label,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container.wp-picker-active .wp-picker-input-wrap label {
   margin-bottom: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container.wp-picker-active .wp-picker-input-wrap .wp-picker-clear,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container.wp-picker-active .wp-picker-input-wrap .wp-picker-clear {
   width: auto;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container.wp-picker-active .wp-picker-holder,
 .vendor_edit_event #mb_ticket .ticket_map .middle_content .wrap_color_ticket .wp-picker-container.wp-picker-active .wp-picker-holder {
   position: absolute;
   z-index: 1;
   left: 0;
   top: 66px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket .content_desc,
 .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket .content_desc {
   display: flex;
   flex-wrap: wrap;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket .content_desc .image_ticket_map,
 .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket .content_desc .image_ticket_map {
   display: flex;
   flex-direction: column;
@@ -10772,13 +11306,16 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   text-decoration: none;
 }
 @media (max-width: 480px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket .content_desc .image_ticket_map,
   .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket .content_desc .image_ticket_map {
     width: 100%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket .content_desc .remove_image_ticket_map,
 .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket .content_desc .remove_image_ticket_map {
   margin-top: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket .content_desc .remove_image_ticket_map span,
 .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket .content_desc .remove_image_ticket_map span {
   border: 1px solid #ccc;
   box-shadow: 0 1px 0 #ccc;
@@ -10787,14 +11324,17 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   padding: 5px 10px;
   transition: 0.3s all ease;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket textarea,
 .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket textarea {
   width: 80%;
 }
 @media (max-width: 480px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket textarea,
   .vendor_edit_event #mb_ticket .ticket_map .bottom_ticket textarea {
     width: 100%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat {
   display: flex;
   align-items: end;
@@ -10803,34 +11343,43 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   padding: 10px 0;
   border-bottom: 1px dotted #e1e1e1;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat > div,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat > div {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col {
   margin-right: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col label,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col label {
   display: block;
   width: 100%;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col input,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col input {
   width: 100%;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container {
   width: 100%;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container button,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container button {
   width: 100%;
   margin: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container button .wp-color-result-text,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container button .wp-color-result-text {
   padding: 6px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container.wp-picker-active,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container.wp-picker-active {
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container.wp-picker-active .wp-picker-input-wrap,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container.wp-picker-active .wp-picker-input-wrap {
   display: flex;
   vertical-align: top;
@@ -10838,30 +11387,38 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   left: 0;
   top: 36px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container.wp-picker-active .wp-picker-input-wrap label,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container.wp-picker-active .wp-picker-input-wrap label {
   margin-bottom: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container.wp-picker-active .wp-picker-input-wrap .wp-picker-clear,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container.wp-picker-active .wp-picker-input-wrap .wp-picker-clear {
   width: auto;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container.wp-picker-active .wp-picker-holder,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .item-col .wp-picker-container.wp-picker-active .wp-picker-holder {
   position: absolute;
   z-index: 1;
   left: 0;
   top: 66px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat label,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat label {
   margin: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .wp-picker-container .wp-color-result,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .wp-picker-container .wp-color-result {
   margin: 0 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .wp-picker-container .wp-picker-clear,
 .vendor_edit_event #mb_ticket .ticket_map .item_desc_seat .wp-picker-container .wp-picker-clear {
   margin-left: 5px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map ul.type_map,
 .vendor_edit_event #mb_ticket .ticket_map ul.type_map {
   padding: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map ul.type_map li,
 .vendor_edit_event #mb_ticket .ticket_map ul.type_map li {
   position: relative;
   display: inline-flex;
@@ -10879,55 +11436,95 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   -moz-transition: all 0.3s ease;
   transition: all 0.3s ease;
 }
-.vendor_edit_event #mb_ticket .ticket_map ul.type_map li.active, .vendor_edit_event #mb_ticket .ticket_map ul.type_map li:hover {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map ul.type_map li.active, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map ul.type_map li:hover,
+.vendor_edit_event #mb_ticket .ticket_map ul.type_map li.active,
+.vendor_edit_event #mb_ticket .ticket_map ul.type_map li:hover {
   border-color: #e86c60;
   background-color: #e86c60;
   color: #FFF;
 }
-.vendor_edit_event #mb_ticket .ticket_map .item_seat, .vendor_edit_event #mb_ticket .ticket_map .item_area {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat,
+.vendor_edit_event #mb_ticket .ticket_map .item_area {
   padding: 10px 0;
   border-bottom: 1px dotted #e1e1e1;
   display: flex;
   align-items: flex-end;
   flex-wrap: wrap;
 }
-.vendor_edit_event #mb_ticket .ticket_map .item_seat input, .vendor_edit_event #mb_ticket .ticket_map .item_area input {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat input, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area input,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat input,
+.vendor_edit_event #mb_ticket .ticket_map .item_area input {
   margin-right: 10px;
 }
-.vendor_edit_event #mb_ticket .ticket_map .item_seat > div, .vendor_edit_event #mb_ticket .ticket_map .item_area > div {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div {
   display: flex;
   flex-direction: column;
   margin-right: 10px;
   margin-bottom: 5px;
 }
-.vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_seat_start_date, .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_seat_end_date, .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_area_start_date, .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_area_end_date, .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_seat_start_date, .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_seat_end_date, .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_area_start_date, .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_area_end_date {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_seat_start_date, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_seat_end_date, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_area_start_date, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_area_end_date, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_seat_start_date, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_seat_end_date, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_area_start_date, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_area_end_date,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_seat_start_date,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_seat_end_date,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_area_start_date,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_area_end_date,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_seat_start_date,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_seat_end_date,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_area_start_date,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_area_end_date {
   max-width: 120px;
 }
-.vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_seat_start_time, .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_seat_end_time, .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_area_start_time, .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_area_end_time, .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_seat_start_time, .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_seat_end_time, .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_area_start_time, .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_area_end_time {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_seat_start_time, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_seat_end_time, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_area_start_time, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_area_end_time, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_seat_start_time, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_seat_end_time, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_area_start_time, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_area_end_time,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_seat_start_time,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_seat_end_time,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_area_start_time,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div.map_area_end_time,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_seat_start_time,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_seat_end_time,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_area_start_time,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div.map_area_end_time {
   max-width: 110px;
 }
-.vendor_edit_event #mb_ticket .ticket_map .item_seat > div label, .vendor_edit_event #mb_ticket .ticket_map .item_area > div label {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div label, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div label,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div label,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div label {
   display: block;
   width: 100%;
 }
-.vendor_edit_event #mb_ticket .ticket_map .item_seat > div input, .vendor_edit_event #mb_ticket .ticket_map .item_seat > div select, .vendor_edit_event #mb_ticket .ticket_map .item_area > div input, .vendor_edit_event #mb_ticket .ticket_map .item_area > div select {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div input, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div select, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div input, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div select,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div input,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div select,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div input,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div select {
   width: 100%;
 }
-.vendor_edit_event #mb_ticket .ticket_map .item_seat > div .select2, .vendor_edit_event #mb_ticket .ticket_map .item_area > div .select2 {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div .select2, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div .select2,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div .select2,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div .select2 {
   min-width: 180px;
 }
-.vendor_edit_event #mb_ticket .ticket_map .item_seat > div .select2.select2-container--default .select2-selection--single, .vendor_edit_event #mb_ticket .ticket_map .item_area > div .select2.select2-container--default .select2-selection--single {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat > div .select2.select2-container--default .select2-selection--single, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area > div .select2.select2-container--default .select2-selection--single,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat > div .select2.select2-container--default .select2-selection--single,
+.vendor_edit_event #mb_ticket .ticket_map .item_area > div .select2.select2-container--default .select2-selection--single {
   border: 1px solid #ccc;
   border-radius: 4px;
   margin: 0;
 }
-.vendor_edit_event #mb_ticket .ticket_map .item_seat a.button, .vendor_edit_event #mb_ticket .ticket_map .item_area a.button {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_seat a.button, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .item_area a.button,
+.vendor_edit_event #mb_ticket .ticket_map .item_seat a.button,
+.vendor_edit_event #mb_ticket .ticket_map .item_area a.button {
   margin-bottom: 5px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .remove_seat_map,
 .vendor_edit_event #mb_ticket .ticket_map .remove_seat_map {
   height: 100% !important;
 }
-.vendor_edit_event #mb_ticket .ticket_map .add_desc_seat_map, .vendor_edit_event #mb_ticket .ticket_map .add_seat_map, .vendor_edit_event #mb_ticket .ticket_map .add_area_map {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .add_desc_seat_map, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .add_seat_map, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_map .add_area_map,
+.vendor_edit_event #mb_ticket .ticket_map .add_desc_seat_map,
+.vendor_edit_event #mb_ticket .ticket_map .add_seat_map,
+.vendor_edit_event #mb_ticket .ticket_map .add_area_map {
   margin: 0 auto;
   margin-top: 10px;
   width: fit-content;
@@ -10937,45 +11534,58 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   height: auto;
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_link label:first-child,
 .vendor_edit_event #mb_ticket .ticket_link label:first-child {
   margin-right: 30px;
   min-width: 150px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_link label:not(:first-child),
 .vendor_edit_event #mb_ticket .ticket_link label:not(:first-child) {
   margin-right: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_link .ticket-link-field,
 .vendor_edit_event #mb_ticket .ticket_link .ticket-link-field {
   display: inline-block;
   margin-right: 30px;
 }
 @media only screen and (max-width: 768px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_link label,
   .vendor_edit_event #mb_ticket .ticket_link label {
     width: 100%;
   }
 }
-.vendor_edit_event #mb_ticket .ticket_external_link, .vendor_edit_event #mb_ticket .ticket_external_link_price {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_external_link, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_external_link_price,
+.vendor_edit_event #mb_ticket .ticket_external_link,
+.vendor_edit_event #mb_ticket .ticket_external_link_price {
   margin-top: 30px;
 }
-.vendor_edit_event #mb_ticket .ticket_external_link label, .vendor_edit_event #mb_ticket .ticket_external_link_price label {
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_external_link label, .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_external_link_price label,
+.vendor_edit_event #mb_ticket .ticket_external_link label,
+.vendor_edit_event #mb_ticket .ticket_external_link_price label {
   min-width: 150px;
   margin-right: 30px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_internal_link .wrap_seat_option > label,
 .vendor_edit_event #mb_ticket .ticket_internal_link .wrap_seat_option > label {
   min-width: 150px;
   margin-right: 30px;
 }
 @media only screen and (max-width: 768px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_ticket .ticket_internal_link .wrap_seat_option label,
   .vendor_edit_event #mb_ticket .ticket_internal_link .wrap_seat_option label {
     width: 100%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event .wrap_event_tax label,
 .vendor_edit_event .wrap_event_tax label {
   min-width: 150px;
   margin-right: 30px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .manual,
 .vendor_edit_event #mb_calendar .manual {
   display: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .manual .item_calendar,
 .vendor_edit_event #mb_calendar .manual .item_calendar {
   display: flex;
   flex-wrap: wrap;
@@ -10985,25 +11595,30 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   padding-top: 10px;
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .manual .item_calendar > div,
 .vendor_edit_event #mb_calendar .manual .item_calendar > div {
   margin-right: 20px;
   margin-bottom: 15px;
   width: 16%;
 }
 @media (max-width: 1600px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_calendar .manual .item_calendar > div,
   .vendor_edit_event #mb_calendar .manual .item_calendar > div {
     width: unset;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .manual .item_calendar label,
 .vendor_edit_event #mb_calendar .manual .item_calendar label {
   min-width: 50px;
   display: block;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .manual .item_calendar input,
 .vendor_edit_event #mb_calendar .manual .item_calendar input {
   height: 40px;
   max-width: 120px;
   min-width: 100px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .manual .item_calendar .remove_calendar,
 .vendor_edit_event #mb_calendar .manual .item_calendar .remove_calendar {
   height: 40px;
   padding: 0 20px;
@@ -11011,32 +11626,41 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   right: 30px;
   bottom: 45px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .manual .add_calendar,
 .vendor_edit_event #mb_calendar .manual .add_calendar {
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto,
 .vendor_edit_event #mb_calendar .auto {
   display: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .vendor_field .select2,
 .vendor_edit_event #mb_calendar .auto .vendor_field .select2 {
   min-width: 200px;
 }
-.vendor_edit_event #mb_calendar .auto .time-range input, .vendor_edit_event #mb_calendar .auto .date-range input {
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .time-range input, .vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .date-range input,
+.vendor_edit_event #mb_calendar .auto .time-range input,
+.vendor_edit_event #mb_calendar .auto .date-range input {
   margin-bottom: 5px;
   max-width: 150px;
   min-width: 120px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #recurrence-interval,
 .vendor_edit_event #mb_calendar .auto #recurrence-interval {
   border-color: #ccc;
   border-radius: 5px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector,
 .vendor_edit_event #mb_calendar .auto #weekly-selector {
   margin: 15px 0px 0px 0px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly {
   display: flex;
   align-items: flex-start;
   flex-wrap: wrap;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays {
   display: inline-flex;
   align-items: flex-start;
@@ -11046,15 +11670,18 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   min-width: 250px;
   margin: 0 5px 5px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays label,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays label {
   line-height: 1;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item {
   margin-top: 10px;
   border: 1px solid #8c8f94;
@@ -11062,12 +11689,15 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   display: flex;
   overflow: hidden;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item:first-child,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item:first-child {
   margin-top: 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item:last-child,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item:last-child {
   margin-bottom: 10px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item input,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item input {
   width: 45%;
   border: none;
@@ -11077,15 +11707,19 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   cursor: pointer;
   min-width: unset;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item input:first-child,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item input:first-child {
   border-right: 1px solid #8c8f94;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item input:last-child,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item input:last-child {
   border-left: 1px solid #8c8f94;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item input:focus,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item input:focus {
   border: none;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item .close,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item .close {
   display: flex;
   align-items: center;
@@ -11103,25 +11737,31 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   -o-transition: all 0.3s ease;
   transition: all 0.3s ease;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item .close:hover,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays .ts-list .ts-item .close:hover {
   background-color: #ff1a1a;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays button,
 .vendor_edit_event #mb_calendar .auto #weekly-selector .ts-weekly .ts_recurrence_bydays button {
   width: 100%;
   margin: 0 0 20px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #monthly-selector,
 .vendor_edit_event #mb_calendar .auto #monthly-selector {
   display: inline-block;
 }
 @media (max-width: 1209px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #monthly-selector,
   .vendor_edit_event #mb_calendar .auto #monthly-selector {
     margin: 15px 0px 0px 0px;
   }
+  .vendor_wrap .contents .vendor_edit_event #mb_calendar .auto #monthly-selector .select2,
   .vendor_edit_event #mb_calendar .auto #monthly-selector .select2 {
     margin-bottom: 5px;
     height: 40px;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_date,
 .vendor_edit_event #mb_calendar .auto .disable_date {
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
@@ -11129,28 +11769,35 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   padding-bottom: 30px;
   margin-top: 30px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_date .label,
 .vendor_edit_event #mb_calendar .auto .disable_date .label {
   margin-top: 15px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_date .add_disable_date,
 .vendor_edit_event #mb_calendar .auto .disable_date .add_disable_date {
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_date .item_disable_date,
 .vendor_edit_event #mb_calendar .auto .disable_date .item_disable_date {
   margin-top: 20px;
   padding-bottom: 20px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_date .item_disable_date input,
 .vendor_edit_event #mb_calendar .auto .disable_date .item_disable_date input {
   max-width: 150px;
   min-width: 120px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_date .remove_disable_date,
 .vendor_edit_event #mb_calendar .auto .disable_date .remove_disable_date {
   background: #e86c60;
   transition: 0.4s ease;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_date .remove_disable_date:hover,
 .vendor_edit_event #mb_calendar .auto .disable_date .remove_disable_date:hover {
   background: #343434;
   border-color: #343434;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_time_slot,
 .vendor_edit_event #mb_calendar .auto .disable_time_slot {
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
@@ -11158,64 +11805,80 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   padding-bottom: 30px;
   margin-top: 30px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_time_slot .label,
 .vendor_edit_event #mb_calendar .auto .disable_time_slot .label {
   margin-top: 15px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_time_slot .add_disable_time_slot,
 .vendor_edit_event #mb_calendar .auto .disable_time_slot .add_disable_time_slot {
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_time_slot .item_disable_time_slot,
 .vendor_edit_event #mb_calendar .auto .disable_time_slot .item_disable_time_slot {
   margin-top: 20px;
   padding-bottom: 20px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_time_slot .item_disable_time_slot input,
 .vendor_edit_event #mb_calendar .auto .disable_time_slot .item_disable_time_slot input {
   max-width: 150px;
   min-width: 120px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_time_slot .remove_disable_time_slot,
 .vendor_edit_event #mb_calendar .auto .disable_time_slot .remove_disable_time_slot {
   background: #e86c60;
   transition: 0.4s ease;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .disable_time_slot .remove_disable_time_slot:hover,
 .vendor_edit_event #mb_calendar .auto .disable_time_slot .remove_disable_time_slot:hover {
   background: #343434;
   border-color: #343434;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .schedules_time,
 .vendor_edit_event #mb_calendar .auto .schedules_time {
   border-top: 1px solid #eee;
   padding-top: 30px;
   margin-top: 30px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .schedules_time .label,
 .vendor_edit_event #mb_calendar .auto .schedules_time .label {
   margin-top: 15px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .schedules_time input,
 .vendor_edit_event #mb_calendar .auto .schedules_time input {
   max-width: 120px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .schedules_time .add_schedules_time,
 .vendor_edit_event #mb_calendar .auto .schedules_time .add_schedules_time {
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .schedules_time .item_schedules_time,
 .vendor_edit_event #mb_calendar .auto .schedules_time .item_schedules_time {
   margin-top: 20px;
   padding-bottom: 20px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .schedules_time .item_schedules_time input,
 .vendor_edit_event #mb_calendar .auto .schedules_time .item_schedules_time input {
   margin-bottom: 5px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .schedules_time .remove_schedules_time,
 .vendor_edit_event #mb_calendar .auto .schedules_time .remove_schedules_time {
   background: #e86c60;
   transition: 0.4s ease;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_calendar .auto .schedules_time .remove_schedules_time:hover,
 .vendor_edit_event #mb_calendar .auto .schedules_time .remove_schedules_time:hover {
   background: #343434;
   border-color: #343434;
 }
 @media screen and (max-width: 479px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_calendar .option_calendar label,
   .vendor_edit_event #mb_calendar .option_calendar label {
     display: block;
     width: 100%;
     margin-left: 0;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_coupon .item_coupon,
 .vendor_edit_event #mb_coupon .item_coupon {
   border-radius: 0;
   margin-bottom: 30px;
@@ -11223,66 +11886,87 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   padding-block-end: 30px;
 }
 @media (max-width: 767px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_coupon .item_coupon,
   .vendor_edit_event #mb_coupon .item_coupon {
     padding: 15px;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_coupon .item_coupon .wrap_discount_code,
 .vendor_edit_event #mb_coupon .item_coupon .wrap_discount_code {
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_coupon .item_coupon .discount_amount input,
 .vendor_edit_event #mb_coupon .item_coupon .discount_amount input {
   max-width: 150px;
   margin-bottom: 5px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_coupon .item_coupon input[type=checkbox],
 .vendor_edit_event #mb_coupon .item_coupon input[type=checkbox] {
   margin-right: 5px;
   width: 16px;
   height: 16px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_coupon .item_coupon .discount_time div,
 .vendor_edit_event #mb_coupon .item_coupon .discount_time div {
   margin: 20px 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_coupon .item_coupon .discount_time div span,
 .vendor_edit_event #mb_coupon .item_coupon .discount_time div span {
   display: inline-block;
   min-width: 50px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_coupon .item_coupon .discount_time div input,
 .vendor_edit_event #mb_coupon .item_coupon .discount_time div input {
   margin-right: 20px;
   margin-bottom: 5px;
 }
-.vendor_edit_event #mb_coupon .item_coupon .discount_time .coupon_start_time, .vendor_edit_event #mb_coupon .item_coupon .discount_time .coupon_end_time {
+.vendor_wrap .contents .vendor_edit_event #mb_coupon .item_coupon .discount_time .coupon_start_time, .vendor_wrap .contents .vendor_edit_event #mb_coupon .item_coupon .discount_time .coupon_end_time,
+.vendor_edit_event #mb_coupon .item_coupon .discount_time .coupon_start_time,
+.vendor_edit_event #mb_coupon .item_coupon .discount_time .coupon_end_time {
   max-width: 150px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_coupon .item_coupon .remove_coupon,
 .vendor_edit_event #mb_coupon .item_coupon .remove_coupon {
   margin: 10px 0 0 0;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_coupon .add_coupon,
 .vendor_edit_event #mb_coupon .add_coupon {
   position: relative;
   display: flex;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_extra_service .el_extra_services,
 .vendor_edit_event #mb_extra_service .el_extra_services {
   margin: 0;
   padding: 0;
   max-width: 600px;
   list-style: none;
 }
-.vendor_edit_event #mb_extra_service .el_extra_services table, .vendor_edit_event #mb_extra_service .el_extra_services tr, .vendor_edit_event #mb_extra_service .el_extra_services td, .vendor_edit_event #mb_extra_service .el_extra_services th {
+.vendor_wrap .contents .vendor_edit_event #mb_extra_service .el_extra_services table, .vendor_wrap .contents .vendor_edit_event #mb_extra_service .el_extra_services tr, .vendor_wrap .contents .vendor_edit_event #mb_extra_service .el_extra_services td, .vendor_wrap .contents .vendor_edit_event #mb_extra_service .el_extra_services th,
+.vendor_edit_event #mb_extra_service .el_extra_services table,
+.vendor_edit_event #mb_extra_service .el_extra_services tr,
+.vendor_edit_event #mb_extra_service .el_extra_services td,
+.vendor_edit_event #mb_extra_service .el_extra_services th {
   border: 0;
   box-shadow: none;
 }
-.vendor_edit_event #mb_extra_service .el_extra_services th, .vendor_edit_event #mb_extra_service .el_extra_services td {
+.vendor_wrap .contents .vendor_edit_event #mb_extra_service .el_extra_services th, .vendor_wrap .contents .vendor_edit_event #mb_extra_service .el_extra_services td,
+.vendor_edit_event #mb_extra_service .el_extra_services th,
+.vendor_edit_event #mb_extra_service .el_extra_services td {
   padding: 10px 0px;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_extra_service .el_extra_services th,
 .vendor_edit_event #mb_extra_service .el_extra_services th {
   text-transform: capitalize;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_extra_service .el_extra_services .el_service_item,
 .vendor_edit_event #mb_extra_service .el_extra_services .el_service_item {
   padding: 10px 0px;
   border-bottom: 3px dashed #ccc;
   position: relative;
 }
+.vendor_wrap .contents .vendor_edit_event #mb_extra_service .el_extra_services .el_service_item .el_remove_service,
 .vendor_edit_event #mb_extra_service .el_extra_services .el_service_item .el_remove_service {
   background-color: #e86c60;
   border-color: #e86c60;
@@ -11291,18 +11975,22 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   right: 0;
 }
 @media screen and (max-width: 600px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_extra_service .el_extra_services .el_service_item .el_remove_service,
   .vendor_edit_event #mb_extra_service .el_extra_services .el_service_item .el_remove_service {
     position: relative;
   }
 }
 @media screen and (max-width: 600px) {
+  .vendor_wrap .contents .vendor_edit_event #mb_extra_service .el_extra_services .el_service_item input,
   .vendor_edit_event #mb_extra_service .el_extra_services .el_service_item input {
     max-width: 100%;
   }
 }
+.vendor_wrap .contents .vendor_edit_event #mb_extra_service #mb_add_services,
 .vendor_edit_event #mb_extra_service #mb_add_services {
   margin: 10px 0px;
 }
+.vendor_wrap .contents .vendor_edit_event .image_feature .image_box,
 .vendor_edit_event .image_feature .image_box {
   display: inline-flex;
   position: relative;
@@ -11311,11 +11999,13 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   width: 150px;
   height: 150px;
 }
+.vendor_wrap .contents .vendor_edit_event .image_feature .image_box .image-preview,
 .vendor_edit_event .image_feature .image_box .image-preview {
   display: block;
   width: 100%;
   object-fit: contain;
 }
+.vendor_wrap .contents .vendor_edit_event .image_feature .image_box .remove_image,
 .vendor_edit_event .image_feature .image_box .remove_image {
   position: absolute;
   top: -10px;
@@ -11323,22 +12013,27 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   opacity: 0.7;
   font-size: 20px;
 }
+.vendor_wrap .contents .vendor_edit_event .image_feature .image_box .remove_image:hover,
 .vendor_edit_event .image_feature .image_box .remove_image:hover {
   opacity: 1;
 }
+.vendor_wrap .contents .vendor_edit_event .gallery_list .gallery_item img,
 .vendor_edit_event .gallery_list .gallery_item img {
   width: 150px;
   height: 150px;
   object-fit: contain;
 }
+.vendor_wrap .contents .vendor_edit_event .image-preview-banner,
 .vendor_edit_event .image-preview-banner {
   max-height: 300px;
 }
+.vendor_wrap .contents .vendor_edit_event .event_type_section.event_basic_block,
 .vendor_edit_event .event_type_section.event_basic_block {
   border: 1px solid #eee;
   margin-bottom: 0 !important;
   padding: 30px 30px 0px 30px;
 }
+.vendor_wrap .contents .vendor_edit_event .wrap_btn_submit,
 .vendor_edit_event .wrap_btn_submit {
   display: flex;
   justify-content: flex-end;
@@ -11346,6 +12041,7 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   padding: 20px 0;
   gap: 15px;
 }
+.vendor_wrap .contents .vendor_edit_event .wrap_btn_submit .el_edit_event_submit,
 .vendor_edit_event .wrap_btn_submit .el_edit_event_submit {
   display: inline-flex;
   align-items: center;
@@ -11360,20 +12056,24 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   cursor: pointer;
   transition: all 0.3s ease;
 }
+.vendor_wrap .contents .vendor_edit_event .wrap_btn_submit .el_edit_event_submit::before,
 .vendor_edit_event .wrap_btn_submit .el_edit_event_submit::before {
   content: "\e603";
   font-family: "eleganticons";
   font-size: 18px;
 }
+.vendor_wrap .contents .vendor_edit_event .wrap_btn_submit .el_edit_event_submit:hover,
 .vendor_edit_event .wrap_btn_submit .el_edit_event_submit:hover {
   background: #e55a25;
   border-color: #e55a25;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 106, 61, 0.3);
 }
+.vendor_wrap .contents .vendor_edit_event .wrap_btn_submit .el_edit_event_submit:active,
 .vendor_edit_event .wrap_btn_submit .el_edit_event_submit:active {
   transform: scale(0.98);
 }
+.vendor_wrap .contents .vendor_edit_event .wrap_btn_submit .submit-load-more,
 .vendor_edit_event .wrap_btn_submit .submit-load-more {
   display: none;
 }
