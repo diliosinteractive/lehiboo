@@ -78,7 +78,7 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 									<span><?php esc_html_e( 'Aperçu', 'eventlist' ); ?></span>
 								</a>
 							<?php } ?>
-							<button type="button" class="btn_save_event">
+							<button type="button" class="btn_save_event" id="trigger_save_event">
 								<i class="icon_check"></i>
 								<span><?php esc_html_e( 'Enregistrer', 'eventlist' ); ?></span>
 							</button>
@@ -89,7 +89,6 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 				<form id="event_edit_form" action="" method="post" enctype="multipart/form-data" class="event_form_wrapper" autocomplete="off" autocorrect="off" autocapitalize="none"
 					data-required="<?php echo esc_attr( json_encode( $event_req_field ) ); ?>">
 					<input type="hidden" value="<?php echo esc_attr( $post_id ); ?>" id="el_post_id" name="el_post_id"/>
-					<?php wp_nonce_field( 'el_edit_event_nonce', 'el_edit_event_nonce' ); ?>
 
 					<!-- Navigation verticale à gauche (comme profil) -->
 					<div class="profile_navigation_sidebar">
@@ -203,9 +202,9 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 						<?php endif; ?>
 						<?php echo apply_filters( 'meup_send_create_event_recapcha', '' ); ?>
 
-						<!-- Bouton submit original (caché visuellement) nécessaire pour le JavaScript -->
-						<div class="wrap_btn_submit" style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;">
+						<div class="wrap_btn_submit">
 							<input class="el_edit_event_submit el_btn_add" name="el_edit_event_submit" type="submit" value="<?php esc_html_e( 'Save Event', 'eventlist' ); ?>" />
+							<?php wp_nonce_field( 'el_edit_event_nonce', 'el_edit_event_nonce' ); ?>
 							<div class="submit-load-more sendmail">
 								<div class="load-more">
 									<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
