@@ -1834,3 +1834,69 @@ $width-content: calc(100% - #{$width-sidebar});
 	}
 
 }
+// V1 Le Hiboo - Taxonomies sur single event
+.event_v1_taxonomies {
+	margin: 20px 0;
+	padding: 15px 0;
+	border-top: 1px solid #e0e0e0;
+	border-bottom: 1px solid #e0e0e0;
+
+	.event_taxonomy_item {
+		margin: 8px 0;
+		display: flex;
+		align-items: center;
+		font-size: 14px;
+
+		.taxonomy_label {
+			font-weight: 600;
+			color: #333;
+			margin-right: 8px;
+			white-space: nowrap;
+
+			i {
+				margin-right: 5px;
+				font-size: 16px;
+			}
+		}
+
+		.taxonomy_terms {
+			color: #666;
+
+			a {
+				color: #FF6B35;
+				text-decoration: none;
+				transition: color 0.3s ease;
+
+				&:hover {
+					color: #e55a25;
+					text-decoration: underline;
+				}
+			}
+		}
+
+		// Icône couleurs spécifiques
+		&.event_taxonomy_event_thematique .taxonomy_label i {
+			color: #FF6B35;
+		}
+
+		&.event_taxonomy_event_saison .taxonomy_label i {
+			color: #4ECDC4;
+		}
+
+		&.event_taxonomy_event_special .taxonomy_label i {
+			color: #FFD93D;
+		}
+	}
+
+	@media (max-width: 767px) {
+		.event_taxonomy_item {
+			flex-direction: column;
+			align-items: flex-start;
+
+			.taxonomy_label {
+				margin-bottom: 5px;
+			}
+		}
+	}
+}
+
