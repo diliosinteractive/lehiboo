@@ -78,7 +78,7 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 									<span><?php esc_html_e( 'Aperçu', 'eventlist' ); ?></span>
 								</a>
 							<?php } ?>
-							<button type="submit" form="event_edit_form" class="btn_save_event" name="el_edit_event_submit">
+							<button type="button" class="btn_save_event">
 								<i class="icon_check"></i>
 								<span><?php esc_html_e( 'Enregistrer', 'eventlist' ); ?></span>
 							</button>
@@ -203,8 +203,8 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 						<?php endif; ?>
 						<?php echo apply_filters( 'meup_send_create_event_recapcha', '' ); ?>
 
-						<!-- Bouton submit original (caché) nécessaire pour le JavaScript -->
-						<div class="wrap_btn_submit" style="display: none;">
+						<!-- Bouton submit original (caché visuellement) nécessaire pour le JavaScript -->
+						<div class="wrap_btn_submit" style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;">
 							<input class="el_edit_event_submit el_btn_add" name="el_edit_event_submit" type="submit" value="<?php esc_html_e( 'Save Event', 'eventlist' ); ?>" />
 							<div class="submit-load-more sendmail">
 								<div class="load-more">

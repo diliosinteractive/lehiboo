@@ -98,8 +98,14 @@
             e.preventDefault();
             e.stopPropagation();
 
-            // Déclencher le clic sur le bouton caché qui gère l'AJAX
-            $('.wrap_btn_submit .el_edit_event_submit').trigger('click');
+            // Rendre visible le loader pour l'utilisateur
+            $('.wrap_btn_submit .submit-load-more').show();
+
+            // Attendre un court délai pour que le DOM se mette à jour
+            setTimeout(function() {
+                // Déclencher le clic sur le bouton caché qui gère l'AJAX
+                $('.wrap_btn_submit .el_edit_event_submit').click();
+            }, 100);
         });
 
     });
