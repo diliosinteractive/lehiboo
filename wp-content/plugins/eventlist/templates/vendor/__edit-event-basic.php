@@ -116,7 +116,16 @@ $time_zone = get_post_meta( $post_id, $_prefix.'time_zone', true) ? get_post_met
 		el_get_taxonomy3('event_cat', 'event_cat', $selected_opt, $required ); ?>
 	</div>
 	
-	<?php if( apply_filters( 'el_show_timezone', true ) ){ ?>
+	<div class="wrap_cat vendor_field">
+		<label for="event_cat"><?php esc_html_e( 'Evénements associés', 'eventlist' ); ?></label>
+		
+		<?php 
+		$selected_opt = ! empty( $cats_selected ) ? $cats_selected[0] : '';
+		$required = true;
+		el_get_taxonomy3('event_cat', 'event_cat', $selected_opt, $required ); ?>
+	</div>
+	
+	<?php /* if( apply_filters( 'el_show_timezone', true ) ){ ?>
 		<div class="vendor_field">
 
 			<label>
@@ -131,7 +140,7 @@ $time_zone = get_post_meta( $post_id, $_prefix.'time_zone', true) ? get_post_met
 				<?php echo wp_timezone_choice( $time_zone, get_user_locale() ); ?>
 			</select>
 		</div>
-	<?php } ?>
+	<?php } */ ?>
 	
 	<?php
 	$arr_list_slug_taxonomy = [];

@@ -1,26 +1,23 @@
 /* ===============================================
    AIRBNB STYLE - LEHIBOO
-   Version ultra-minimaliste
+   Design propre et professionnel
    =============================================== */
 
 /* ========================================
    PAGE LISTE - GRILLE 4 COLONNES
    ======================================== */
 
-/* Grille 4 colonnes pour type1 */
 .event_archive.type1 {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
     gap: 24px !important;
 }
 
-/* Forcer 4 colonnes même avec classe two-column ou three-column */
 .event_archive.type1.two-column,
 .event_archive.type1.three-column {
     grid-template-columns: repeat(4, 1fr) !important;
 }
 
-/* Reset des styles de float/width qui pourraient venir du thème */
 .event_archive.type1 .event_entry {
     width: 100% !important;
     margin: 0 !important;
@@ -31,7 +28,6 @@
    RESPONSIVE LISTE
    ======================================== */
 
-/* Large Desktop (1440px+) */
 @media (min-width: 1440px) {
     .event_archive.type1,
     .event_archive.type1.two-column,
@@ -40,7 +36,6 @@
     }
 }
 
-/* Tablettes (768px - 1023px) */
 @media (min-width: 768px) and (max-width: 1023px) {
     .event_archive.type1,
     .event_archive.type1.two-column,
@@ -50,7 +45,6 @@
     }
 }
 
-/* Mobile paysage (550px - 767px) */
 @media (min-width: 550px) and (max-width: 767px) {
     .event_archive.type1,
     .event_archive.type1.two-column,
@@ -60,7 +54,6 @@
     }
 }
 
-/* Mobile portrait (max 549px) */
 @media (max-width: 549px) {
     .event_archive.type1,
     .event_archive.type1.two-column,
@@ -71,10 +64,9 @@
 }
 
 /* ========================================
-   PAGE DETAIL - AMÉLIORATIONS SUBTILES
+   PAGE DETAIL - BADGES
    ======================================== */
 
-/* Taxonomies en badges modernes */
 .single-event .event_taxonomy .content_tax {
     display: flex;
     flex-wrap: wrap;
@@ -100,7 +92,6 @@
     border-color: #222222;
 }
 
-/* Tags en badges */
 .single-event .event_tag .content_tag {
     display: flex;
     flex-wrap: wrap;
@@ -124,12 +115,10 @@
     border-color: #B0B0B0;
 }
 
-/* Card Admin avec border-radius */
 .single-event .info_user {
     border-radius: 12px;
 }
 
-/* Map avec border-radius */
 .single-event .event_map {
     border-radius: 12px;
     overflow: hidden;

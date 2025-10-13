@@ -51,13 +51,37 @@ $user_meta_field = get_option( 'ova_register_form' );
 
 				<ul class="vendor_tab">
 					<li data-id="author_profile">
-						<a href="#author_profile"><?php esc_html_e( 'Profile', 'eventlist' ); ?></a>
+						<a href="#author_profile"><?php esc_html_e( 'Mon profil', 'eventlist' ); ?></a>
 					</li>
 					<?php if( el_is_vendor() ){ ?>
+						<li data-id="author_organisation">
+							<a href="#author_organisation"><?php esc_html_e( 'Mon organisation', 'eventlist' ); ?></a>
+						</li>
+					<?php } ?>
+					<?php if( el_is_vendor() ){ ?>
+						<li data-id="author_presentation">
+							<a href="#author_presentation"><?php esc_html_e( 'Présentation', 'eventlist' ); ?></a>
+						</li>
+					<?php } ?>
+
+					<?php if( el_is_vendor() ){ ?>
+						<li data-id="author_localisation">
+							<a href="#author_localisation"><?php esc_html_e( 'Localisation', 'eventlist' ); ?></a>
+						</li>
+					<?php } ?>
+
+
+
+
+
+					<?php 
+					/* if( el_is_vendor() ){ ?>
 						<li data-id="author_social">
 							<a href="#author_social"><?php esc_html_e( 'Social', 'eventlist' ); ?></a>
 						</li>
-					<?php } ?>
+					<?php } */ 
+					?>
+
 					<li data-id="author_password">
 						<a href="#author_password"><?php esc_html_e( 'Password', 'eventlist' ); ?></a>
 					</li>
@@ -147,7 +171,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 							
 							<div class="vendor_field">
 								<label class="control-label" for="first_name">
-									<?php esc_html_e( 'First Name', 'eventlist' ); ?>
+									<?php esc_html_e( 'Prénom <sup>*</sup>', 'eventlist' ); ?>
 								</label>
 								<input id="first_name" value="<?php echo esc_attr( $first_name ); ?>" name="first_name" type="text" required>
 							</div>
@@ -185,7 +209,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 						$show_job = $OVALG_Settings ? $OVALG_Settings->show_job() : 'yes';
 						if( apply_filters( 'ovalg_register_user_show_job', true ) && $show_job == 'yes' ){ ?>
 							<div class="vendor_field">
-								<label class="control-label" for="user_job"><?php esc_html_e( 'Job', 'eventlist' ); ?></label>
+								<label class="control-label" for="user_job"><?php esc_html_e( 'Poste', 'eventlist' ); ?></label>
 								<input id="user_job" value="<?php echo esc_attr( $user_job ); ?>" name="user_job" type="text" placeholder="<?php esc_attr_e( 'CEO', 'eventlist' ); ?>" >
 							</div>
 						<?php } ?>

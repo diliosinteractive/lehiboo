@@ -95,7 +95,8 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 							</li>
 						<?php } ?>
 						
-						<?php if ( EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' && apply_filters( 'el_edit_event_show_coupon', true ) ) { ?>
+						<?php /*
+						if ( EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' && apply_filters( 'el_edit_event_show_coupon', true ) ) { ?>
 							<li data-id="mb_coupon">
 								<a href="#mb_coupon"><?php esc_html_e( 'Coupon', 'eventlist' ); ?></a>
 							</li>
@@ -111,12 +112,13 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 							<li data-id="mb_cancel_booking">
 								<a href="#mb_cancel_booking"><?php esc_html_e( 'Cancel booking', 'eventlist' ); ?></a>
 							</li>
-						<?php } ?>
+						<?php } */ ?>
 						<?php if ( apply_filters( 'el_create_event_show_extra_service_tab', true ) == true ): ?>
 							<li data-id="mb_extra_service">
 								<a href="#mb_extra_service"><?php esc_html_e( 'Extra Services', 'eventlist' ); ?></a>
 							</li>
-						<?php endif; ?>
+						<?php endif; 
+						 ?>
 
 					</ul>
 

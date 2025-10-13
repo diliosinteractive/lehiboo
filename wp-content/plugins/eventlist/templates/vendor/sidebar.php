@@ -141,6 +141,19 @@ $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_tic
 				</li>
 			<?php } ?>
 
+			
+			<?php if( apply_filters( 'el_manage_vendor_show_wishlist', true ) ){ ?>
+				<li class="menu_vendor_mywishlist <?php if ($vendor == 'galerie') echo esc_attr('active');  ?>">
+					<a href="<?php echo add_query_arg( 
+									array( 
+										'vendor' => 'galerie',
+									),
+									get_myaccount_page() ); ?>">
+						<i class="icon_heart"></i><?php esc_html_e( 'Ma galerie', 'eventlist' ); ?>
+					</a>
+				</li>
+			<?php } ?>
+
 			<li class="menu_vendor_myprofile <?php if ($vendor == 'profile') echo esc_attr('active');  ?>">
 				<a href="<?php echo add_query_arg(
 								array( 
