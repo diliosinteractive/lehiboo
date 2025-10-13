@@ -92,23 +92,19 @@
             });
         }
 
-        // Le bouton de la sticky bar déclenche le bouton submit réel
-        // IMPORTANT: Le script du plugin écoute l'événement 'click' sur .el_edit_event_submit
-        // On doit donc déclencher cet événement exactement comme si l'utilisateur avait cliqué
-        $('#trigger_save_event').on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
+        // Déplacer le vrai bouton submit dans la sticky bar
+        // Au lieu de déléguer le clic, on déplace physiquement le bouton
+        // Cela évite tous les problèmes de propagation d'événements
+        var $realSubmitButton = $('.wrap_btn_submit');
+        var $placeholder = $('#sticky_submit_placeholder');
 
-            var $realButton = $('.el_edit_event_submit');
+        if ($realSubmitButton.length && $placeholder.length) {
+            // Déplacer le bouton dans le placeholder
+            $realSubmitButton.appendTo($placeholder);
 
-            if ($realButton.length) {
-                // Déclencher l'événement click jQuery (pas le natif)
-                // car le plugin utilise jQuery pour attacher son handler
-                $realButton.trigger('click');
-            } else {
-                console.error('Bouton .el_edit_event_submit introuvable');
-            }
-        });
+            // Ajouter une classe pour le styling
+            $realSubmitButton.addClass('in-sticky-bar');
+        }
 
     });
 

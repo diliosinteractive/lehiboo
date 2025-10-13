@@ -78,15 +78,13 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 									<span><?php esc_html_e( 'Aperçu', 'eventlist' ); ?></span>
 								</a>
 							<?php } ?>
-							<button type="button" class="btn_save_event" id="trigger_save_event">
-								<i class="icon_check"></i>
-								<span><?php esc_html_e( 'Enregistrer', 'eventlist' ); ?></span>
-							</button>
+							<!-- Le vrai bouton submit sera positionné ici via CSS -->
+							<div id="sticky_submit_placeholder"></div>
 						</div>
 					</div>
 				</div>
 
-				<form id="event_edit_form" action="" method="post" enctype="multipart/form-data" class="event_form_wrapper" autocomplete="off" autocorrect="off" autocapitalize="none"
+				<form id="event_edit_form" action="" method="post" enctype="multipart/form-data" class="content event_form_wrapper" autocomplete="off" autocorrect="off" autocapitalize="none"
 					data-required="<?php echo esc_attr( json_encode( $event_req_field ) ); ?>">
 					<input type="hidden" value="<?php echo esc_attr( $post_id ); ?>" id="el_post_id" name="el_post_id"/>
 
