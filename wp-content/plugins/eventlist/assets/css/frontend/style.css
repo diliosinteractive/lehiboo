@@ -9012,7 +9012,636 @@ input.submit_bulk_action {
   /*event type class or online*/
 }
 .vendor_edit_event .el_req {
-  color: red;
+  color: #ff6a3d;
+  font-weight: 500;
+}
+.vendor_edit_event input[type=text],
+.vendor_edit_event input[type=email],
+.vendor_edit_event input[type=url],
+.vendor_edit_event input[type=number],
+.vendor_edit_event input[type=tel],
+.vendor_edit_event input[type=password],
+.vendor_edit_event input[type=date],
+.vendor_edit_event input[type=time],
+.vendor_edit_event textarea,
+.vendor_edit_event select {
+  padding: 12px 16px;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #2c3e50;
+  background-color: #ffffff;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 100%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.vendor_edit_event input[type=text]:hover,
+.vendor_edit_event input[type=email]:hover,
+.vendor_edit_event input[type=url]:hover,
+.vendor_edit_event input[type=number]:hover,
+.vendor_edit_event input[type=tel]:hover,
+.vendor_edit_event input[type=password]:hover,
+.vendor_edit_event input[type=date]:hover,
+.vendor_edit_event input[type=time]:hover,
+.vendor_edit_event textarea:hover,
+.vendor_edit_event select:hover {
+  border-color: #cbd5e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+.vendor_edit_event input[type=text]:focus,
+.vendor_edit_event input[type=email]:focus,
+.vendor_edit_event input[type=url]:focus,
+.vendor_edit_event input[type=number]:focus,
+.vendor_edit_event input[type=tel]:focus,
+.vendor_edit_event input[type=password]:focus,
+.vendor_edit_event input[type=date]:focus,
+.vendor_edit_event input[type=time]:focus,
+.vendor_edit_event textarea:focus,
+.vendor_edit_event select:focus {
+  outline: none;
+  border-color: #ff6a3d;
+  box-shadow: 0 0 0 3px rgba(255, 106, 61, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+}
+.vendor_edit_event input[type=text]::placeholder,
+.vendor_edit_event input[type=email]::placeholder,
+.vendor_edit_event input[type=url]::placeholder,
+.vendor_edit_event input[type=number]::placeholder,
+.vendor_edit_event input[type=tel]::placeholder,
+.vendor_edit_event input[type=password]::placeholder,
+.vendor_edit_event input[type=date]::placeholder,
+.vendor_edit_event input[type=time]::placeholder,
+.vendor_edit_event textarea::placeholder,
+.vendor_edit_event select::placeholder {
+  color: #a0aec0;
+  opacity: 1;
+}
+.vendor_edit_event input[type=text]:disabled, .vendor_edit_event input[type=text][readonly],
+.vendor_edit_event input[type=email]:disabled,
+.vendor_edit_event input[type=email][readonly],
+.vendor_edit_event input[type=url]:disabled,
+.vendor_edit_event input[type=url][readonly],
+.vendor_edit_event input[type=number]:disabled,
+.vendor_edit_event input[type=number][readonly],
+.vendor_edit_event input[type=tel]:disabled,
+.vendor_edit_event input[type=tel][readonly],
+.vendor_edit_event input[type=password]:disabled,
+.vendor_edit_event input[type=password][readonly],
+.vendor_edit_event input[type=date]:disabled,
+.vendor_edit_event input[type=date][readonly],
+.vendor_edit_event input[type=time]:disabled,
+.vendor_edit_event input[type=time][readonly],
+.vendor_edit_event textarea:disabled,
+.vendor_edit_event textarea[readonly],
+.vendor_edit_event select:disabled,
+.vendor_edit_event select[readonly] {
+  background-color: #f7fafc;
+  border-color: #e2e8f0;
+  color: #718096;
+  cursor: not-allowed;
+}
+.vendor_edit_event input[type=text].error,
+.vendor_edit_event input[type=email].error,
+.vendor_edit_event input[type=url].error,
+.vendor_edit_event input[type=number].error,
+.vendor_edit_event input[type=tel].error,
+.vendor_edit_event input[type=password].error,
+.vendor_edit_event input[type=date].error,
+.vendor_edit_event input[type=time].error,
+.vendor_edit_event textarea.error,
+.vendor_edit_event select.error {
+  border-color: #fc8181;
+  background-color: #fff5f5;
+}
+.vendor_edit_event textarea {
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+}
+.vendor_edit_event label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.vendor_edit_event label.required::after, .vendor_edit_event label:has(+ input:required)::after {
+  content: " *";
+  color: #ff6a3d;
+  font-weight: 600;
+}
+.vendor_edit_event .vendor_field {
+  margin-bottom: 24px;
+}
+.vendor_edit_event .vendor_field:last-child {
+  margin-bottom: 0;
+}
+.vendor_edit_event .vendor_field .field-description,
+.vendor_edit_event .vendor_field .helper-text {
+  display: block;
+  font-size: 13px;
+  color: #718096;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+.vendor_edit_event .heading_section {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 32px 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+}
+.vendor_edit_event .heading_section:first-child {
+  margin-top: 0;
+}
+.vendor_edit_event .heading_explain {
+  font-size: 14px;
+  color: #718096;
+  margin-top: 8px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+.vendor_edit_event .error {
+  color: #e53e3e;
+  font-size: 13px;
+  margin-top: 6px;
+  display: block;
+}
+.vendor_edit_event .error::before {
+  content: "⚠ ";
+}
+.vendor_edit_event .select2-container {
+  width: 100% !important;
+}
+.vendor_edit_event .select2-container .select2-selection {
+  border: 2px solid #e1e8ed !important;
+  border-radius: 8px !important;
+  min-height: 48px !important;
+  padding: 4px 8px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+.vendor_edit_event .select2-container .select2-selection:hover {
+  border-color: #cbd5e0 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06) !important;
+}
+.vendor_edit_event .select2-container .select2-selection .select2-selection__rendered {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  line-height: 38px !important;
+  color: #2c3e50 !important;
+  font-size: 15px !important;
+}
+.vendor_edit_event .select2-container .select2-selection .select2-selection__arrow {
+  height: 46px !important;
+  right: 8px !important;
+}
+.vendor_edit_event .select2-container.select2-container--open .select2-selection {
+  border-color: #ff6a3d !important;
+  box-shadow: 0 0 0 3px rgba(255, 106, 61, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+.vendor_edit_event .select2-dropdown {
+  border: 2px solid #ff6a3d !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+  margin-top: 4px !important;
+}
+.vendor_edit_event .select2-results__option {
+  padding: 10px 16px !important;
+  font-size: 15px !important;
+}
+.vendor_edit_event .select2-results__option--highlighted {
+  background-color: #fff5f0 !important;
+  color: #ff6a3d !important;
+}
+.vendor_edit_event .select2-results__option[aria-selected=true] {
+  background-color: #ff6a3d !important;
+  color: #ffffff !important;
+}
+.vendor_edit_event .button,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit) {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  line-height: 1.5;
+}
+.vendor_edit_event .button.add_image, .vendor_edit_event .button.add_ticket, .vendor_edit_event .button.add_calendar, .vendor_edit_event .button.add_social, .vendor_edit_event .button.add_schedules_time, .vendor_edit_event .button.add_coupon, .vendor_edit_event .button[class*=add_],
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_image,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_ticket,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_calendar,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_social,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_schedules_time,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_coupon,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=add_] {
+  background: #48bb78;
+  color: #ffffff;
+  border-color: #48bb78;
+}
+.vendor_edit_event .button.add_image i, .vendor_edit_event .button.add_ticket i, .vendor_edit_event .button.add_calendar i, .vendor_edit_event .button.add_social i, .vendor_edit_event .button.add_schedules_time i, .vendor_edit_event .button.add_coupon i, .vendor_edit_event .button[class*=add_] i,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_image i,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_ticket i,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_calendar i,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_social i,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_schedules_time i,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_coupon i,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=add_] i {
+  font-size: 16px;
+}
+.vendor_edit_event .button.add_image:hover, .vendor_edit_event .button.add_ticket:hover, .vendor_edit_event .button.add_calendar:hover, .vendor_edit_event .button.add_social:hover, .vendor_edit_event .button.add_schedules_time:hover, .vendor_edit_event .button.add_coupon:hover, .vendor_edit_event .button[class*=add_]:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_image:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_ticket:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_calendar:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_social:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_schedules_time:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_coupon:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=add_]:hover {
+  background: #38a169;
+  border-color: #38a169;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+}
+.vendor_edit_event .button.add_image:active, .vendor_edit_event .button.add_ticket:active, .vendor_edit_event .button.add_calendar:active, .vendor_edit_event .button.add_social:active, .vendor_edit_event .button.add_schedules_time:active, .vendor_edit_event .button.add_coupon:active, .vendor_edit_event .button[class*=add_]:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_image:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_ticket:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_calendar:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_social:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_schedules_time:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).add_coupon:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=add_]:active {
+  transform: scale(0.98);
+}
+.vendor_edit_event .button.remove_image, .vendor_edit_event .button.delete_ticket, .vendor_edit_event .button.remove_calendar, .vendor_edit_event .button.remove_social, .vendor_edit_event .button[class*=remove_], .vendor_edit_event .button[class*=delete_],
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_image,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).delete_ticket,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_calendar,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_social,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=remove_],
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=delete_] {
+  background: #f56565;
+  color: #ffffff;
+  border-color: #f56565;
+}
+.vendor_edit_event .button.remove_image i, .vendor_edit_event .button.delete_ticket i, .vendor_edit_event .button.remove_calendar i, .vendor_edit_event .button.remove_social i, .vendor_edit_event .button[class*=remove_] i, .vendor_edit_event .button[class*=delete_] i,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_image i,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).delete_ticket i,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_calendar i,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_social i,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=remove_] i,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=delete_] i {
+  font-size: 16px;
+}
+.vendor_edit_event .button.remove_image:hover, .vendor_edit_event .button.delete_ticket:hover, .vendor_edit_event .button.remove_calendar:hover, .vendor_edit_event .button.remove_social:hover, .vendor_edit_event .button[class*=remove_]:hover, .vendor_edit_event .button[class*=delete_]:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_image:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).delete_ticket:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_calendar:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_social:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=remove_]:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=delete_]:hover {
+  background: #e53e3e;
+  border-color: #e53e3e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+}
+.vendor_edit_event .button.remove_image:active, .vendor_edit_event .button.delete_ticket:active, .vendor_edit_event .button.remove_calendar:active, .vendor_edit_event .button.remove_social:active, .vendor_edit_event .button[class*=remove_]:active, .vendor_edit_event .button[class*=delete_]:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_image:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).delete_ticket:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_calendar:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).remove_social:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=remove_]:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=delete_]:active {
+  transform: scale(0.98);
+}
+.vendor_edit_event .button.preview_event, .vendor_edit_event .button[class*=view_],
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).preview_event,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=view_] {
+  background: #4299e1;
+  color: #ffffff;
+  border-color: #4299e1;
+}
+.vendor_edit_event .button.preview_event:hover, .vendor_edit_event .button[class*=view_]:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).preview_event:hover,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=view_]:hover {
+  background: #3182ce;
+  border-color: #3182ce;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+}
+.vendor_edit_event .button.preview_event:active, .vendor_edit_event .button[class*=view_]:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit).preview_event:active,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit)[class*=view_]:active {
+  transform: scale(0.98);
+}
+.vendor_edit_event .image_feature .image_box,
+.vendor_edit_event .image_feature .gallery_item,
+.vendor_edit_event .image_feature .wrap_image_banner,
+.vendor_edit_event .image_gallery .image_box,
+.vendor_edit_event .image_gallery .gallery_item,
+.vendor_edit_event .image_gallery .wrap_image_banner,
+.vendor_edit_event .wrap_image_banner .image_box,
+.vendor_edit_event .wrap_image_banner .gallery_item,
+.vendor_edit_event .wrap_image_banner .wrap_image_banner {
+  border: 2px dashed #cbd5e0;
+  border-radius: 8px;
+  padding: 12px;
+  transition: all 0.3s ease;
+  background-color: #f7fafc;
+}
+.vendor_edit_event .image_feature .image_box:hover,
+.vendor_edit_event .image_feature .gallery_item:hover,
+.vendor_edit_event .image_feature .wrap_image_banner:hover,
+.vendor_edit_event .image_gallery .image_box:hover,
+.vendor_edit_event .image_gallery .gallery_item:hover,
+.vendor_edit_event .image_gallery .wrap_image_banner:hover,
+.vendor_edit_event .wrap_image_banner .image_box:hover,
+.vendor_edit_event .wrap_image_banner .gallery_item:hover,
+.vendor_edit_event .wrap_image_banner .wrap_image_banner:hover {
+  border-color: #ff6a3d;
+  background-color: #fff5f0;
+}
+.vendor_edit_event .image_feature .add_image,
+.vendor_edit_event .image_feature .add_image_banner,
+.vendor_edit_event .image_gallery .add_image,
+.vendor_edit_event .image_gallery .add_image_banner,
+.vendor_edit_event .wrap_image_banner .add_image,
+.vendor_edit_event .wrap_image_banner .add_image_banner {
+  background: transparent;
+  border: 2px dashed #cbd5e0;
+  color: #718096;
+  padding: 24px;
+  text-align: center;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+.vendor_edit_event .image_feature .add_image:hover,
+.vendor_edit_event .image_feature .add_image_banner:hover,
+.vendor_edit_event .image_gallery .add_image:hover,
+.vendor_edit_event .image_gallery .add_image_banner:hover,
+.vendor_edit_event .wrap_image_banner .add_image:hover,
+.vendor_edit_event .wrap_image_banner .add_image_banner:hover {
+  border-color: #ff6a3d;
+  color: #ff6a3d;
+  background-color: #fff5f0;
+}
+.vendor_edit_event .image_feature .add_image i,
+.vendor_edit_event .image_feature .add_image_banner i,
+.vendor_edit_event .image_gallery .add_image i,
+.vendor_edit_event .image_gallery .add_image_banner i,
+.vendor_edit_event .wrap_image_banner .add_image i,
+.vendor_edit_event .wrap_image_banner .add_image_banner i {
+  display: block;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.vendor_edit_event .input_radio_group,
+.vendor_edit_event .radio_seat_option {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.vendor_edit_event .input_radio_group label,
+.vendor_edit_event .radio_seat_option label {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  margin-bottom: 0;
+  font-weight: 500;
+}
+.vendor_edit_event .input_radio_group label:hover,
+.vendor_edit_event .radio_seat_option label:hover {
+  border-color: #cbd5e0;
+  background-color: #f7fafc;
+}
+.vendor_edit_event .input_radio_group label input[type=radio],
+.vendor_edit_event .input_radio_group label input[type=checkbox],
+.vendor_edit_event .radio_seat_option label input[type=radio],
+.vendor_edit_event .radio_seat_option label input[type=checkbox] {
+  margin-right: 8px;
+}
+input[type=radio]:checked ~ .vendor_edit_event .input_radio_group label, input[type=checkbox]:checked ~ .vendor_edit_event .input_radio_group label,
+input[type=radio]:checked ~ .vendor_edit_event .radio_seat_option label,
+input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
+  border-color: #ff6a3d;
+  background-color: #fff5f0;
+  color: #ff6a3d;
+}
+.vendor_edit_event .event_basic_block {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+.vendor_edit_event .event_basic_block:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.vendor_edit_event .event_basic_block:last-child {
+  margin-bottom: 0;
+}
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.vendor_edit_event .ticket_item,
+.vendor_edit_event .item_calendar,
+.vendor_edit_event .social_item,
+.vendor_edit_event .item_coupon {
+  animation: slideInDown 0.3s ease;
+}
+.vendor_edit_event *:focus-visible {
+  outline: 3px solid #ff6a3d;
+  outline-offset: 2px;
+}
+.vendor_edit_event .skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #ff6a3d;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 0 0 4px 0;
+  z-index: 100;
+}
+.vendor_edit_event .skip-to-content:focus {
+  top: 0;
+}
+.vendor_edit_event [data-tooltip] {
+  position: relative;
+  cursor: help;
+}
+.vendor_edit_event [data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: #2d3748;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 1000;
+}
+.vendor_edit_event [data-tooltip]::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #2d3748;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+.vendor_edit_event [data-tooltip]:hover::after, .vendor_edit_event [data-tooltip]:hover::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+.vendor_edit_event .loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  z-index: 10;
+}
+.vendor_edit_event .loading-overlay::after {
+  content: "";
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #ff6a3d;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.vendor_edit_event .notice,
+.vendor_edit_event .message {
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  animation: fadeIn 0.3s ease;
+}
+.vendor_edit_event .notice::before,
+.vendor_edit_event .message::before {
+  font-family: "eleganticons";
+  font-size: 20px;
+}
+.vendor_edit_event .notice.success,
+.vendor_edit_event .message.success {
+  background: #f0fdf4;
+  border: 2px solid #86efac;
+  color: #166534;
+}
+.vendor_edit_event .notice.success::before,
+.vendor_edit_event .message.success::before {
+  content: "\e080";
+  color: #22c55e;
+}
+.vendor_edit_event .notice.error,
+.vendor_edit_event .message.error {
+  background: #fef2f2;
+  border: 2px solid #fca5a5;
+  color: #991b1b;
+}
+.vendor_edit_event .notice.error::before,
+.vendor_edit_event .message.error::before {
+  content: "\e078";
+  color: #ef4444;
+}
+.vendor_edit_event .notice.warning,
+.vendor_edit_event .message.warning {
+  background: #fffbeb;
+  border: 2px solid #fcd34d;
+  color: #92400e;
+}
+.vendor_edit_event .notice.warning::before,
+.vendor_edit_event .message.warning::before {
+  content: "\e002";
+  color: #f59e0b;
+}
+.vendor_edit_event .notice.info,
+.vendor_edit_event .message.info {
+  background: #eff6ff;
+  border: 2px solid #93c5fd;
+  color: #1e40af;
+}
+.vendor_edit_event .notice.info::before,
+.vendor_edit_event .message.info::before {
+  content: "\e0a6";
+  color: #3b82f6;
+}
+@media (max-width: 768px) {
+  .vendor_edit_event input[type=text],
+  .vendor_edit_event input[type=email],
+  .vendor_edit_event input[type=url],
+  .vendor_edit_event input[type=number],
+  .vendor_edit_event input[type=tel],
+  .vendor_edit_event input[type=password],
+  .vendor_edit_event textarea,
+  .vendor_edit_event select {
+    font-size: 16px;
+  }
+  .vendor_edit_event .event_basic_block {
+    padding: 16px;
+  }
+  .vendor_edit_event .button,
+  .vendor_edit_event button {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
 }
 .vendor_edit_event #mb_basic input[type=text] {
   min-width: 300px;

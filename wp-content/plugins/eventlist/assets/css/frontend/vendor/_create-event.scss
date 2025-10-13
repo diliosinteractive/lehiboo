@@ -272,7 +272,600 @@
 	background: #fff;
 
 	.el_req {
-		color: red;
+		color: #ff6a3d;
+		font-weight: 500;
+	}
+
+	// Amélioration globale des inputs, textarea et select
+	input[type="text"],
+	input[type="email"],
+	input[type="url"],
+	input[type="number"],
+	input[type="tel"],
+	input[type="password"],
+	input[type="date"],
+	input[type="time"],
+	textarea,
+	select {
+		padding: 12px 16px;
+		border: 2px solid #e1e8ed;
+		border-radius: 8px;
+		font-size: 15px;
+		line-height: 1.5;
+		color: #2c3e50;
+		background-color: #ffffff;
+		transition: all 0.3s ease;
+		width: 100%;
+		max-width: 100%;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+
+		&:hover {
+			border-color: #cbd5e0;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+		}
+
+		&:focus {
+			outline: none;
+			border-color: #ff6a3d;
+			box-shadow: 0 0 0 3px rgba(255, 106, 61, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08);
+			background-color: #ffffff;
+		}
+
+		&::placeholder {
+			color: #a0aec0;
+			opacity: 1;
+		}
+
+		&:disabled,
+		&[readonly] {
+			background-color: #f7fafc;
+			border-color: #e2e8f0;
+			color: #718096;
+			cursor: not-allowed;
+		}
+
+		&.error {
+			border-color: #fc8181;
+			background-color: #fff5f5;
+		}
+	}
+
+	textarea {
+		min-height: 120px;
+		resize: vertical;
+		font-family: inherit;
+	}
+
+	// Amélioration des labels
+	label {
+		display: block;
+		font-size: 14px;
+		font-weight: 600;
+		color: #2d3748;
+		margin-bottom: 8px;
+		line-height: 1.4;
+
+		&.required::after,
+		&:has(+ input:required)::after {
+			content: ' *';
+			color: #ff6a3d;
+			font-weight: 600;
+		}
+	}
+
+	// Groupes de champs pour meilleur espacement
+	.vendor_field {
+		margin-bottom: 24px;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+
+		// Sous-labels ou helper text
+		.field-description,
+		.helper-text {
+			display: block;
+			font-size: 13px;
+			color: #718096;
+			margin-top: 6px;
+			line-height: 1.5;
+		}
+	}
+
+	// Sections avec titres
+	.heading_section {
+		font-size: 18px;
+		font-weight: 700;
+		color: #1a202c;
+		margin: 32px 0 20px 0;
+		padding-bottom: 12px;
+		border-bottom: 2px solid #e2e8f0;
+
+		&:first-child {
+			margin-top: 0;
+		}
+	}
+
+	.heading_explain {
+		font-size: 14px;
+		color: #718096;
+		margin-top: 8px;
+		margin-bottom: 20px;
+		line-height: 1.6;
+	}
+
+	// Messages d'erreur
+	.error {
+		color: #e53e3e;
+		font-size: 13px;
+		margin-top: 6px;
+		display: block;
+
+		&::before {
+			content: '⚠ ';
+		}
+	}
+
+	// Amélioration des Select2
+	.select2-container {
+		width: 100% !important;
+
+		.select2-selection {
+			border: 2px solid #e1e8ed !important;
+			border-radius: 8px !important;
+			min-height: 48px !important;
+			padding: 4px 8px !important;
+			transition: all 0.3s ease !important;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+
+			&:hover {
+				border-color: #cbd5e0 !important;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06) !important;
+			}
+
+			.select2-selection__rendered {
+				padding-left: 8px !important;
+				padding-right: 8px !important;
+				line-height: 38px !important;
+				color: #2c3e50 !important;
+				font-size: 15px !important;
+			}
+
+			.select2-selection__arrow {
+				height: 46px !important;
+				right: 8px !important;
+			}
+		}
+
+		&.select2-container--open .select2-selection {
+			border-color: #ff6a3d !important;
+			box-shadow: 0 0 0 3px rgba(255, 106, 61, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+		}
+	}
+
+	.select2-dropdown {
+		border: 2px solid #ff6a3d !important;
+		border-radius: 8px !important;
+		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+		margin-top: 4px !important;
+	}
+
+	.select2-results__option {
+		padding: 10px 16px !important;
+		font-size: 15px !important;
+
+		&--highlighted {
+			background-color: #fff5f0 !important;
+			color: #ff6a3d !important;
+		}
+
+		&[aria-selected="true"] {
+			background-color: #ff6a3d !important;
+			color: #ffffff !important;
+		}
+	}
+
+	// Amélioration des boutons d'action
+	.button,
+	button:not(.btn_save_event):not(.el_edit_event_submit) {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 20px;
+		font-size: 14px;
+		font-weight: 500;
+		border-radius: 6px;
+		border: 2px solid transparent;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		text-decoration: none;
+		line-height: 1.5;
+
+		// Boutons primaires (ajouter, sauver)
+		&.add_image,
+		&.add_ticket,
+		&.add_calendar,
+		&.add_social,
+		&.add_schedules_time,
+		&.add_coupon,
+		&[class*="add_"] {
+			background: #48bb78;
+			color: #ffffff;
+			border-color: #48bb78;
+
+			i {
+				font-size: 16px;
+			}
+
+			&:hover {
+				background: #38a169;
+				border-color: #38a169;
+				transform: translateY(-1px);
+				box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+			}
+
+			&:active {
+				transform: scale(0.98);
+			}
+		}
+
+		// Boutons de suppression
+		&.remove_image,
+		&.delete_ticket,
+		&.remove_calendar,
+		&.remove_social,
+		&[class*="remove_"],
+		&[class*="delete_"] {
+			background: #f56565;
+			color: #ffffff;
+			border-color: #f56565;
+
+			i {
+				font-size: 16px;
+			}
+
+			&:hover {
+				background: #e53e3e;
+				border-color: #e53e3e;
+				transform: translateY(-1px);
+				box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+			}
+
+			&:active {
+				transform: scale(0.98);
+			}
+		}
+
+		// Boutons secondaires
+		&.preview_event,
+		&[class*="view_"] {
+			background: #4299e1;
+			color: #ffffff;
+			border-color: #4299e1;
+
+			&:hover {
+				background: #3182ce;
+				border-color: #3182ce;
+				transform: translateY(-1px);
+				box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+			}
+
+			&:active {
+				transform: scale(0.98);
+			}
+		}
+	}
+
+	// Amélioration des zones de fichiers/images
+	.image_feature,
+	.image_gallery,
+	.wrap_image_banner {
+		.image_box,
+		.gallery_item,
+		.wrap_image_banner {
+			border: 2px dashed #cbd5e0;
+			border-radius: 8px;
+			padding: 12px;
+			transition: all 0.3s ease;
+			background-color: #f7fafc;
+
+			&:hover {
+				border-color: #ff6a3d;
+				background-color: #fff5f0;
+			}
+		}
+
+		.add_image,
+		.add_image_banner {
+			background: transparent;
+			border: 2px dashed #cbd5e0;
+			color: #718096;
+			padding: 24px;
+			text-align: center;
+			border-radius: 8px;
+			transition: all 0.3s ease;
+
+			&:hover {
+				border-color: #ff6a3d;
+				color: #ff6a3d;
+				background-color: #fff5f0;
+			}
+
+			i {
+				display: block;
+				font-size: 32px;
+				margin-bottom: 8px;
+			}
+		}
+	}
+
+	// Amélioration des groupes de radio/checkbox
+	.input_radio_group,
+	.radio_seat_option {
+		display: flex;
+		gap: 16px;
+		flex-wrap: wrap;
+		margin: 12px 0;
+
+		label {
+			display: inline-flex;
+			align-items: center;
+			padding: 10px 16px;
+			border: 2px solid #e1e8ed;
+			border-radius: 8px;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			background-color: #ffffff;
+			margin-bottom: 0;
+			font-weight: 500;
+
+			&:hover {
+				border-color: #cbd5e0;
+				background-color: #f7fafc;
+			}
+
+			input[type="radio"],
+			input[type="checkbox"] {
+				margin-right: 8px;
+			}
+
+			input[type="radio"]:checked ~ &,
+			input[type="checkbox"]:checked ~ & {
+				border-color: #ff6a3d;
+				background-color: #fff5f0;
+				color: #ff6a3d;
+			}
+		}
+	}
+
+	// Amélioration des blocs de contenu
+	.event_basic_block {
+		background: #ffffff;
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		padding: 24px;
+		margin-bottom: 24px;
+		transition: all 0.3s ease;
+
+		&:hover {
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+		}
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	// Animations pour les éléments ajoutés dynamiquement
+	@keyframes slideInDown {
+		from {
+			opacity: 0;
+			transform: translateY(-10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	.ticket_item,
+	.item_calendar,
+	.social_item,
+	.item_coupon {
+		animation: slideInDown 0.3s ease;
+	}
+
+	// Amélioration de l'accessibilité - focus visible
+	*:focus-visible {
+		outline: 3px solid #ff6a3d;
+		outline-offset: 2px;
+	}
+
+	// Skip links pour accessibilité clavier
+	.skip-to-content {
+		position: absolute;
+		top: -40px;
+		left: 0;
+		background: #ff6a3d;
+		color: white;
+		padding: 8px 16px;
+		text-decoration: none;
+		border-radius: 0 0 4px 0;
+		z-index: 100;
+
+		&:focus {
+			top: 0;
+		}
+	}
+
+	// Tooltips améliorés
+	[data-tooltip] {
+		position: relative;
+		cursor: help;
+
+		&::after {
+			content: attr(data-tooltip);
+			position: absolute;
+			bottom: 100%;
+			left: 50%;
+			transform: translateX(-50%) translateY(-8px);
+			background: #2d3748;
+			color: white;
+			padding: 8px 12px;
+			border-radius: 6px;
+			font-size: 13px;
+			white-space: nowrap;
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 0.3s ease, transform 0.3s ease;
+			z-index: 1000;
+		}
+
+		&::before {
+			content: '';
+			position: absolute;
+			bottom: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+			border: 6px solid transparent;
+			border-top-color: #2d3748;
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 0.3s ease;
+			z-index: 1000;
+		}
+
+		&:hover::after,
+		&:hover::before {
+			opacity: 1;
+			transform: translateX(-50%) translateY(-4px);
+		}
+	}
+
+	// Indicateurs de chargement améliorés
+	.loading-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(255, 255, 255, 0.9);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 8px;
+		z-index: 10;
+
+		&::after {
+			content: '';
+			width: 40px;
+			height: 40px;
+			border: 4px solid #e2e8f0;
+			border-top-color: #ff6a3d;
+			border-radius: 50%;
+			animation: spin 0.8s linear infinite;
+		}
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	// Amélioration des messages de succès/erreur
+	.notice,
+	.message {
+		padding: 16px 20px;
+		border-radius: 8px;
+		margin: 16px 0;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		font-size: 14px;
+		animation: fadeIn 0.3s ease;
+
+		&::before {
+			font-family: 'eleganticons';
+			font-size: 20px;
+		}
+
+		&.success {
+			background: #f0fdf4;
+			border: 2px solid #86efac;
+			color: #166534;
+
+			&::before {
+				content: '\e080';
+				color: #22c55e;
+			}
+		}
+
+		&.error {
+			background: #fef2f2;
+			border: 2px solid #fca5a5;
+			color: #991b1b;
+
+			&::before {
+				content: '\e078';
+				color: #ef4444;
+			}
+		}
+
+		&.warning {
+			background: #fffbeb;
+			border: 2px solid #fcd34d;
+			color: #92400e;
+
+			&::before {
+				content: '\e002';
+				color: #f59e0b;
+			}
+		}
+
+		&.info {
+			background: #eff6ff;
+			border: 2px solid #93c5fd;
+			color: #1e40af;
+
+			&::before {
+				content: '\e0a6';
+				color: #3b82f6;
+			}
+		}
+	}
+
+	// Amélioration responsive
+	@media (max-width: 768px) {
+		input[type="text"],
+		input[type="email"],
+		input[type="url"],
+		input[type="number"],
+		input[type="tel"],
+		input[type="password"],
+		textarea,
+		select {
+			font-size: 16px; // Évite le zoom sur iOS
+		}
+
+		.event_basic_block {
+			padding: 16px;
+		}
+
+		.button,
+		button {
+			padding: 12px 16px;
+			font-size: 14px;
+		}
 	}
 
 	#mb_basic {
