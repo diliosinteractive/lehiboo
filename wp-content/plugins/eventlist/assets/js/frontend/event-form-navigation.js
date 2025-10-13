@@ -95,8 +95,15 @@
         // Le bouton de la sticky bar déclenche le bouton submit réel
         $('#trigger_save_event').on('click', function(e) {
             e.preventDefault();
-            // Cliquer sur le vrai bouton submit dans le formulaire
-            $('.el_edit_event_submit').click();
+
+            // Trouver le vrai bouton et déclencher son événement
+            var $realButton = $('.el_edit_event_submit');
+
+            if ($realButton.length) {
+                // Utiliser la méthode native DOM au lieu de jQuery
+                // pour éviter les problèmes de propagation d'événement
+                $realButton[0].click();
+            }
         });
 
     });
