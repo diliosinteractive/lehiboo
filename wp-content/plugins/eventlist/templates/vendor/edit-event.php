@@ -86,7 +86,7 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 					</div>
 				</div>
 
-				<form id="event_edit_form" action="<?php echo esc_url( home_url('/') ); ?>" method="post" enctype="multipart/form-data" class="event_form_wrapper" autocomplete="off" autocorrect="off" autocapitalize="none"
+				<form id="event_edit_form" action="" method="post" enctype="multipart/form-data" class="event_form_wrapper" autocomplete="off" autocorrect="off" autocapitalize="none"
 					data-required="<?php echo esc_attr( json_encode( $event_req_field ) ); ?>">
 					<input type="hidden" value="<?php echo esc_attr( $post_id ); ?>" id="el_post_id" name="el_post_id"/>
 					<?php wp_nonce_field( 'el_edit_event_nonce', 'el_edit_event_nonce' ); ?>

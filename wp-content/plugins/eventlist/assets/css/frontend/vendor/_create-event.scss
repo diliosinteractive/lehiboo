@@ -9,13 +9,26 @@
 	border-bottom: 2px solid #e0e0e0;
 	padding: 0;
 	position: sticky;
-	top: 80px; // Ajusté pour ne pas être caché par le menu sticky du site (hauteur ~80px)
+	top: 80px; // Menu du site (hauteur ~80px)
 	z-index: 100;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 	transition: box-shadow 0.3s ease;
 
+	// Si barre admin WordPress visible (utilisateur connecté)
+	.admin-bar & {
+		top: 112px; // 80px (menu) + 32px (barre admin desktop)
+
+		@media (max-width: 782px) {
+			top: 126px; // 80px (menu) + 46px (barre admin mobile)
+		}
+	}
+
 	@media (max-width: 768px) {
-		top: 60px; // Menu mobile généralement plus petit
+		top: 60px; // Menu mobile plus petit
+
+		.admin-bar & {
+			top: 106px; // 60px (menu mobile) + 46px (barre admin mobile)
+		}
 	}
 
 	&.is-scrolled {

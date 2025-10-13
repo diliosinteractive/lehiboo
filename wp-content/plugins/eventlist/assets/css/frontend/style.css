@@ -8777,9 +8777,20 @@ input.submit_bulk_action {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease;
 }
+.admin-bar .event_form_sticky_bar {
+  top: 112px;
+}
+@media (max-width: 782px) {
+  .admin-bar .event_form_sticky_bar {
+    top: 126px;
+  }
+}
 @media (max-width: 768px) {
   .event_form_sticky_bar {
     top: 60px;
+  }
+  .admin-bar .event_form_sticky_bar {
+    top: 106px;
   }
 }
 .event_form_sticky_bar.is-scrolled {
