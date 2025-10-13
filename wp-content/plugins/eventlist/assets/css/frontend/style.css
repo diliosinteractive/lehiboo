@@ -8772,10 +8772,15 @@ input.submit_bulk_action {
   border-bottom: 2px solid #e0e0e0;
   padding: 0;
   position: sticky;
-  top: 0;
+  top: 80px;
   z-index: 100;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease;
+}
+@media (max-width: 768px) {
+  .event_form_sticky_bar {
+    top: 60px;
+  }
 }
 .event_form_sticky_bar.is-scrolled {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);

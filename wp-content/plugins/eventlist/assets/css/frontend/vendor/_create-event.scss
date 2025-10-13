@@ -9,10 +9,14 @@
 	border-bottom: 2px solid #e0e0e0;
 	padding: 0;
 	position: sticky;
-	top: 0;
+	top: 80px; // Ajusté pour ne pas être caché par le menu sticky du site (hauteur ~80px)
 	z-index: 100;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 	transition: box-shadow 0.3s ease;
+
+	@media (max-width: 768px) {
+		top: 60px; // Menu mobile généralement plus petit
+	}
 
 	&.is-scrolled {
 		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
