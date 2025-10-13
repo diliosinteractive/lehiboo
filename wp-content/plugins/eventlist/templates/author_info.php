@@ -33,6 +33,15 @@ if( $author_id ){
 
 	$user_job = get_user_meta( $author_id, 'user_job', true ) ? get_user_meta( $author_id, 'user_job', true ) : '';
 
+	// V1 Le Hiboo - Nouvelles données organisation
+	$org_name = get_user_meta( $author_id, 'org_name', true ) ? get_user_meta( $author_id, 'org_name', true ) : '';
+	$org_cover_image = get_user_meta( $author_id, 'org_cover_image', true ) ? get_user_meta( $author_id, 'org_cover_image', true ) : '';
+	$org_web = get_user_meta( $author_id, 'org_web', true ) ? get_user_meta( $author_id, 'org_web', true ) : '';
+	$user_professional_email = get_user_meta( $author_id, 'user_professional_email', true ) ? get_user_meta( $author_id, 'user_professional_email', true ) : '';
+	$user_country = get_user_meta( $author_id, 'user_country', true ) ? get_user_meta( $author_id, 'user_country', true ) : '';
+	$user_city = get_user_meta( $author_id, 'user_city', true ) ? get_user_meta( $author_id, 'user_city', true ) : '';
+	$user_postcode = get_user_meta( $author_id, 'user_postcode', true ) ? get_user_meta( $author_id, 'user_postcode', true ) : '';
+
 	$info_organizer = get_post_meta( $eid, OVA_METABOX_EVENT.'info_organizer', true ) ? get_post_meta( $eid, OVA_METABOX_EVENT.'info_organizer', true ) : '';
 	$name_organizer = ( get_post_meta( $eid, OVA_METABOX_EVENT.'name_organizer', true ) ? get_post_meta( $eid, OVA_METABOX_EVENT.'name_organizer', true ) : '' );
 	$phone_organizer = ( get_post_meta( $eid, OVA_METABOX_EVENT.'phone_organizer', true ) ? get_post_meta( $eid, OVA_METABOX_EVENT.'phone_organizer', true ) : '' );
@@ -41,6 +50,13 @@ if( $author_id ){
 	$social_organizer = ( get_post_meta( $eid, OVA_METABOX_EVENT.'social_organizer', true ) ? get_post_meta( $eid, OVA_METABOX_EVENT.'social_organizer', true ) : array() );
 
 	?>
+
+	<!-- V1 Le Hiboo - Image de couverture -->
+	<?php if ( !is_singular('event') && $org_cover_image ) : ?>
+		<div class="author_cover_image">
+			<img src="<?php echo esc_url( wp_get_attachment_image_url( $org_cover_image, 'full' ) ); ?>" alt="<?php echo esc_attr( $org_name ? $org_name : $display_name ); ?>" />
+		</div>
+	<?php endif; ?>
 
 	<!-- Info -->
 	<div class="info_user event_section_white">
@@ -54,20 +70,23 @@ if( $author_id ){
 			<div class="author_name second_font">
 				<a class="name" href="<?php echo esc_url( get_author_posts_url( $author_id ) ); ?> ">
 					<?php if (is_singular('event') && $info_organizer == 'checked') {
-						echo esc_html( $name_organizer ); 
+						echo esc_html( $name_organizer );
+					} elseif ( !is_singular('event') && $org_name ) {
+						// V1 Le Hiboo - Afficher le nom de l'organisation sur le profil public
+						echo esc_html( $org_name );
 					} else {
-						echo esc_html( $display_name ); 
+						echo esc_html( $display_name );
 					} ?>
 				</a>
-				
+
 				<div class="user_job second_font">
 					<?php if (is_singular('event') && $info_organizer == 'checked') {
-						echo esc_html( $job_organizer ); 
+						echo esc_html( $job_organizer );
 					} else {
-						echo esc_html( $user_job ); 
+						echo esc_html( $user_job );
 					} ?>
 				</div>
-				
+
 			</div>
 
 		</div>
@@ -99,6 +118,9 @@ if( $author_id ){
 					<i class="icon_mail"></i>
 					<?php if (is_singular('event') && $info_organizer == 'checked') { ?>
 						<a href="<?php echo esc_attr('mailto:'.$mail_organizer); ?>"><?php echo esc_html( $mail_organizer ); ?></a>
+					<?php } elseif ( !is_singular('event') && $user_professional_email ) { ?>
+						<!-- V1 Le Hiboo - Email professionnel sur profil public -->
+						<a href="<?php echo esc_attr('mailto:'.$user_professional_email); ?>"><?php echo esc_html( $user_professional_email ); ?></a>
 					<?php } else { ?>
 						<a href="<?php echo esc_attr('mailto:'.$user_email); ?>"><?php echo esc_html( $user_email ); ?></a>
 					<?php	} ?>
@@ -106,7 +128,13 @@ if( $author_id ){
 			<?php } ?>
 
 			<?php if ( apply_filters( 'el_show_website_info', true ) ): ?>
-				<?php if ( $author_data->user_url ): ?>
+				<?php if ( !is_singular('event') && $org_web ) : ?>
+					<!-- V1 Le Hiboo - Site web de l'organisation -->
+					<div class="website">
+						<i class="fas fa-link"></i>
+						<a href="<?php echo esc_url( $org_web ); ?>" rel="nofollow" target="_blank"><?php echo esc_html( $org_web ); ?></a>
+					</div>
+				<?php elseif ( $author_data->user_url ): ?>
 					<div class="website">
 						<i class="fas fa-link"></i>
 						<a href="<?php echo esc_url( $author_data->user_url ); ?>" rel="nofollow" target="_blank"><?php echo esc_html( $author_data->user_url ); ?></a>
@@ -114,11 +142,38 @@ if( $author_id ){
 				<?php endif; ?>
 			<?php endif; ?>
 
-			<?php if ( is_author() && $user_address && apply_filters( 'el_show_address_info', true ) ) { ?>
-				<div class="address">
-					<i class="icon_pin_alt"></i>
-					<span style="display: block;"><?php echo esc_html($user_address); ?></span>
-				</div>
+			<?php if ( is_author() && apply_filters( 'el_show_address_info', true ) ) { ?>
+				<?php if ( $user_city || $user_country ) : ?>
+					<!-- V1 Le Hiboo - Localisation structurée -->
+					<div class="address">
+						<i class="icon_pin_alt"></i>
+						<span style="display: block;">
+							<?php
+							$location_parts = array();
+							if ( $user_postcode ) $location_parts[] = $user_postcode;
+							if ( $user_city ) $location_parts[] = $user_city;
+							if ( $user_country ) {
+								$countries = array(
+									'FR' => __( 'France', 'eventlist' ),
+									'BE' => __( 'Belgique', 'eventlist' ),
+									'CH' => __( 'Suisse', 'eventlist' ),
+									'CA' => __( 'Canada', 'eventlist' ),
+									'LU' => __( 'Luxembourg', 'eventlist' ),
+									'MC' => __( 'Monaco', 'eventlist' ),
+								);
+								$location_parts[] = isset( $countries[$user_country] ) ? $countries[$user_country] : $user_country;
+							}
+							echo esc_html( implode( ', ', $location_parts ) );
+							?>
+						</span>
+					</div>
+				<?php elseif ( $user_address ) : ?>
+					<!-- Fallback sur l'adresse legacy -->
+					<div class="address">
+						<i class="icon_pin_alt"></i>
+						<span style="display: block;"><?php echo esc_html($user_address); ?></span>
+					</div>
+				<?php endif; ?>
 			<?php } ?>
 			
 
