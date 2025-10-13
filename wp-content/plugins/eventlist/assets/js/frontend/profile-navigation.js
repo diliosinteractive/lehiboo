@@ -168,6 +168,50 @@
             });
         });
 
+        // Soumission du formulaire "Localisation" - V1 Le Hiboo
+        $('#el_save_localisation').on('submit', function(e) {
+            e.preventDefault();
+
+            var $form = $(this);
+            var $button = $form.find('input[type="submit"]');
+            var $loader = $form.find('.ova__loader');
+            var formData = $form.serializeArray();
+            var dataObj = {};
+
+            // Convertir en objet
+            $.each(formData, function(i, field) {
+                dataObj[field.name] = field.value;
+            });
+
+            // Afficher le loader
+            $button.prop('disabled', true);
+            $loader.show();
+
+            $.ajax({
+                url: ajax_object.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'el_update_localisation',
+                    data: dataObj
+                },
+                success: function(response) {
+                    $button.prop('disabled', false);
+                    $loader.hide();
+
+                    if (response.success) {
+                        alert(response.data.message || 'Enregistré avec succès !');
+                    } else {
+                        alert(response.data.message || 'Une erreur est survenue.');
+                    }
+                },
+                error: function() {
+                    $button.prop('disabled', false);
+                    $loader.hide();
+                    alert('Erreur de connexion. Veuillez réessayer.');
+                }
+            });
+        });
+
         // Gestion de l'upload de l'image de couverture
         var coverImageFrame;
 

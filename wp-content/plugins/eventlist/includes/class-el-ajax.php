@@ -36,6 +36,9 @@ if( !class_exists( 'El_Ajax' ) ){
 				// Vendor Update Presentation (V1 Le Hiboo)
 				'el_update_presentation',
 
+				// Vendor Update Localisation (V1 Le Hiboo)
+				'el_update_localisation',
+
 				// Vendor Add Social
 				'el_add_social',
 
@@ -970,6 +973,7 @@ if( !class_exists( 'El_Ajax' ) ){
 			$user_email = isset( $post_data['user_email'] ) ? sanitize_text_field( $post_data['user_email'] ) : '';
 			$user_job = isset( $post_data['user_job'] ) ? sanitize_text_field( $post_data['user_job'] ) : '';
 			$user_phone = isset( $post_data['user_phone'] ) ? sanitize_text_field( $post_data['user_phone'] ) : '';
+			$user_professional_email = isset( $post_data['user_professional_email'] ) ? sanitize_email( $post_data['user_professional_email'] ) : ''; // V1 Le Hiboo
 			$user_address = isset( $post_data['user_address'] ) ? sanitize_text_field( $post_data['user_address'] ) : '';
 			$description = isset( $post_data['description'] ) ? sanitize_textarea_field( $post_data['description'] ) : '';
 			$author_id_image = isset( $post_data['author_id_image'] ) ? sanitize_text_field( $post_data['author_id_image'] ) : '';
@@ -980,6 +984,7 @@ if( !class_exists( 'El_Ajax' ) ){
 			update_user_meta( $user_id, 'last_name', $last_name );
 			update_user_meta( $user_id, 'user_job', $user_job );
 			update_user_meta( $user_id, 'user_phone', $user_phone );
+			update_user_meta( $user_id, 'user_professional_email', $user_professional_email ); // V1 Le Hiboo
 			update_user_meta( $user_id, 'user_address', $user_address );
 			update_user_meta( $user_id, 'description', $description );
 			update_user_meta( $user_id, 'author_id_image', $author_id_image );
@@ -1151,6 +1156,49 @@ if( !class_exists( 'El_Ajax' ) ){
 			update_user_meta( $user_id, 'org_video_youtube', $org_video_youtube );
 
 			wp_send_json_success( array( 'message' => __( 'Présentation enregistrée avec succès', 'eventlist' ) ) );
+			wp_die();
+		}
+
+		/**
+		 * V1 Le Hiboo - Update Localisation
+		 */
+		public static function el_update_localisation(){
+			if( !isset( $_POST['data'] ) ) wp_die();
+			$post_data = $_POST['data'];
+			$user_id = wp_get_current_user()->ID;
+
+			// Vérifier le nonce
+			if( !isset( $post_data['el_update_localisation_nonce'] ) ||
+				!wp_verify_nonce( $post_data['el_update_localisation_nonce'], 'el_update_localisation_nonce' ) ) {
+				wp_send_json_error( array( 'message' => __( 'Erreur de sécurité', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			// Sanitize
+			$user_country = isset( $post_data['user_country'] ) ? sanitize_text_field( $post_data['user_country'] ) : '';
+			$user_city = isset( $post_data['user_city'] ) ? sanitize_text_field( $post_data['user_city'] ) : '';
+			$user_postcode = isset( $post_data['user_postcode'] ) ? sanitize_text_field( $post_data['user_postcode'] ) : '';
+			$user_address_line1 = isset( $post_data['user_address_line1'] ) ? sanitize_text_field( $post_data['user_address_line1'] ) : '';
+			$user_address_line2 = isset( $post_data['user_address_line2'] ) ? sanitize_text_field( $post_data['user_address_line2'] ) : '';
+
+			// Validation - champs obligatoires
+			if( empty( $user_country ) || empty( $user_city ) || empty( $user_postcode ) ) {
+				wp_send_json_error( array( 'message' => __( 'Le pays, la ville et le code postal sont obligatoires', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			// Enregistrer les meta
+			update_user_meta( $user_id, 'user_country', $user_country );
+			update_user_meta( $user_id, 'user_city', $user_city );
+			update_user_meta( $user_id, 'user_postcode', $user_postcode );
+			update_user_meta( $user_id, 'user_address_line1', $user_address_line1 );
+			update_user_meta( $user_id, 'user_address_line2', $user_address_line2 );
+
+			// Mettre à jour aussi le champ legacy user_address pour compatibilité
+			$full_address = trim( $user_address_line1 . ' ' . $user_address_line2 . ', ' . $user_postcode . ' ' . $user_city . ', ' . $user_country );
+			update_user_meta( $user_id, 'user_address', $full_address );
+
+			wp_send_json_success( array( 'message' => __( 'Localisation enregistrée avec succès', 'eventlist' ) ) );
 			wp_die();
 		}
 

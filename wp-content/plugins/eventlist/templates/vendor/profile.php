@@ -222,9 +222,20 @@ $user_meta_field = get_option( 'ova_register_form' );
 
 						<!-- Email -->
 						<div class="vendor_field">
-							<label class="control-label" for="user_email"><?php esc_html_e( 'Email', 'eventlist' ); ?></label>
+							<label class="control-label" for="user_email"><?php esc_html_e( 'Email de connexion', 'eventlist' ); ?></label>
 							<input id="user_email" value="<?php the_author_meta('user_email', $user_id) ?>" name="user_email" type="text" placeholder="<?php esc_attr_e( 'example@email.com', 'eventlist' ); ?>" disabled>
 						</div>
+
+						<!-- Email Professionnel - V1 Le Hiboo -->
+						<?php if( el_is_vendor() ){
+							$user_professional_email = get_user_meta( $user_id, 'user_professional_email', true );
+						?>
+							<div class="vendor_field">
+								<label class="control-label" for="user_professional_email"><?php esc_html_e( 'Email professionnel', 'eventlist' ); ?></label>
+								<input id="user_professional_email" value="<?php echo esc_attr( $user_professional_email ); ?>" name="user_professional_email" type="email" placeholder="<?php esc_attr_e( 'contact@organisation.fr', 'eventlist' ); ?>" >
+								<small class="form-text text-muted"><?php esc_html_e( 'Email de contact public pour votre organisation', 'eventlist' ); ?></small>
+							</div>
+						<?php } ?>
 
 						<!-- Job -->
 						<?php
@@ -667,6 +678,95 @@ $user_meta_field = get_option( 'ova_register_form' );
 						</form>
 					</div>
 				<?php } ?>
+
+				<!-- Localisation (NOUVEAU - V1 Le Hiboo) -->
+				<div id="author_localisation" class="tab-contents">
+					<h2><?php esc_html_e( 'Localisation', 'eventlist' ); ?></h2>
+					<p class="description"><?php esc_html_e( 'Renseignez l\'adresse complète de votre organisation.', 'eventlist' ); ?></p>
+
+					<form id="el_save_localisation" enctype="multipart/form-data" method="post" autocomplete="off">
+
+						<!-- Pays -->
+						<div class="vendor_field">
+							<label class="control-label" for="user_country">
+								<?php esc_html_e( 'Pays', 'eventlist' ); ?> <sup style="color: red;">*</sup>
+							</label>
+							<select id="user_country" name="user_country" required>
+								<option value=""><?php esc_html_e( '-- Sélectionner un pays --', 'eventlist' ); ?></option>
+								<?php
+								$selected_country = get_user_meta( $user_id, 'user_country', true );
+								$countries = array(
+									'FR' => __( 'France', 'eventlist' ),
+									'BE' => __( 'Belgique', 'eventlist' ),
+									'CH' => __( 'Suisse', 'eventlist' ),
+									'CA' => __( 'Canada', 'eventlist' ),
+									'LU' => __( 'Luxembourg', 'eventlist' ),
+									'MC' => __( 'Monaco', 'eventlist' ),
+								);
+								foreach( $countries as $code => $country_name ){
+									printf(
+										'<option value="%s" %s>%s</option>',
+										esc_attr( $code ),
+										selected( $selected_country, $code, false ),
+										esc_html( $country_name )
+									);
+								}
+								?>
+							</select>
+						</div>
+
+						<!-- Ville -->
+						<div class="vendor_field">
+							<label class="control-label" for="user_city">
+								<?php esc_html_e( 'Ville', 'eventlist' ); ?> <sup style="color: red;">*</sup>
+							</label>
+							<input id="user_city" name="user_city" type="text"
+								value="<?php echo esc_attr( get_user_meta( $user_id, 'user_city', true ) ); ?>"
+								placeholder="<?php esc_attr_e( 'Ex: Paris', 'eventlist' ); ?>"
+								required>
+						</div>
+
+						<!-- Code Postal -->
+						<div class="vendor_field">
+							<label class="control-label" for="user_postcode">
+								<?php esc_html_e( 'Code Postal', 'eventlist' ); ?> <sup style="color: red;">*</sup>
+							</label>
+							<input id="user_postcode" name="user_postcode" type="text"
+								value="<?php echo esc_attr( get_user_meta( $user_id, 'user_postcode', true ) ); ?>"
+								placeholder="<?php esc_attr_e( 'Ex: 75001', 'eventlist' ); ?>"
+								required>
+						</div>
+
+						<!-- Adresse complète (ligne 1) -->
+						<div class="vendor_field">
+							<label class="control-label" for="user_address_line1">
+								<?php esc_html_e( 'Adresse (ligne 1)', 'eventlist' ); ?>
+							</label>
+							<input id="user_address_line1" name="user_address_line1" type="text"
+								value="<?php echo esc_attr( get_user_meta( $user_id, 'user_address_line1', true ) ); ?>"
+								placeholder="<?php esc_attr_e( 'Numéro et nom de rue', 'eventlist' ); ?>">
+						</div>
+
+						<!-- Adresse complète (ligne 2) -->
+						<div class="vendor_field">
+							<label class="control-label" for="user_address_line2">
+								<?php esc_html_e( 'Adresse (ligne 2)', 'eventlist' ); ?>
+							</label>
+							<input id="user_address_line2" name="user_address_line2" type="text"
+								value="<?php echo esc_attr( get_user_meta( $user_id, 'user_address_line2', true ) ); ?>"
+								placeholder="<?php esc_attr_e( 'Complément d\'adresse (optionnel)', 'eventlist' ); ?>">
+						</div>
+
+						<div class="vendor_field">
+							<input type="submit" name="el_update_localisation" class="button el_submit_btn" value="<?php esc_attr_e( 'Enregistrer', 'eventlist' ); ?>" />
+							<span class="ova__loader">
+								<img src="<?php echo esc_url( includes_url() . 'js/tinymce/skins/lightgray/img//loader.gif' ); ?>" />
+							</span>
+						</div>
+
+						<?php wp_nonce_field( 'el_update_localisation_nonce', 'el_update_localisation_nonce' ); ?>
+					</form>
+				</div>
 
 
 				<!-- Social (existant - on le garde pour l'instant) -->
