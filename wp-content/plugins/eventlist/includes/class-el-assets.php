@@ -220,13 +220,18 @@ class EL_Assets{
 		if ( isset( $_GET['vendor'] ) && $_GET['vendor'] == 'profile' ) {
 			wp_enqueue_script('el_profile_navigation', EL_PLUGIN_URI.'assets/js/frontend/profile-navigation.js', array('jquery'),false,true );
 		}
-		
+
+		// Event Form Navigation (Vertical Tabs) - V1 Le Hiboo - Phase 6
+		if ( isset( $_GET['vendor'] ) && ( $_GET['vendor'] == 'create-event' || $_GET['vendor'] == 'listing-edit' ) ) {
+			wp_enqueue_script('el_event_form_navigation', EL_PLUGIN_URI.'assets/js/frontend/event-form-navigation.js', array('jquery'),'1.0',true );
+		}
+
 		if ( did_action( 'elementor/loaded' ) ) {
 			wp_enqueue_script( 'script-eventlist-elementor', EL_PLUGIN_URI. 'assets/js/frontend/script-elementor.js', [ 'jquery' ], false, true );
 			wp_localize_script( 'script-eventlist-elementor', 'event_element_object', array( 'get_location' => apply_filters('el_get_location', true ) ) );
 		}
 
-		wp_enqueue_style('el_frontend', EL_PLUGIN_URI.'assets/css/frontend/style.css' );
+		wp_enqueue_style('el_frontend', EL_PLUGIN_URI.'assets/css/frontend/style.css', array(), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/css/frontend/style.css') );
 	}
 
 	public function ova_admin_enqueue_scripts(){
