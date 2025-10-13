@@ -46,59 +46,81 @@ $user_meta_field = get_option( 'ova_register_form' );
 		<?php echo el_get_template( '/vendor/heading.php' ); ?>
 
 		<div class="vendor_profile">
-			<!-- Content -->
-			<div class="content">
 
-				<ul class="vendor_tab">
-					<li data-id="author_profile">
-						<a href="#author_profile"><?php esc_html_e( 'Mon profil', 'eventlist' ); ?></a>
-					</li>
-					<?php if( el_is_vendor() ){ ?>
-						<li data-id="author_organisation">
-							<a href="#author_organisation"><?php esc_html_e( 'Mon organisation', 'eventlist' ); ?></a>
+			<!-- Navigation verticale à gauche -->
+			<div class="profile_navigation_sidebar">
+				<div class="profile_user_header">
+					<div class="profile_avatar">
+						<?php
+						$img_path = ( $author_id_image && wp_get_attachment_image_url($author_id_image, 'el_thumbnail') ) ? wp_get_attachment_image_url($author_id_image, 'el_thumbnail') : EL_PLUGIN_URI.'assets/img/unknow_user.png';
+						?>
+						<img src="<?php echo esc_url($img_path); ?>" alt="<?php echo esc_attr($display_name); ?>">
+					</div>
+					<div class="profile_user_info">
+						<h3><?php echo esc_html( $display_name ); ?></h3>
+					</div>
+				</div>
+
+				<nav class="profile_tabs_nav">
+					<ul>
+						<li class="profile_tab_item active" data-tab="author_profile">
+							<a href="#author_profile">
+								<i class="icon_profile"></i>
+								<span><?php esc_html_e( 'Informations Personnelles', 'eventlist' ); ?></span>
+							</a>
 						</li>
-					<?php } ?>
-					<?php if( el_is_vendor() ){ ?>
-						<li data-id="author_presentation">
-							<a href="#author_presentation"><?php esc_html_e( 'Présentation', 'eventlist' ); ?></a>
+
+						<?php if( el_is_vendor() ){ ?>
+							<li class="profile_tab_item" data-tab="author_organisation">
+								<a href="#author_organisation">
+									<i class="icon_building"></i>
+									<span><?php esc_html_e( 'Mon Organisation', 'eventlist' ); ?></span>
+								</a>
+							</li>
+							<li class="profile_tab_item" data-tab="author_presentation">
+								<a href="#author_presentation">
+									<i class="icon_documents_alt"></i>
+									<span><?php esc_html_e( 'Présentation', 'eventlist' ); ?></span>
+								</a>
+							</li>
+							<li class="profile_tab_item" data-tab="author_localisation">
+								<a href="#author_localisation">
+									<i class="icon_pin_alt"></i>
+									<span><?php esc_html_e( 'Localisation', 'eventlist' ); ?></span>
+								</a>
+							</li>
+						<?php } ?>
+
+						<li class="profile_tab_item" data-tab="author_password">
+							<a href="#author_password">
+								<i class="icon_lock_alt"></i>
+								<span><?php esc_html_e( 'Mot de passe', 'eventlist' ); ?></span>
+							</a>
 						</li>
-					<?php } ?>
 
-					<?php if( el_is_vendor() ){ ?>
-						<li data-id="author_localisation">
-							<a href="#author_localisation"><?php esc_html_e( 'Localisation', 'eventlist' ); ?></a>
-						</li>
-					<?php } ?>
+						<?php if( el_is_vendor() && apply_filters( 'el_profile_show_bank', true ) ){ ?>
+							<li class="profile_tab_item" data-tab="author_bank">
+								<a href="#author_bank">
+									<i class="icon_creditcard"></i>
+									<span><?php esc_html_e( 'Informations de Paiement', 'eventlist' ); ?></span>
+								</a>
+							</li>
+						<?php } ?>
 
+						<?php if( el_is_vendor() && EL()->options->checkout->get( 'split_payment_stripe_active', 'no' ) == 'yes' ){ ?>
+							<li class="profile_tab_item" data-tab="strip_connect">
+								<a href="#strip_connect">
+									<i class="icon_creditcard"></i>
+									<span><?php esc_html_e( 'Stripe Connect', 'eventlist' ); ?></span>
+								</a>
+							</li>
+						<?php } ?>
+					</ul>
+				</nav>
+			</div>
 
-
-
-
-					<?php 
-					/* if( el_is_vendor() ){ ?>
-						<li data-id="author_social">
-							<a href="#author_social"><?php esc_html_e( 'Social', 'eventlist' ); ?></a>
-						</li>
-					<?php } */ 
-					?>
-
-					<li data-id="author_password">
-						<a href="#author_password"><?php esc_html_e( 'Password', 'eventlist' ); ?></a>
-					</li>
-
-					<?php if( el_is_vendor() && apply_filters( 'el_profile_show_bank', true ) ){ ?>
-						<li data-id="author_bank">
-							<a href="#author_bank"><?php esc_html_e( 'Payout Method', 'eventlist' ); ?></a>
-						</li>
-					<?php } ?>
-
-					<?php if( el_is_vendor() && EL()->options->checkout->get( 'split_payment_stripe_active', 'no' ) == 'yes' ){ ?>
-					<li data-id="strip_connect">
-						<a href="#strip_connect"> <?php esc_html_e( 'Stripe Connect', 'eventlist' ); ?> </a>
-					</li>
-					<?php } ?>
-
-				</ul>
+			<!-- Contenu des onglets -->
+			<div class="profile_content_area">
 
 				<?php if( el_is_vendor() && EL()->options->checkout->get( 'split_payment_stripe_active', 'no' ) == 'yes' ){ ?>
 					<div id="strip_connect" class="tab-contents">
@@ -433,7 +455,221 @@ $user_meta_field = get_option( 'ova_register_form' );
 				</div>
 
 
-				<!-- Social -->
+				<!-- Mon Organisation (NOUVEAU) -->
+				<?php if( el_is_vendor() ){ ?>
+					<div id="author_organisation" class="tab-contents">
+						<h2><?php esc_html_e( 'Informations sur votre organisation', 'eventlist' ); ?></h2>
+						<p class="description"><?php esc_html_e( 'Ces informations administratives sont nécessaires pour identifier votre structure.', 'eventlist' ); ?></p>
+
+						<form id="el_save_organisation" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
+
+							<!-- Nom de l'organisation -->
+							<div class="vendor_field">
+								<label class="control-label" for="org_name">
+									<?php esc_html_e( 'Nom de l\'organisation', 'eventlist' ); ?> <sup style="color: red;">*</sup>
+								</label>
+								<input id="org_name" name="org_name" type="text"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_name', true ) ); ?>"
+									placeholder="<?php esc_attr_e( 'Ex: Association Le Hiboo', 'eventlist' ); ?>"
+									required>
+							</div>
+
+							<!-- Rôle de l'organisation -->
+							<div class="vendor_field checkbox">
+								<label><?php esc_html_e( 'Rôle de l\'organisation', 'eventlist' ); ?> <sup style="color: red;">*</sup></label>
+								<?php
+								$org_roles = get_user_meta( $user_id, 'org_role', true );
+								$org_roles = is_array( $org_roles ) ? $org_roles : array();
+								$available_roles = get_option( 'el_org_roles_list', array(
+									'organisateur' => __( 'Organisateur d\'événements', 'eventlist' ),
+									'lieu' => __( 'Lieu / Salle', 'eventlist' ),
+									'prestataire' => __( 'Prestataire de services', 'eventlist' ),
+									'association' => __( 'Association culturelle', 'eventlist' ),
+								));
+								?>
+								<div class="checkbox_field_wrap">
+									<?php foreach( $available_roles as $role_key => $role_label ): ?>
+										<div class="vendor_checkbox_field">
+											<input type="checkbox"
+												id="org_role_<?php echo esc_attr($role_key); ?>"
+												name="org_role[]"
+												value="<?php echo esc_attr($role_key); ?>"
+												<?php checked( in_array($role_key, $org_roles) ); ?> />
+											<label for="org_role_<?php echo esc_attr($role_key); ?>">
+												<?php echo esc_html($role_label); ?>
+											</label>
+										</div>
+									<?php endforeach; ?>
+								</div>
+							</div>
+
+							<!-- Statut juridique -->
+							<div class="vendor_field">
+								<label class="control-label" for="org_statut_juridique">
+									<?php esc_html_e( 'Statut juridique', 'eventlist' ); ?> <sup style="color: red;">*</sup>
+								</label>
+								<?php
+								$org_statut = get_user_meta( $user_id, 'org_statut_juridique', true );
+								$statuts = get_option( 'el_statuts_juridiques_list', array(
+									'association' => __( 'Association loi 1901', 'eventlist' ),
+									'sarl' => __( 'SARL', 'eventlist' ),
+									'sas' => __( 'SAS', 'eventlist' ),
+									'auto_entrepreneur' => __( 'Auto-entrepreneur / Micro-entreprise', 'eventlist' ),
+									'eirl' => __( 'EIRL', 'eventlist' ),
+									'sa' => __( 'SA', 'eventlist' ),
+									'ei' => __( 'Entreprise Individuelle', 'eventlist' ),
+									'autre' => __( 'Autre', 'eventlist' ),
+								));
+								// Ajouter l'option vide au début
+								$statuts = array_merge( array( '' => __( '-- Sélectionnez --', 'eventlist' ) ), $statuts );
+								?>
+								<select id="org_statut_juridique" name="org_statut_juridique" required>
+									<?php foreach( $statuts as $key => $label ): ?>
+										<option value="<?php echo esc_attr($key); ?>" <?php selected( $org_statut, $key ); ?>>
+											<?php echo esc_html($label); ?>
+										</option>
+									<?php endforeach; ?>
+								</select>
+							</div>
+
+							<!-- Type de structure -->
+							<div class="vendor_field checkbox">
+								<label><?php esc_html_e( 'Type de structure', 'eventlist' ); ?> <sup style="color: red;">*</sup></label>
+								<?php
+								$org_types = get_user_meta( $user_id, 'org_type_structure', true );
+								$org_types = is_array( $org_types ) ? $org_types : array();
+								$available_types = get_option( 'el_types_structure_list', array(
+									'culturel' => __( 'Culturel', 'eventlist' ),
+									'sportif' => __( 'Sportif', 'eventlist' ),
+									'educatif' => __( 'Éducatif', 'eventlist' ),
+									'loisirs' => __( 'Loisirs', 'eventlist' ),
+									'artistique' => __( 'Artistique', 'eventlist' ),
+									'social' => __( 'Social / Solidaire', 'eventlist' ),
+								));
+								?>
+								<div class="checkbox_field_wrap">
+									<?php foreach( $available_types as $type_key => $type_label ): ?>
+										<div class="vendor_checkbox_field">
+											<input type="checkbox"
+												id="org_type_<?php echo esc_attr($type_key); ?>"
+												name="org_type_structure[]"
+												value="<?php echo esc_attr($type_key); ?>"
+												<?php checked( in_array($type_key, $org_types) ); ?> />
+											<label for="org_type_<?php echo esc_attr($type_key); ?>">
+												<?php echo esc_html($type_label); ?>
+											</label>
+										</div>
+									<?php endforeach; ?>
+								</div>
+							</div>
+
+							<!-- SIREN -->
+							<div class="vendor_field">
+								<label class="control-label" for="org_siren">
+									<?php esc_html_e( 'SIREN', 'eventlist' ); ?> <sup style="color: red;">*</sup>
+									<span class="info-icon" title="<?php esc_attr_e( 'Numéro SIREN à 9 chiffres', 'eventlist' ); ?>">?</span>
+								</label>
+								<input id="org_siren" name="org_siren" type="text"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_siren', true ) ); ?>"
+									placeholder="<?php esc_attr_e( '123456789', 'eventlist' ); ?>"
+									pattern="[0-9]{9}"
+									maxlength="9"
+									required>
+								<small><?php esc_html_e( '9 chiffres uniquement', 'eventlist' ); ?></small>
+							</div>
+
+							<!-- Date de création -->
+							<div class="vendor_field">
+								<label class="control-label" for="org_date_creation">
+									<?php esc_html_e( 'Date de création de l\'entité', 'eventlist' ); ?>
+								</label>
+								<input id="org_date_creation" name="org_date_creation" type="date"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_date_creation', true ) ); ?>">
+							</div>
+
+							<div class="vendor_field">
+								<input type="submit" name="el_update_organisation" class="button el_submit_btn" value="<?php esc_attr_e( 'Enregistrer', 'eventlist' ); ?>" />
+								<span class="ova__loader">
+									<img src="<?php echo esc_url( includes_url() . 'js/tinymce/skins/lightgray/img//loader.gif' ); ?>" />
+								</span>
+							</div>
+
+							<?php wp_nonce_field( 'el_update_organisation_nonce', 'el_update_organisation_nonce' ); ?>
+						</form>
+					</div>
+				<?php } ?>
+
+
+				<!-- Présentation (Profil Public) (NOUVEAU) -->
+				<?php if( el_is_vendor() ){ ?>
+					<div id="author_presentation" class="tab-contents">
+						<div class="profile_public_notice">
+							<i class="icon_info"></i>
+							<p><?php esc_html_e( 'Les informations de cette section seront visibles sur votre profil public.', 'eventlist' ); ?></p>
+						</div>
+
+						<form id="el_save_presentation" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
+
+							<!-- Description (déplacé depuis author_profile) -->
+							<div class="vendor_field textarea">
+								<label class="control-label" for="description"><?php esc_html_e( 'Description', 'eventlist' ); ?></label>
+								<textarea id="description" name="description" rows="8" placeholder="<?php esc_attr_e( 'Présentez votre organisation...', 'eventlist' ); ?>"><?php echo esc_textarea( get_user_meta( $user_id, 'description', true ) ); ?></textarea>
+								<small><?php esc_html_e( 'Les liens URL ne sont pas autorisés dans la description.', 'eventlist' ); ?></small>
+							</div>
+
+							<!-- Image à la une -->
+							<div class="vendor_field">
+								<label class="control-label"><?php esc_html_e( 'Image de couverture', 'eventlist' ); ?></label>
+								<?php
+								$org_cover_image = get_user_meta( $user_id, 'org_cover_image', true );
+								?>
+								<div class="image_upload_wrap">
+									<?php if( $org_cover_image ): ?>
+										<img class="preview_cover_image" src="<?php echo esc_url( wp_get_attachment_image_url($org_cover_image, 'large') ); ?>" style="max-width: 100%; height: auto; margin-bottom: 10px;">
+										<button type="button" class="button remove_cover_image"><?php esc_html_e( 'Retirer l\'image', 'eventlist' ); ?></button>
+									<?php endif; ?>
+									<button type="button" class="button add_cover_image" data-uploader-title="<?php esc_attr_e( 'Sélectionner une image de couverture', 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( 'Utiliser cette image', 'eventlist' ); ?>">
+										<?php esc_html_e( 'Ajouter une image', 'eventlist' ); ?>
+									</button>
+									<input type="hidden" name="org_cover_image" class="org_cover_image_id" value="<?php echo esc_attr( $org_cover_image ); ?>">
+								</div>
+								<small><?php esc_html_e( 'Format recommandé : 1200x400px', 'eventlist' ); ?></small>
+							</div>
+
+							<!-- Page Web -->
+							<div class="vendor_field">
+								<label class="control-label" for="org_web">
+									<?php esc_html_e( 'Site Web de l\'organisation', 'eventlist' ); ?>
+								</label>
+								<input id="org_web" name="org_web" type="url"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_web', true ) ); ?>"
+									placeholder="https://www.exemple.com">
+							</div>
+
+							<!-- Vidéo YouTube -->
+							<div class="vendor_field">
+								<label class="control-label" for="org_video_youtube">
+									<?php esc_html_e( 'Vidéo de présentation (YouTube)', 'eventlist' ); ?>
+								</label>
+								<input id="org_video_youtube" name="org_video_youtube" type="url"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_video_youtube', true ) ); ?>"
+									placeholder="https://www.youtube.com/watch?v=...">
+							</div>
+
+							<div class="vendor_field">
+								<input type="submit" name="el_update_presentation" class="button el_submit_btn" value="<?php esc_attr_e( 'Enregistrer', 'eventlist' ); ?>" />
+								<span class="ova__loader">
+									<img src="<?php echo esc_url( includes_url() . 'js/tinymce/skins/lightgray/img//loader.gif' ); ?>" />
+								</span>
+							</div>
+
+							<?php wp_nonce_field( 'el_update_presentation_nonce', 'el_update_presentation_nonce' ); ?>
+						</form>
+					</div>
+				<?php } ?>
+
+
+				<!-- Social (existant - on le garde pour l'instant) -->
 				<?php if( el_is_vendor() ){ ?>
 					<div id="author_social" class="tab-contents">
 						<form id="el_save_social" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
@@ -733,9 +969,11 @@ $user_meta_field = get_option( 'ova_register_form' );
 				<?php } ?>
 
 
-			</div> <!-- End Content -->
+			</div> <!-- End tab-contents -->
 
-		</div>
+			</div> <!-- End profile_content_area -->
 
-	</div>
-</div>
+		</div> <!-- End vendor_profile -->
+
+	</div> <!-- End contents -->
+</div> <!-- End vendor_wrap -->

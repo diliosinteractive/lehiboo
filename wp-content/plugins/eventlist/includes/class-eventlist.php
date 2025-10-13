@@ -118,6 +118,8 @@ final class EventList{
 		// Post Type
 		require_once EL_PLUGIN_INC . 'class-el-post-types.php';
 
+		// V1 Le Hiboo - Installation des taxonomies
+		require_once EL_PLUGIN_INC . 'class-el-install-taxonomies.php';
 
 		// Template Loader
 		require_once EL_PLUGIN_INC . 'class-el-template-loader.php';

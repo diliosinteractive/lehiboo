@@ -65,6 +65,13 @@ class El_Admin_Menus{
 
 		add_submenu_page( 'eventlist', esc_html__( 'Tags', 'eventlist' ), esc_html__( 'Tags', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_tag&post_type=event' );
 
+		// V1 Le Hiboo - Nouvelles taxonomies
+		add_submenu_page( 'eventlist', esc_html__( 'Thématiques', 'eventlist' ), esc_html__( 'Thématiques', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_thematique&post_type=event' );
+
+		add_submenu_page( 'eventlist', esc_html__( 'Événements Spéciaux', 'eventlist' ), esc_html__( 'Événements Spéciaux', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_special&post_type=event' );
+
+		add_submenu_page( 'eventlist', esc_html__( 'Saisons', 'eventlist' ), esc_html__( 'Saisons', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_saison&post_type=event' );
+
 		add_submenu_page( 'eventlist', esc_html__( 'Locations', 'eventlist' ), esc_html__( 'Locations', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_loc&post_type=event' );
 
 		add_submenu_page( 'eventlist', esc_html__( 'Venues', 'eventlist' ), esc_html__( 'Venues', 'eventlist' ), 'manage_options', 'edit.php?post_type=venue' );
@@ -107,6 +114,8 @@ class El_Admin_Menus{
 
 		add_submenu_page( 'eventlist', esc_html__( 'Custom Checkout Field', 'eventlist' ), esc_html__( 'Custom Checkout Field', 'eventlist' ), 'manage_options', 'ova_el_custom_checkout_field', array( $this, 'el_register_custom_checkout_field' ) );
 
+		// V1 Le Hiboo - Options Espace Partenaire
+		add_submenu_page( 'eventlist', esc_html__( 'Options Partenaire', 'eventlist' ), esc_html__( 'Options Partenaire', 'eventlist' ), 'manage_options', 'el_partner_options', array( $this, 'el_register_partner_options' ) );
 
 
 
@@ -152,6 +161,13 @@ class El_Admin_Menus{
 
 	public function register_report_user_page() {
 		EL()->_include( EL_PLUGIN_INC . 'admin/views/settings/report_user.php' );
+	}
+
+	/**
+	 * V1 Le Hiboo - Options Espace Partenaire
+	 */
+	public function el_register_partner_options() {
+		EL()->_include( EL_PLUGIN_INC . 'admin/views/settings/partner_options.php' );
 	}
 
 	/**

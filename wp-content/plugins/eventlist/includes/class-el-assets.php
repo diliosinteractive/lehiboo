@@ -215,6 +215,11 @@ class EL_Assets{
 		wp_localize_script( 'el_frontend', 'event_object', array(
 			'event_type' => $event_type,
 		) );
+
+		// Profile Navigation (Vertical Tabs) - V1 Le Hiboo
+		if ( isset( $_GET['vendor'] ) && $_GET['vendor'] == 'profile' ) {
+			wp_enqueue_script('el_profile_navigation', EL_PLUGIN_URI.'assets/js/frontend/profile-navigation.js', array('jquery'),false,true );
+		}
 		
 		if ( did_action( 'elementor/loaded' ) ) {
 			wp_enqueue_script( 'script-eventlist-elementor', EL_PLUGIN_URI. 'assets/js/frontend/script-elementor.js', [ 'jquery' ], false, true );

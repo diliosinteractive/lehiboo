@@ -30,6 +30,12 @@ if( !class_exists( 'El_Ajax' ) ){
 				// Vendor Update Profile
 				'el_update_profile',
 
+				// Vendor Update Organisation (V1 Le Hiboo)
+				'el_update_organisation',
+
+				// Vendor Update Presentation (V1 Le Hiboo)
+				'el_update_presentation',
+
 				// Vendor Add Social
 				'el_add_social',
 
@@ -1043,6 +1049,108 @@ if( !class_exists( 'El_Ajax' ) ){
 				update_user_meta( $user_id, $key, $value );
 			}
 
+			wp_die();
+		}
+
+		/**
+		 * V1 Le Hiboo - Update Organisation
+		 * Sauvegarde les informations de l'organisation du partenaire
+		 */
+		public static function el_update_organisation(){
+			if( !isset( $_POST['data'] ) ) wp_die();
+
+			$post_data = $_POST['data'];
+			$user_id = wp_get_current_user()->ID;
+
+			// Vérifier le nonce
+			if( !isset( $post_data['el_update_organisation_nonce'] ) ||
+			    !wp_verify_nonce( $post_data['el_update_organisation_nonce'], 'el_update_organisation_nonce' ) ) {
+				wp_send_json_error( array( 'message' => __( 'Erreur de sécurité', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			// Vérifier que l'utilisateur est vendor
+			if( !el_is_vendor() ) {
+				wp_send_json_error( array( 'message' => __( 'Action non autorisée', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			// Sanitize et enregistrer les données
+			$org_name = isset( $post_data['org_name'] ) ? sanitize_text_field( $post_data['org_name'] ) : '';
+			$org_statut_juridique = isset( $post_data['org_statut_juridique'] ) ? sanitize_text_field( $post_data['org_statut_juridique'] ) : '';
+			$org_siren = isset( $post_data['org_siren'] ) ? sanitize_text_field( $post_data['org_siren'] ) : '';
+			$org_date_creation = isset( $post_data['org_date_creation'] ) ? sanitize_text_field( $post_data['org_date_creation'] ) : '';
+
+			// Tableaux (checkboxes multiples)
+			$org_role = isset( $post_data['org_role'] ) && is_array( $post_data['org_role'] )
+				? array_map( 'sanitize_text_field', $post_data['org_role'] )
+				: array();
+
+			$org_type_structure = isset( $post_data['org_type_structure'] ) && is_array( $post_data['org_type_structure'] )
+				? array_map( 'sanitize_text_field', $post_data['org_type_structure'] )
+				: array();
+
+			// Validation SIREN (9 chiffres)
+			if( !empty( $org_siren ) && !preg_match( '/^[0-9]{9}$/', $org_siren ) ) {
+				wp_send_json_error( array( 'message' => __( 'Le SIREN doit contenir exactement 9 chiffres', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			// Enregistrer les meta
+			update_user_meta( $user_id, 'org_name', $org_name );
+			update_user_meta( $user_id, 'org_role', $org_role );
+			update_user_meta( $user_id, 'org_statut_juridique', $org_statut_juridique );
+			update_user_meta( $user_id, 'org_type_structure', $org_type_structure );
+			update_user_meta( $user_id, 'org_siren', $org_siren );
+			update_user_meta( $user_id, 'org_date_creation', $org_date_creation );
+
+			wp_send_json_success( array( 'message' => __( 'Informations de l\'organisation enregistrées avec succès', 'eventlist' ) ) );
+			wp_die();
+		}
+
+		/**
+		 * V1 Le Hiboo - Update Presentation
+		 * Sauvegarde les informations de présentation (profil public) du partenaire
+		 */
+		public static function el_update_presentation(){
+			if( !isset( $_POST['data'] ) ) wp_die();
+
+			$post_data = $_POST['data'];
+			$user_id = wp_get_current_user()->ID;
+
+			// Vérifier le nonce
+			if( !isset( $post_data['el_update_presentation_nonce'] ) ||
+			    !wp_verify_nonce( $post_data['el_update_presentation_nonce'], 'el_update_presentation_nonce' ) ) {
+				wp_send_json_error( array( 'message' => __( 'Erreur de sécurité', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			// Vérifier que l'utilisateur est vendor
+			if( !el_is_vendor() ) {
+				wp_send_json_error( array( 'message' => __( 'Action non autorisée', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			// Sanitize et enregistrer les données
+			$description = isset( $post_data['description'] ) ? sanitize_textarea_field( $post_data['description'] ) : '';
+
+			// Bloquer les URLs dans la description
+			if( preg_match( '/(http|https|www\.)/i', $description ) ) {
+				wp_send_json_error( array( 'message' => __( 'Les liens URL ne sont pas autorisés dans la description', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			$org_cover_image = isset( $post_data['org_cover_image'] ) ? absint( $post_data['org_cover_image'] ) : 0;
+			$org_web = isset( $post_data['org_web'] ) ? esc_url_raw( $post_data['org_web'] ) : '';
+			$org_video_youtube = isset( $post_data['org_video_youtube'] ) ? esc_url_raw( $post_data['org_video_youtube'] ) : '';
+
+			// Enregistrer les meta
+			update_user_meta( $user_id, 'description', $description );
+			update_user_meta( $user_id, 'org_cover_image', $org_cover_image );
+			update_user_meta( $user_id, 'org_web', $org_web );
+			update_user_meta( $user_id, 'org_video_youtube', $org_video_youtube );
+
+			wp_send_json_success( array( 'message' => __( 'Présentation enregistrée avec succès', 'eventlist' ) ) );
 			wp_die();
 		}
 

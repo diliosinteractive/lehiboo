@@ -82,11 +82,50 @@
 			}
 		}
 
-		div {
-			margin-left: 10px;
-			p {
-				margin: 0;
+			div {
+
+					margin-left: 10px;
+
+					p {
+
+						margin: 0;
+
+					}
+
+				}
+
 			}
+
+			
+
+			.nav-section-title {
+
+		      color: #9a99b5;
+
+		      font-size: 12px;
+
+		      font-weight: 700;
+
+		      text-transform: uppercase;
+
+		      margin-top: 20px;
+
+		      margin-bottom: 10px;
+
+		      padding-bottom: 10px;
+
+		      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+
+		
+
+		      &:first-child {
+
+		        margin-top: 0;
+
+		      }
+
+		    }
+
 		}
-	}
-}
+
+		

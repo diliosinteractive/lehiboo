@@ -24,7 +24,7 @@ $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_tic
 			<div>
 				<p class="display_name"><?php echo esc_html( $display_name ); ?></p>
 				<a href="<?php echo add_query_arg( array( 'vendor' => 'profile' ), get_myaccount_page() ); ?>" class="edit_profile">
-					<?php esc_html_e( 'Edit Profile', 'eventlist' ); ?>
+					<?php esc_html_e( 'Modifier mon profil', 'eventlist' ); ?>
 				</a>
 			</div>
 		</div>
@@ -35,132 +35,114 @@ $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_tic
 
 		<ul class="dashboard_nav">
 
-			<?php if( el_is_vendor() && apply_filters( 'el_manage_vendor_show_general', true ) ){ ?>
-				<li class="menu_vendor_general <?php if ($vendor == 'general') echo esc_attr('active');  ?>">
-					<a href="<?php echo add_query_arg( 
-									array( 
-										'vendor' => 'general'
-									),
-									get_myaccount_page() ); ?>">
-						<i class="icon_house_alt"></i>
-						<?php esc_html_e( 'General', 'eventlist' ); ?>
-					</a>
-				</li>
-			<?php } ?>
+            <?php if( el_is_vendor() ) { ?>
+                <!-- NOUVELLE NAVIGATION PARTENAIRE -->
+                <li class="nav-section-title"><?php esc_html_e( 'Gestion des Activités', 'eventlist' ); ?></li>
 
-			<?php if( el_is_vendor() && apply_filters( 'el_manage_vendor_show_my_listing', true ) ){ ?>
-				<li class="menu_vendor_mylisting <?php if ($vendor == 'listing' || $vendor == 'listing-edit' ) echo esc_attr('active');  ?>">
-					<a href="<?php echo add_query_arg( 
-									array( 
-										'vendor' => 'listing',
-										'listing_type' => 'any'
-									),
-									get_myaccount_page() ); ?>">
-						<i class="icon_document"></i>
-						<?php esc_html_e( 'My Listings', 'eventlist' ); ?>
-					</a>
-				</li>
-			<?php } ?>
+                <?php if( apply_filters( 'el_manage_vendor_show_general', true ) ){ ?>
+                    <li class="menu_vendor_general <?php if ($vendor == 'general') echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'general'), get_myaccount_page() ); ?>">
+                            <i class="icon_house_alt"></i>
+                            <?php esc_html_e( 'Tableau de bord', 'eventlist' ); ?>
+                        </a>
+                    </li>
+                <?php } ?>
 
-			<?php if( el_is_vendor() && apply_filters( 'el_manage_vendor_show_create_event', true ) ){ ?>
-				<li class="menu_vendor_create_event <?php if ($vendor == 'create-event') echo esc_attr('active');  ?>">
-					<a href="<?php echo add_query_arg( 
-										array( 
-											'vendor' => 'create-event'
-										),
-										get_myaccount_page() ); ?>">
-						<i class="icon_plus_alt"></i>
-						<?php esc_html_e( 'Create Event', 'eventlist' ); ?>
-					</a>
-				</li>
-			<?php } ?>
+                <?php if( apply_filters( 'el_manage_vendor_show_my_listing', true ) ){ ?>
+                    <li class="menu_vendor_mylisting <?php if ($vendor == 'listing' || $vendor == 'listing-edit' ) echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'listing', 'listing_type' => 'any'), get_myaccount_page() ); ?>">
+                            <i class="icon_document"></i>
+                            <?php esc_html_e( 'Mes Activités', 'eventlist' ); ?>
+                        </a>
+                    </li>
+                <?php } ?>
 
-			<?php if( EL()->options->package->get('enable_package', 'no') == 'yes' && el_is_vendor() && apply_filters( 'el_manage_vendor_show_package', true ) && ! el_is_administrator() && ! el_hide_package_menu_item() ){ ?>
-				<li class="menu_vendor_package <?php if ($vendor == 'package') echo esc_attr('active');  ?>">
-					<a href="<?php echo add_query_arg( 
-									array( 
-										'vendor' => 'package',
-									),
-									get_myaccount_page() ); ?>">
-						<i class="icon_gift"></i>
-						<?php esc_html_e( 'Package', 'eventlist' ); ?>
-					</a>
-				</li>
-			<?php } ?>
+                <?php if( apply_filters( 'el_manage_vendor_show_create_event', true ) ){ ?>
+                    <li class="menu_vendor_create_event <?php if ($vendor == 'create-event') echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'create-event'), get_myaccount_page() ); ?>">
+                            <i class="icon_plus_alt"></i>
+                            <?php esc_html_e( 'Créer une activité', 'eventlist' ); ?>
+                        </a>
+                    </li>
+                <?php } ?>
+                
+                <?php if( apply_filters( 'el_manage_vendor_show_wishlist', true ) ){ ?>
+                    <li class="menu_vendor_mywishlist <?php if ($vendor == 'galerie') echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'galerie'), get_myaccount_page() ); ?>">
+                            <i class="icon_images"></i><?php esc_html_e( 'Ma galerie', 'eventlist' ); ?>
+                        </a>
+                    </li>
+                <?php } ?>
 
-			
-		
-			<?php if ( EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' && apply_filters( 'el_manage_vendor_show_mybooking', true ) ) { ?>
-				<li class="menu_vendor_mybookings <?php if ($vendor == 'mybookings') echo esc_attr('active');  ?>">
-					<a href="<?php echo add_query_arg(
-									array( 
-										'vendor' => 'mybookings'
-									),
-									get_myaccount_page() ); ?>">
-						<i class="icon_archive"></i><?php esc_html_e( 'My Bookings', 'eventlist' ); ?>
-					</a>
-				</li>
-			<?php } ?>
+                <li class="nav-section-title"><?php esc_html_e( 'Finances', 'eventlist' ); ?></li>
 
-			<?php if ( $allow_transfer_ticket ): ?>
-				
-				<li class="menu_vendor_tickets_received <?php if ($vendor == 'tickets_received') echo esc_attr('active');  ?>">
-					<a href="<?php echo add_query_arg(
-									array( 
-										'vendor' => 'tickets_received'
-									),
-									get_myaccount_page() ); ?>">
-						<i class="icon_archive"></i><?php esc_html_e( 'Tickets Received', 'eventlist' ); ?>
-					</a>
-				</li>
+                <?php if ( EL()->options->tax_fee->get('manage_profit', 'profit_1') == 'profit_2' && apply_filters( 'el_manage_vendor_show_wallet', true) ) { ?>
+                    <li class="menu_vendor_wallet <?php if ($vendor == 'wallet') echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'wallet'), get_myaccount_page() ); ?>">
+                            <i class="icon_wallet_alt"></i><?php esc_html_e( 'Portefeuille', 'eventlist' ); ?>
+                        </a>
+                    </li>
+                <?php } ?>
 
-			<?php endif; ?>
+                <?php if ( EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' && apply_filters( 'el_manage_vendor_show_mybooking', true ) ) { ?>
+                    <li class="menu_vendor_mybookings <?php if ($vendor == 'mybookings') echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'mybookings'), get_myaccount_page() ); ?>">
+                            <i class="icon_archive"></i><?php esc_html_e( 'Mes Réservations', 'eventlist' ); ?>
+                        </a>
+                    </li>
+                <?php } ?>
 
-			<?php if ( EL()->options->tax_fee->get('manage_profit', 'profit_1') == 'profit_2' && el_is_vendor() && apply_filters( 'el_manage_vendor_show_wallet', true) ) { ?>
-					<li class="menu_vendor_wallet <?php if ($vendor == 'wallet') echo esc_attr('active');  ?>">
-						<a href="<?php echo add_query_arg(
-										array( 
-											'vendor' => 'wallet'
-										),
-										get_myaccount_page() ); ?>">
-							<i class=" icon_wallet_alt"></i><?php esc_html_e( 'Wallet', 'eventlist' ); ?>
-						</a>
-					</li>
-			<?php } ?>
+                <?php if ( $allow_transfer_ticket ){ ?>
+                    <li class="menu_vendor_tickets_received <?php if ($vendor == 'tickets_received') echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'tickets_received'), get_myaccount_page() ); ?>">
+                            <i class="icon_tag_alt"></i><?php esc_html_e( 'Billets Reçus', 'eventlist' ); ?>
+                        </a>
+                    </li>
+                <?php } ?>
 
-			
-			<?php if( apply_filters( 'el_manage_vendor_show_wishlist', true ) ){ ?>
-				<li class="menu_vendor_mywishlist <?php if ($vendor == 'wishlist') echo esc_attr('active');  ?>">
-					<a href="<?php echo add_query_arg( 
-									array( 
-										'vendor' => 'wishlist',
-									),
-									get_myaccount_page() ); ?>">
-						<i class="icon_heart"></i><?php esc_html_e( 'My WishList', 'eventlist' ); ?>
-					</a>
-				</li>
-			<?php } ?>
+                <?php if( EL()->options->package->get('enable_package', 'no') == 'yes' && apply_filters( 'el_manage_vendor_show_package', true ) && ! el_is_administrator() && ! el_hide_package_menu_item() ){ ?>
+                    <li class="menu_vendor_package <?php if ($vendor == 'package') echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'package'), get_myaccount_page() ); ?>">
+                            <i class="icon_gift"></i>
+                            <?php esc_html_e( 'Mon Forfait', 'eventlist' ); ?>
+                        </a>
+                    </li>
+                <?php } ?>
 
-			
-			<?php if( apply_filters( 'el_manage_vendor_show_wishlist', true ) ){ ?>
-				<li class="menu_vendor_mywishlist <?php if ($vendor == 'galerie') echo esc_attr('active');  ?>">
-					<a href="<?php echo add_query_arg( 
-									array( 
-										'vendor' => 'galerie',
-									),
-									get_myaccount_page() ); ?>">
-						<i class="icon_heart"></i><?php esc_html_e( 'Ma galerie', 'eventlist' ); ?>
-					</a>
-				</li>
-			<?php } ?>
+
+            <?php } else { ?>
+                <!-- NOUVELLE NAVIGATION CLIENT -->
+                <?php if ( EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' && apply_filters( 'el_manage_vendor_show_mybooking', true ) ) { ?>
+                    <li class="menu_vendor_mybookings <?php if ($vendor == 'mybookings') echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'mybookings'), get_myaccount_page() ); ?>">
+                            <i class="icon_archive"></i><?php esc_html_e( 'Mes Réservations', 'eventlist' ); ?>
+                        </a>
+                    </li>
+                <?php } ?>
+
+                <?php if ( $allow_transfer_ticket ): ?>
+                    <li class="menu_vendor_tickets_received <?php if ($vendor == 'tickets_received') echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'tickets_received'), get_myaccount_page() ); ?>">
+                            <i class="icon_tag_alt"></i><?php esc_html_e( 'Billets Reçus', 'eventlist' ); ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php if( apply_filters( 'el_manage_vendor_show_wishlist', true ) ){ ?>
+                    <li class="menu_vendor_mywishlist <?php if ($vendor == 'wishlist') echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'wishlist'), get_myaccount_page() ); ?>">
+                            <i class="icon_heart"></i><?php esc_html_e( 'Mes Favoris', 'eventlist' ); ?>
+                        </a>
+                    </li>
+                <?php } ?>
+            <?php } ?>
+
+            <!-- SECTION COMMUNE -->
+            <li class="nav-section-title"><?php esc_html_e( 'Mon Compte', 'eventlist' ); ?></li>
 
 			<li class="menu_vendor_myprofile <?php if ($vendor == 'profile') echo esc_attr('active');  ?>">
-				<a href="<?php echo add_query_arg(
-								array( 
-									'vendor' => 'profile'
-								),
-								get_myaccount_page() ); ?>">
-					<i class="icon_profile"></i><?php esc_html_e( 'My Profile', 'eventlist' ); ?>
+				<a href="<?php echo add_query_arg( array( 'vendor' => 'profile'), get_myaccount_page() ); ?>">
+					<i class="icon_profile"></i><?php esc_html_e( 'Mon Profil', 'eventlist' ); ?>
 				</a>
 			</li>
 			
@@ -168,7 +150,7 @@ $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_tic
 				<li class="menu_vendor_logout">
 					<a href="<?php echo apply_filters( 'el_logout_url' ,wp_logout_url() ); ?>">
 						<i class="icon_lock-open"></i>
-						<?php esc_html_e( 'Logout', 'eventlist' ); ?>
+						<?php esc_html_e( 'Déconnexion', 'eventlist' ); ?>
 					</a>
 				</li>
 			<?php } ?>

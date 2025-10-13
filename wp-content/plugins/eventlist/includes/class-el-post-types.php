@@ -100,7 +100,8 @@ class EL_Post_Types{
 	public function register_post_types(){
 
 		$supports   = array( 'author', 'title', 'editor', 'comments', 'excerpt', 'thumbnail'  );
-		$taxonomies = array( 'event_cat', 'event_tag', 'event_loc' );
+		// V1 Le Hiboo - Ajout des nouvelles taxonomies
+		$taxonomies = array( 'event_cat', 'event_tag', 'event_thematique', 'event_special', 'event_saison', 'event_loc' );
 		
 		$args_event = array(
 
@@ -602,6 +603,116 @@ class EL_Post_Types{
 		$args = apply_filters( 'el_register_tax_event_tag', $args );
 		register_taxonomy( 'event_tag', array( 'event' ), $args );
 
+
+		// ========================================
+		// V1 Le Hiboo - Nouvelles taxonomies
+		// ========================================
+
+		// Taxonomy : Thématiques
+		$labels = array(
+			'name'              => _x( 'Thématiques', 'taxonomy general name', 'eventlist' ),
+			'singular_name'     => _x( 'Thématique', 'taxonomy singular name', 'eventlist' ),
+			'search_items'      => __( 'Rechercher une thématique', 'eventlist' ),
+			'all_items'         => __( 'Toutes les thématiques', 'eventlist' ),
+			'parent_item'       => __( 'Thématique parente', 'eventlist' ),
+			'parent_item_colon' => __( 'Thématique parente:', 'eventlist' ),
+			'edit_item'         => __( 'Modifier la thématique', 'eventlist' ),
+			'update_item'       => __( 'Mettre à jour la thématique', 'eventlist' ),
+			'add_new_item'      => __( 'Ajouter une thématique', 'eventlist' ),
+			'new_item_name'     => __( 'Nouvelle thématique', 'eventlist' ),
+			'menu_name'         => __( 'Thématiques', 'eventlist' )
+		);
+
+		$args = array(
+			'hierarchical'      => true,
+			'public'            => true,
+			'labels'            => $labels,
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'query_var'         => true,
+			'capabilities'      => array ( 'post' ),
+			'show_in_rest'      => true,
+			'rewrite'           => array(
+				'slug'       => 'thematique',
+				'with_front' => false,
+				'feeds'      => true,
+			),
+		);
+
+		$args = apply_filters( 'el_register_tax_event_thematique', $args );
+		register_taxonomy( 'event_thematique', array( 'event' ), $args );
+
+
+		// Taxonomy : Événements Spéciaux
+		$labels = array(
+			'name'              => _x( 'Événements Spéciaux', 'taxonomy general name', 'eventlist' ),
+			'singular_name'     => _x( 'Événement Spécial', 'taxonomy singular name', 'eventlist' ),
+			'search_items'      => __( 'Rechercher un événement spécial', 'eventlist' ),
+			'all_items'         => __( 'Tous les événements spéciaux', 'eventlist' ),
+			'parent_item'       => null,
+			'parent_item_colon' => null,
+			'edit_item'         => __( 'Modifier l\'événement spécial', 'eventlist' ),
+			'update_item'       => __( 'Mettre à jour l\'événement spécial', 'eventlist' ),
+			'add_new_item'      => __( 'Ajouter un événement spécial', 'eventlist' ),
+			'new_item_name'     => __( 'Nouvel événement spécial', 'eventlist' ),
+			'menu_name'         => __( 'Événements Spéciaux', 'eventlist' )
+		);
+
+		$args = array(
+			'hierarchical'      => false,
+			'public'            => true,
+			'labels'            => $labels,
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'query_var'         => true,
+			'capabilities'      => array ( 'post' ),
+			'show_in_rest'      => true,
+			'rewrite'           => array(
+				'slug'       => 'evenement-special',
+				'with_front' => false,
+				'feeds'      => true,
+			),
+		);
+
+		$args = apply_filters( 'el_register_tax_event_special', $args );
+		register_taxonomy( 'event_special', array( 'event' ), $args );
+
+
+		// Taxonomy : Saisons
+		$labels = array(
+			'name'              => _x( 'Saisons', 'taxonomy general name', 'eventlist' ),
+			'singular_name'     => _x( 'Saison', 'taxonomy singular name', 'eventlist' ),
+			'search_items'      => __( 'Rechercher une saison', 'eventlist' ),
+			'all_items'         => __( 'Toutes les saisons', 'eventlist' ),
+			'parent_item'       => null,
+			'parent_item_colon' => null,
+			'edit_item'         => __( 'Modifier la saison', 'eventlist' ),
+			'update_item'       => __( 'Mettre à jour la saison', 'eventlist' ),
+			'add_new_item'      => __( 'Ajouter une saison', 'eventlist' ),
+			'new_item_name'     => __( 'Nouvelle saison', 'eventlist' ),
+			'menu_name'         => __( 'Saisons', 'eventlist' )
+		);
+
+		$args = array(
+			'hierarchical'      => false,
+			'public'            => true,
+			'labels'            => $labels,
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'query_var'         => true,
+			'capabilities'      => array ( 'post' ),
+			'show_in_rest'      => true,
+			'rewrite'           => array(
+				'slug'       => 'saison',
+				'with_front' => false,
+				'feeds'      => true,
+			),
+		);
+
+		$args = apply_filters( 'el_register_tax_event_saison', $args );
+		register_taxonomy( 'event_saison', array( 'event' ), $args );
+
+		// Fin V1 Le Hiboo - Nouvelles taxonomies
 
 
 		// Add new taxonomy, make it hierarchical (like location)
