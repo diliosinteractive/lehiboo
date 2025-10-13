@@ -93,16 +93,20 @@
         }
 
         // Le bouton de la sticky bar déclenche le bouton submit réel
+        // IMPORTANT: Le script du plugin écoute l'événement 'click' sur .el_edit_event_submit
+        // On doit donc déclencher cet événement exactement comme si l'utilisateur avait cliqué
         $('#trigger_save_event').on('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
 
-            // Trouver le vrai bouton et déclencher son événement
             var $realButton = $('.el_edit_event_submit');
 
             if ($realButton.length) {
-                // Utiliser la méthode native DOM au lieu de jQuery
-                // pour éviter les problèmes de propagation d'événement
-                $realButton[0].click();
+                // Déclencher l'événement click jQuery (pas le natif)
+                // car le plugin utilise jQuery pour attacher son handler
+                $realButton.trigger('click');
+            } else {
+                console.error('Bouton .el_edit_event_submit introuvable');
             }
         });
 
