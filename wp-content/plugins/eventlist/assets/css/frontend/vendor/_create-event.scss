@@ -2159,6 +2159,51 @@
 		padding: 30px 30px 0px 30px;
 	}
 
+	// Style pour le bouton submit en bas du formulaire
+	.wrap_btn_submit {
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		padding: 20px 0;
+		gap: 15px;
+
+		.el_edit_event_submit {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 12px 30px;
+			background: #ff6a3d;
+			color: #fff;
+			border: 2px solid #ff6a3d;
+			border-radius: 6px;
+			font-size: 16px;
+			font-weight: 500;
+			cursor: pointer;
+			transition: all 0.3s ease;
+
+			&::before {
+				content: "\e603"; // icon_check
+				font-family: 'eleganticons';
+				font-size: 18px;
+			}
+
+			&:hover {
+				background: #e55a25;
+				border-color: #e55a25;
+				transform: translateY(-1px);
+				box-shadow: 0 4px 12px rgba(255, 106, 61, 0.3);
+			}
+
+			&:active {
+				transform: scale(0.98);
+			}
+		}
+
+		.submit-load-more {
+			display: none; // On utilise le loader du bouton sticky
+		}
+	}
+
 }
 
 .event_basic_block {
@@ -2362,51 +2407,6 @@ body.rtl {
 					}
 				}
 			}
-		}
-	}
-
-	// Style pour le bouton submit en bas du formulaire
-	.wrap_btn_submit {
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
-		padding: 20px 0;
-		gap: 15px;
-
-		.el_edit_event_submit {
-			display: inline-flex;
-			align-items: center;
-			gap: 8px;
-			padding: 12px 30px;
-			background: #ff6a3d;
-			color: #fff;
-			border: 2px solid #ff6a3d;
-			border-radius: 6px;
-			font-size: 16px;
-			font-weight: 500;
-			cursor: pointer;
-			transition: all 0.3s ease;
-
-			&::before {
-				content: "\e603"; // icon_check
-				font-family: 'eleganticons';
-				font-size: 18px;
-			}
-
-			&:hover {
-				background: #e55a25;
-				border-color: #e55a25;
-				transform: translateY(-1px);
-				box-shadow: 0 4px 12px rgba(255, 106, 61, 0.3);
-			}
-
-			&:active {
-				transform: scale(0.98);
-			}
-		}
-
-		.submit-load-more {
-			display: none; // On utilise le loader du bouton sticky
 		}
 	}
 }

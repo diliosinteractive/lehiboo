@@ -10710,6 +10710,44 @@ input.submit_bulk_action {
   margin-bottom: 0 !important;
   padding: 30px 30px 0px 30px;
 }
+.vendor_edit_event .wrap_btn_submit {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 20px 0;
+  gap: 15px;
+}
+.vendor_edit_event .wrap_btn_submit .el_edit_event_submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 30px;
+  background: #ff6a3d;
+  color: #fff;
+  border: 2px solid #ff6a3d;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.vendor_edit_event .wrap_btn_submit .el_edit_event_submit::before {
+  content: "\e603";
+  font-family: "eleganticons";
+  font-size: 18px;
+}
+.vendor_edit_event .wrap_btn_submit .el_edit_event_submit:hover {
+  background: #e55a25;
+  border-color: #e55a25;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 106, 61, 0.3);
+}
+.vendor_edit_event .wrap_btn_submit .el_edit_event_submit:active {
+  transform: scale(0.98);
+}
+.vendor_edit_event .wrap_btn_submit .submit-load-more {
+  display: none;
+}
 
 .event_basic_block .el_custom_taxonomy label span {
   color: red;
@@ -10821,44 +10859,6 @@ body.rtl .vendor_edit_event #mb_ticket .ticket_external_link label, body.rtl .ve
 body.rtl .vendor_edit_event #mb_ticket .ticket_map .middle_content .date_ticket .date_ticket_row input:last-child {
   margin-left: 0;
   margin-right: 10px;
-}
-body.rtl .wrap_btn_submit {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 20px 0;
-  gap: 15px;
-}
-body.rtl .wrap_btn_submit .el_edit_event_submit {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 30px;
-  background: #ff6a3d;
-  color: #fff;
-  border: 2px solid #ff6a3d;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-body.rtl .wrap_btn_submit .el_edit_event_submit::before {
-  content: "\e603";
-  font-family: "eleganticons";
-  font-size: 18px;
-}
-body.rtl .wrap_btn_submit .el_edit_event_submit:hover {
-  background: #e55a25;
-  border-color: #e55a25;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(255, 106, 61, 0.3);
-}
-body.rtl .wrap_btn_submit .el_edit_event_submit:active {
-  transform: scale(0.98);
-}
-body.rtl .wrap_btn_submit .submit-load-more {
-  display: none;
 }
 
 /*manage tickets*/
