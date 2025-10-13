@@ -8888,52 +8888,6 @@ input.submit_bulk_action {
 .event_form_sticky_bar .btn_save_event:active {
   transform: scale(0.98);
 }
-.event_form_sticky_bar .wrap_btn_submit.in-sticky-bar {
-  display: inline-flex;
-  align-items: center;
-  position: relative;
-}
-.event_form_sticky_bar .wrap_btn_submit.in-sticky-bar .el_edit_event_submit {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid #ff6a3d;
-  background: #ff6a3d;
-  color: #fff;
-}
-.event_form_sticky_bar .wrap_btn_submit.in-sticky-bar .el_edit_event_submit::before {
-  content: "\e603";
-  font-family: "eleganticons";
-  font-size: 16px;
-}
-@media (max-width: 768px) {
-  .event_form_sticky_bar .wrap_btn_submit.in-sticky-bar .el_edit_event_submit {
-    padding: 8px 16px;
-    font-size: 13px;
-  }
-}
-.event_form_sticky_bar .wrap_btn_submit.in-sticky-bar .el_edit_event_submit:hover {
-  background: #e55a25;
-  border-color: #e55a25;
-  transform: translateY(-1px);
-}
-.event_form_sticky_bar .wrap_btn_submit.in-sticky-bar .el_edit_event_submit:active {
-  transform: scale(0.98);
-}
-.event_form_sticky_bar .wrap_btn_submit.in-sticky-bar .submit-load-more {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 10;
-}
 
 .vendor_edit_event .event_form_wrapper {
   display: flex;

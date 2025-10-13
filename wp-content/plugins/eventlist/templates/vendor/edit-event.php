@@ -78,8 +78,10 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 									<span><?php esc_html_e( 'Aperçu', 'eventlist' ); ?></span>
 								</a>
 							<?php } ?>
-							<!-- Le vrai bouton submit sera positionné ici via CSS -->
-							<div id="sticky_submit_placeholder"></div>
+							<button type="button" class="btn_save_event" id="trigger_save_event">
+								<i class="icon_check"></i>
+								<span><?php esc_html_e( 'Enregistrer', 'eventlist' ); ?></span>
+							</button>
 						</div>
 					</div>
 				</div>

@@ -92,19 +92,17 @@
             });
         }
 
-        // Déplacer le vrai bouton submit dans la sticky bar
-        // Au lieu de déléguer le clic, on déplace physiquement le bouton
-        // Cela évite tous les problèmes de propagation d'événements
-        var $realSubmitButton = $('.wrap_btn_submit');
-        var $placeholder = $('#sticky_submit_placeholder');
+        // Le bouton de la sticky bar déclenche le bouton submit réel
+        $('#trigger_save_event').on('click', function(e) {
+            e.preventDefault();
 
-        if ($realSubmitButton.length && $placeholder.length) {
-            // Déplacer le bouton dans le placeholder
-            $realSubmitButton.appendTo($placeholder);
+            var $realButton = $('.el_edit_event_submit');
 
-            // Ajouter une classe pour le styling
-            $realSubmitButton.addClass('in-sticky-bar');
-        }
+            if ($realButton.length) {
+                // Déclencher le clic sur le vrai bouton qui est dans le formulaire
+                $realButton.trigger('click');
+            }
+        });
 
     });
 
