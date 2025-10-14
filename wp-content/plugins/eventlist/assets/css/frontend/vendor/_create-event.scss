@@ -177,11 +177,55 @@
 			background: #f8f9fa;
 			border-right: 1px solid #e0e0e0;
 			flex-shrink: 0;
+			position: sticky;
+			top: 150px; // Offset pour la barre sticky (80px menu + 70px sticky bar)
+			align-self: flex-start; // Important pour que sticky fonctionne
+			max-height: calc(100vh - 170px); // Hauteur max pour ne pas dépasser l'écran
+			overflow-y: auto; // Scroll si trop d'items
+
+			// Si barre admin WordPress visible
+			.admin-bar & {
+				top: 182px; // 112px (menu + admin bar desktop) + 70px (sticky bar)
+
+				@media (max-width: 782px) {
+					top: 196px; // 126px (menu + admin bar mobile) + 70px (sticky bar)
+				}
+			}
 
 			@media (max-width: 991px) {
 				width: 100%;
 				border-right: none;
 				border-bottom: 1px solid #e0e0e0;
+				position: relative; // Désactiver sticky sur mobile
+				top: auto;
+				max-height: none;
+				overflow-y: visible;
+			}
+
+			@media (max-width: 768px) {
+				top: 130px; // 60px (menu mobile) + 70px (sticky bar)
+
+				.admin-bar & {
+					top: 176px; // 106px (menu + admin mobile) + 70px (sticky bar)
+				}
+			}
+
+			// Scrollbar personnalisée pour la navigation
+			&::-webkit-scrollbar {
+				width: 6px;
+			}
+
+			&::-webkit-scrollbar-track {
+				background: #edf2f7;
+			}
+
+			&::-webkit-scrollbar-thumb {
+				background: #cbd5e0;
+				border-radius: 3px;
+
+				&:hover {
+					background: #a0aec0;
+				}
 			}
 
 			.profile_tabs_nav {
