@@ -100,14 +100,18 @@ $total_pages = $query->max_num_pages;
 					<?php while ( $query->have_posts() ) : $query->the_post();
 						$image_id = get_the_ID();
 						$image_url = wp_get_attachment_image_url( $image_id, 'large' );
-						$image_thumb = wp_get_attachment_image_url( $image_id, 'medium' );
+						$image_thumb = wp_get_attachment_image_url( $image_id, 'thumbnail' );
 						$image_title = get_the_title();
 						$image_date = get_the_date( 'd/m/Y' );
 						$image_size = size_format( filesize( get_attached_file( $image_id ) ), 2 );
 					?>
 						<div class="galerie_item" data-image-id="<?php echo esc_attr( $image_id ); ?>">
 							<div class="galerie_item_inner">
-								<img src="<?php echo esc_url( $image_thumb ); ?>" alt="<?php echo esc_attr( $image_title ); ?>">
+								<img src="<?php echo esc_url( $image_thumb ); ?>"
+									alt="<?php echo esc_attr( $image_title ); ?>"
+									loading="lazy"
+									width="150"
+									height="150">
 								<div class="galerie_item_overlay">
 									<div class="galerie_item_info">
 										<span class="image_title"><?php echo esc_html( wp_trim_words( $image_title, 5 ) ); ?></span>
