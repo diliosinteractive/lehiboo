@@ -43,8 +43,15 @@
                     multiple: true,  // Permettre la sélection multiple
                     library: {
                         type: 'image'  // Seulement les images
-                    },
-                    state: 'upload'  // Ouvrir directement l'onglet téléverser
+                    }
+                });
+
+                // Basculer vers l'onglet téléverser à l'ouverture
+                frame.on('open', function() {
+                    // Activer l'onglet "Téléverser des fichiers"
+                    if (frame.content.mode() === 'browse') {
+                        frame.content.mode('upload');
+                    }
                 });
 
                 // Quand des images sont sélectionnées/uploadées
