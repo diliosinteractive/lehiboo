@@ -12,6 +12,9 @@ $date_range = el_get_date_range_from_filter( $range, $_GET );
 $vendor_id = get_current_user_id();
 $analytics = EL_Analytics::instance()->get_vendor_analytics( $vendor_id, $date_range );
 
+// Récupérer les données temporelles pour les graphiques
+$temporal_data = EL_Analytics::instance()->get_vendor_temporal_analytics( $vendor_id, $date_range );
+
 ?>
 
 <div class="el-dashboard-analytics">
@@ -62,6 +65,59 @@ $analytics = EL_Analytics::instance()->get_vendor_analytics( $vendor_id, $date_r
 				<div class="kpi-label"><?php esc_html_e( 'Taux de conversion', 'eventlist' ); ?></div>
 			</div>
 		</div>
+	</div>
+
+	<!-- Graphique Principal - Évolution Temporelle -->
+	<div class="analytics-chart-container">
+		<h4 class="analytics-section-title">
+			<i class="icon_clock_alt"></i>
+			<?php esc_html_e( 'Évolution des performances', 'eventlist' ); ?>
+		</h4>
+		<div class="chart-wrapper">
+			<canvas id="el-analytics-main-chart"
+				data-labels="<?php echo esc_attr( json_encode( $temporal_data['labels'] ) ); ?>"
+				data-views="<?php echo esc_attr( json_encode( $temporal_data['views'] ) ); ?>"
+				data-bookings="<?php echo esc_attr( json_encode( $temporal_data['booking_clicks'] ) ); ?>"
+				data-wishlists="<?php echo esc_attr( json_encode( $temporal_data['wishlist_adds'] ) ); ?>"
+				data-contacts="<?php echo esc_attr( json_encode( $temporal_data['contact_clicks'] ) ); ?>"
+				data-shares="<?php echo esc_attr( json_encode( $temporal_data['share_clicks'] ) ); ?>"
+			></canvas>
+		</div>
+	</div>
+
+	<!-- Graphiques de Distribution (Devices & Browsers) -->
+	<div class="analytics-charts-grid">
+		<!-- Graphique Devices -->
+		<?php if ( ! empty( $analytics['device_stats'] ) ) : ?>
+			<div class="chart-card">
+				<h4 class="analytics-section-title">
+					<i class="icon_mobile"></i>
+					<?php esc_html_e( 'Distribution par appareil', 'eventlist' ); ?>
+				</h4>
+				<div class="chart-wrapper">
+					<canvas id="el-analytics-devices-chart"
+						data-labels="<?php echo esc_attr( json_encode( array_column( $analytics['device_stats'], 'device_type' ) ) ); ?>"
+						data-values="<?php echo esc_attr( json_encode( array_column( $analytics['device_stats'], 'count' ) ) ); ?>"
+					></canvas>
+				</div>
+			</div>
+		<?php endif; ?>
+
+		<!-- Graphique Browsers -->
+		<?php if ( ! empty( $analytics['browser_stats'] ) ) : ?>
+			<div class="chart-card">
+				<h4 class="analytics-section-title">
+					<i class="icon_globe"></i>
+					<?php esc_html_e( 'Distribution par navigateur', 'eventlist' ); ?>
+				</h4>
+				<div class="chart-wrapper">
+					<canvas id="el-analytics-browsers-chart"
+						data-labels="<?php echo esc_attr( json_encode( array_column( $analytics['browser_stats'], 'browser' ) ) ); ?>"
+						data-values="<?php echo esc_attr( json_encode( array_column( $analytics['browser_stats'], 'count' ) ) ); ?>"
+					></canvas>
+				</div>
+			</div>
+		<?php endif; ?>
 	</div>
 
 	<!-- Interactions -->

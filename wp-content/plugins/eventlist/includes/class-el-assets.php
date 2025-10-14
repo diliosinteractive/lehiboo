@@ -223,6 +223,12 @@ class EL_Assets{
 			'nonce' => wp_create_nonce( 'el_analytics_nonce' )
 		) );
 
+		// Chart.js for analytics dashboard
+		if ( isset( $_GET['vendor'] ) && $_GET['vendor'] == 'general' ) {
+			wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js', array(), '4.4.1', true );
+			wp_enqueue_script('el_analytics_charts', EL_PLUGIN_URI.'assets/js/frontend/el-analytics-charts.js', array('jquery', 'chartjs'), false, true );
+		}
+
 		// Profile Navigation (Vertical Tabs) - V1 Le Hiboo
 		if ( isset( $_GET['vendor'] ) && $_GET['vendor'] == 'profile' ) {
 			wp_enqueue_script('el_profile_navigation', EL_PLUGIN_URI.'assets/js/frontend/profile-navigation.js', array('jquery'),false,true );

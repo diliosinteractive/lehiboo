@@ -585,6 +585,124 @@ class EL_Analytics {
 			'top_events' => array()
 		);
 	}
+
+	/**
+	 * Get temporal analytics data for charts
+	 * Returns data grouped by day for the specified date range
+	 */
+	public function get_vendor_temporal_analytics( $vendor_id = null, $date_range = null ) {
+		global $wpdb;
+
+		if ( ! $vendor_id ) {
+			$vendor_id = get_current_user_id();
+		}
+
+		// Get vendor's events
+		$events = get_posts( array(
+			'post_type'      => 'event',
+			'author'         => $vendor_id,
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'post_status'    => 'any'
+		) );
+
+		if ( empty( $events ) ) {
+			return array(
+				'labels' => array(),
+				'views' => array(),
+				'booking_clicks' => array(),
+				'wishlist_adds' => array(),
+				'contact_clicks' => array(),
+				'share_clicks' => array()
+			);
+		}
+
+		$event_ids = implode( ',', array_map( 'absint', $events ) );
+
+		// Default to last 7 days if no range specified
+		if ( ! $date_range ) {
+			$date_range = array(
+				'start' => strtotime( '-6 days', strtotime( 'midnight' ) ),
+				'end' => strtotime( 'midnight' )
+			);
+		}
+
+		// Query data grouped by date
+		$query = $wpdb->prepare(
+			"SELECT
+				DATE(created_at) as date,
+				COUNT(CASE WHEN event_type = 'view' THEN 1 END) as views,
+				COUNT(CASE WHEN event_type = 'booking_click' THEN 1 END) as booking_clicks,
+				COUNT(CASE WHEN event_type = 'wishlist_add' THEN 1 END) as wishlist_adds,
+				COUNT(CASE WHEN event_type = 'contact_click' THEN 1 END) as contact_clicks,
+				COUNT(CASE WHEN event_type = 'share_click' THEN 1 END) as share_clicks
+			FROM {$this->table_name}
+			WHERE event_id IN ($event_ids)
+			AND created_at BETWEEN %s AND %s
+			GROUP BY DATE(created_at)
+			ORDER BY date ASC",
+			date( 'Y-m-d 00:00:00', $date_range['start'] ),
+			date( 'Y-m-d 23:59:59', $date_range['end'] )
+		);
+
+		$results = $wpdb->get_results( $query, ARRAY_A );
+
+		// Create a complete date range array
+		$data = array();
+		$current = $date_range['start'];
+		while ( $current <= $date_range['end'] ) {
+			$date_key = date( 'Y-m-d', $current );
+			$data[ $date_key ] = array(
+				'views' => 0,
+				'booking_clicks' => 0,
+				'wishlist_adds' => 0,
+				'contact_clicks' => 0,
+				'share_clicks' => 0
+			);
+			$current = strtotime( '+1 day', $current );
+		}
+
+		// Fill in actual data
+		foreach ( $results as $row ) {
+			$date_key = $row['date'];
+			if ( isset( $data[ $date_key ] ) ) {
+				$data[ $date_key ] = array(
+					'views' => intval( $row['views'] ),
+					'booking_clicks' => intval( $row['booking_clicks'] ),
+					'wishlist_adds' => intval( $row['wishlist_adds'] ),
+					'contact_clicks' => intval( $row['contact_clicks'] ),
+					'share_clicks' => intval( $row['share_clicks'] )
+				);
+			}
+		}
+
+		// Format for Chart.js
+		$labels = array();
+		$views = array();
+		$booking_clicks = array();
+		$wishlist_adds = array();
+		$contact_clicks = array();
+		$share_clicks = array();
+
+		foreach ( $data as $date => $values ) {
+			// Format date for display (e.g., "15 Jan")
+			$labels[] = date( 'd M', strtotime( $date ) );
+			$views[] = $values['views'];
+			$booking_clicks[] = $values['booking_clicks'];
+			$wishlist_adds[] = $values['wishlist_adds'];
+			$contact_clicks[] = $values['contact_clicks'];
+			$share_clicks[] = $values['share_clicks'];
+		}
+
+		return array(
+			'labels' => $labels,
+			'views' => $views,
+			'booking_clicks' => $booking_clicks,
+			'wishlist_adds' => $wishlist_adds,
+			'contact_clicks' => $contact_clicks,
+			'share_clicks' => $share_clicks
+		);
+	}
 }
 
 // Initialize
