@@ -9908,10 +9908,10 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
 }
 .vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio,
 .vendor_edit_event #publication .input_radio_group .el_input_radio {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  display: block;
   padding: 20px;
+  padding-bottom: 50px;
+  padding-right: 50px;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
   cursor: pointer;
@@ -9920,6 +9920,10 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   margin-bottom: 0;
   position: relative;
   min-height: 100px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #2d3748;
+  line-height: 1.5;
 }
 .vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio:hover,
 .vendor_edit_event #publication .input_radio_group .el_input_radio:hover {
@@ -9927,14 +9931,6 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   background-color: #f8fafc;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio::before,
-.vendor_edit_event #publication .input_radio_group .el_input_radio::before {
-  content: attr(data-label);
-  font-weight: 600;
-  font-size: 15px;
-  color: #2d3748;
-  margin-bottom: 8px;
 }
 .vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio .el_icon_help,
 .vendor_edit_event #publication .input_radio_group .el_input_radio .el_icon_help {
@@ -9955,6 +9951,7 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   opacity: 0;
   width: 0;
   height: 0;
+  pointer-events: none;
 }
 .vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio input[type=radio]:checked ~ .checkmark,
 .vendor_edit_event #publication .input_radio_group .el_input_radio input[type=radio]:checked ~ .checkmark {
@@ -9965,14 +9962,11 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
 .vendor_edit_event #publication .input_radio_group .el_input_radio input[type=radio]:checked ~ .checkmark::after {
   display: block;
 }
-.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio:has(input:checked),
-.vendor_edit_event #publication .input_radio_group .el_input_radio:has(input:checked) {
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio:has(input[type=radio]:checked),
+.vendor_edit_event #publication .input_radio_group .el_input_radio:has(input[type=radio]:checked) {
   border-color: #ff6a3d;
   background-color: #fff5f0;
   box-shadow: 0 0 0 3px rgba(255, 106, 61, 0.1);
-}
-.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio:has(input:checked)::before,
-.vendor_edit_event #publication .input_radio_group .el_input_radio:has(input:checked)::before {
   color: #ff6a3d;
 }
 .vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio .checkmark,
@@ -9986,6 +9980,7 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   border: 2px solid #cbd5e0;
   border-radius: 50%;
   transition: all 0.3s ease;
+  pointer-events: none;
 }
 .vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio .checkmark::after,
 .vendor_edit_event #publication .input_radio_group .el_input_radio .checkmark::after {

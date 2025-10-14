@@ -903,10 +903,10 @@
 			}
 
 			.el_input_radio {
-				display: flex;
-				flex-direction: column;
-				align-items: flex-start;
+				display: block;
 				padding: 20px;
+				padding-bottom: 50px; // Espace pour le checkmark
+				padding-right: 50px; // Espace pour l'icône help
 				border: 2px solid #e2e8f0;
 				border-radius: 12px;
 				cursor: pointer;
@@ -915,21 +915,16 @@
 				margin-bottom: 0;
 				position: relative;
 				min-height: 100px;
+				font-weight: 600;
+				font-size: 15px;
+				color: #2d3748;
+				line-height: 1.5;
 
 				&:hover {
 					border-color: #cbd5e0;
 					background-color: #f8fafc;
 					transform: translateY(-2px);
 					box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-				}
-
-				// Texte du label
-				&::before {
-					content: attr(data-label);
-					font-weight: 600;
-					font-size: 15px;
-					color: #2d3748;
-					margin-bottom: 8px;
 				}
 
 				// Icône help
@@ -952,6 +947,7 @@
 					opacity: 0;
 					width: 0;
 					height: 0;
+					pointer-events: none;
 
 					// Quand sélectionné
 					&:checked ~ .checkmark {
@@ -962,23 +958,14 @@
 							display: block;
 						}
 					}
-
-					&:checked {
-						& ~ * {
-							// Change la couleur de fond quand sélectionné
-						}
-					}
 				}
 
-				// État sélectionné
-				&:has(input:checked) {
+				// État sélectionné via :has (navigateurs modernes)
+				&:has(input[type="radio"]:checked) {
 					border-color: #ff6a3d;
 					background-color: #fff5f0;
 					box-shadow: 0 0 0 3px rgba(255, 106, 61, 0.1);
-
-					&::before {
-						color: #ff6a3d;
-					}
+					color: #ff6a3d;
 				}
 
 				// Checkmark personnalisé
@@ -992,6 +979,7 @@
 					border: 2px solid #cbd5e0;
 					border-radius: 50%;
 					transition: all 0.3s ease;
+					pointer-events: none;
 
 					&::after {
 						content: "";
