@@ -39,6 +39,10 @@ if( !class_exists( 'El_Ajax' ) ){
 				// Vendor Update Localisation (V1 Le Hiboo)
 				'el_update_localisation',
 
+				// Vendor Gallery Operations (V1 Le Hiboo)
+				'el_add_gallery_images',
+				'el_delete_gallery_image',
+
 				// Vendor Add Social
 				'el_add_social',
 
@@ -4930,6 +4934,86 @@ if( !class_exists( 'El_Ajax' ) ){
 		}
 
 		wp_die();
+	}
+
+	/**
+	 * Ajouter des images à la galerie du partenaire
+	 * V1 Le Hiboo
+	 */
+	public function el_add_gallery_images() {
+		check_ajax_referer( 'ajax_nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Vous devez être connecté', 'eventlist' ) ) );
+		}
+
+		$user_id = get_current_user_id();
+
+		// Récupérer les IDs des images
+		$image_ids = isset( $_POST['image_ids'] ) ? array_map( 'absint', $_POST['image_ids'] ) : array();
+
+		if ( empty( $image_ids ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Aucune image sélectionnée', 'eventlist' ) ) );
+		}
+
+		// Récupérer la galerie actuelle
+		$current_gallery = get_user_meta( $user_id, 'vendor_gallery_images', true );
+		$current_gallery = $current_gallery ? $current_gallery : array();
+
+		// Ajouter les nouvelles images
+		$updated_gallery = array_merge( $current_gallery, $image_ids );
+		$updated_gallery = array_unique( $updated_gallery ); // Éviter les doublons
+		$updated_gallery = array_values( $updated_gallery ); // Réindexer
+
+		// Sauvegarder
+		update_user_meta( $user_id, 'vendor_gallery_images', $updated_gallery );
+
+		wp_send_json_success( array(
+			'message' => esc_html__( 'Images ajoutées avec succès', 'eventlist' ),
+			'count' => count( $updated_gallery )
+		) );
+	}
+
+	/**
+	 * Supprimer une image de la galerie du partenaire
+	 * V1 Le Hiboo
+	 */
+	public function el_delete_gallery_image() {
+		check_ajax_referer( 'ajax_nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Vous devez être connecté', 'eventlist' ) ) );
+		}
+
+		$user_id = get_current_user_id();
+
+		// Récupérer l'ID de l'image à supprimer
+		$image_id = isset( $_POST['image_id'] ) ? absint( $_POST['image_id'] ) : 0;
+
+		if ( ! $image_id ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Image non trouvée', 'eventlist' ) ) );
+		}
+
+		// Récupérer la galerie actuelle
+		$current_gallery = get_user_meta( $user_id, 'vendor_gallery_images', true );
+		$current_gallery = $current_gallery ? $current_gallery : array();
+
+		// Retirer l'image
+		$key = array_search( $image_id, $current_gallery );
+		if ( $key !== false ) {
+			unset( $current_gallery[ $key ] );
+			$current_gallery = array_values( $current_gallery ); // Réindexer
+
+			// Sauvegarder
+			update_user_meta( $user_id, 'vendor_gallery_images', $current_gallery );
+
+			wp_send_json_success( array(
+				'message' => esc_html__( 'Image supprimée avec succès', 'eventlist' ),
+				'count' => count( $current_gallery )
+			) );
+		} else {
+			wp_send_json_error( array( 'message' => esc_html__( 'Image non trouvée dans la galerie', 'eventlist' ) ) );
+		}
 	}
 }
 

@@ -241,6 +241,12 @@ class EL_Assets{
 			wp_enqueue_script('el_event_form_progress', EL_PLUGIN_URI.'assets/js/frontend/event-form-progress.js', array('jquery'),'1.0',true );
 		}
 
+		// Vendor Gallery Management - V1 Le Hiboo
+		if ( isset( $_GET['vendor'] ) && $_GET['vendor'] == 'galerie' ) {
+			wp_enqueue_media(); // Enqueue WordPress media uploader
+			wp_enqueue_script('el_vendor_gallery', EL_PLUGIN_URI.'assets/js/frontend/vendor-gallery.js', array('jquery'),'1.0',true );
+		}
+
 		if ( did_action( 'elementor/loaded' ) ) {
 			wp_enqueue_script( 'script-eventlist-elementor', EL_PLUGIN_URI. 'assets/js/frontend/script-elementor.js', [ 'jquery' ], false, true );
 			wp_localize_script( 'script-eventlist-elementor', 'event_element_object', array( 'get_location' => apply_filters('el_get_location', true ) ) );

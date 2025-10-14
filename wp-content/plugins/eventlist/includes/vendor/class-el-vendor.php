@@ -154,7 +154,15 @@ class EL_Vendor {
 				$template = apply_filters( 'el_shortcode_myaccount_template_profile', 'vendor/profile.php' );
 			}
 			break;
-			
+
+			case 'galerie':
+			if( el_is_vendor() && apply_filters( 'el_manage_vendor_show_galerie', true ) ){
+				$template = apply_filters( 'el_shortcode_galerie_template_galerie', 'vendor/galerie.php' );
+			}else{
+				$template = apply_filters( 'el_shortcode_myaccount_template_profile', 'vendor/profile.php' );
+			}
+			break;
+
 
 		}
 
