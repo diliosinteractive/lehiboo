@@ -159,6 +159,7 @@ final class EventList{
 		// Vendor
 		require_once EL_PLUGIN_INC . 'vendor/class-el-vendor.php';
 		require_once EL_PLUGIN_INC . 'vendor/el-vendor-functions.php';
+		require_once EL_PLUGIN_INC . 'vendor/el-vendor-stats-functions.php';
 
 		// Payment Gateways
 		require_once EL_PLUGIN_INC . 'class-el-payment-gateways.php';
