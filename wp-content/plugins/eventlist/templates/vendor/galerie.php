@@ -62,20 +62,21 @@ $total_pages = $query->max_num_pages;
 			<!-- Barre d'outils : Recherche + Upload -->
 			<div class="galerie_toolbar">
 				<div class="galerie_search">
-					<form method="get" action="">
+					<form method="get" action="" class="galerie_search_form">
 						<?php
 						// Préserver les paramètres GET existants
 						if ( isset( $_GET['vendor'] ) ) {
 							echo '<input type="hidden" name="vendor" value="' . esc_attr( $_GET['vendor'] ) . '">';
 						}
 						?>
+						<i class="icon_search"></i>
 						<input type="text"
 							name="gallery_search"
 							placeholder="<?php esc_attr_e( 'Rechercher une image...', 'eventlist' ); ?>"
 							value="<?php echo esc_attr( $search ); ?>"
 							class="galerie_search_input">
 						<button type="submit" class="galerie_search_btn">
-							<i class="icon_search"></i>
+							<?php esc_html_e( 'Rechercher', 'eventlist' ); ?>
 						</button>
 						<?php if ( ! empty( $search ) ) : ?>
 							<a href="<?php echo esc_url( add_query_arg( 'vendor', 'galerie', get_myaccount_page() ) ); ?>" class="galerie_search_clear">
@@ -117,6 +118,11 @@ $total_pages = $query->max_num_pages;
 											data-image-url="<?php echo esc_url( $image_url ); ?>"
 											title="<?php esc_attr_e( 'Voir l\'image', 'eventlist' ); ?>">
 											<i class="icon_search"></i>
+										</button>
+										<button type="button" class="galerie_action_btn edit_image_btn"
+											data-image-id="<?php echo esc_attr( $image_id ); ?>"
+											title="<?php esc_attr_e( 'Modifier les métadonnées', 'eventlist' ); ?>">
+											<i class="icon_pencil"></i>
 										</button>
 										<button type="button" class="galerie_action_btn delete_image_btn"
 											data-image-id="<?php echo esc_attr( $image_id ); ?>"

@@ -12,6 +12,7 @@
             this.addGalleryImages();
             this.deleteImage();
             this.viewImage();
+            this.editImage();
             this.closeModal();
         },
 
@@ -42,7 +43,8 @@
                     multiple: true,  // Permettre la sélection multiple
                     library: {
                         type: 'image'  // Seulement les images
-                    }
+                    },
+                    state: 'upload'  // Ouvrir directement l'onglet téléverser
                 });
 
                 // Quand des images sont sélectionnées/uploadées
@@ -128,6 +130,45 @@
                 $('#gallery_modal_image').attr('src', imageUrl);
                 $('#gallery_image_modal').fadeIn(300);
                 $('body').css('overflow', 'hidden');
+            });
+        },
+
+        /**
+         * Modifier les métadonnées d'une image via le media frame WordPress
+         */
+        editImage: function() {
+            $(document).on('click', '.edit_image_btn', function(e) {
+                e.preventDefault();
+
+                const imageId = $(this).data('image-id');
+
+                // Créer un media frame pour éditer l'image
+                const frame = wp.media({
+                    title: 'Modifier les métadonnées',
+                    multiple: false,
+                    library: {
+                        type: 'image'
+                    },
+                    button: {
+                        text: 'Mettre à jour'
+                    }
+                });
+
+                // Pré-sélectionner l'image
+                frame.on('open', function() {
+                    const selection = frame.state().get('selection');
+                    const attachment = wp.media.attachment(imageId);
+                    attachment.fetch();
+                    selection.add(attachment);
+                });
+
+                // Après mise à jour
+                frame.on('select', function() {
+                    // Recharger la page pour afficher les modifications
+                    location.reload();
+                });
+
+                frame.open();
             });
         },
 
