@@ -224,6 +224,8 @@ class EL_Assets{
 		// Event Form Navigation (Vertical Tabs) - V1 Le Hiboo - Phase 6
 		if ( isset( $_GET['vendor'] ) && ( $_GET['vendor'] == 'create-event' || $_GET['vendor'] == 'listing-edit' ) ) {
 			wp_enqueue_script('el_event_form_navigation', EL_PLUGIN_URI.'assets/js/frontend/event-form-navigation.js', array('jquery'),'1.0',true );
+			// Event Form Progress Navigation (Horizontal Anchors) - V1 Le Hiboo - Phase 6.8
+			wp_enqueue_script('el_event_form_progress', EL_PLUGIN_URI.'assets/js/frontend/event-form-progress.js', array('jquery'),'1.0',true );
 		}
 
 		if ( did_action( 'elementor/loaded' ) ) {

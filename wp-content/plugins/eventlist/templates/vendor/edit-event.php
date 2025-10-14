@@ -86,70 +86,55 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 					</div>
 				</div>
 
-				<form id="event_edit_form" action="" method="post" enctype="multipart/form-data" class="content event_form_wrapper" autocomplete="off" autocorrect="off" autocapitalize="none"
+				<form id="event_edit_form" action="" method="post" enctype="multipart/form-data" class="content event_form_wrapper event_form_single_page" autocomplete="off" autocorrect="off" autocapitalize="none"
 					data-required="<?php echo esc_attr( json_encode( $event_req_field ) ); ?>">
 					<input type="hidden" value="<?php echo esc_attr( $post_id ); ?>" id="el_post_id" name="el_post_id"/>
 
-					<!-- Navigation verticale à gauche (comme profil) -->
-					<div class="profile_navigation_sidebar">
-						<nav class="profile_tabs_nav">
+					<!-- Navigation sticky avec ancres -->
+					<div class="form_progress_navigation">
+						<nav class="progress_nav">
 							<ul>
-								<li class="profile_tab_item active" data-tab="mb_basic">
-									<a href="#mb_basic">
-										<i class="icon_document_alt"></i>
-										<span><?php esc_html_e( 'Informations de base', 'eventlist' ); ?></span>
+								<li class="progress_nav_item active" data-anchor="general-info">
+									<a href="#general-info">
+										<i class="icon_documents_alt"></i>
+										<span><?php esc_html_e( 'Informations générales', 'eventlist' ); ?></span>
 									</a>
 								</li>
-
+								<li class="progress_nav_item" data-anchor="presentation">
+									<a href="#presentation">
+										<i class="icon_images"></i>
+										<span><?php esc_html_e( 'Présentation', 'eventlist' ); ?></span>
+									</a>
+								</li>
+								<li class="progress_nav_item" data-anchor="localisation">
+									<a href="#localisation">
+										<i class="icon_pin_alt"></i>
+										<span><?php esc_html_e( 'Localisation', 'eventlist' ); ?></span>
+									</a>
+								</li>
+								<li class="progress_nav_item" data-anchor="creneaux">
+									<a href="#creneaux">
+										<i class="icon_calendar"></i>
+										<span><?php esc_html_e( 'Créneaux', 'eventlist' ); ?></span>
+									</a>
+								</li>
 								<?php if ( EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' ) { ?>
-									<li class="profile_tab_item" data-tab="mb_ticket">
-										<a href="#mb_ticket">
+									<li class="progress_nav_item" data-anchor="billetterie">
+										<a href="#billetterie">
 											<i class="icon_tag_alt"></i>
-											<span><?php esc_html_e( 'Billets', 'eventlist' ); ?></span>
-										</a>
-									</li>
-								<?php	} ?>
-
-								<?php if( apply_filters( 'el_create_event_show_calendar_tab', true ) ){ ?>
-									<li class="profile_tab_item" data-tab="mb_calendar">
-										<a href="#mb_calendar">
-											<i class="icon_calendar"></i>
-											<span><?php esc_html_e( 'Calendrier', 'eventlist' ); ?></span>
+											<span><?php esc_html_e( 'Billetterie', 'eventlist' ); ?></span>
 										</a>
 									</li>
 								<?php } ?>
-
-
-								<?php /*
-								if ( EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' && apply_filters( 'el_edit_event_show_coupon', true ) ) { ?>
-									<li class="profile_tab_item" data-tab="mb_coupon">
-										<a href="#mb_coupon">
-											<i class="icon_percent"></i>
-											<span><?php esc_html_e( 'Coupon', 'eventlist' ); ?></span>
-										</a>
-									</li>
-								<?php } ?>
-
-								<?php if( apply_filters( 'el_create_event_show_member_tab', true ) && EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' ){ ?>
-									<li class="profile_tab_item" data-tab="mb_api_key">
-										<a href="#mb_api_key">
-											<i class="icon_group"></i>
-											<span><?php esc_html_e( 'Staff Member', 'eventlist' ); ?></span>
-										</a>
-									</li>
-								<?php } ?>
-
-								<?php if ( EL()->options->cancel->get('cancel_enable', 1 ) && EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' ) { ?>
-									<li class="profile_tab_item" data-tab="mb_cancel_booking">
-										<a href="#mb_cancel_booking">
-											<i class="icon_close"></i>
-											<span><?php esc_html_e( 'Cancel booking', 'eventlist' ); ?></span>
-										</a>
-									</li>
-								<?php } */ ?>
+								<li class="progress_nav_item" data-anchor="publication">
+									<a href="#publication">
+										<i class="icon_cloud-upload_alt"></i>
+										<span><?php esc_html_e( 'Publication', 'eventlist' ); ?></span>
+									</a>
+								</li>
 								<?php if ( apply_filters( 'el_create_event_show_extra_service_tab', true ) == true ): ?>
-									<li class="profile_tab_item" data-tab="mb_extra_service">
-										<a href="#mb_extra_service">
+									<li class="progress_nav_item" data-anchor="services-extra">
+										<a href="#services-extra">
 											<i class="icon_star"></i>
 											<span><?php esc_html_e( 'Services Extra', 'eventlist' ); ?></span>
 										</a>
@@ -159,49 +144,135 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 						</nav>
 					</div>
 
-					<!-- Contenu des onglets -->
-					<div class="profile_content_area">
+					<!-- Contenu unique avec encarts visibles -->
+					<div class="form_content_area">
 
-						<div id="mb_basic" class="tab-contents">
-						<?php echo el_get_template( '/vendor/__edit-event-basic.php', array( 'event_req_field' => $event_req_field ) ); ?>
-					</div>
+						<!-- ENCART 1: Informations générales -->
+						<div id="general-info" class="form_card">
+							<div class="form_card_header">
+								<h2 class="form_card_title">
+									<i class="icon_documents_alt"></i>
+									<?php esc_html_e( 'Informations générales', 'eventlist' ); ?>
+								</h2>
+								<p class="form_card_description"><?php esc_html_e( 'Les informations essentielles de votre événement', 'eventlist' ); ?></p>
+							</div>
+							<div class="form_card_content" id="mb_basic">
+								<?php echo el_get_template( '/vendor/__edit-event-basic.php', array( 'event_req_field' => $event_req_field ) ); ?>
+							</div>
+						</div>
 
-					<?php if ( EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' ) { ?>
-						<div id="mb_ticket" class="tab-contents">
-							<?php echo el_get_template( '/vendor/__edit-event-ticket.php' ); ?>
+						<!-- ENCART 2: Présentation (Description, Images, Vidéo) -->
+						<div id="presentation" class="form_card">
+							<div class="form_card_header">
+								<h2 class="form_card_title">
+									<i class="icon_images"></i>
+									<?php esc_html_e( 'Présentation', 'eventlist' ); ?>
+								</h2>
+								<p class="form_card_description"><?php esc_html_e( 'Présentez votre événement avec du texte, des images et une vidéo', 'eventlist' ); ?></p>
+							</div>
+							<div class="form_card_content">
+								<!-- La description, images et vidéo seront extraites du template basic -->
+							</div>
 						</div>
-					<?php	} ?>
 
-					<?php if( apply_filters( 'el_create_event_show_calendar_tab', true ) ){ ?>
-						<div id="mb_calendar" class="tab-contents">
-							<?php echo el_get_template( '/vendor/__edit-event-calendar.php' ); ?>
+						<!-- ENCART 3: Localisation -->
+						<div id="localisation" class="form_card">
+							<div class="form_card_header">
+								<h2 class="form_card_title">
+									<i class="icon_pin_alt"></i>
+									<?php esc_html_e( 'Localisation', 'eventlist' ); ?>
+								</h2>
+								<p class="form_card_description"><?php esc_html_e( 'Où se déroule votre événement ?', 'eventlist' ); ?></p>
+							</div>
+							<div class="form_card_content">
+								<!-- La localisation sera extraite du template basic -->
+							</div>
 						</div>
-					<?php } ?>
 
-					<?php if ( EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' && apply_filters( 'el_edit_event_show_coupon', true ) ) { ?>
-						<div id="mb_coupon" class="tab-contents">
-							<?php echo el_get_template( '/vendor/__edit-event-coupon.php' ); ?>
-						</div>
-					<?php	} ?>
-					
-					<?php if( apply_filters( 'el_create_event_show_member_tab', true ) && EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' ){ ?>
-						<div id="mb_api_key" class="tab-contents">
-							<?php  echo el_get_template( '/vendor/__edit-event-api-key.php' ); ?>
-						</div>
-					<?php } ?>
+						<!-- ENCART 4: Créneaux (Calendrier) -->
+						<?php if( apply_filters( 'el_create_event_show_calendar_tab', true ) ){ ?>
+							<div id="creneaux" class="form_card">
+								<div class="form_card_header">
+									<h2 class="form_card_title">
+										<i class="icon_calendar"></i>
+										<?php esc_html_e( 'Créneaux', 'eventlist' ); ?>
+									</h2>
+									<p class="form_card_description"><?php esc_html_e( 'Définissez les dates et horaires de votre événement', 'eventlist' ); ?></p>
+								</div>
+								<div class="form_card_content" id="mb_calendar">
+									<?php echo el_get_template( '/vendor/__edit-event-calendar.php' ); ?>
+								</div>
+							</div>
+						<?php } ?>
 
-					<?php if ( EL()->options->cancel->get('cancel_enable', 1 ) && EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' ) { ?>
-						<div id="mb_cancel_booking" class="tab-contents">
-							<?php  echo el_get_template( '/vendor/__edit-event-cancel-booking.php' ); ?>
+						<!-- ENCART 5: Billetterie -->
+						<?php if ( EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' ) { ?>
+							<div id="billetterie" class="form_card">
+								<div class="form_card_header">
+									<h2 class="form_card_title">
+										<i class="icon_tag_alt"></i>
+										<?php esc_html_e( 'Billetterie', 'eventlist' ); ?>
+									</h2>
+									<p class="form_card_description"><?php esc_html_e( 'Configurez les billets et tarifs pour votre événement', 'eventlist' ); ?></p>
+								</div>
+								<div class="form_card_content" id="mb_ticket">
+									<?php echo el_get_template( '/vendor/__edit-event-ticket.php' ); ?>
+								</div>
+							</div>
+						<?php } ?>
+
+						<!-- ENCART 6: Publication -->
+						<div id="publication" class="form_card">
+							<div class="form_card_header">
+								<h2 class="form_card_title">
+									<i class="icon_cloud-upload_alt"></i>
+									<?php esc_html_e( 'Publication', 'eventlist' ); ?>
+								</h2>
+								<p class="form_card_description"><?php esc_html_e( 'Choisissez la visibilité et le statut de votre événement', 'eventlist' ); ?></p>
+							</div>
+							<div class="form_card_content">
+								<!-- Public/Privé et statut de publication seront extraits du template basic -->
+							</div>
 						</div>
-					<?php } ?>
-					<?php if ( apply_filters( 'el_create_event_show_extra_service_tab', true ) == true ): ?>
-						<div id="mb_extra_service" class="tab-contents">
-							<?php echo el_get_template( '/vendor/__edit-event-extra-service.php' ); ?>
-						</div>
+
+						<!-- ENCART 7: Services Extra (optionnel) -->
+						<?php if ( apply_filters( 'el_create_event_show_extra_service_tab', true ) == true ): ?>
+							<div id="services-extra" class="form_card">
+								<div class="form_card_header">
+									<h2 class="form_card_title">
+										<i class="icon_star"></i>
+										<?php esc_html_e( 'Services Extra', 'eventlist' ); ?>
+									</h2>
+									<p class="form_card_description"><?php esc_html_e( 'Ajoutez des services supplémentaires à votre événement', 'eventlist' ); ?></p>
+								</div>
+								<div class="form_card_content" id="mb_extra_service">
+									<?php echo el_get_template( '/vendor/__edit-event-extra-service.php' ); ?>
+								</div>
+							</div>
 						<?php endif; ?>
+
+						<!-- Coupons et autres (cachés pour l'instant) -->
+						<?php if ( EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' && apply_filters( 'el_edit_event_show_coupon', true ) ) { ?>
+							<div id="mb_coupon" style="display:none;">
+								<?php echo el_get_template( '/vendor/__edit-event-coupon.php' ); ?>
+							</div>
+						<?php } ?>
+
+						<?php if( apply_filters( 'el_create_event_show_member_tab', true ) && EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' ){ ?>
+							<div id="mb_api_key" style="display:none;">
+								<?php echo el_get_template( '/vendor/__edit-event-api-key.php' ); ?>
+							</div>
+						<?php } ?>
+
+						<?php if ( EL()->options->cancel->get('cancel_enable', 1 ) && EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' ) { ?>
+							<div id="mb_cancel_booking" style="display:none;">
+								<?php echo el_get_template( '/vendor/__edit-event-cancel-booking.php' ); ?>
+							</div>
+						<?php } ?>
+
 						<?php echo apply_filters( 'meup_send_create_event_recapcha', '' ); ?>
 
+						<!-- Bouton de soumission -->
 						<div class="wrap_btn_submit">
 							<input class="el_edit_event_submit el_btn_add" name="el_edit_event_submit" type="submit" value="<?php esc_html_e( 'Save Event', 'eventlist' ); ?>" />
 							<?php wp_nonce_field( 'el_edit_event_nonce', 'el_edit_event_nonce' ); ?>
@@ -215,7 +286,7 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 						<p class="error-total-event"><?php echo esc_html_e('You should upgrade to high package because your current package is limit number events', 'eventlist') ?></p>
 						<p class="error-time-limit"><?php echo esc_html_e('Your package time is expired', 'eventlist') ?></p>
 
-					</div> <!-- End profile_content_area -->
+					</div> <!-- End form_content_area -->
 				</form>
 
 			<?php else: 

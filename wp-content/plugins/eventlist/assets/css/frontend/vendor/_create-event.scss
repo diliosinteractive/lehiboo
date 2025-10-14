@@ -165,7 +165,189 @@
 }
 
 .vendor_edit_event {
-	.event_form_wrapper {
+	// Nouvelle structure avec encarts et navigation horizontale
+	.event_form_wrapper.event_form_single_page {
+		display: block !important;
+		background: #fff;
+		min-height: 600px;
+
+		/* Navigation sticky horizontale avec ancres */
+		.form_progress_navigation {
+			position: sticky;
+			top: 0;
+			z-index: 100;
+			background: #ffffff;
+			border-bottom: 2px solid #e2e8f0;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+			margin-bottom: 32px;
+
+			.progress_nav {
+				ul {
+					display: flex;
+					list-style: none;
+					margin: 0;
+					padding: 0;
+					overflow-x: auto;
+					overflow-y: hidden;
+					-webkit-overflow-scrolling: touch;
+
+					/* Hide scrollbar but keep functionality */
+					&::-webkit-scrollbar {
+						height: 2px;
+					}
+
+					&::-webkit-scrollbar-thumb {
+						background: #ff6a3d;
+						border-radius: 2px;
+					}
+
+					.progress_nav_item {
+						flex-shrink: 0;
+						margin: 0;
+
+						a {
+							display: flex;
+							align-items: center;
+							gap: 8px;
+							padding: 16px 20px;
+							color: #718096;
+							text-decoration: none;
+							border-bottom: 3px solid transparent;
+							transition: all 0.3s ease;
+							font-weight: 500;
+							font-size: 14px;
+							white-space: nowrap;
+
+							i {
+								font-size: 18px;
+							}
+
+							&:hover {
+								color: #ff6a3d;
+								background: #fff5f0;
+							}
+						}
+
+						&.active a {
+							color: #ff6a3d;
+							border-bottom-color: #ff6a3d;
+							background: #fff5f0;
+						}
+					}
+				}
+			}
+
+			@media (max-width: 768px) {
+				.progress_nav ul {
+					.progress_nav_item a {
+						padding: 12px 16px;
+						font-size: 13px;
+
+						span {
+							display: none; // Masquer le texte sur mobile, garder juste l'icône
+						}
+
+						i {
+							font-size: 20px;
+						}
+					}
+				}
+			}
+		}
+
+		/* Zone de contenu avec encarts */
+		.form_content_area {
+			padding: 0 32px 32px;
+			max-width: 1200px;
+			margin: 0 auto;
+
+			@media (max-width: 768px) {
+				padding: 0 16px 16px;
+			}
+		}
+
+		/* Styles des encarts (cards) */
+		.form_card {
+			background: #ffffff;
+			border: 2px solid #e2e8f0;
+			border-radius: 12px;
+			margin-bottom: 32px;
+			scroll-margin-top: 80px; // Offset pour la sticky nav
+			transition: all 0.3s ease;
+
+			&:hover {
+				box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+				border-color: #cbd5e0;
+			}
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+
+			.form_card_header {
+				padding: 24px 32px;
+				border-bottom: 2px solid #e2e8f0;
+				background: linear-gradient(to bottom, #f7fafc, #ffffff);
+
+				@media (max-width: 768px) {
+					padding: 20px;
+				}
+
+				.form_card_title {
+					font-size: 22px;
+					font-weight: 700;
+					color: #1a202c;
+					margin: 0 0 8px 0;
+					display: flex;
+					align-items: center;
+					gap: 12px;
+
+					i {
+						font-size: 24px;
+						color: #ff6a3d;
+					}
+				}
+
+				.form_card_description {
+					font-size: 14px;
+					color: #718096;
+					margin: 0;
+					line-height: 1.6;
+				}
+			}
+
+			.form_card_content {
+				padding: 32px;
+
+				@media (max-width: 768px) {
+					padding: 20px;
+				}
+			}
+		}
+
+		/* Animations des cards */
+		.form_card.fade-in-card {
+			opacity: 0;
+			transform: translateY(20px);
+			transition: opacity 0.6s ease, transform 0.6s ease;
+
+			&.is-visible {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		/* Indicateurs de complétion (optionnel) */
+		.progress_nav_item.completed {
+			.completion-check {
+				color: #48bb78;
+				margin-right: 4px;
+			}
+		}
+	}
+
+	// Ancienne structure avec navigation verticale (fallback)
+	.event_form_wrapper:not(.event_form_single_page) {
 		display: flex;
 		background: #fff;
 		min-height: 600px;
