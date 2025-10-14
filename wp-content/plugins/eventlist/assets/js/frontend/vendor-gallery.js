@@ -1,6 +1,6 @@
 /**
  * EventList Vendor Gallery Management
- * Gestion de la galerie d'images du partenaire
+ * Affichage et gestion de la médiathèque WordPress du partenaire
  */
 
 (function($) {
@@ -16,7 +16,8 @@
         },
 
         /**
-         * Ajouter des images à la galerie via le media uploader WordPress
+         * Ajouter des images via le media uploader WordPress
+         * Les images sont automatiquement ajoutées à la médiathèque
          */
         addGalleryImages: function() {
             let frame;
@@ -44,15 +45,19 @@
                     }
                 });
 
-                // Quand des images sont sélectionnées
+                // Quand des images sont sélectionnées/uploadées
                 frame.on('select', function() {
-                    const attachments = frame.state().get('selection').toJSON();
-                    const imageIds = attachments.map(function(attachment) {
-                        return attachment.id;
-                    });
+                    // Les images sont automatiquement ajoutées à la médiathèque WordPress
+                    // On recharge la page pour les afficher
+                    location.reload();
+                });
 
-                    // Sauvegarder via AJAX
-                    VendorGallery.saveGalleryImages(imageIds);
+                // Après fermeture du uploader
+                frame.on('close', function() {
+                    const selection = frame.state().get('selection');
+                    if (selection && selection.length > 0) {
+                        location.reload();
+                    }
                 });
 
                 frame.open();
@@ -60,44 +65,13 @@
         },
 
         /**
-         * Sauvegarder les nouvelles images via AJAX
-         */
-        saveGalleryImages: function(imageIds) {
-            $.ajax({
-                url: el_general.ajax_url,
-                type: 'POST',
-                data: {
-                    action: 'el_add_gallery_images',
-                    nonce: el_general.ajax_nonce,
-                    image_ids: imageIds
-                },
-                beforeSend: function() {
-                    $('.add_gallery_images').prop('disabled', true).html('<i class="icon_loading"></i> ' + 'Ajout en cours...');
-                },
-                success: function(response) {
-                    if (response.success) {
-                        // Recharger la page pour afficher les nouvelles images
-                        location.reload();
-                    } else {
-                        alert(response.data.message || 'Erreur lors de l\'ajout des images');
-                        $('.add_gallery_images').prop('disabled', false).html('<i class="icon_plus"></i> Ajouter des images');
-                    }
-                },
-                error: function() {
-                    alert('Erreur de connexion au serveur');
-                    $('.add_gallery_images').prop('disabled', false).html('<i class="icon_plus"></i> Ajouter des images');
-                }
-            });
-        },
-
-        /**
-         * Supprimer une image de la galerie
+         * Supprimer définitivement une image de WordPress
          */
         deleteImage: function() {
             $(document).on('click', '.delete_image_btn', function(e) {
                 e.preventDefault();
 
-                if (!confirm('Êtes-vous sûr de vouloir supprimer cette image de votre galerie ?')) {
+                if (!confirm('⚠️ Attention : Cette action est irréversible.\n\nVoulez-vous vraiment supprimer définitivement cette image de WordPress ?\n\nElle sera supprimée de tous vos événements et pages qui l\'utilisent.')) {
                     return;
                 }
 
@@ -120,25 +94,12 @@
                     success: function(response) {
                         if (response.success) {
                             // Retirer l'élément avec animation
-                            item.fadeOut(300, function() {
+                            item.fadeOut(400, function() {
                                 $(this).remove();
 
-                                // Mettre à jour le compteur
-                                const currentCount = parseInt($('#gallery_count').text());
-                                $('#gallery_count').text(currentCount - 1);
-
-                                // Si plus d'images, afficher l'état vide
+                                // Si plus d'images sur la page, recharger
                                 if ($('.galerie_item').length === 0) {
-                                    $('#gallery_items_grid').remove();
-                                    $('.galerie_footer').before(`
-                                        <div class="galerie_empty" id="gallery_empty_state">
-                                            <div class="galerie_empty_icon">
-                                                <i class="icon_images"></i>
-                                            </div>
-                                            <h3>Votre galerie est vide</h3>
-                                            <p>Ajoutez des images pour mettre en valeur votre organisation et vos événements.</p>
-                                        </div>
-                                    `);
+                                    location.reload();
                                 }
                             });
                         } else {
