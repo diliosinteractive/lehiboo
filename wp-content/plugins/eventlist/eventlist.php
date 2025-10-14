@@ -51,5 +51,17 @@ function EL() {
 $GLOBALS['eventlist'] = EL();
 // Global for backwards compatibility.
 
+/**
+ * Plugin activation hook - Create analytics table
+ */
+register_activation_hook( __FILE__, 'el_plugin_activate' );
+function el_plugin_activate() {
+	require_once EL_PLUGIN_INC . 'class-el-analytics.php';
+	EL_Analytics::create_table();
+
+	// Flush rewrite rules
+	flush_rewrite_rules();
+}
+
 
 

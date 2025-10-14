@@ -216,6 +216,13 @@ class EL_Assets{
 			'event_type' => $event_type,
 		) );
 
+		// Analytics tracking script
+		wp_enqueue_script('el_analytics', EL_PLUGIN_URI.'assets/js/frontend/el-analytics.js', array('jquery'),false,true );
+		wp_localize_script( 'el_analytics', 'el_analytics_obj', array(
+			'ajax_url' => admin_url('admin-ajax.php'),
+			'nonce' => wp_create_nonce( 'el_analytics_nonce' )
+		) );
+
 		// Profile Navigation (Vertical Tabs) - V1 Le Hiboo
 		if ( isset( $_GET['vendor'] ) && $_GET['vendor'] == 'profile' ) {
 			wp_enqueue_script('el_profile_navigation', EL_PLUGIN_URI.'assets/js/frontend/profile-navigation.js', array('jquery'),false,true );

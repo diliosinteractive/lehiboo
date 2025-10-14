@@ -64,6 +64,9 @@ $placeholder = date( el_date_time_format_js_reverse($format), current_time('time
 		<!-- KPI Dashboard -->
 		<?php echo el_get_template( '/vendor/__dashboard-kpi.php' ); ?>
 
+		<!-- Analytics Dashboard -->
+		<?php echo el_get_template( '/vendor/__dashboard-analytics.php' ); ?>
+
 		<div class="accounting">
 
 			<h3 class="vendor_report">
