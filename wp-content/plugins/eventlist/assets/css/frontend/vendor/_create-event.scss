@@ -892,16 +892,11 @@
 
 	// Amélioration des blocs de contenu
 	.event_basic_block {
-		background: #ffffff;
-		border: 1px solid #e2e8f0;
-		border-radius: 12px;
-		padding: 24px;
+		// Styles de bordure et padding retirés - les encarts form_card gèrent maintenant le style
+		background: transparent;
+		border: none;
+		padding: 0;
 		margin-bottom: 24px;
-		transition: all 0.3s ease;
-
-		&:hover {
-			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-		}
 
 		&:last-child {
 			margin-bottom: 0;
@@ -1110,7 +1105,7 @@
 		}
 
 		.event_basic_block {
-			padding: 16px;
+			padding: 0; // Retiré pour éviter double padding avec form_card
 		}
 
 		.button,
@@ -2998,10 +2993,9 @@
 
 	/*event type class or online*/
 	.event_type_section.event_basic_block{
-		border: 1px solid #eee;
-
+		border: none; // Retiré
 		margin-bottom: 0!important;
-		padding: 30px 30px 0px 30px;
+		padding: 0; // Retiré
 	}
 
 	// Style pour le bouton submit en bas du formulaire

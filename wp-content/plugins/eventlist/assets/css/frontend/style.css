@@ -9895,16 +9895,10 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
 }
 .vendor_wrap .contents .vendor_edit_event .event_basic_block,
 .vendor_edit_event .event_basic_block {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 24px;
+  background: transparent;
+  border: none;
+  padding: 0;
   margin-bottom: 24px;
-  transition: all 0.3s ease;
-}
-.vendor_wrap .contents .vendor_edit_event .event_basic_block:hover,
-.vendor_edit_event .event_basic_block:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 .vendor_wrap .contents .vendor_edit_event .event_basic_block:last-child,
 .vendor_edit_event .event_basic_block:last-child {
@@ -10132,7 +10126,7 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   }
   .vendor_wrap .contents .vendor_edit_event .event_basic_block,
   .vendor_edit_event .event_basic_block {
-    padding: 16px;
+    padding: 0;
   }
   .vendor_wrap .contents .vendor_edit_event .button,
   .vendor_wrap .contents .vendor_edit_event button,
@@ -12241,9 +12235,9 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
 }
 .vendor_wrap .contents .vendor_edit_event .event_type_section.event_basic_block,
 .vendor_edit_event .event_type_section.event_basic_block {
-  border: 1px solid #eee;
+  border: none;
   margin-bottom: 0 !important;
-  padding: 30px 30px 0px 30px;
+  padding: 0;
 }
 .vendor_wrap .contents .vendor_edit_event .wrap_btn_submit,
 .vendor_edit_event .wrap_btn_submit {
