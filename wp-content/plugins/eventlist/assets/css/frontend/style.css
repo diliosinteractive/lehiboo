@@ -9893,6 +9893,152 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   background-color: #fff5f0;
   color: #ff6a3d;
 }
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group,
+.vendor_edit_event #publication .input_radio_group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+@media (max-width: 768px) {
+  .vendor_wrap .contents .vendor_edit_event #publication .input_radio_group,
+  .vendor_edit_event #publication .input_radio_group {
+    grid-template-columns: 1fr;
+  }
+}
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio,
+.vendor_edit_event #publication .input_radio_group .el_input_radio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  margin-bottom: 0;
+  position: relative;
+  min-height: 100px;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio:hover,
+.vendor_edit_event #publication .input_radio_group .el_input_radio:hover {
+  border-color: #cbd5e0;
+  background-color: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio::before,
+.vendor_edit_event #publication .input_radio_group .el_input_radio::before {
+  content: attr(data-label);
+  font-weight: 600;
+  font-size: 15px;
+  color: #2d3748;
+  margin-bottom: 8px;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio .el_icon_help,
+.vendor_edit_event #publication .input_radio_group .el_input_radio .el_icon_help {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: #a0aec0;
+  font-size: 18px;
+  cursor: help;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio .el_icon_help:hover,
+.vendor_edit_event #publication .input_radio_group .el_input_radio .el_icon_help:hover {
+  color: #4a5568;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio input[type=radio],
+.vendor_edit_event #publication .input_radio_group .el_input_radio input[type=radio] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio input[type=radio]:checked ~ .checkmark,
+.vendor_edit_event #publication .input_radio_group .el_input_radio input[type=radio]:checked ~ .checkmark {
+  background-color: #ff6a3d;
+  border-color: #ff6a3d;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio input[type=radio]:checked ~ .checkmark::after,
+.vendor_edit_event #publication .input_radio_group .el_input_radio input[type=radio]:checked ~ .checkmark::after {
+  display: block;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio:has(input:checked),
+.vendor_edit_event #publication .input_radio_group .el_input_radio:has(input:checked) {
+  border-color: #ff6a3d;
+  background-color: #fff5f0;
+  box-shadow: 0 0 0 3px rgba(255, 106, 61, 0.1);
+}
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio:has(input:checked)::before,
+.vendor_edit_event #publication .input_radio_group .el_input_radio:has(input:checked)::before {
+  color: #ff6a3d;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio .checkmark,
+.vendor_edit_event #publication .input_radio_group .el_input_radio .checkmark {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  height: 24px;
+  width: 24px;
+  background-color: #ffffff;
+  border: 2px solid #cbd5e0;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio .checkmark::after,
+.vendor_edit_event #publication .input_radio_group .el_input_radio .checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 7px;
+  top: 3px;
+  width: 6px;
+  height: 11px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.vendor_wrap .contents .vendor_edit_event #publication .wrap_event_password,
+.vendor_edit_event #publication .wrap_event_password {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+  max-width: 500px;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .wrap_event_password label,
+.vendor_edit_event #publication .wrap_event_password label {
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 12px;
+  display: block;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .wrap_event_password .input_group,
+.vendor_edit_event #publication .wrap_event_password .input_group {
+  position: relative;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .wrap_event_password .input_group input[type=password],
+.vendor_wrap .contents .vendor_edit_event #publication .wrap_event_password .input_group input[type=text],
+.vendor_edit_event #publication .wrap_event_password .input_group input[type=password],
+.vendor_edit_event #publication .wrap_event_password .input_group input[type=text] {
+  width: 100%;
+  padding-right: 45px;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .wrap_event_password .input_group .show_hide_password,
+.vendor_edit_event #publication .wrap_event_password .input_group .show_hide_password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a0aec0;
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+.vendor_wrap .contents .vendor_edit_event #publication .wrap_event_password .input_group .show_hide_password:hover,
+.vendor_edit_event #publication .wrap_event_password .input_group .show_hide_password:hover {
+  color: #4a5568;
+}
 .vendor_wrap .contents .vendor_edit_event .event_basic_block,
 .vendor_edit_event .event_basic_block {
   background: transparent;
