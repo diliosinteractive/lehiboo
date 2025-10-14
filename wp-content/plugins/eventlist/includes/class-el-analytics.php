@@ -40,6 +40,12 @@ class EL_Analytics {
 
 		// Admin action to manually create table
 		add_action( 'admin_init', array( $this, 'maybe_create_table' ) );
+
+		// Schedule cleanup cron job
+		if ( ! wp_next_scheduled( 'el_analytics_cleanup' ) ) {
+			wp_schedule_event( time(), 'daily', 'el_analytics_cleanup' );
+		}
+		add_action( 'el_analytics_cleanup', array( $this, 'cleanup_old_data' ) );
 	}
 
 	/**
@@ -175,6 +181,20 @@ class EL_Analytics {
 		$session_id = $this->get_session_id();
 		$ip_address = $this->get_client_ip();
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
+
+		// ============================================
+		// PROTECTION 1: Block bots and crawlers
+		// ============================================
+		if ( $this->is_bot( $user_agent ) ) {
+			return false;
+		}
+
+		// ============================================
+		// PROTECTION 2: Rate limiting per session/IP
+		// ============================================
+		if ( ! $this->check_rate_limit( $session_id, $ip_address, $event_type ) ) {
+			return false;
+		}
 
 		// Parse device info
 		$device_info = $this->parse_user_agent( $user_agent );
@@ -337,6 +357,114 @@ class EL_Analytics {
 			'city' => null,
 			'country' => null
 		);
+	}
+
+	/**
+	 * Check if user agent is a bot/crawler
+	 *
+	 * @param string $user_agent User agent string
+	 * @return bool True if bot, false if human
+	 */
+	private function is_bot( $user_agent ) {
+		if ( empty( $user_agent ) ) {
+			return true;
+		}
+
+		// Liste complète des bots connus
+		$bot_patterns = array(
+			// Search engines
+			'googlebot', 'bingbot', 'slurp', 'duckduckbot', 'baiduspider', 'yandexbot', 'sogou',
+			'exabot', 'facebot', 'ia_archiver',
+
+			// Social media crawlers
+			'facebookexternalhit', 'twitterbot', 'linkedinbot', 'pinterest', 'whatsapp',
+			'telegrambot', 'slackbot', 'discordbot',
+
+			// SEO tools
+			'ahrefsbot', 'semrushbot', 'mj12bot', 'dotbot', 'rogerbot', 'screaming frog',
+			'linkpadbot', 'seobilitybot', 'spbot',
+
+			// Monitoring & uptime
+			'uptimerobot', 'pingdom', 'gtmetrix', 'lighthouse', 'pagespeed',
+
+			// Generic crawlers
+			'bot', 'crawler', 'spider', 'scraper', 'curl', 'wget', 'python-requests',
+			'java/', 'go-http-client', 'applebot', 'petalbot',
+
+			// Headless browsers (potential scrapers)
+			'headlesschrome', 'phantomjs', 'selenium',
+
+			// Archive & backup
+			'archive.org_bot', 'wayback', 'ia_archiver'
+		);
+
+		$user_agent_lower = strtolower( $user_agent );
+
+		foreach ( $bot_patterns as $pattern ) {
+			if ( strpos( $user_agent_lower, $pattern ) !== false ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Rate limiting: Prevent flooding the database
+	 * Max 1 view per event per session every 5 minutes
+	 * Max 100 total actions per session per hour
+	 *
+	 * @param string $session_id Session ID
+	 * @param string $ip_address IP address
+	 * @param string $event_type Type of event being tracked
+	 * @return bool True if allowed, false if rate limit exceeded
+	 */
+	private function check_rate_limit( $session_id, $ip_address, $event_type ) {
+		global $wpdb;
+
+		// Use transients for rate limiting (faster than DB queries)
+		$transient_key_session = 'el_rate_limit_' . md5( $session_id );
+		$transient_key_ip = 'el_rate_limit_ip_' . md5( $ip_address );
+
+		// Check session rate limit (100 actions per hour)
+		$session_count = get_transient( $transient_key_session );
+		if ( $session_count === false ) {
+			set_transient( $transient_key_session, 1, HOUR_IN_SECONDS );
+		} else {
+			if ( $session_count >= 100 ) {
+				// Rate limit exceeded
+				return false;
+			}
+			set_transient( $transient_key_session, $session_count + 1, HOUR_IN_SECONDS );
+		}
+
+		// Check IP rate limit (200 actions per hour - more permissive for shared IPs)
+		$ip_count = get_transient( $transient_key_ip );
+		if ( $ip_count === false ) {
+			set_transient( $transient_key_ip, 1, HOUR_IN_SECONDS );
+		} else {
+			if ( $ip_count >= 200 ) {
+				// Rate limit exceeded
+				return false;
+			}
+			set_transient( $transient_key_ip, $ip_count + 1, HOUR_IN_SECONDS );
+		}
+
+		// Special check for 'view' events: Only 1 view per event per session every 5 minutes
+		if ( $event_type === 'view' ) {
+			$event_id = isset( $_POST['event_id'] ) ? absint( $_POST['event_id'] ) : 0;
+			$view_key = 'el_view_' . md5( $session_id . '_' . $event_id );
+
+			if ( get_transient( $view_key ) ) {
+				// Already viewed this event recently
+				return false;
+			}
+
+			// Mark as viewed for 5 minutes
+			set_transient( $view_key, 1, 5 * MINUTE_IN_SECONDS );
+		}
+
+		return true;
 	}
 
 	/**
@@ -721,6 +849,72 @@ class EL_Analytics {
 			'contact_clicks' => $contact_clicks,
 			'share_clicks' => $share_clicks
 		);
+	}
+
+	/**
+	 * Cleanup old analytics data (run via cron)
+	 * Keep only last 90 days of data to prevent database bloat
+	 */
+	public function cleanup_old_data() {
+		global $wpdb;
+
+		// Delete records older than 90 days
+		$days_to_keep = apply_filters( 'el_analytics_retention_days', 90 );
+		$delete_before = date( 'Y-m-d H:i:s', strtotime( "-{$days_to_keep} days" ) );
+
+		$deleted = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$this->table_name} WHERE created_at < %s",
+				$delete_before
+			)
+		);
+
+		// Optimize table after deletion
+		if ( $deleted > 0 ) {
+			$wpdb->query( "OPTIMIZE TABLE {$this->table_name}" );
+		}
+
+		return $deleted;
+	}
+
+	/**
+	 * Get database statistics
+	 */
+	public function get_database_stats() {
+		global $wpdb;
+
+		$stats = array();
+
+		// Total records
+		$stats['total_records'] = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->table_name}" );
+
+		// Table size
+		$table_size = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT
+					ROUND((data_length + index_length) / 1024 / 1024, 2) AS size_mb,
+					table_rows
+				FROM information_schema.tables
+				WHERE table_schema = %s
+				AND table_name = %s",
+				DB_NAME,
+				$this->table_name
+			)
+		);
+
+		$stats['size_mb'] = $table_size ? $table_size->size_mb : 0;
+		$stats['estimated_rows'] = $table_size ? $table_size->table_rows : 0;
+
+		// Records by date
+		$stats['records_last_7_days'] = $wpdb->get_var(
+			"SELECT COUNT(*) FROM {$this->table_name} WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"
+		);
+
+		$stats['records_last_30_days'] = $wpdb->get_var(
+			"SELECT COUNT(*) FROM {$this->table_name} WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)"
+		);
+
+		return $stats;
 	}
 }
 
