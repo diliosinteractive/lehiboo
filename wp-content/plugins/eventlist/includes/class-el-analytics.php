@@ -37,6 +37,25 @@ class EL_Analytics {
 		add_action( 'wp_ajax_el_track_event', array( $this, 'track_event' ) );
 		add_action( 'wp_ajax_nopriv_el_track_event', array( $this, 'track_event' ) );
 		add_filter( 'body_class', array( $this, 'add_event_id_to_body' ) );
+
+		// Admin action to manually create table
+		add_action( 'admin_init', array( $this, 'maybe_create_table' ) );
+	}
+
+	/**
+	 * Check and create table if it doesn't exist (run on admin_init)
+	 */
+	public function maybe_create_table() {
+		global $wpdb;
+
+		// Check if table exists
+		$table_name = $wpdb->prefix . 'el_analytics';
+		$table_exists = $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" );
+
+		// If table doesn't exist, create it
+		if ( $table_exists != $table_name ) {
+			self::create_table();
+		}
 	}
 
 	/**

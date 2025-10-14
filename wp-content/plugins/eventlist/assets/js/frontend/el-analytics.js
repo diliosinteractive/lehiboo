@@ -42,6 +42,12 @@
             var eventId = this.getEventId();
 
             if (!eventId) {
+                console.log('EL Analytics: No event ID found');
+                return;
+            }
+
+            if (typeof el_analytics_obj === 'undefined') {
+                console.error('EL Analytics: el_analytics_obj is not defined');
                 return;
             }
 
@@ -54,15 +60,17 @@
                 meta_data: metaData || {}
             };
 
+            console.log('EL Analytics: Tracking', eventType, 'for event', eventId);
+
             $.ajax({
                 url: el_analytics_obj.ajax_url,
                 type: 'POST',
                 data: data,
                 success: function(response) {
-                    // Silent success
+                    console.log('EL Analytics: Success', eventType, response);
                 },
                 error: function(xhr, status, error) {
-                    // Silent error
+                    console.error('EL Analytics: Error', eventType, xhr.responseText);
                 }
             });
         },
@@ -73,8 +81,8 @@
         trackPageView: function() {
             var self = this;
 
-            // Only track on single event pages
-            if ($('body').hasClass('single-event') || $('.event-single').length > 0) {
+            // Only track on single event pages (WordPress uses 'single-event' class with hyphen)
+            if ($('body').hasClass('single-event') || $('body').hasClass('single') && $('body').hasClass('postid-' + self.getEventId())) {
                 // Track after a short delay to ensure page is loaded
                 setTimeout(function() {
                     self.trackEvent('view', {
