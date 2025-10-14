@@ -90,53 +90,74 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 					data-required="<?php echo esc_attr( json_encode( $event_req_field ) ); ?>">
 					<input type="hidden" value="<?php echo esc_attr( $post_id ); ?>" id="el_post_id" name="el_post_id"/>
 
-					<!-- Navigation sticky avec ancres -->
-					<div class="form_progress_navigation">
-						<nav class="progress_nav">
+					<!-- Navigation verticale à gauche avec coches de validation -->
+					<div class="profile_navigation_sidebar">
+						<nav class="profile_tabs_nav">
 							<ul>
-								<li class="progress_nav_item active" data-anchor="general-info">
+								<li class="profile_tab_item active" data-section="general-info">
 									<a href="#general-info">
-										<i class="icon_documents_alt"></i>
-										<span><?php esc_html_e( 'Informations générales', 'eventlist' ); ?></span>
+										<span class="nav_icon"><i class="icon_documents_alt"></i></span>
+										<span class="nav_text"><?php esc_html_e( 'Informations générales', 'eventlist' ); ?></span>
+										<span class="validation_status">
+											<i class="icon_check validation_check"></i>
+										</span>
 									</a>
 								</li>
-								<li class="progress_nav_item" data-anchor="presentation">
+								<li class="profile_tab_item" data-section="presentation">
 									<a href="#presentation">
-										<i class="icon_images"></i>
-										<span><?php esc_html_e( 'Présentation', 'eventlist' ); ?></span>
+										<span class="nav_icon"><i class="icon_images"></i></span>
+										<span class="nav_text"><?php esc_html_e( 'Présentation', 'eventlist' ); ?></span>
+										<span class="validation_status">
+											<i class="icon_check validation_check"></i>
+										</span>
 									</a>
 								</li>
-								<li class="progress_nav_item" data-anchor="localisation">
+								<li class="profile_tab_item" data-section="localisation">
 									<a href="#localisation">
-										<i class="icon_pin_alt"></i>
-										<span><?php esc_html_e( 'Localisation', 'eventlist' ); ?></span>
+										<span class="nav_icon"><i class="icon_pin_alt"></i></span>
+										<span class="nav_text"><?php esc_html_e( 'Localisation', 'eventlist' ); ?></span>
+										<span class="validation_status">
+											<i class="icon_check validation_check"></i>
+										</span>
 									</a>
 								</li>
-								<li class="progress_nav_item" data-anchor="creneaux">
+								<li class="profile_tab_item" data-section="creneaux">
 									<a href="#creneaux">
-										<i class="icon_calendar"></i>
-										<span><?php esc_html_e( 'Créneaux', 'eventlist' ); ?></span>
+										<span class="nav_icon"><i class="icon_calendar"></i></span>
+										<span class="nav_text"><?php esc_html_e( 'Créneaux', 'eventlist' ); ?></span>
+										<span class="validation_status">
+											<i class="icon_check validation_check"></i>
+										</span>
 									</a>
 								</li>
 								<?php if ( EL()->options->role->get('allow_to_selling_ticket', 'yes') == 'yes' ) { ?>
-									<li class="progress_nav_item" data-anchor="billetterie">
+									<li class="profile_tab_item" data-section="billetterie">
 										<a href="#billetterie">
-											<i class="icon_tag_alt"></i>
-											<span><?php esc_html_e( 'Billetterie', 'eventlist' ); ?></span>
+											<span class="nav_icon"><i class="icon_tag_alt"></i></span>
+											<span class="nav_text"><?php esc_html_e( 'Billetterie', 'eventlist' ); ?></span>
+											<span class="validation_status">
+												<i class="icon_check validation_check"></i>
+											</span>
 										</a>
 									</li>
 								<?php } ?>
-								<li class="progress_nav_item" data-anchor="publication">
+								<li class="profile_tab_item" data-section="publication">
 									<a href="#publication">
-										<i class="icon_cloud-upload_alt"></i>
-										<span><?php esc_html_e( 'Publication', 'eventlist' ); ?></span>
+										<span class="nav_icon"><i class="icon_cloud-upload_alt"></i></span>
+										<span class="nav_text"><?php esc_html_e( 'Publication', 'eventlist' ); ?></span>
+										<span class="validation_status">
+											<i class="icon_check validation_check"></i>
+										</span>
 									</a>
 								</li>
 								<?php if ( apply_filters( 'el_create_event_show_extra_service_tab', true ) == true ): ?>
-									<li class="progress_nav_item" data-anchor="services-extra">
+									<li class="profile_tab_item" data-section="services-extra">
 										<a href="#services-extra">
-											<i class="icon_star"></i>
-											<span><?php esc_html_e( 'Services Extra', 'eventlist' ); ?></span>
+											<span class="nav_icon"><i class="icon_star"></i></span>
+											<span class="nav_text"><?php esc_html_e( 'Services Extra', 'eventlist' ); ?></span>
+											<span class="validation_status">
+												<i class="icon_check validation_check"></i>
+											</span>
 										</a>
 									</li>
 								<?php endif; ?>
@@ -145,7 +166,7 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 					</div>
 
 					<!-- Contenu unique avec encarts visibles -->
-					<div class="form_content_area">
+					<div class="profile_content_area">
 
 						<!-- ENCART 1: Informations générales -->
 						<div id="general-info" class="form_card">

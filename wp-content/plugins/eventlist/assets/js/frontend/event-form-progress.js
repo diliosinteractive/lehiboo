@@ -1,6 +1,6 @@
 /**
  * Event Form Progress Navigation
- * Gère le smooth scroll et l'état actif de la navigation par ancres
+ * Gère le smooth scroll, l'état actif et les coches de validation
  */
 
 (function($) {
@@ -8,16 +8,18 @@
 
 	// Configuration
 	const config = {
-		navSelector: '.form_progress_navigation',
-		navItemSelector: '.progress_nav_item',
+		navSelector: '.profile_navigation_sidebar',
+		navItemSelector: '.profile_tab_item',
 		cardSelector: '.form_card',
 		activeClass: 'active',
-		offset: 100, // Offset pour le sticky header
+		completedClass: 'completed',
+		incompleteClass: 'incomplete',
+		offset: 100, // Offset pour navigation
 		scrollDuration: 800
 	};
 
 	/**
-	 * Initialise la navigation avec ancres
+	 * Initialise la navigation avec ancres et validation
 	 */
 	function initProgressNavigation() {
 		if (!$(config.navSelector).length) {
@@ -38,6 +40,9 @@
 
 		// Mettre à jour l'état actif en scrollant
 		initScrollSpy();
+
+		// Initialiser la validation des sections
+		initSectionValidation();
 	}
 
 	/**
@@ -105,8 +110,110 @@
 		// Mettre à jour la classe active
 		if (currentCard) {
 			$navItems.removeClass(config.activeClass);
-			$navItems.filter(`[data-anchor="${currentCard}"]`).addClass(config.activeClass);
+			$navItems.filter(`[data-section="${currentCard}"]`).addClass(config.activeClass);
 		}
+	}
+
+	/**
+	 * Initialise la validation des sections
+	 */
+	function initSectionValidation() {
+		// Validation initiale au chargement
+		validateAllSections();
+
+		// Re-valider quand un champ change
+		$(document).on('change blur keyup', 'input, textarea, select', function() {
+			// Debounce pour éviter trop d'appels
+			clearTimeout(window.validationTimeout);
+			window.validationTimeout = setTimeout(function() {
+				validateAllSections();
+			}, 300);
+		});
+
+		// Re-valider après les événements Select2
+		$(document).on('select2:select select2:unselect', function() {
+			setTimeout(validateAllSections, 100);
+		});
+	}
+
+	/**
+	 * Valide toutes les sections
+	 */
+	function validateAllSections() {
+		const $navItems = $(config.navItemSelector);
+
+		$navItems.each(function() {
+			const $navItem = $(this);
+			const sectionId = $navItem.data('section');
+			const $section = $(`#${sectionId}`);
+
+			if (!$section.length) return;
+
+			const isComplete = checkSectionCompletion($section);
+
+			// Mettre à jour les classes
+			$navItem.removeClass(config.completedClass + ' ' + config.incompleteClass);
+
+			if (isComplete) {
+				$navItem.addClass(config.completedClass);
+			} else {
+				$navItem.addClass(config.incompleteClass);
+			}
+		});
+	}
+
+	/**
+	 * Vérifie si une section est complète
+	 */
+	function checkSectionCompletion($section) {
+		// Trouver tous les champs requis dans la section
+		const $requiredFields = $section.find('input[required], textarea[required], select[required]')
+			.add($section.find('input, textarea, select').filter(function() {
+				// Aussi vérifier les champs avec attribut data-required ou classe required
+				return $(this).data('required') || $(this).hasClass('required');
+			}));
+
+		if ($requiredFields.length === 0) {
+			// Pas de champs requis = section optionnelle = complétée
+			return true;
+		}
+
+		let allFilled = true;
+
+		$requiredFields.each(function() {
+			const $field = $(this);
+			const fieldType = $field.attr('type');
+			const tagName = $field.prop('tagName').toLowerCase();
+
+			// Vérifier selon le type de champ
+			if (fieldType === 'checkbox' || fieldType === 'radio') {
+				// Pour checkbox/radio, vérifier si au moins un est coché dans le groupe
+				const name = $field.attr('name');
+				if (name) {
+					const isChecked = $(`input[name="${name}"]:checked`).length > 0;
+					if (!isChecked) {
+						allFilled = false;
+						return false; // Break
+					}
+				}
+			} else if (tagName === 'select') {
+				// Pour select, vérifier qu'une valeur est sélectionnée
+				const value = $field.val();
+				if (!value || value === '' || value === null || (Array.isArray(value) && value.length === 0)) {
+					allFilled = false;
+					return false; // Break
+				}
+			} else {
+				// Pour input text, textarea, etc.
+				const value = $field.val();
+				if (!value || value.trim() === '') {
+					allFilled = false;
+					return false; // Break
+				}
+			}
+		});
+
+		return allFilled;
 	}
 
 	/**
@@ -136,56 +243,6 @@
 	}
 
 	/**
-	 * Ajoute des indicateurs de complétion
-	 */
-	function initCompletionIndicators() {
-		const $navItems = $(config.navItemSelector);
-
-		$navItems.each(function() {
-			const $item = $(this);
-			const anchor = $item.data('anchor');
-			const $card = $(`#${anchor}`);
-
-			if (!$card.length) return;
-
-			// Vérifier si la section est complète
-			const isComplete = checkSectionCompletion($card);
-
-			if (isComplete) {
-				$item.addClass('completed');
-				$item.find('a').prepend('<i class="icon_check_alt2 completion-check"></i>');
-			}
-		});
-	}
-
-	/**
-	 * Vérifie si une section est complète
-	 */
-	function checkSectionCompletion($card) {
-		// Vérifier les champs requis
-		const $requiredFields = $card.find('[required], .required');
-
-		if ($requiredFields.length === 0) {
-			return false; // Pas de champs requis = pas de validation
-		}
-
-		let allFilled = true;
-
-		$requiredFields.each(function() {
-			const $field = $(this);
-
-			if ($field.is('input, textarea, select')) {
-				if (!$field.val() || $field.val().length === 0) {
-					allFilled = false;
-					return false; // Break
-				}
-			}
-		});
-
-		return allFilled;
-	}
-
-	/**
 	 * Initialisation au chargement du DOM
 	 */
 	$(document).ready(function() {
@@ -197,14 +254,8 @@
 		initProgressNavigation();
 		initCardAnimations();
 
-		// Indicateurs de complétion (optionnel, à activer si souhaité)
-		// initCompletionIndicators();
-
-		// Re-vérifier la complétion lors des changements
-		$(document).on('change blur', 'input, textarea, select', function() {
-			// Optionnel: re-calculer les indicateurs
-			// initCompletionIndicators();
-		});
+		// Log pour debug
+		console.log('Event Form Progress Navigation initialized');
 	});
 
 })(jQuery);
