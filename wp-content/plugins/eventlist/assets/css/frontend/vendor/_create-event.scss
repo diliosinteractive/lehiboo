@@ -941,13 +941,19 @@
 					}
 				}
 
-				// Input radio caché mais accessible
+				// Input radio complètement caché mais accessible
 				input[type="radio"] {
 					position: absolute;
 					opacity: 0;
 					width: 0;
 					height: 0;
+					margin: 0;
+					padding: 0;
+					border: 0;
+					clip: rect(0, 0, 0, 0);
+					overflow: hidden;
 					pointer-events: none;
+					z-index: -1;
 
 					// Quand sélectionné
 					&:checked ~ .checkmark {

@@ -9951,7 +9951,13 @@ input[type=checkbox]:checked ~ .vendor_edit_event .radio_seat_option label {
   opacity: 0;
   width: 0;
   height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  overflow: hidden;
   pointer-events: none;
+  z-index: -1;
 }
 .vendor_wrap .contents .vendor_edit_event #publication .input_radio_group .el_input_radio input[type=radio]:checked ~ .checkmark,
 .vendor_edit_event #publication .input_radio_group .el_input_radio input[type=radio]:checked ~ .checkmark {
