@@ -178,7 +178,7 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 								<p class="form_card_description"><?php esc_html_e( 'Les informations essentielles de votre événement', 'eventlist' ); ?></p>
 							</div>
 							<div class="form_card_content" id="mb_basic">
-								<?php echo el_get_template( '/vendor/__edit-event-basic.php', array( 'event_req_field' => $event_req_field ) ); ?>
+								<?php echo el_get_template( '/vendor/__edit-event-general.php', array( 'event_req_field' => $event_req_field ) ); ?>
 							</div>
 						</div>
 
@@ -192,7 +192,7 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 								<p class="form_card_description"><?php esc_html_e( 'Présentez votre événement avec du texte, des images et une vidéo', 'eventlist' ); ?></p>
 							</div>
 							<div class="form_card_content">
-								<!-- La description, images et vidéo seront extraites du template basic -->
+								<?php echo el_get_template( '/vendor/__edit-event-presentation.php', array( 'event_req_field' => $event_req_field ) ); ?>
 							</div>
 						</div>
 
@@ -206,7 +206,7 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 								<p class="form_card_description"><?php esc_html_e( 'Où se déroule votre événement ?', 'eventlist' ); ?></p>
 							</div>
 							<div class="form_card_content">
-								<!-- La localisation sera extraite du template basic -->
+								<?php echo el_get_template( '/vendor/__edit-event-localisation.php', array( 'event_req_field' => $event_req_field ) ); ?>
 							</div>
 						</div>
 
@@ -252,7 +252,7 @@ $event_req_field = apply_filters( 'el_event_req_field', array(
 								<p class="form_card_description"><?php esc_html_e( 'Choisissez la visibilité et le statut de votre événement', 'eventlist' ); ?></p>
 							</div>
 							<div class="form_card_content">
-								<!-- Public/Privé et statut de publication seront extraits du template basic -->
+								<?php echo el_get_template( '/vendor/__edit-event-publication.php', array( 'event_req_field' => $event_req_field ) ); ?>
 							</div>
 						</div>
 
