@@ -123,11 +123,29 @@ function handle_send_organizer_message() {
 	// Récupérer l'email de l'organisateur depuis l'événement
 	$author_id = $event_post->post_author;
 	error_log( 'CONTACT FORM - Author ID: ' . $author_id );
+	error_log( 'CONTACT FORM - Event post_author type: ' . gettype($author_id) );
+	error_log( 'CONTACT FORM - Event post_author value: ' . var_export($author_id, true) );
 
-	$organizer_email = get_the_author_meta( 'user_email', $author_id );
+	// Vérifier si author_id est valide
+	if ( empty( $author_id ) || $author_id == 0 ) {
+		error_log( 'CONTACT FORM - ERROR: Author ID is empty or 0' );
+		wp_send_json_error( array( 'message' => 'ID auteur invalide (Event ID: ' . $event_id . ', Author ID: ' . $author_id . ')' ) );
+	}
+
+	// Récupérer l'email professionnel du partenaire (priorité sur email WordPress)
+	$organizer_email = get_user_meta( $author_id, 'user_professional_email', true );
+	error_log( 'CONTACT FORM - Professional email from meta: ' . var_export($organizer_email, true) );
+
+	// Fallback sur l'email WordPress si pas d'email professionnel
+	if ( empty( $organizer_email ) ) {
+		$organizer_email = get_the_author_meta( 'user_email', $author_id );
+		error_log( 'CONTACT FORM - WordPress email fallback: ' . var_export($organizer_email, true) );
+	}
+
 	$organizer_name = get_the_author_meta( 'display_name', $author_id );
 
-	error_log( 'CONTACT FORM - Organizer email: ' . $organizer_email );
+	error_log( 'CONTACT FORM - Final organizer email: ' . $organizer_email );
+	error_log( 'CONTACT FORM - Final organizer name: ' . $organizer_name );
 
 	// Validation détaillée
 	$errors = array();
@@ -305,4 +323,22 @@ function save_organizer_message( $event_id, $from_name, $from_email, $message_co
 	}
 
 	return false;
+}
+
+// ========================================
+// FILTER - EVENTLIST TEMPLATE OVERRIDE POUR CHILD THEME
+// ========================================
+add_filter( 'el_locate_template', 'meup_child_locate_vendor_template', 10, 4 );
+function meup_child_locate_vendor_template( $template, $template_name, $template_path, $default_path ) {
+	// Chemin dans le child theme
+	$child_theme_template = get_stylesheet_directory() . '/' . trailingslashit( $template_path ) . $template_name;
+
+	// Si le template existe dans le child theme, l'utiliser en priorité
+	if ( file_exists( $child_theme_template ) ) {
+		error_log( 'EVENTLIST TEMPLATE OVERRIDE: Using child theme template - ' . $child_theme_template );
+		return $child_theme_template;
+	}
+
+	// Sinon retourner le template par défaut
+	return $template;
 }
