@@ -97,6 +97,34 @@ $author_name = get_the_author_meta('display_name', $author_id);
 $author_url = get_author_posts_url( $author_id );
 ?>
 
+<!-- Organisateur (hors sticky) -->
+<div class="booking_organizer_card">
+	<?php
+	$author_id = get_the_author_meta('ID');
+	$author_name = get_the_author_meta('display_name', $author_id);
+	$author_avatar = get_avatar_url( $author_id, array('size' => 64) );
+	$author_url = get_author_posts_url( $author_id );
+	$author_description = get_the_author_meta('description', $author_id);
+	?>
+
+	<div class="organizer_header">
+		<a href="<?php echo esc_url( $author_url ); ?>" class="organizer_avatar">
+			<img src="<?php echo esc_url( $author_avatar ); ?>" alt="<?php echo esc_attr( $author_name ); ?>">
+		</a>
+		<div class="organizer_info">
+			<div class="organizer_label"><?php esc_html_e( 'Organisé par', 'eventlist' ); ?></div>
+			<h3 class="organizer_name">
+				<a href="<?php echo esc_url( $author_url ); ?>"><?php echo esc_html( $author_name ); ?></a>
+			</h3>
+		</div>
+	</div>
+
+	<button type="button" class="organizer_contact_btn" id="open_contact_form">
+		<i class="icon_mail_alt"></i>
+		<?php esc_html_e( 'Envoyer un message', 'eventlist' ); ?>
+	</button>
+</div>
+
 <div class="event_booking_sticky" id="booking_sticky_widget" data-price="<?php echo esc_attr( $ticket_price ); ?>">
 
 	<!-- Prix -->
@@ -123,82 +151,9 @@ $author_url = get_author_posts_url( $author_id );
 		<?php endif; endif; ?>
 	</div>
 
-	<!-- Formulaire de réservation -->
-	<div class="booking_form_section">
-
-		<!-- Sélecteur de date -->
-		<div class="booking_field booking_date_field">
-			<label for="booking_date_select"><?php esc_html_e( 'Date', 'eventlist' ); ?></label>
-			<div class="booking_date_display" id="booking_date_display">
-				<i class="icon_calendar"></i>
-				<span><?php esc_html_e( 'Sélectionner une date', 'eventlist' ); ?></span>
-			</div>
-			<a href="#booking_event" class="btn_select_date">
-				<?php esc_html_e( 'Voir le calendrier', 'eventlist' ); ?>
-			</a>
-		</div>
-
-		<!-- Nombre d'invités -->
-		<div class="booking_field booking_guests_field">
-			<label for="booking_guests"><?php esc_html_e( 'Invités', 'eventlist' ); ?></label>
-			<div class="guests_controls">
-				<button type="button" class="guests_btn guests_minus" data-action="decrease">
-					<i class="icon_minus"></i>
-				</button>
-				<input type="number"
-				       id="booking_guests"
-				       class="guests_input"
-				       value="1"
-				       min="1"
-				       max="20"
-				       readonly />
-				<button type="button" class="guests_btn guests_plus" data-action="increase">
-					<i class="icon_plus"></i>
-				</button>
-			</div>
-		</div>
-
-		<!-- Total calculé -->
-		<?php if( $ticket_price > 0 ) : ?>
-			<div class="booking_total_section">
-				<div class="total_line">
-					<span class="total_label">
-						<?php echo esc_html( $currency . number_format($ticket_price, 2) ); ?> × <span class="guests_count">1</span> <?php esc_html_e( 'invité(s)', 'eventlist' ); ?>
-					</span>
-					<span class="total_amount" id="booking_total_amount">
-						<?php echo esc_html( $currency . number_format($ticket_price, 2) ); ?>
-					</span>
-				</div>
-			</div>
-		<?php endif; ?>
-
-		<!-- CTA Réserver -->
-		<?php if( $is_available ) : ?>
-			<a href="<?php echo esc_url( $booking_url ); ?>"
-			   class="btn_book_now <?php echo $is_external ? 'external_link' : ''; ?>"
-			   <?php echo $is_external ? 'target="_blank"' : ''; ?>>
-				<?php esc_html_e( 'Réserver maintenant', 'eventlist' ); ?>
-			</a>
-		<?php else : ?>
-			<button class="btn_book_now disabled" disabled>
-				<?php esc_html_e( 'Complet', 'eventlist' ); ?>
-			</button>
-		<?php endif; ?>
-
-		<!-- Lien contact organisateur -->
-		<div class="booking_contact_organizer">
-			<a href="<?php echo esc_url( $author_url ); ?>" class="contact_link">
-				<i class="icon_mail_alt"></i>
-				<?php esc_html_e( 'Contacter l\'organisateur', 'eventlist' ); ?>
-			</a>
-		</div>
-
-	</div>
-
-	<!-- Message d'information -->
-	<div class="booking_info_message">
-		<i class="icon_info"></i>
-		<span><?php esc_html_e( 'Vous ne serez débité qu\'après confirmation', 'eventlist' ); ?></span>
+	<!-- Calendrier des disponibilités -->
+	<div class="booking_calendar_inline">
+		<?php do_action( 'el_single_event_ticket_calendar' ); ?>
 	</div>
 
 </div>

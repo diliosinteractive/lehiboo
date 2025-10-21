@@ -21,8 +21,26 @@ function meup_child_scripts() {
 
     // Styles Airbnb pour Single Event
     if( is_singular('event') ) {
-        wp_enqueue_style( 'single-event-airbnb', get_stylesheet_directory_uri() . '/single-event-airbnb.css', array('meup-parent-style'), '2.7.0' );
-        wp_enqueue_script( 'single-event-airbnb', get_stylesheet_directory_uri() . '/assets/js/single-event-airbnb.js', array('jquery'), '2.7.0', true );
+        wp_enqueue_style( 'single-event-airbnb', get_stylesheet_directory_uri() . '/single-event-airbnb.css', array('meup-parent-style'), '3.3.1' );
+        wp_enqueue_script( 'single-event-airbnb', get_stylesheet_directory_uri() . '/assets/js/single-event-airbnb.js', array('jquery'), '3.3.1', true );
+
+        // Cloudflare Turnstile CAPTCHA
+        wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
+
+        // Localiser le script pour AJAX
+        wp_localize_script( 'single-event-airbnb', 'el_ajax_object', array(
+            'ajax_url' => admin_url( 'admin-ajax.php' ),
+            'nonce' => wp_create_nonce( 'el_ajax_nonce' ),
+            'turnstile_sitekey' => '0x4AAAAAAB75T9T-6xfs5mqd' // À remplacer par votre clé
+        ));
+    }
+
+    // Styles pour la page Messages Vendor
+    if( is_page() ) {
+        global $post;
+        if( $post && has_shortcode( $post->post_content, 'el_member_account' ) ) {
+            wp_enqueue_style( 'vendor-messages', get_stylesheet_directory_uri() . '/vendor-messages.css', array('meup-parent-style'), '3.4.0' );
+        }
     }
 }
 
@@ -74,4 +92,217 @@ function meup_child_sync_taxonomy_count() {
             update_option( 'ova_eventlist_general', $options );
         }
     }
+}
+// ========================================
+// AJAX HANDLER - CONTACT ORGANISATEUR
+// ========================================
+add_action( 'wp_ajax_send_organizer_message', 'handle_send_organizer_message' );
+add_action( 'wp_ajax_nopriv_send_organizer_message', 'handle_send_organizer_message' );
+
+function handle_send_organizer_message() {
+	// Vérifier le nonce
+	if ( ! isset( $_POST['contact_nonce'] ) || ! wp_verify_nonce( $_POST['contact_nonce'], 'contact_organizer_nonce' ) ) {
+		wp_send_json_error( array( 'message' => 'Erreur de sécurité.' ) );
+	}
+
+	// Récupérer les données
+	$name = isset( $_POST['contact_name'] ) ? sanitize_text_field( $_POST['contact_name'] ) : '';
+	$email = isset( $_POST['contact_email'] ) ? sanitize_email( $_POST['contact_email'] ) : '';
+	$message = isset( $_POST['contact_message'] ) ? sanitize_textarea_field( $_POST['contact_message'] ) : '';
+	$event_id = isset( $_POST['event_id'] ) ? intval( $_POST['event_id'] ) : 0;
+
+	// Debug: Log des données reçues
+	error_log( 'CONTACT FORM - Event ID: ' . $event_id );
+
+	// Vérifier que l'événement existe
+	$event_post = get_post( $event_id );
+	if ( ! $event_post ) {
+		wp_send_json_error( array( 'message' => 'Événement introuvable (ID: ' . $event_id . ')' ) );
+	}
+
+	// Récupérer l'email de l'organisateur depuis l'événement
+	$author_id = $event_post->post_author;
+	error_log( 'CONTACT FORM - Author ID: ' . $author_id );
+
+	$organizer_email = get_the_author_meta( 'user_email', $author_id );
+	$organizer_name = get_the_author_meta( 'display_name', $author_id );
+
+	error_log( 'CONTACT FORM - Organizer email: ' . $organizer_email );
+
+	// Validation détaillée
+	$errors = array();
+
+	if ( empty( $name ) ) {
+		$errors[] = 'Nom manquant';
+	}
+	if ( empty( $email ) ) {
+		$errors[] = 'Email manquant';
+	}
+	if ( empty( $message ) ) {
+		$errors[] = 'Message manquant';
+	}
+	if ( empty( $event_id ) ) {
+		$errors[] = 'Event ID manquant';
+	}
+	if ( empty( $organizer_email ) ) {
+		$errors[] = 'Email organisateur introuvable';
+	}
+
+	if ( ! empty( $errors ) ) {
+		wp_send_json_error( array(
+			'message' => 'Veuillez remplir tous les champs.',
+			'errors' => $errors,
+			'debug' => array(
+				'name' => $name,
+				'email' => $email,
+				'message_length' => strlen($message),
+				'organizer_email' => $organizer_email
+			)
+		) );
+	}
+
+	if ( ! is_email( $email ) || ! is_email( $organizer_email ) ) {
+		wp_send_json_error( array( 'message' => 'Adresse email invalide.' ) );
+	}
+
+	// Vérifier le CAPTCHA Turnstile
+	$turnstile_response = isset( $_POST['cf-turnstile-response'] ) ? $_POST['cf-turnstile-response'] : '';
+
+	if ( empty( $turnstile_response ) ) {
+		wp_send_json_error( array( 'message' => 'Veuillez valider le CAPTCHA.' ) );
+	}
+
+	// Valider le token Turnstile auprès de Cloudflare
+	$secret_key = '0x4AAAAAAB75T-X7AoX9nIt-M-0G2ndG4zU'; // À remplacer par votre clé secrète
+	$verify_url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+
+	$response_verify = wp_remote_post( $verify_url, array(
+		'body' => array(
+			'secret' => $secret_key,
+			'response' => $turnstile_response,
+			'remoteip' => $_SERVER['REMOTE_ADDR']
+		)
+	));
+
+	if ( is_wp_error( $response_verify ) ) {
+		wp_send_json_error( array( 'message' => 'Erreur de validation du CAPTCHA.' ) );
+	}
+
+	$verify_data = json_decode( wp_remote_retrieve_body( $response_verify ), true );
+
+	if ( ! $verify_data['success'] ) {
+		wp_send_json_error( array( 'message' => 'CAPTCHA invalide. Veuillez réessayer.' ) );
+	}
+
+	// Préparer l'email
+	$event_title = get_the_title( $event_id );
+	$event_link = get_permalink( $event_id );
+
+	$subject = sprintf( '[%s] Message concernant: %s', get_bloginfo('name'), $event_title );
+
+	$body = "Vous avez reçu un message concernant votre événement:\n\n";
+	$body .= "Événement: {$event_title}\n";
+	$body .= "Lien: {$event_link}\n\n";
+	$body .= "De: {$name} ({$email})\n\n";
+	$body .= "Message:\n{$message}\n\n";
+	$body .= "---\n";
+	$body .= "Cet email a été envoyé via le formulaire de contact de " . get_bloginfo('name');
+
+	$headers = array(
+		'Content-Type: text/plain; charset=UTF-8',
+		'From: ' . get_bloginfo('name') . ' <' . get_bloginfo('admin_email') . '>',
+		'Reply-To: ' . $name . ' <' . $email . '>'
+	);
+
+	// Sauvegarder le message dans la base de données
+	$message_id = save_organizer_message( $event_id, $name, $email, $message, $author_id );
+
+	// Envoyer l'email
+	$sent = wp_mail( $organizer_email, $subject, $body, $headers );
+
+	if ( $sent && $message_id ) {
+		// Marquer le message comme envoyé
+		update_post_meta( $message_id, '_email_sent', 1 );
+
+		wp_send_json_success( array(
+			'message' => 'Votre message a été envoyé avec succès!',
+			'message_id' => $message_id
+		) );
+	} elseif ( $message_id && ! $sent ) {
+		// Message sauvegardé mais email non envoyé
+		update_post_meta( $message_id, '_email_sent', 0 );
+		update_post_meta( $message_id, '_email_error', 'Erreur lors de l\'envoi de l\'email' );
+
+		wp_send_json_error( array( 'message' => 'Message sauvegardé mais l\'email n\'a pas pu être envoyé.' ) );
+	} else {
+		wp_send_json_error( array( 'message' => 'Erreur lors de l\'envoi du message. Veuillez réessayer.' ) );
+	}
+}
+
+// ========================================
+// CUSTOM POST TYPE - MESSAGES ORGANISATEURS
+// ========================================
+add_action( 'init', 'register_organizer_messages_cpt' );
+
+function register_organizer_messages_cpt() {
+	$labels = array(
+		'name'                  => 'Messages',
+		'singular_name'         => 'Message',
+		'menu_name'             => 'Messages',
+		'name_admin_bar'        => 'Message',
+		'add_new'               => 'Ajouter',
+		'add_new_item'          => 'Ajouter un message',
+		'new_item'              => 'Nouveau message',
+		'edit_item'             => 'Modifier le message',
+		'view_item'             => 'Voir le message',
+		'all_items'             => 'Tous les messages',
+		'search_items'          => 'Rechercher des messages',
+		'not_found'             => 'Aucun message trouvé',
+		'not_found_in_trash'    => 'Aucun message trouvé dans la corbeille'
+	);
+
+	$args = array(
+		'labels'              => $labels,
+		'public'              => false,
+		'show_ui'             => true,
+		'show_in_menu'        => false, // On l'affichera dans le menu EventList
+		'capability_type'     => 'post',
+		'capabilities'        => array(
+			'create_posts' => 'do_not_allow', // Empêche la création manuelle
+		),
+		'map_meta_cap'        => true,
+		'has_archive'         => false,
+		'hierarchical'        => false,
+		'menu_position'       => null,
+		'supports'            => array( 'title', 'editor', 'author' ),
+	);
+
+	register_post_type( 'organizer_message', $args );
+}
+
+// Sauvegarder le message dans la base de données
+function save_organizer_message( $event_id, $from_name, $from_email, $message_content, $organizer_id ) {
+	$event_title = get_the_title( $event_id );
+
+	// Créer le post
+	$message_id = wp_insert_post( array(
+		'post_title'    => sprintf( '%s - Message de %s', $event_title, $from_name ),
+		'post_content'  => $message_content,
+		'post_status'   => 'private',
+		'post_type'     => 'organizer_message',
+		'post_author'   => $organizer_id,
+	));
+
+	if ( ! is_wp_error( $message_id ) ) {
+		// Ajouter les métadonnées
+		update_post_meta( $message_id, '_from_name', sanitize_text_field( $from_name ) );
+		update_post_meta( $message_id, '_from_email', sanitize_email( $from_email ) );
+		update_post_meta( $message_id, '_event_id', intval( $event_id ) );
+		update_post_meta( $message_id, '_sent_date', current_time( 'mysql' ) );
+		update_post_meta( $message_id, '_is_read', 0 );
+
+		return $message_id;
+	}
+
+	return false;
 }

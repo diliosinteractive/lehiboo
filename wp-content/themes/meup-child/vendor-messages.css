@@ -1,0 +1,45 @@
+/**
+ * Vendor Messages - Styles
+ *
+ * Styles pour le système de messagerie des partenaires
+ *
+ * @package LeHiboo
+ * @version 3.4.0
+ */
+
+/* ========================================
+   Badge de compteur dans le menu sidebar
+   ======================================== */
+.vendor_sidebar .message_count_badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    margin-left: 8px;
+    background: #FF5722;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 11px;
+    line-height: 1;
+}
+
+.vendor_sidebar .menu_vendor_messages.active .message_count_badge {
+    background: #FFFFFF;
+    color: #FF5722;
+}
+
+.vendor_sidebar .menu_vendor_messages a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* ========================================
+   Message auto-marquage comme lu
+   ======================================== */
+.message_row.message_unread.viewed {
+    background: #FFFFFF !important;
+}

@@ -74,6 +74,39 @@ $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_tic
                     </li>
                 <?php } ?>
 
+                <li class="nav-section-title"><?php esc_html_e( 'Communication', 'eventlist' ); ?></li>
+
+                <?php if( apply_filters( 'el_manage_vendor_show_messages', true ) ){
+                    // Compter les messages non lus
+                    $user_id = wp_get_current_user()->ID;
+                    $unread_args = array(
+                        'post_type'      => 'organizer_message',
+                        'post_status'    => 'private',
+                        'author'         => $user_id,
+                        'posts_per_page' => -1,
+                        'meta_query'     => array(
+                            array(
+                                'key'     => '_is_read',
+                                'value'   => '0',
+                                'compare' => '='
+                            )
+                        ),
+                    );
+                    $unread_query = new WP_Query( $unread_args );
+                    $unread_count = $unread_query->found_posts;
+                    wp_reset_postdata();
+                ?>
+                    <li class="menu_vendor_messages <?php if ($vendor == 'messages') echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'messages'), get_myaccount_page() ); ?>">
+                            <i class="icon_mail_alt"></i>
+                            <?php esc_html_e( 'Messages', 'eventlist' ); ?>
+                            <?php if ( $unread_count > 0 ) : ?>
+                                <span class="message_count_badge"><?php echo esc_html( $unread_count ); ?></span>
+                            <?php endif; ?>
+                        </a>
+                    </li>
+                <?php } ?>
+
                 <li class="nav-section-title"><?php esc_html_e( 'Finances', 'eventlist' ); ?></li>
 
                 <?php if ( EL()->options->tax_fee->get('manage_profit', 'profit_1') == 'profit_2' && apply_filters( 'el_manage_vendor_show_wallet', true) ) { ?>

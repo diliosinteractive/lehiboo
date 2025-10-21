@@ -128,10 +128,10 @@ $event_id = get_the_ID();
 					<?php do_action( 'el_single_event_map' ); ?>
 				</div>
 
-				<!-- Calendrier / Disponibilités -->
-				<div class="event_calendar_section">
-					<?php do_action( 'el_single_event_ticket_calendar' ); ?>
-				</div>
+				<!-- Calendrier / Disponibilités - Moved to sidebar -->
+				<!-- <div class="event_calendar_section">
+					<?php // do_action( 'el_single_event_ticket_calendar' ); ?>
+				</div> -->
 
 				<!-- Avis -->
 				<?php if( is_singular('event') && comments_open( $event_id ) ) { ?>
@@ -182,6 +182,66 @@ $event_id = get_the_ID();
 		<!-- CTA Mobile Flottant (Mobile uniquement) -->
 		<div class="event_mobile_cta_wrapper">
 			<?php el_get_template( 'single/booking-mobile-cta.php' ); ?>
+		</div>
+
+		<!-- Popup Formulaire de Contact Organisateur -->
+		<?php
+		global $post;
+		$event_id = $post->ID;
+		$author_id = $post->post_author;
+		$organizer_email = get_the_author_meta('user_email', $author_id);
+		$organizer_name = get_the_author_meta('display_name', $author_id);
+
+		// Debug
+		error_log('Contact Form - Event ID: ' . $event_id);
+		error_log('Contact Form - Author ID: ' . $author_id);
+		error_log('Contact Form - Organizer Email: ' . $organizer_email);
+		?>
+		<div id="contact_organizer_popup" class="contact_popup_overlay" style="display:none;">
+			<div class="contact_popup_container">
+				<div class="contact_popup_header">
+					<h3 class="contact_popup_title">
+						<?php esc_html_e( 'Contacter l\'organisateur', 'eventlist' ); ?>
+					</h3>
+					<button type="button" class="contact_popup_close" aria-label="<?php esc_attr_e( 'Fermer', 'eventlist' ); ?>">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<line x1="18" y1="6" x2="6" y2="18"></line>
+							<line x1="6" y1="6" x2="18" y2="18"></line>
+						</svg>
+					</button>
+				</div>
+				<div class="contact_popup_body">
+					<form id="contact_organizer_form" class="contact_form" method="post">
+						<div class="form_field">
+							<label for="contact_name"><?php esc_html_e( 'Votre nom', 'eventlist' ); ?> *</label>
+							<input type="text" id="contact_name" name="contact_name" required>
+						</div>
+						<div class="form_field">
+							<label for="contact_email"><?php esc_html_e( 'Votre email', 'eventlist' ); ?> *</label>
+							<input type="email" id="contact_email" name="contact_email" required>
+						</div>
+						<div class="form_field">
+							<label for="contact_message"><?php esc_html_e( 'Message', 'eventlist' ); ?> *</label>
+							<textarea id="contact_message" name="contact_message" rows="6" required></textarea>
+						</div>
+
+						<!-- Cloudflare Turnstile CAPTCHA -->
+						<div class="form_field">
+							<div class="cf-turnstile" data-sitekey="0x4AAAAAAB75T9T-6xfs5mqd" data-theme="light"></div>
+						</div>
+
+						<input type="hidden" name="event_id" value="<?php echo esc_attr( $event_id ); ?>">
+						<input type="hidden" name="action" value="send_organizer_message">
+						<?php wp_nonce_field( 'contact_organizer_nonce', 'contact_nonce' ); ?>
+
+						<div class="form_actions">
+							<button type="submit" class="contact_submit_btn">
+								<?php esc_html_e( 'Envoyer', 'eventlist' ); ?>
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
 		</div>
 
 	<?php endif; ?>

@@ -163,6 +163,14 @@ class EL_Vendor {
 			}
 			break;
 
+			case 'messages':
+			if( el_is_vendor() && apply_filters( 'el_manage_vendor_show_messages', true ) ){
+				$template = apply_filters( 'el_shortcode_messages_template_messages', 'vendor/messages.php' );
+			}else{
+				$template = apply_filters( 'el_shortcode_myaccount_template_profile', 'vendor/profile.php' );
+			}
+			break;
+
 
 		}
 

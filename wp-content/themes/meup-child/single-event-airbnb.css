@@ -3,7 +3,7 @@
  * ULTRA SPÉCIFIQUE pour override les styles du thème
  *
  * @package LeHiboo
- * @version 2.7.0 - Fix double Fancybox initialization
+ * @version 3.3.1 - Fixed popup display (moved to main template)
  */
 
 /* ========================================
@@ -1009,7 +1009,6 @@
 	/* Widget booking visible */
 	.event_single_airbnb .event_booking_sticky_wrapper {
 		display: block;
-		margin-top: 32px;
 	}
 
 	/* CTA mobile masqué */
@@ -1046,24 +1045,18 @@
 	/* Layout 2 colonnes GALERIE + BOOKING */
 	.event_single_airbnb .event_gallery_booking_section {
 		display: grid !important;
-		grid-template-columns: 1fr 420px;
-		gap: 64px;
+		grid-template-columns: 1fr 480px;
+		gap: 24px;
 		align-items: start;
 		margin-bottom: 48px;
 	}
-
-	/* Widget sticky */
-	.event_single_airbnb .event_booking_sticky_wrapper {
-		position: sticky;
-		top: 100px;
-		margin-top: 0;
 	}
 
 	/* Main Grid 2 colonnes CONTENU + SIDEBAR */
 	.event_single_airbnb .event_main_grid {
 		display: grid !important;
-		grid-template-columns: 1fr 380px;
-		gap: 80px;
+		grid-template-columns: 1fr 480px;
+		gap: 24px;
 		align-items: start;
 	}
 
@@ -1114,5 +1107,456 @@
 @media (min-width: 1024px) {
 	.event_single_airbnb .desktop_only {
 		display: block;
+	}
+}
+
+/* ========================================
+   CALENDRIER INLINE DANS SIDEBAR
+   ======================================== */
+.booking_calendar_inline {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+/* Masquer le calendrier dans le contenu principal */
+.event_single_airbnb .event_calendar_section {
+	display: none !important;
+}
+
+/* ========================================
+   CALENDRIER AIRBNB - LISTE DES DATES
+   ======================================== */
+.airbnb_calendar_wrapper {
+	width: 100%;
+}
+
+.airbnb_calendar_title {
+	font-size: 18px;
+	font-weight: 600;
+	color: #222222;
+	margin: 0 0 16px 0;
+	padding: 0;
+}
+
+.airbnb_calendar_list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+/* Item de calendrier - Style Airbnb horizontal */
+.airbnb_calendar_item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 16px;
+	background: #FFFFFF;
+	border: 1px solid #DDDDDD;
+	border-radius: 12px;
+	transition: all 0.2s ease;
+	cursor: pointer;
+}
+
+.airbnb_calendar_item:hover {
+	border-color: #222222;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.airbnb_calendar_item.is-unavailable {
+	background: #F7F7F7;
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.airbnb_calendar_item.is-unavailable:hover {
+	border-color: #DDDDDD;
+	box-shadow: none;
+}
+
+/* Info principale (gauche) */
+.calendar_item_info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+/* Date */
+.calendar_item_date .date_day_name {
+	font-size: 16px;
+	font-weight: 600;
+	color: #222222;
+	line-height: 1.3;
+}
+
+/* Méta: Horaires + Disponibilité */
+.calendar_item_meta {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	font-size: 14px;
+	color: #717171;
+	line-height: 1.4;
+}
+
+.calendar_item_meta .time_range {
+	color: #717171;
+}
+
+.calendar_item_meta .availability_count {
+	color: #717171;
+}
+
+/* Action (droite) - Bouton orange */
+.calendar_item_action {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.item_book_btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px 20px;
+	background: #FF5722;
+	color: #FFFFFF !important;
+	font-size: 14px;
+	font-weight: 600;
+	border-radius: 8px;
+	text-decoration: none !important;
+	transition: all 0.2s ease;
+	white-space: nowrap;
+	border: none;
+}
+
+.item_book_btn:hover {
+	background: #E64A19;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+}
+
+.item_book_btn.un-selling {
+	background: #DDDDDD;
+	color: #717171 !important;
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
+.item_unavailable_btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px 20px;
+	background: #F5F5F5;
+	color: #B0B0B0;
+	font-size: 14px;
+	font-weight: 600;
+	border-radius: 8px;
+	white-space: nowrap;
+}
+
+/* Responsive Mobile */
+@media screen and (max-width: 767px) {
+	.airbnb_calendar_title {
+		font-size: 16px;
+		margin-bottom: 12px;
+	}
+
+	.airbnb_calendar_list {
+		gap: 10px;
+	}
+
+	.airbnb_calendar_item {
+		padding: 14px;
+	}
+
+	.calendar_item_date .date_day_name {
+		font-size: 15px;
+	}
+
+	.calendar_item_meta {
+		font-size: 13px;
+	}
+}
+
+/* Masquer l'organisateur dans le contenu (il est maintenant dans la sidebar) */
+.event_single_airbnb .event_content_column .event_organizer_card {
+	display: none !important;
+}
+
+/* Styles pour l'organisateur dans la sidebar */
+.event_single_airbnb .booking_organizer_section {
+	padding-bottom: 20px;
+	margin-bottom: 20px;
+	border-bottom: 1px solid #EBEBEB;
+}
+
+/* ========================================
+   BLOC ORGANISATEUR DANS SIDEBAR
+   ======================================== */
+.booking_organizer_card {
+	background: #FFFFFF;
+	border: 1px solid #DDDDDD;
+	border-radius: 12px;
+	padding: 24px;
+	margin-bottom: 24px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.organizer_header {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 20px;
+}
+
+.organizer_avatar {
+	flex-shrink: 0;
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	overflow: hidden;
+	transition: transform 0.2s ease;
+}
+
+.organizer_avatar:hover {
+	transform: scale(1.05);
+}
+
+.organizer_avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.organizer_info {
+	flex: 1;
+}
+
+.organizer_label {
+	font-size: 12px;
+	color: #717171;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin-bottom: 4px;
+}
+
+.organizer_name {
+	font-size: 18px;
+	font-weight: 600;
+	color: #222222;
+	margin: 0;
+	line-height: 1.3;
+}
+
+.organizer_name a {
+	color: #222222;
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.organizer_name a:hover {
+	color: #FF5722;
+}
+
+.organizer_contact_btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	padding: 14px 24px;
+	background: transparent;
+	border: 1px solid #222222;
+	border-radius: 8px;
+	color: #222222;
+	font-size: 15px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.organizer_contact_btn:hover {
+	background: #222222;
+	color: #FFFFFF;
+}
+
+.organizer_contact_btn i {
+	font-size: 16px;
+}
+
+/* ========================================
+   POPUP FORMULAIRE DE CONTACT
+   ======================================== */
+.contact_popup_overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.6);
+	z-index: 9999;
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.contact_popup_overlay.is-open {
+	opacity: 1;
+	visibility: visible;
+}
+
+.contact_popup_container {
+	background: #FFFFFF;
+	border-radius: 16px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+	max-width: 600px;
+	width: 100%;
+	max-height: 90vh;
+	display: flex;
+	flex-direction: column;
+	transform: scale(0.95);
+	transition: transform 0.3s ease;
+}
+
+.contact_popup_overlay.is-open .contact_popup_container {
+	transform: scale(1);
+}
+
+.contact_popup_header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 24px;
+	border-bottom: 1px solid #EBEBEB;
+}
+
+.contact_popup_title {
+	font-size: 22px;
+	font-weight: 600;
+	color: #222222;
+	margin: 0;
+}
+
+.contact_popup_close {
+	background: transparent;
+	border: none;
+	border-radius: 50%;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: background 0.2s ease;
+	color: #222222;
+	padding: 0;
+}
+
+.contact_popup_close:hover {
+	background: #F7F7F7;
+}
+
+.contact_popup_body {
+	padding: 24px;
+	overflow-y: auto;
+	flex: 1;
+}
+
+/* Formulaire */
+.contact_form {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.form_field {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.form_field label {
+	font-size: 14px;
+	font-weight: 600;
+	color: #222222;
+}
+
+.form_field input[type="text"],
+.form_field input[type="email"],
+.form_field textarea {
+	width: 100%;
+	padding: 12px 16px;
+	border: 1px solid #DDDDDD;
+	border-radius: 8px;
+	font-size: 15px;
+	font-family: inherit;
+	transition: border-color 0.2s ease;
+}
+
+.form_field input:focus,
+.form_field textarea:focus {
+	outline: none;
+	border-color: #FF5722;
+}
+
+.form_field textarea {
+	resize: vertical;
+	min-height: 120px;
+}
+
+.form_actions {
+	margin-top: 8px;
+}
+
+.contact_submit_btn {
+	width: 100%;
+	padding: 14px 24px;
+	background: #FF5722;
+	color: #FFFFFF;
+	font-size: 16px;
+	font-weight: 600;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.contact_submit_btn:hover {
+	background: #E64A19;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+	.contact_popup_overlay {
+		padding: 0;
+		align-items: flex-end;
+	}
+
+	.contact_popup_container {
+		border-radius: 16px 16px 0 0;
+		max-height: 95vh;
+	}
+
+	.contact_popup_header {
+		padding: 16px;
+	}
+
+	.contact_popup_title {
+		font-size: 18px;
+	}
+
+	.contact_popup_body {
+		padding: 16px;
 	}
 }

@@ -4,13 +4,11 @@
  * Gère les interactions pour la page événement style Airbnb:
  * - Widget sticky (desktop)
  * - Lightbox galerie avec Fancybox
- * - Compteur invités (+/-)
- * - Calcul total prix
  * - CTA mobile scroll
  * - Accordéons FAQ
  *
  * @package LeHiboo
- * @version 2.1.0
+ * @version 3.3.1
  */
 
 (function($) {
@@ -23,11 +21,11 @@
 		 */
 		init: function() {
 			this.stickyWidget();
-			this.guestCounter();
 			this.mobileCtaScroll();
 			this.galleryLightbox();
 			this.smoothScroll();
 			this.faqAccordions();
+			this.contactPopup();
 		},
 
 		/**
@@ -57,56 +55,6 @@
 		/**
 		 * Compteur d'invités (+/-)
 		 */
-		guestCounter: function() {
-			var $input = $('#booking_guests');
-			var $totalAmount = $('#booking_total_amount');
-			var basePrice = $('#booking_sticky_widget').data('price') || 0;
-
-			// Boutons +/-
-			$('.guests_btn').on('click', function(e) {
-				e.preventDefault();
-
-				var action = $(this).data('action');
-				var currentVal = parseInt( $input.val() ) || 1;
-				var newVal = currentVal;
-
-				if ( action === 'increase' ) {
-					newVal = Math.min(currentVal + 1, 20);
-				} else if ( action === 'decrease' ) {
-					newVal = Math.max(currentVal - 1, 1);
-				}
-
-				$input.val(newVal);
-
-				// Mettre à jour le nombre d'invités affiché
-				$('.guests_count').text(newVal);
-
-				// Recalculer le total
-				EventAirbnb.updateTotal(newVal, basePrice);
-			});
-
-			// Empêcher saisie manuelle
-			$input.on('keydown', function(e) {
-				e.preventDefault();
-				return false;
-			});
-		},
-
-		/**
-		 * Mise à jour du total
-		 */
-		updateTotal: function(guests, basePrice) {
-			var total = guests * basePrice;
-			var currency = $('#booking_total_amount').text().replace(/[0-9.,]/g, '').trim();
-
-			if ( !currency ) {
-				currency = '€';
-			}
-
-			var formattedTotal = total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-
-			$('#booking_total_amount').text( currency + formattedTotal );
-		},
 
 		/**
 		 * CTA Mobile - Afficher/Masquer au scroll
@@ -339,14 +287,175 @@
 					$answer.slideDown(300);
 				}
 			});
+		},
+
+		/**
+		 * Popup Formulaire de Contact
+		 */
+		contactPopup: function() {
+			console.log('=== CONTACT POPUP INIT ===');
+
+			var $popup = $('#contact_organizer_popup');
+			var $openBtn = $('#open_contact_form');
+			var $closeBtn = $('.contact_popup_close');
+
+			console.log('Popup element:', $popup.length);
+			console.log('Open button:', $openBtn.length);
+			console.log('Close button:', $closeBtn.length);
+
+			if ( !$popup.length ) {
+				console.warn('Popup element not found!');
+				return;
+			}
+
+			if ( !$openBtn.length ) {
+				console.warn('Open button not found!');
+				return;
+			}
+
+			// Ouvrir le popup
+			$openBtn.on('click', function(e) {
+				e.preventDefault();
+				console.log('>>> Button clicked - Opening popup');
+				EventAirbnb.openContactPopup();
+			});
+
+			// Fermer avec le bouton X
+			$closeBtn.on('click', function(e) {
+				e.preventDefault();
+				EventAirbnb.closeContactPopup();
+			});
+
+			// Fermer au clic sur l'overlay
+			$popup.on('click', function(e) {
+				if ( $(e.target).is('.contact_popup_overlay') ) {
+					EventAirbnb.closeContactPopup();
+				}
+			});
+
+			// Fermer avec Escape
+			$(document).on('keydown', function(e) {
+				if ( e.key === 'Escape' && $popup.hasClass('is-open') ) {
+					EventAirbnb.closeContactPopup();
+				}
+			});
+
+			// Gérer la soumission du formulaire (AJAX)
+			$('#contact_organizer_form').on('submit', function(e) {
+				e.preventDefault();
+				EventAirbnb.submitContactForm( $(this) );
+			});
+		},
+
+		/**
+		 * Ouvrir le popup de contact
+		 */
+		openContactPopup: function() {
+			console.log('>>> OPENING CONTACT POPUP');
+			var $popup = $('#contact_organizer_popup');
+			console.log('Popup element in open function:', $popup.length);
+
+			$popup.addClass('is-open');
+			$popup.show(); // Force display
+			$('body').css('overflow', 'hidden');
+
+			console.log('Popup classes:', $popup.attr('class'));
+			console.log('Popup display:', $popup.css('display'));
+		},
+
+		/**
+		 * Fermer le popup de contact
+		 */
+		closeContactPopup: function() {
+			var $popup = $('#contact_organizer_popup');
+			$popup.removeClass('is-open');
+			$('body').css('overflow', '');
+		},
+
+		/**
+		 * Soumettre le formulaire de contact via AJAX
+		 */
+		submitContactForm: function( $form ) {
+			var $submitBtn = $form.find('.contact_submit_btn');
+			var originalText = $submitBtn.text();
+
+			// Récupérer le token Turnstile
+			var turnstileResponse = $form.find('[name="cf-turnstile-response"]').val();
+
+			console.log('Form data:', {
+				name: $form.find('[name="contact_name"]').val(),
+				email: $form.find('[name="contact_email"]').val(),
+				message: $form.find('[name="contact_message"]').val(),
+				turnstile: turnstileResponse ? 'présent' : 'absent'
+			});
+
+			// Vérifier le CAPTCHA
+			if ( !turnstileResponse ) {
+				alert( 'Veuillez valider le CAPTCHA.' );
+				return;
+			}
+
+			// Désactiver le bouton
+			$submitBtn.prop('disabled', true).text('Envoi en cours...');
+
+			// Vérifier que el_ajax_object existe
+			var ajaxUrl = (typeof el_ajax_object !== 'undefined' && el_ajax_object.ajax_url)
+				? el_ajax_object.ajax_url
+				: '/wp-admin/admin-ajax.php';
+
+			console.log('Sending AJAX to:', ajaxUrl);
+
+			// Préparer les données
+			var formData = $form.serialize();
+			console.log('Serialized form data:', formData);
+
+			// Envoyer via AJAX
+			$.ajax({
+				url: ajaxUrl,
+				type: 'POST',
+				data: formData,
+				success: function(response) {
+					console.log('AJAX Response:', response);
+					if ( response.success ) {
+						// Succès
+						alert( response.data.message || 'Message envoyé avec succès!' );
+						$form[0].reset();
+						// Reset Turnstile
+						if ( typeof turnstile !== 'undefined' ) {
+							turnstile.reset();
+						}
+						EventAirbnb.closeContactPopup();
+					} else {
+						// Erreur
+						var errorMsg = response.data.message || 'Erreur lors de l\'envoi du message.';
+						if ( response.data.errors ) {
+							errorMsg += '\n\nDétails: ' + response.data.errors.join(', ');
+						}
+						alert( errorMsg );
+					}
+				},
+				error: function(xhr, status, error) {
+					console.error('AJAX Error:', status, error);
+					console.error('Response:', xhr.responseText);
+					alert( 'Erreur de connexion. Veuillez réessayer.' );
+				},
+				complete: function() {
+					// Réactiver le bouton
+					$submitBtn.prop('disabled', false).text(originalText);
+				}
+			});
 		}
 
 	};
 
 	// Document Ready
 	$(document).ready(function() {
+		console.log('Document ready');
 		if ( $('.event_single_airbnb').length ) {
+			console.log('Event Airbnb template detected');
 			EventAirbnb.init();
+		} else {
+			console.log('NOT Airbnb template');
 		}
 	});
 
