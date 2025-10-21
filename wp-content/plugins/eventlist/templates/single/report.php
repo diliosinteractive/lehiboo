@@ -1,3 +1,5 @@
+<?php /* ?>
+
 <?php if( ! defined( 'ABSPATH' ) ) exit(); ?>
 
 <div class="el_report">
@@ -8,3 +10,5 @@
 	<div class="el_wrap_form_report"></div>
 	
 </div>
+
+<?php */ ?>

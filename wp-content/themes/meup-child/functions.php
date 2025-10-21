@@ -18,6 +18,19 @@ add_action( 'wp_enqueue_scripts', 'meup_child_scripts', 100 );
 function meup_child_scripts() {
     wp_enqueue_style( 'meup-parent-style', get_template_directory_uri(). '/style.css' );
     wp_enqueue_style( 'meup-airbnb-style', get_stylesheet_directory_uri() . '/airbnb-style.css', array('meup-parent-style'), '1.0.2' );
+
+    // Styles Airbnb pour Single Event
+    if( is_singular('event') ) {
+        wp_enqueue_style( 'single-event-airbnb', get_stylesheet_directory_uri() . '/single-event-airbnb.css', array('meup-parent-style'), '2.4.0' );
+        wp_enqueue_script( 'single-event-airbnb', get_stylesheet_directory_uri() . '/assets/js/single-event-airbnb.js', array('jquery'), '2.4.0', true );
+    }
+}
+
+// ========================================
+// EXTENSIONS METABOX EVENT (FAQ, Inclus, etc.)
+// ========================================
+if( file_exists( get_stylesheet_directory() . '/includes/event-metabox-extensions.php' ) ) {
+	require_once get_stylesheet_directory() . '/includes/event-metabox-extensions.php';
 }
 
 // ========================================

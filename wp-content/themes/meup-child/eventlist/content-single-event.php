@@ -1,0 +1,189 @@
+<?php
+/**
+ * Template Override: Single Event - Airbnb Experience Style
+ *
+ * Override du template principal pour afficher les événements
+ * dans un style inspiré d'Airbnb Experiences avec layout 2 colonnes.
+ *
+ * @package LeHiboo
+ * @since 1.0.0
+ */
+
+if( ! defined( 'ABSPATH' ) ) exit();
+
+global $event;
+$event_id = get_the_ID();
+?>
+
+<!-- AIRBNB TEMPLATE LOADED -->
+<article id="event_<?php the_ID(); ?>" <?php post_class( 'event_single event_single_airbnb' ); ?>>
+
+	<?php if ( ! post_password_required( $event_id ) ): ?>
+
+		<!-- Fil d'Ariane Airbnb Style -->
+		<div class="event_breadcrumb_airbnb">
+			<?php
+			// Breadcrumb custom style Airbnb
+			$categories = get_the_terms( $event_id, 'event_cat' );
+			$category_link = '';
+			$category_name = '';
+
+			if ( $categories && !is_wp_error($categories) ) {
+				$first_cat = array_shift($categories);
+				$category_link = get_term_link($first_cat);
+				$category_name = $first_cat->name;
+			}
+			?>
+			<nav class="breadcrumb_nav" aria-label="Breadcrumb">
+				<a href="<?php echo esc_url( home_url('/') ); ?>" class="breadcrumb_home">Accueil</a>
+				<span class="breadcrumb_separator">›</span>
+				<a href="<?php echo esc_url( get_post_type_archive_link('event') ); ?>" class="breadcrumb_events">Événements</a>
+				<?php if ( $category_name ) : ?>
+					<span class="breadcrumb_separator">›</span>
+					<a href="<?php echo esc_url( $category_link ); ?>" class="breadcrumb_category"><?php echo esc_html( $category_name ); ?></a>
+				<?php endif; ?>
+			</nav>
+		</div>
+
+		<!-- En-tête de l'événement -->
+		<div class="event_header_airbnb">
+
+			<!-- Date avec pastille calendrier -->
+			<div class="event_date_badge">
+				<?php el_get_template( 'single/date.php' ); ?>
+			</div>
+
+			<!-- Titre -->
+			<div class="event_title_wrapper">
+				<?php do_action( 'el_single_event_title' ); ?>
+			</div>
+
+			<!-- Méta ligne: Ville • Catégorie • Durée • Langues • Note -->
+			<div class="event_meta_line">
+				<?php el_get_template( 'single/meta-line.php' ); ?>
+			</div>
+
+			<!-- Actions: Partager | Enregistrer -->
+			<div class="event_actions">
+				<?php do_action( 'el_single_share_social' ); ?>
+				<?php do_action( 'el_single_report' ); ?>
+				<?php do_action( 'el_single_calenda_export' ); ?>
+			</div>
+
+		</div>
+
+		<!-- Layout 2 colonnes: Galerie + Réservation -->
+		<div class="event_gallery_booking_section">
+
+			<!-- Galerie mosaïque (1 large + 4 mini) -->
+			<div class="event_gallery_mosaic">
+				<?php el_get_template( 'single/gallery-mosaic.php' ); ?>
+			</div>
+
+			<!-- Widget Réservation Sticky (Desktop uniquement) -->
+			<div class="event_booking_sticky_wrapper">
+				<?php el_get_template( 'single/booking-sticky.php' ); ?>
+			</div>
+
+		</div>
+
+		<!-- Contenu principal (2 colonnes sur desktop) -->
+		<div class="event_main_grid">
+
+			<!-- Colonne de gauche: Contenu -->
+			<div class="event_content_column">
+
+				<!-- Highlights / À savoir -->
+				<div class="event_highlights_section">
+					<?php el_get_template( 'single/highlights.php' ); ?>
+				</div>
+
+				<!-- Carte Organisateur -->
+				<div class="event_organizer_card">
+					<?php do_action( 'el_author_info' ); ?>
+				</div>
+
+				<!-- Description -->
+				<div class="event_description_section">
+					<?php do_action( 'el_single_event_content' ); ?>
+				</div>
+
+				<!-- Inclus / Non inclus -->
+				<div class="event_includes_section">
+					<?php el_get_template( 'single/includes.php' ); ?>
+				</div>
+
+				<!-- Exigences -->
+				<div class="event_requirements_section">
+					<?php el_get_template( 'single/requirements.php' ); ?>
+				</div>
+
+				<!-- Point de RDV -->
+				<div class="event_meeting_point_section">
+					<?php el_get_template( 'single/meeting-point.php' ); ?>
+				</div>
+
+				<!-- Carte (Map) -->
+				<div class="event_map_section">
+					<?php do_action( 'el_single_event_map' ); ?>
+				</div>
+
+				<!-- Calendrier / Disponibilités -->
+				<div class="event_calendar_section">
+					<?php do_action( 'el_single_event_ticket_calendar' ); ?>
+				</div>
+
+				<!-- Avis -->
+				<?php if( is_singular('event') && comments_open( $event_id ) ) { ?>
+					<div class="event_reviews_section">
+						<?php do_action( 'el_single_event_comment' ); ?>
+					</div>
+				<?php } ?>
+
+				<!-- FAQ -->
+				<div class="event_faq_section">
+					<?php el_get_template( 'single/faq.php' ); ?>
+				</div>
+
+			</div><!-- .event_content_column -->
+
+			<!-- Colonne de droite: Sidebar (masquée sur desktop car sticky en haut) -->
+			<div class="event_sidebar_column">
+
+				<!-- Taxonomies & Tags -->
+				<div class="event_sidebar_taxonomies">
+					<?php do_action( 'el_single_event_tag' ); ?>
+					<?php do_action( 'el_single_event_taxonomy' ); ?>
+				</div>
+
+				<!-- Politique d'annulation -->
+				<div class="event_sidebar_policy">
+					<?php do_action( 'el_single_event_policy' ); ?>
+				</div>
+
+				<!-- Sidebar WordPress Widget Area -->
+				<?php if(is_active_sidebar('single-event-sidebar')){ ?>
+					<aside id="event-sidebar" class="event_sidebar">
+						<div class="content-sidebar">
+							<?php dynamic_sidebar('single-event-sidebar'); ?>
+						</div>
+					</aside>
+				<?php } ?>
+
+			</div><!-- .event_sidebar_column -->
+
+		</div><!-- .event_main_grid -->
+
+		<!-- Événements liés (full width) -->
+		<div class="event_related_section">
+			<?php do_action('el_single_event_related'); ?>
+		</div>
+
+		<!-- CTA Mobile Flottant (Mobile uniquement) -->
+		<div class="event_mobile_cta_wrapper">
+			<?php el_get_template( 'single/booking-mobile-cta.php' ); ?>
+		</div>
+
+	<?php endif; ?>
+
+</article>
