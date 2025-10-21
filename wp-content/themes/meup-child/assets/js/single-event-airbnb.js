@@ -3,14 +3,14 @@
  *
  * Gère les interactions pour la page événement style Airbnb:
  * - Widget sticky (desktop)
- * - Lightbox galerie
+ * - Lightbox galerie avec Fancybox
  * - Compteur invités (+/-)
  * - Calcul total prix
  * - CTA mobile scroll
  * - Accordéons FAQ
  *
  * @package LeHiboo
- * @version 1.0.0
+ * @version 2.1.0
  */
 
 (function($) {
@@ -155,61 +155,132 @@
 		},
 
 		/**
-		 * Galerie Lightbox
+		 * Galerie Lightbox - Fancybox (évite double initialisation)
 		 */
 		galleryLightbox: function() {
-			// Si PrettyPhoto ou autre plugin lightbox existe
-			if ( typeof $.fn.prettyPhoto !== 'undefined' ) {
-				$('.gallery_lightbox').prettyPhoto({
-					social_tools: false,
-					slideshow: 5000,
-					theme: 'pp_default',
-					horizontal_padding: 20,
-					opacity: 0.80,
-					allow_resize: true,
-					default_width: 800,
-					default_height: 600,
-					counter_separator_label: '/',
-					keyboard_shortcuts: true
-				});
+			// Vérifier que Fancybox est disponible
+			if ( typeof Fancybox === 'undefined' ) {
+				console.warn('Fancybox not loaded');
+				return;
 			}
 
-			// Sinon, lightbox simple avec fancybox ou magnific popup
-			else if ( typeof $.fn.magnificPopup !== 'undefined' ) {
-				$('.gallery_lightbox').magnificPopup({
+			// Désactiver l'auto-bind de Fancybox
+			Fancybox.unbind('.gallery_lightbox');
+			Fancybox.close();
+
+			// Collecter toutes les images de la galerie
+			var galleryImages = [];
+
+			$('.gallery_lightbox').each(function() {
+				var $link = $(this);
+				var imageUrl = $link.attr('href');
+				var title = $link.data('title') || $link.find('img').attr('alt') || '';
+
+				galleryImages.push({
+					src: imageUrl,
 					type: 'image',
-					gallery: {
-						enabled: true
-					},
-					image: {
-						titleSrc: 'data-title'
-					}
+					caption: title
 				});
-			}
-
-			// Fallback: ouverture dans nouvelle fenêtre
-			else {
-				$('.gallery_lightbox').on('click', function(e) {
-					if ( !$(this).hasClass('no-lightbox') ) {
-						// Laisser le comportement par défaut (nouvelle fenêtre)
-					}
-				});
-			}
-
-			// Bouton "Voir toutes les photos" mobile
-			$('.btn_view_all_photos').on('click', function(e) {
-				e.preventDefault();
-
-				// Trigger le premier lien de la lightbox
-				$('.gallery_lightbox').first().trigger('click');
 			});
 
-			// Overlay "Voir toutes les photos" sur la 4ème image
-			$('.view_all_photos_overlay').parent().on('click', function(e) {
-				e.preventDefault();
+			// Options Fancybox
+			var fancyboxOptions = {
+				Toolbar: {
+					display: {
+						left: [],
+						middle: [],
+						right: ['close']
+					}
+				},
 
-				// Ouvrir la lightbox
-				$(this).find('.gallery_lightbox').trigger('click');
+				Thumbs: {
+					type: 'classic'
+				},
+
+				keyboard: {
+					Escape: 'close',
+					Delete: 'close',
+					Backspace: 'close',
+					PageUp: 'next',
+					PageDown: 'prev',
+					ArrowUp: 'prev',
+					ArrowDown: 'next',
+					ArrowRight: 'next',
+					ArrowLeft: 'prev'
+				},
+
+				animated: true,
+				showClass: 'f-fadeIn',
+				hideClass: 'f-fadeOut',
+				preload: 1,
+
+				l10n: {
+					CLOSE: 'Fermer',
+					NEXT: 'Suivant',
+					PREV: 'Précédent',
+					MODAL: 'Vous pouvez fermer cette fenêtre avec la touche ESC',
+					ERROR: 'Impossible de charger l\'image',
+					IMAGE_ERROR: 'Image introuvable'
+				}
+			};
+
+			// Gestion des clics
+			$('.gallery_lightbox').off('click').on('click', function(e) {
+				e.preventDefault();
+				e.stopImmediatePropagation();
+
+				if ( Fancybox.getInstance() ) {
+					Fancybox.close();
+				}
+
+				var clickedIndex = $('.gallery_lightbox').index(this);
+
+				setTimeout(function() {
+					Fancybox.show(galleryImages, $.extend({}, fancyboxOptions, {
+						startIndex: clickedIndex
+					}));
+				}, 50);
+
+				return false;
+			});
+
+			// Bouton "Voir toutes les photos"
+			$('.btn_view_all_photos').off('click').on('click', function(e) {
+				e.preventDefault();
+				e.stopImmediatePropagation();
+
+				if ( Fancybox.getInstance() ) {
+					Fancybox.close();
+				}
+
+				setTimeout(function() {
+					Fancybox.show(galleryImages, $.extend({}, fancyboxOptions, {
+						startIndex: 0
+					}));
+				}, 50);
+
+				return false;
+			});
+
+			// Overlay miniature
+			$('.view_all_photos_overlay').closest('.gallery_thumbnail_item').off('click').on('click', function(e) {
+				e.preventDefault();
+				e.stopImmediatePropagation();
+
+				if ( Fancybox.getInstance() ) {
+					Fancybox.close();
+				}
+
+				var $link = $(this).find('.gallery_lightbox');
+				var clickedIndex = $('.gallery_lightbox').index($link);
+
+				setTimeout(function() {
+					Fancybox.show(galleryImages, $.extend({}, fancyboxOptions, {
+						startIndex: clickedIndex
+					}));
+				}, 50);
+
+				return false;
 			});
 		},
 
@@ -236,7 +307,6 @@
 
 		/**
 		 * Accordéons FAQ
-		 * Note: Le code est aussi dans faq.php pour éviter dépendance JS
 		 */
 		faqAccordions: function() {
 			$('.faq_question').on('click', function(e) {
@@ -247,7 +317,7 @@
 				var $answer = $item.find('.faq_answer');
 				var isExpanded = $button.attr('aria-expanded') === 'true';
 
-				// Fermer tous les autres accordéons
+				// Fermer tous les autres
 				$('.faq_item').not($item).each(function() {
 					$(this).find('.faq_question')
 						.attr('aria-expanded', 'false')
@@ -258,7 +328,7 @@
 					$(this).find('.faq_answer').slideUp(300);
 				});
 
-				// Toggle l'accordéon actuel
+				// Toggle
 				if( isExpanded ) {
 					$button.attr('aria-expanded', 'false');
 					$button.find('.faq_icon').removeClass('icon_minus').addClass('icon_plus');
@@ -273,25 +343,19 @@
 
 	};
 
-	/**
-	 * Document Ready
-	 */
+	// Document Ready
 	$(document).ready(function() {
-		// Vérifier si on est sur une page événement avec le nouveau template
 		if ( $('.event_single_airbnb').length ) {
 			EventAirbnb.init();
 		}
 	});
 
-	/**
-	 * Window Resize - Réinitialiser certains comportements
-	 */
+	// Window Resize
 	var resizeTimer;
 	$(window).on('resize', function() {
 		clearTimeout(resizeTimer);
 
 		resizeTimer = setTimeout(function() {
-			// Réinitialiser si passage mobile <-> desktop
 			if ( $('.event_single_airbnb').length ) {
 				EventAirbnb.stickyWidget();
 				EventAirbnb.mobileCtaScroll();

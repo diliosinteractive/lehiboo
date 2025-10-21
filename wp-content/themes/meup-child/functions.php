@@ -21,8 +21,8 @@ function meup_child_scripts() {
 
     // Styles Airbnb pour Single Event
     if( is_singular('event') ) {
-        wp_enqueue_style( 'single-event-airbnb', get_stylesheet_directory_uri() . '/single-event-airbnb.css', array('meup-parent-style'), '2.4.0' );
-        wp_enqueue_script( 'single-event-airbnb', get_stylesheet_directory_uri() . '/assets/js/single-event-airbnb.js', array('jquery'), '2.4.0', true );
+        wp_enqueue_style( 'single-event-airbnb', get_stylesheet_directory_uri() . '/single-event-airbnb.css', array('meup-parent-style'), '2.7.0' );
+        wp_enqueue_script( 'single-event-airbnb', get_stylesheet_directory_uri() . '/assets/js/single-event-airbnb.js', array('jquery'), '2.7.0', true );
     }
 }
 

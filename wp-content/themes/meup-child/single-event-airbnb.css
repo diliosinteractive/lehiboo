@@ -3,7 +3,7 @@
  * ULTRA SPÉCIFIQUE pour override les styles du thème
  *
  * @package LeHiboo
- * @version 2.4.0 - Actions aligned right with title
+ * @version 2.7.0 - Fix double Fancybox initialization
  */
 
 /* ========================================
@@ -180,18 +180,12 @@
 	position: relative;
 }
 
-.event_single_airbnb .el_share_social > a {
-	text-decoration: underline !important;
-}
 
 /* Calendar Export - Style spécifique */
 .event_single_airbnb .el_calendar_export {
 	position: relative;
 }
 
-.event_single_airbnb .el_calendar_export > a {
-	text-decoration: underline !important;
-}
 
 /* Dropdown des actions (si présent) */
 .event_single_airbnb .el_con_calendar_export,
@@ -312,28 +306,39 @@
 }
 
 /* ========================================
-   GALERIE MOSAÏQUE - AIRBNB STYLE
+   GALERIE - 2 GRANDES IMAGES A4 + MINIATURES
    ======================================== */
 .event_single_airbnb .event_gallery_booking_section {
 	margin-bottom: 48px;
 	position: relative;
 }
 
-/* Mobile : Image simple */
 .event_single_airbnb .event_gallery_mosaic_wrapper {
 	width: 100%;
-	border-radius: 12px;
-	overflow: hidden;
 	margin-bottom: 24px;
 	position: relative;
 }
 
+/* Ligne des 2 grandes images format A4 (portrait) */
+.event_single_airbnb .gallery_main_images_row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+	margin-bottom: 12px;
+}
+
 .event_single_airbnb .gallery_main_image {
-	width: 100%;
 	position: relative;
-	padding-bottom: 66.67%; /* 3:2 ratio */
+	padding-bottom: 141.42%; /* Ratio A4 = 1:√2 ≈ 1:1.414 */
 	overflow: hidden;
 	background: #f7f7f7;
+	border-radius: 12px;
+	cursor: pointer;
+	transition: transform 0.3s ease;
+}
+
+.event_single_airbnb .gallery_main_image:hover {
+	transform: scale(1.02);
 }
 
 .event_single_airbnb .gallery_main_image img {
@@ -345,10 +350,60 @@
 	object-fit: cover;
 }
 
-.event_single_airbnb .gallery_grid_images {
-	display: none;
+/* Ligne des miniatures en dessous */
+.event_single_airbnb .gallery_thumbnails_row {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 12px;
 }
 
+.event_single_airbnb .gallery_thumbnail_item {
+	position: relative;
+	padding-bottom: 75%; /* Ratio 4:3 */
+	overflow: hidden;
+	background: #f7f7f7;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: transform 0.3s ease;
+}
+
+.event_single_airbnb .gallery_thumbnail_item:hover {
+	transform: scale(1.05);
+}
+
+.event_single_airbnb .gallery_thumbnail_item img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Overlay "Voir toutes les photos" */
+.event_single_airbnb .view_all_photos_overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	font-weight: 600;
+	font-size: 18px;
+	gap: 8px;
+	z-index: 2;
+}
+
+.event_single_airbnb .view_all_photos_overlay i {
+	font-size: 24px;
+}
+
+/* Bouton mobile */
 .event_single_airbnb .btn_view_all_photos.mobile_only {
 	display: block;
 	width: 100%;
@@ -366,6 +421,27 @@
 .event_single_airbnb .btn_view_all_photos.mobile_only:hover {
 	background: #F7F7F7;
 	border-color: #222222;
+}
+
+/* Mobile : 1 seule grande image + miniatures dessous */
+@media (max-width: 767px) {
+	.event_single_airbnb .gallery_main_images_row {
+		grid-template-columns: 1fr;
+		gap: 8px;
+	}
+
+	.event_single_airbnb .gallery_main_image {
+		padding-bottom: 75%; /* 4:3 sur mobile */
+	}
+
+	.event_single_airbnb .gallery_main_image_2 {
+		display: none; /* Masquer la 2ème image sur mobile */
+	}
+
+	.event_single_airbnb .gallery_thumbnails_row {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 8px;
+	}
 }
 
 /* ========================================
@@ -902,34 +978,8 @@
 		letter-spacing: -0.03em !important;
 	}
 
-	/* Galerie: Grid 2x2 visible */
-	.event_single_airbnb .gallery_main_image {
-		padding-bottom: 56.25%; /* 16:9 */
-	}
-
-	.event_single_airbnb .gallery_grid_images {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 8px;
-		margin-top: 8px;
-	}
-
-	.event_single_airbnb .grid_image_item {
-		position: relative;
-		padding-bottom: 75%; /* 4:3 */
-		overflow: hidden;
-		border-radius: 8px;
-		background: #f7f7f7;
-	}
-
-	.event_single_airbnb .grid_image_item img {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
+	/* Galerie: Keep 2 images A4 format on tablet */
+	/* Styles already defined in base, no need to override */
 
 	.event_single_airbnb .view_all_photos_overlay {
 		position: absolute;
@@ -990,45 +1040,8 @@
 		line-height: 1.08 !important;
 	}
 
-	/* Galerie Mosaïque: 1 large + grid 2x2 */
-	.event_single_airbnb .event_gallery_mosaic_wrapper {
-		display: grid !important;
-		grid-template-columns: 2fr 1fr;
-		gap: 8px;
-		height: 480px;
-		margin-bottom: 0;
-	}
-
-	.event_single_airbnb .gallery_main_image {
-		padding-bottom: 0;
-		height: 100%;
-		border-radius: 12px 0 0 12px;
-	}
-
-	.event_single_airbnb .gallery_grid_images {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 1fr 1fr;
-		gap: 8px;
-		margin-top: 0;
-	}
-
-	.event_single_airbnb .grid_image_item {
-		padding-bottom: 0;
-		height: 100%;
-	}
-
-	.event_single_airbnb .grid_image_item:first-child {
-		border-radius: 0;
-	}
-
-	.event_single_airbnb .grid_image_item:nth-child(2) {
-		border-radius: 0 12px 0 0;
-	}
-
-	.event_single_airbnb .grid_image_item:nth-child(4) {
-		border-radius: 0 0 12px 0;
-	}
+	/* Galerie: Keep 2 images A4 format on desktop */
+	/* Styles already defined in base, no need to override */
 
 	/* Layout 2 colonnes GALERIE + BOOKING */
 	.event_single_airbnb .event_gallery_booking_section {

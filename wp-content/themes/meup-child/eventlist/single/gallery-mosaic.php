@@ -34,14 +34,16 @@ if ( empty($list_gallery) ) {
 	$list_gallery_large = array( $placeholder );
 }
 
-// Limiter à 5 images max (1 grande + 4 mini)
-$main_image = !empty($list_gallery_large) ? $list_gallery_large[0] : $list_gallery[0];
-$grid_images = array_slice( $list_gallery, 0, 4 );
+// Prendre les 2 premières images pour les grandes images (format A4)
+$main_images = array_slice( !empty($list_gallery_large) ? $list_gallery_large : $list_gallery, 0, 2 );
 
-// Remplir avec des placeholders si moins de 4 images
-while( count($grid_images) < 4 ) {
-	$grid_images[] = $placeholder;
+// Remplir avec placeholder si moins de 2 images
+while( count($main_images) < 2 ) {
+	$main_images[] = $placeholder;
 }
+
+// Miniatures : prendre les images restantes (max 4)
+$thumbnail_images = array_slice( $list_gallery, 2, 4 );
 
 $total_images = count($list_gallery);
 ?>
@@ -49,46 +51,52 @@ $total_images = count($list_gallery);
 <?php if ( !empty($list_gallery) ) : ?>
 	<div class="event_gallery_mosaic_wrapper">
 
-		<!-- Image principale (gauche) -->
-		<div class="gallery_main_image">
-			<a href="<?php echo esc_url( $main_image ); ?>"
-			   class="gallery_lightbox"
-			   data-lightbox="event-gallery"
-			   data-title="<?php echo esc_attr( get_the_title() ); ?>">
-				<img src="<?php echo esc_url( $main_image ); ?>"
-				     alt="<?php echo esc_attr( get_the_title() ); ?>"
-				     class="main_image" />
-			</a>
-		</div>
-
-		<!-- Grille 2x2 (droite) -->
-		<div class="gallery_grid_images">
-			<?php foreach( $grid_images as $index => $image_url ) : ?>
-				<div class="grid_image_item <?php echo $index === 3 ? 'last_item' : ''; ?>">
+		<!-- Deux grandes images format A4 en haut -->
+		<div class="gallery_main_images_row">
+			<?php foreach( $main_images as $index => $image_url ) : ?>
+				<div class="gallery_main_image gallery_main_image_<?php echo $index + 1; ?>">
 					<a href="<?php echo esc_url( $image_url ); ?>"
 					   class="gallery_lightbox"
 					   data-lightbox="event-gallery"
 					   data-title="<?php echo esc_attr( get_the_title() ); ?>">
 						<img src="<?php echo esc_url( $image_url ); ?>"
-						     alt="<?php echo esc_attr( get_the_title() ); ?>" />
-
-						<!-- Badge "Voir toutes les photos" sur la 4ème image -->
-						<?php if( $index === 3 && $total_images > 5 ) : ?>
-							<div class="view_all_photos_overlay">
-								<i class="icon_image"></i>
-								<span><?php echo sprintf( esc_html__( 'Voir les %s photos', 'eventlist' ), $total_images ); ?></span>
-							</div>
-						<?php endif; ?>
+						     alt="<?php echo esc_attr( get_the_title() ); ?>"
+						     class="main_image" />
 					</a>
 				</div>
 			<?php endforeach; ?>
 		</div>
 
-		<!-- Images cachées pour la lightbox (si plus de 5 images) -->
-		<?php if( $total_images > 5 ) : ?>
+		<!-- Miniatures en dessous (si disponibles) -->
+		<?php if ( !empty($thumbnail_images) ) : ?>
+			<div class="gallery_thumbnails_row">
+				<?php foreach( $thumbnail_images as $index => $image_url ) : ?>
+					<div class="gallery_thumbnail_item">
+						<a href="<?php echo esc_url( $image_url ); ?>"
+						   class="gallery_lightbox"
+						   data-lightbox="event-gallery"
+						   data-title="<?php echo esc_attr( get_the_title() ); ?>">
+							<img src="<?php echo esc_url( $image_url ); ?>"
+							     alt="<?php echo esc_attr( get_the_title() ); ?>" />
+
+							<!-- Badge "Voir toutes les photos" sur la dernière miniature -->
+							<?php if( $index === count($thumbnail_images) - 1 && $total_images > 6 ) : ?>
+								<div class="view_all_photos_overlay">
+									<i class="icon_image"></i>
+									<span>+<?php echo $total_images - 6; ?></span>
+								</div>
+							<?php endif; ?>
+						</a>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+
+		<!-- Images cachées pour la lightbox (si plus de 6 images) -->
+		<?php if( $total_images > 6 ) : ?>
 			<div class="gallery_hidden_images" style="display:none;">
 				<?php
-				$remaining_images = array_slice( $list_gallery, 5 );
+				$remaining_images = array_slice( $list_gallery, 6 );
 				foreach( $remaining_images as $image_url ) :
 				?>
 					<a href="<?php echo esc_url( $image_url ); ?>"
