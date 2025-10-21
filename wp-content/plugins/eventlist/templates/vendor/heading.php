@@ -50,6 +50,10 @@
 		$title = esc_html__( 'Bookings', 'eventlist' );
 	}else if( $vendor == 'manage_event' && $eid && $tab == 'tickets'){
 		$title = esc_html__( 'Tickets', 'eventlist' );
+	}else if( $vendor == 'messages' ){
+		$title = esc_html__( 'Mes Messages', 'eventlist' );
+	}else if( $vendor == 'galerie' ){
+		$title = esc_html__( 'Ma Galerie', 'eventlist' );
 	}else{
 		$title = esc_html__( 'My Listings', 'eventlist' );
 	}
