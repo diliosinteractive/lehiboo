@@ -17810,8 +17810,9 @@ body.rtl .el_export_popup_wrapper .el_export_container .el_export_pagination {
   grid-template-columns: 360px 1fr;
   gap: 40px;
   width: 100%;
-  margin: 0;
-  padding: 40px 0 60px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px 60px 20px;
 }
 @media (max-width: 991px) {
   .author_page_modern {
@@ -20326,5 +20327,3 @@ body.archive .wrap_form_search .wrap_range_price .range_price_box .range_price_b
   display: flex;
   align-items: baseline;
 }
-
-/*# sourceMappingURL=style.css.map */
