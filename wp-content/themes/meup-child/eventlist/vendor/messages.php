@@ -25,11 +25,10 @@ $messages_query = new WP_Query( $args );
 	<div class="contents">
 		<?php echo el_get_template( '/vendor/heading.php' ); ?>
 
-		<?php if ( isset( $_GET['marked'] ) && $_GET['marked'] === 'read' ) : ?>
-			<div class="el-notify">
-				<p class="success status"><?php esc_html_e( 'Message marqué comme lu.', 'eventlist' ); ?></p>
-			</div>
-		<?php endif; ?>
+		<div class="el-notify" id="message-notification" style="display:none;">
+			<p class="success status"></p>
+			<p class="error status"></p>
+		</div>
 
 		<div class="table-list-booking">
 			<table>
@@ -132,13 +131,9 @@ $messages_query = new WP_Query( $args );
 									</div>
 									<div class="message-detail-actions">
 										<?php if ( ! $is_read ) : ?>
-											<form method="post" style="display:inline;">
-												<input type="hidden" name="message_id" value="<?php echo esc_attr( $message_id ); ?>">
-												<?php wp_nonce_field( 'mark_message_read', 'message_nonce' ); ?>
-												<button type="submit" name="mark_as_read" class="button">
-													<?php esc_html_e( 'Marquer comme lu', 'eventlist' ); ?>
-												</button>
-											</form>
+											<button type="button" class="button btn-mark-read" data-message-id="<?php echo esc_attr( $message_id ); ?>" data-nonce="<?php echo wp_create_nonce( 'mark_message_read_nonce' ); ?>">
+												<?php esc_html_e( 'Marquer comme lu', 'eventlist' ); ?>
+											</button>
 										<?php endif; ?>
 										<a href="mailto:<?php echo esc_attr( $from_email ); ?>" class="button">
 											<?php esc_html_e( 'Répondre', 'eventlist' ); ?>
@@ -301,6 +296,66 @@ jQuery(document).ready(function($) {
 			$currentRow.find('.status-badge').removeClass('unread').addClass('read')
 				.text('<?php esc_html_e( "Lu", "eventlist" ); ?>');
 		}
+	});
+
+	// Marquer comme lu via AJAX
+	$('.btn-mark-read').on('click', function() {
+		var $btn = $(this);
+		var messageId = $btn.data('message-id');
+		var nonce = $btn.data('nonce');
+		var originalText = $btn.text();
+
+		// Désactiver le bouton
+		$btn.prop('disabled', true).text('<?php esc_html_e( "En cours...", "eventlist" ); ?>');
+
+		$.ajax({
+			url: '<?php echo admin_url( "admin-ajax.php" ); ?>',
+			type: 'POST',
+			data: {
+				action: 'mark_message_read',
+				message_id: messageId,
+				nonce: nonce
+			},
+			success: function(response) {
+				if (response.success) {
+					// Afficher notification succès
+					$('#message-notification').show();
+					$('#message-notification .success').text(response.data.message).show();
+					$('#message-notification .error').hide();
+
+					// Mettre à jour le statut visuellement
+					var $row = $('.message-row-' + messageId);
+					$row.removeClass('message-unread').addClass('message-read');
+					$row.find('.status-badge').removeClass('unread').addClass('read')
+						.text('<?php esc_html_e( "Lu", "eventlist" ); ?>');
+
+					// Cacher le bouton
+					$btn.fadeOut();
+
+					// Cacher la notification après 3 secondes
+					setTimeout(function() {
+						$('#message-notification').fadeOut();
+					}, 3000);
+
+					// Recharger la page pour mettre à jour le compteur du sidebar
+					setTimeout(function() {
+						window.location.reload();
+					}, 1500);
+				} else {
+					// Afficher erreur
+					$('#message-notification').show();
+					$('#message-notification .error').text(response.data.message).show();
+					$('#message-notification .success').hide();
+					$btn.prop('disabled', false).text(originalText);
+				}
+			},
+			error: function() {
+				$('#message-notification').show();
+				$('#message-notification .error').text('<?php esc_html_e( "Une erreur est survenue.", "eventlist" ); ?>').show();
+				$('#message-notification .success').hide();
+				$btn.prop('disabled', false).text(originalText);
+			}
+		});
 	});
 });
 </script>

@@ -344,35 +344,34 @@ function meup_child_locate_vendor_template( $template, $template_name, $template
 }
 
 // ========================================
-// ACTION - MARQUER MESSAGE COMME LU
+// AJAX - MARQUER MESSAGE COMME LU
 // ========================================
-add_action( 'template_redirect', 'meup_handle_mark_message_read' );
-function meup_handle_mark_message_read() {
-	// Vérifier qu'on est sur la page messages
-	if ( ! isset( $_GET['vendor'] ) || $_GET['vendor'] !== 'messages' ) {
-		return;
-	}
-
-	// Vérifier la soumission du formulaire
-	if ( ! isset( $_POST['mark_as_read'] ) || ! isset( $_POST['message_id'] ) ) {
-		return;
-	}
-
+add_action( 'wp_ajax_mark_message_read', 'meup_ajax_mark_message_read' );
+function meup_ajax_mark_message_read() {
 	// Vérifier le nonce
-	if ( ! isset( $_POST['message_nonce'] ) || ! wp_verify_nonce( $_POST['message_nonce'], 'mark_message_read' ) ) {
-		return;
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'mark_message_read_nonce' ) ) {
+		wp_send_json_error( array( 'message' => 'Erreur de sécurité.' ) );
 	}
 
 	$current_user_id = get_current_user_id();
-	$message_id = intval( $_POST['message_id'] );
+	$message_id = isset( $_POST['message_id'] ) ? intval( $_POST['message_id'] ) : 0;
+
+	if ( ! $message_id ) {
+		wp_send_json_error( array( 'message' => 'ID message manquant.' ) );
+	}
+
 	$message = get_post( $message_id );
 
 	// Vérifier que le message appartient à l'utilisateur
-	if ( $message && $message->post_author == $current_user_id ) {
-		update_post_meta( $message_id, '_is_read', 1 );
-
-		// Redirection vers la même page
-		wp_safe_redirect( add_query_arg( array( 'vendor' => 'messages', 'marked' => 'read' ), get_myaccount_page() ) );
-		exit;
+	if ( ! $message || $message->post_author != $current_user_id ) {
+		wp_send_json_error( array( 'message' => 'Accès refusé.' ) );
 	}
+
+	// Marquer comme lu
+	update_post_meta( $message_id, '_is_read', 1 );
+
+	wp_send_json_success( array(
+		'message' => 'Message marqué comme lu.',
+		'message_id' => $message_id
+	) );
 }
