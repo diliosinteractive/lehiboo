@@ -49,7 +49,7 @@ function meup_child_scripts() {
 
     // V1 Le Hiboo - Modern Author Profile JS (page auteur)
     if( is_author() ) {
-        wp_enqueue_script( 'author-profile-modern', get_template_directory_uri() . '/wp-content/plugins/eventlist/assets/js/frontend/author-profile-modern.js', array('jquery'), '1.0.0', true );
+        wp_enqueue_script( 'author-profile-modern', plugins_url( 'eventlist/assets/js/frontend/author-profile-modern.js' ), array('jquery'), '1.0.0', true );
     }
 }
 
