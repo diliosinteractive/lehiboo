@@ -425,8 +425,8 @@
             }, 3000);
         });
 
-        // Écouter les événements AJAX pour retirer le loader
-        $(document).on('ajaxComplete', function(_event, _xhr, settings) {
+        // Écouter les événements AJAX pour recharger la page après sauvegarde
+        $(document).on('ajaxComplete', function(_event, xhr, settings) {
             // Vérifier si c'est une requête de mise à jour du profil
             if (settings.data && (
                 settings.data.includes('el_update_profile') ||
@@ -435,9 +435,25 @@
                 settings.data.includes('el_update_password') ||
                 settings.data.includes('el_update_payout_method')
             )) {
-                // Retirer l'état de chargement du bouton sticky
-                $('#trigger_save_profile').removeClass('is-loading');
-                $('#trigger_save_profile').prop('disabled', false);
+                // V1 Le Hiboo - Recharger la page après sauvegarde réussie
+                // pour mettre à jour l'URL du bouton "Prévisualiser" avec le nouveau slug
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response && response.success) {
+                        // Attendre un peu pour que l'utilisateur voie le message de succès
+                        setTimeout(function() {
+                            location.reload();
+                        }, 800);
+                    } else {
+                        // En cas d'erreur, retirer quand même le loader
+                        $('#trigger_save_profile').removeClass('is-loading');
+                        $('#trigger_save_profile').prop('disabled', false);
+                    }
+                } catch (e) {
+                    // Si on ne peut pas parser la réponse, retirer le loader
+                    $('#trigger_save_profile').removeClass('is-loading');
+                    $('#trigger_save_profile').prop('disabled', false);
+                }
             }
         });
 
