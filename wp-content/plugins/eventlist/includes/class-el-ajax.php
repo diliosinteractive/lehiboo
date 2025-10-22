@@ -1137,6 +1137,36 @@ if( !class_exists( 'El_Ajax' ) ){
 			// Enregistrer les meta
 			update_user_meta( $user_id, 'org_name', $org_name );
 			update_user_meta( $user_id, 'org_display_name', $org_display_name );
+
+			// V1 Le Hiboo - Mettre à jour le user_nicename (slug URL) basé sur org_display_name
+			if ( ! empty( $org_display_name ) ) {
+				$new_nicename = sanitize_title( $org_display_name );
+
+				// Vérifier que le slug est unique
+				$existing_user = get_user_by( 'slug', $new_nicename );
+				if ( $existing_user && $existing_user->ID !== $user_id ) {
+					// Si le slug existe déjà, ajouter un suffixe numérique
+					$i = 1;
+					$base_nicename = $new_nicename;
+					while ( get_user_by( 'slug', $new_nicename ) && get_user_by( 'slug', $new_nicename )->ID !== $user_id ) {
+						$new_nicename = $base_nicename . '-' . $i;
+						$i++;
+					}
+				}
+
+				// Mettre à jour le user_nicename dans wp_users
+				global $wpdb;
+				$wpdb->update(
+					$wpdb->users,
+					array( 'user_nicename' => $new_nicename ),
+					array( 'ID' => $user_id ),
+					array( '%s' ),
+					array( '%d' )
+				);
+
+				// Nettoyer le cache utilisateur
+				clean_user_cache( $user_id );
+			}
 			update_user_meta( $user_id, 'org_role', $org_role );
 			update_user_meta( $user_id, 'org_statut_juridique', $org_statut_juridique );
 			update_user_meta( $user_id, 'org_forme_juridique', $org_forme_juridique );

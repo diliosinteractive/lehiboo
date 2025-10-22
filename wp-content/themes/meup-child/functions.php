@@ -375,3 +375,99 @@ function meup_ajax_mark_message_read() {
 		'message_id' => $message_id
 	) );
 }
+
+// ========================================
+// V1 LE HIBOO - MISE À JOUR SLUG PARTENAIRES
+// ========================================
+
+/**
+ * Fonction utilitaire pour mettre à jour le user_nicename (slug URL)
+ * de tous les partenaires existants basé sur leur org_display_name
+ *
+ * À exécuter une seule fois via wp-admin/admin.php?action=update_vendor_slugs
+ */
+function lehiboo_update_vendor_slugs() {
+	// Vérifier les permissions admin
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( 'Accès non autorisé' );
+	}
+
+	global $wpdb;
+
+	// Récupérer tous les utilisateurs avec le rôle el_event_vendor
+	$vendors = get_users( array(
+		'role' => 'el_event_vendor',
+		'fields' => 'ID'
+	) );
+
+	$updated = 0;
+	$skipped = 0;
+	$errors = array();
+
+	foreach ( $vendors as $user_id ) {
+		$org_display_name = get_user_meta( $user_id, 'org_display_name', true );
+
+		if ( empty( $org_display_name ) ) {
+			// Fallback sur org_name si org_display_name est vide
+			$org_display_name = get_user_meta( $user_id, 'org_name', true );
+		}
+
+		if ( empty( $org_display_name ) ) {
+			$skipped++;
+			continue;
+		}
+
+		// Créer le slug depuis org_display_name
+		$new_nicename = sanitize_title( $org_display_name );
+
+		// Vérifier que le slug est unique
+		$existing_user = get_user_by( 'slug', $new_nicename );
+		if ( $existing_user && $existing_user->ID !== $user_id ) {
+			// Si le slug existe déjà, ajouter un suffixe numérique
+			$i = 1;
+			$base_nicename = $new_nicename;
+			while ( get_user_by( 'slug', $new_nicename ) && get_user_by( 'slug', $new_nicename )->ID !== $user_id ) {
+				$new_nicename = $base_nicename . '-' . $i;
+				$i++;
+			}
+		}
+
+		// Mettre à jour le user_nicename dans wp_users
+		$result = $wpdb->update(
+			$wpdb->users,
+			array( 'user_nicename' => $new_nicename ),
+			array( 'ID' => $user_id ),
+			array( '%s' ),
+			array( '%d' )
+		);
+
+		if ( $result === false ) {
+			$errors[] = "Erreur pour l'utilisateur ID $user_id";
+		} else {
+			// Nettoyer le cache utilisateur
+			clean_user_cache( $user_id );
+			$updated++;
+		}
+	}
+
+	// Afficher le résultat
+	echo '<div style="padding: 20px; font-family: sans-serif;">';
+	echo '<h2>✅ Mise à jour des slugs partenaires terminée</h2>';
+	echo '<p><strong>Mis à jour :</strong> ' . $updated . ' partenaires</p>';
+	echo '<p><strong>Ignorés :</strong> ' . $skipped . ' partenaires (pas de nom d\'organisation)</p>';
+
+	if ( ! empty( $errors ) ) {
+		echo '<p><strong>Erreurs :</strong></p>';
+		echo '<ul>';
+		foreach ( $errors as $error ) {
+			echo '<li>' . esc_html( $error ) . '</li>';
+		}
+		echo '</ul>';
+	}
+
+	echo '<p><a href="' . admin_url() . '">← Retour au tableau de bord</a></p>';
+	echo '</div>';
+}
+
+// Ajouter une action admin pour exécuter la fonction
+add_action( 'admin_action_update_vendor_slugs', 'lehiboo_update_vendor_slugs' );
