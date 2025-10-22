@@ -19,10 +19,14 @@ function meup_child_scripts() {
     wp_enqueue_style( 'meup-parent-style', get_template_directory_uri(). '/style.css' );
     wp_enqueue_style( 'meup-airbnb-style', get_stylesheet_directory_uri() . '/airbnb-style.css', array('meup-parent-style'), '1.0.2' );
 
+    // Toast Notification System - Chargé globalement
+    wp_enqueue_style( 'toast-notification', get_stylesheet_directory_uri() . '/assets/css/toast-notification.css', array(), '1.0.0' );
+    wp_enqueue_script( 'toast-notification', get_stylesheet_directory_uri() . '/assets/js/toast-notification.js', array('jquery'), '1.0.0', true );
+
     // Styles Airbnb pour Single Event
     if( is_singular('event') ) {
         wp_enqueue_style( 'single-event-airbnb', get_stylesheet_directory_uri() . '/single-event-airbnb.css', array('meup-parent-style'), '3.3.1' );
-        wp_enqueue_script( 'single-event-airbnb', get_stylesheet_directory_uri() . '/assets/js/single-event-airbnb.js', array('jquery'), '3.3.1', true );
+        wp_enqueue_script( 'single-event-airbnb', get_stylesheet_directory_uri() . '/assets/js/single-event-airbnb.js', array('jquery', 'toast-notification'), '3.3.1', true );
 
         // Cloudflare Turnstile CAPTCHA
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );

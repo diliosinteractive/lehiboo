@@ -1,0 +1,303 @@
+/**
+ * Toast Notification System - Styles
+ * V1 Le Hiboo
+ *
+ * @package LeHiboo
+ * @version 1.0.0
+ */
+
+/* ===================================
+   Conteneur principal
+   =================================== */
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 999999;
+    pointer-events: none;
+    max-width: 420px;
+}
+
+/* ===================================
+   Toast
+   =================================== */
+
+.toast {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.04);
+    pointer-events: auto;
+    overflow: hidden;
+    min-width: 320px;
+    max-width: 100%;
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.toast.toast-show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ===================================
+   Types de toast
+   =================================== */
+
+/* Succès */
+.toast-success {
+    border-left: 4px solid #10b981;
+}
+
+.toast-success .toast-icon {
+    color: #10b981;
+}
+
+.toast-success .toast-progress-bar {
+    background: linear-gradient(90deg, #10b981, #059669);
+}
+
+/* Erreur */
+.toast-error {
+    border-left: 4px solid #ef4444;
+}
+
+.toast-error .toast-icon {
+    color: #ef4444;
+}
+
+.toast-error .toast-progress-bar {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+/* Avertissement */
+.toast-warning {
+    border-left: 4px solid #f59e0b;
+}
+
+.toast-warning .toast-icon {
+    color: #f59e0b;
+}
+
+.toast-warning .toast-progress-bar {
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+/* Information */
+.toast-info {
+    border-left: 4px solid #3b82f6;
+}
+
+.toast-info .toast-icon {
+    color: #3b82f6;
+}
+
+.toast-info .toast-progress-bar {
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+/* ===================================
+   Éléments du toast
+   =================================== */
+
+.toast-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-top: 2px;
+}
+
+.toast-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.toast-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.toast-message {
+    color: #1f2937;
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 500;
+    word-wrap: break-word;
+}
+
+.toast-close {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.toast-close:hover {
+    background: #f3f4f6;
+    color: #1f2937;
+}
+
+.toast-close:active {
+    transform: scale(0.95);
+}
+
+.toast-close svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ===================================
+   Barre de progression
+   =================================== */
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.toast-progress-bar {
+    height: 100%;
+    width: 100%;
+    transform-origin: left;
+    animation: toast-progress linear forwards;
+}
+
+@keyframes toast-progress {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
+    }
+}
+
+/* ===================================
+   Animations
+   =================================== */
+
+/* Animation slide (défaut) */
+.toast-slide {
+    /* Déjà défini dans .toast */
+}
+
+/* Animation fade */
+.toast-fade {
+    transform: translateX(0);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.toast-fade:not(.toast-show) {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+/* Animation bounce */
+.toast-bounce {
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ===================================
+   Responsive
+   =================================== */
+
+@media screen and (max-width: 640px) {
+    .toast-container {
+        top: auto;
+        bottom: 20px;
+        right: 12px;
+        left: 12px;
+        max-width: none;
+    }
+
+    .toast {
+        min-width: 0;
+        width: 100%;
+        margin-bottom: 8px;
+        padding: 14px 16px;
+        transform: translateY(100px);
+    }
+
+    .toast.toast-show {
+        transform: translateY(0);
+    }
+
+    .toast-message {
+        font-size: 13px;
+    }
+}
+
+/* ===================================
+   Mode sombre (optionnel)
+   =================================== */
+
+@media (prefers-color-scheme: dark) {
+    .toast {
+        background: #1f2937;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                    0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .toast-message {
+        color: #f9fafb;
+    }
+
+    .toast-close {
+        color: #9ca3af;
+    }
+
+    .toast-close:hover {
+        background: #374151;
+        color: #f9fafb;
+    }
+
+    .toast-progress {
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* ===================================
+   Accessibilité
+   =================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .toast {
+        transition: opacity 0.2s ease;
+        transform: none !important;
+    }
+
+    .toast-progress-bar {
+        animation: none;
+    }
+}
+
+/* Focus visible pour les utilisateurs au clavier */
+.toast-close:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}

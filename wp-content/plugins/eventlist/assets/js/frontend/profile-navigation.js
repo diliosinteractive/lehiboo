@@ -111,15 +111,27 @@
 
                     if (response.success) {
                         // Afficher message de succès
-                        alert(response.data.message || 'Enregistré avec succès !');
+                        if (typeof ToastNotification !== 'undefined') {
+                            ToastNotification.success(response.data.message || 'Enregistré avec succès !');
+                        } else {
+                            alert(response.data.message || 'Enregistré avec succès !');
+                        }
                     } else {
-                        alert(response.data.message || 'Une erreur est survenue.');
+                        if (typeof ToastNotification !== 'undefined') {
+                            ToastNotification.error(response.data.message || 'Une erreur est survenue.');
+                        } else {
+                            alert(response.data.message || 'Une erreur est survenue.');
+                        }
                     }
                 },
                 error: function() {
                     $button.prop('disabled', false);
                     $loader.hide();
-                    alert('Erreur de connexion. Veuillez réessayer.');
+                    if (typeof ToastNotification !== 'undefined') {
+                        ToastNotification.error('Erreur de connexion. Veuillez réessayer.');
+                    } else {
+                        alert('Erreur de connexion. Veuillez réessayer.');
+                    }
                 }
             });
         });
@@ -155,15 +167,27 @@
                     $loader.hide();
 
                     if (response.success) {
-                        alert(response.data.message || 'Enregistré avec succès !');
+                        if (typeof ToastNotification !== 'undefined') {
+                            ToastNotification.success(response.data.message || 'Enregistré avec succès !');
+                        } else {
+                            alert(response.data.message || 'Enregistré avec succès !');
+                        }
                     } else {
-                        alert(response.data.message || 'Une erreur est survenue.');
+                        if (typeof ToastNotification !== 'undefined') {
+                            ToastNotification.error(response.data.message || 'Une erreur est survenue.');
+                        } else {
+                            alert(response.data.message || 'Une erreur est survenue.');
+                        }
                     }
                 },
                 error: function() {
                     $button.prop('disabled', false);
                     $loader.hide();
-                    alert('Erreur de connexion. Veuillez réessayer.');
+                    if (typeof ToastNotification !== 'undefined') {
+                        ToastNotification.error('Erreur de connexion. Veuillez réessayer.');
+                    } else {
+                        alert('Erreur de connexion. Veuillez réessayer.');
+                    }
                 }
             });
         });
@@ -199,15 +223,27 @@
                     $loader.hide();
 
                     if (response.success) {
-                        alert(response.data.message || 'Enregistré avec succès !');
+                        if (typeof ToastNotification !== 'undefined') {
+                            ToastNotification.success(response.data.message || 'Enregistré avec succès !');
+                        } else {
+                            alert(response.data.message || 'Enregistré avec succès !');
+                        }
                     } else {
-                        alert(response.data.message || 'Une erreur est survenue.');
+                        if (typeof ToastNotification !== 'undefined') {
+                            ToastNotification.error(response.data.message || 'Une erreur est survenue.');
+                        } else {
+                            alert(response.data.message || 'Une erreur est survenue.');
+                        }
                     }
                 },
                 error: function() {
                     $button.prop('disabled', false);
                     $loader.hide();
-                    alert('Erreur de connexion. Veuillez réessayer.');
+                    if (typeof ToastNotification !== 'undefined') {
+                        ToastNotification.error('Erreur de connexion. Veuillez réessayer.');
+                    } else {
+                        alert('Erreur de connexion. Veuillez réessayer.');
+                    }
                 }
             });
         });

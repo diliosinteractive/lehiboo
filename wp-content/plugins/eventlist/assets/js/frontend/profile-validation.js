@@ -303,13 +303,21 @@
 
             if (!oldPass || !newPass || !confirmPass) {
                 e.preventDefault();
-                alert('Veuillez remplir tous les champs.');
+                if (typeof ToastNotification !== 'undefined') {
+                    ToastNotification.warning('Veuillez remplir tous les champs.');
+                } else {
+                    alert('Veuillez remplir tous les champs.');
+                }
                 return false;
             }
 
             if (newPass !== confirmPass) {
                 e.preventDefault();
-                alert('Les mots de passe ne correspondent pas.');
+                if (typeof ToastNotification !== 'undefined') {
+                    ToastNotification.error('Les mots de passe ne correspondent pas.');
+                } else {
+                    alert('Les mots de passe ne correspondent pas.');
+                }
                 return false;
             }
 
@@ -318,7 +326,11 @@
 
             if (!allValid) {
                 e.preventDefault();
-                alert('Le mot de passe ne respecte pas les règles de sécurité.');
+                if (typeof ToastNotification !== 'undefined') {
+                    ToastNotification.error('Le mot de passe ne respecte pas les règles de sécurité.');
+                } else {
+                    alert('Le mot de passe ne respecte pas les règles de sécurité.');
+                }
                 return false;
             }
         });

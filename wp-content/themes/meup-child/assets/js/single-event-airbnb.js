@@ -391,7 +391,11 @@
 
 			// Vérifier le CAPTCHA
 			if ( !turnstileResponse ) {
-				alert( 'Veuillez valider le CAPTCHA.' );
+				if (typeof ToastNotification !== 'undefined') {
+					ToastNotification.warning('Veuillez valider le CAPTCHA.');
+				} else {
+					alert( 'Veuillez valider le CAPTCHA.' );
+				}
 				return;
 			}
 
@@ -418,7 +422,11 @@
 					console.log('AJAX Response:', response);
 					if ( response.success ) {
 						// Succès
-						alert( response.data.message || 'Message envoyé avec succès!' );
+						if (typeof ToastNotification !== 'undefined') {
+							ToastNotification.success(response.data.message || 'Message envoyé avec succès!');
+						} else {
+							alert( response.data.message || 'Message envoyé avec succès!' );
+						}
 						$form[0].reset();
 						// Reset Turnstile
 						if ( typeof turnstile !== 'undefined' ) {
@@ -431,13 +439,21 @@
 						if ( response.data.errors ) {
 							errorMsg += '\n\nDétails: ' + response.data.errors.join(', ');
 						}
-						alert( errorMsg );
+						if (typeof ToastNotification !== 'undefined') {
+							ToastNotification.error(errorMsg);
+						} else {
+							alert( errorMsg );
+						}
 					}
 				},
 				error: function(xhr, status, error) {
 					console.error('AJAX Error:', status, error);
 					console.error('Response:', xhr.responseText);
-					alert( 'Erreur de connexion. Veuillez réessayer.' );
+					if (typeof ToastNotification !== 'undefined') {
+						ToastNotification.error('Erreur de connexion. Veuillez réessayer.');
+					} else {
+						alert( 'Erreur de connexion. Veuillez réessayer.' );
+					}
 				},
 				complete: function() {
 					// Réactiver le bouton
