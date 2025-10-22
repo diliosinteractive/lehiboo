@@ -17609,6 +17609,10 @@ body.rtl .el_export_popup_wrapper .el_export_container .el_export_pagination {
 /* ============================================
    V1 Le Hiboo - Modern Author Profile Design
    ============================================ */
+.author .ovatheme_breadcrumbs {
+  margin-bottom: 0 !important;
+}
+
 .author_hero_header {
   position: relative;
   width: 100vw;
@@ -17823,6 +17827,7 @@ body.rtl .el_export_popup_wrapper .el_export_container .el_export_pagination {
 }
 .author_page_modern .author_page_sidebar {
   position: relative;
+  background: transparent;
 }
 @media (min-width: 992px) {
   .author_page_modern .author_page_sidebar {
@@ -17839,7 +17844,7 @@ body.rtl .el_export_popup_wrapper .el_export_container .el_export_pagination {
 }
 
 .sidebar_info_card {
-  background: #fff;
+  background: #fff !important;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   overflow: hidden;

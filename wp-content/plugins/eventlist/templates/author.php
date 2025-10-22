@@ -12,6 +12,9 @@ $wp_display_name = get_the_author_meta( 'display_name', $author_id );
 
 $display_name = ! empty( $org_display_name ) ? $org_display_name : ( ! empty( $user_display_name ) ? $user_display_name : $wp_display_name );
 
+// V1 Le Hiboo - Récupérer la description de l'utilisateur
+$user_description = get_user_meta( $author_id, 'description', true );
+
 $archive_type = 'type6'; // Grid card layout
 $layout_column = 'three-column'; // 3 columns grid
 

@@ -840,6 +840,13 @@ $radius-sm: 8px;
 $radius-md: 12px;
 $radius-lg: 16px;
 
+// Breadcrumbs - Remove margin on author pages
+.author {
+	.ovatheme_breadcrumbs {
+		margin-bottom: 0 !important;
+	}
+}
+
 // Hero Header Section (Full Width - breaks out of container)
 .author_hero_header {
 	position: relative;
@@ -1072,6 +1079,7 @@ $radius-lg: 16px;
 
 	.author_page_sidebar {
 		position: relative;
+		background: transparent;
 
 		@media (min-width: 992px) {
 			position: sticky;
@@ -1090,7 +1098,7 @@ $radius-lg: 16px;
 
 // Sidebar Info Card
 .sidebar_info_card {
-	background: $background-white;
+	background: $background-white !important;
 	border-radius: $radius-md;
 	box-shadow: $shadow-sm;
 	overflow: hidden;
