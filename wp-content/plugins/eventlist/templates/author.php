@@ -12,8 +12,8 @@ $wp_display_name = get_the_author_meta( 'display_name', $author_id );
 
 $display_name = ! empty( $org_display_name ) ? $org_display_name : ( ! empty( $user_display_name ) ? $user_display_name : $wp_display_name );
 
-$archive_type = 'type3'; // You can change value to typ1, type2, type3, type4, type5
-$layout_column = 'single-column'; // You can change value to single-column, two-column, three-column
+$archive_type = 'type6'; // Grid card layout
+$layout_column = 'three-column'; // 3 columns grid
 
 $status = isset( $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : '';
 
@@ -28,7 +28,9 @@ if ( $author_id_image ) {
 
 ?>
 
-<!-- Hero Header Section -->
+<?php $global_layout = apply_filters( 'meup_theme_sidebar','' ); ?>
+
+<!-- Hero Header Section (Outside main container for full width) -->
 <div class="author_hero_header">
 	<?php if ( $org_cover_image ) : ?>
 		<div class="hero_cover_image">
@@ -70,11 +72,15 @@ if ( $author_id_image ) {
 	</div>
 </div>
 
-<div class="author_page author_page_modern">
-	
-	<div class="author_page_sidebar">
-		<?php do_action( 'el_author_info' ); ?>
-	</div>
+<!-- Main Content Container -->
+<div class="wrap_site <?php echo esc_attr($global_layout); ?>">
+	<div id="main-content" class="main author_main_wrapper">
+
+		<div class="author_page author_page_modern">
+
+			<div class="author_page_sidebar">
+				<?php do_action( 'el_author_info' ); ?>
+			</div>
 
 	<!-- Main Content -->
 	<div class="author_main_content">
@@ -96,20 +102,28 @@ if ( $author_id_image ) {
 			));
 			$opening_count = $opening_events->found_posts;
 			wp_reset_postdata();
+
+			// Récupérer les infos pratiques
+			$org_video = get_user_meta( $author_id, 'org_video', true );
+			$org_event_types = get_user_meta( $author_id, 'org_event_types', true );
+			$org_parking = get_user_meta( $author_id, 'org_parking', true );
+			$org_pmr = get_user_meta( $author_id, 'org_pmr', true );
+			$org_restaurant = get_user_meta( $author_id, 'org_restaurant', true );
+			$org_drink = get_user_meta( $author_id, 'org_drink', true );
 			?>
 			<div class="stats_grid">
 				<div class="stat_card">
 					<div class="stat_icon">
-						<i class="fas fa-calendar-check"></i>
+						<i class="icon_calendar"></i>
 					</div>
 					<div class="stat_content">
 						<span class="stat_value"><?php echo esc_html( $total_events ); ?></span>
 						<span class="stat_label"><?php esc_html_e( 'Total Events', 'eventlist' ); ?></span>
 					</div>
 				</div>
-				<div class="stat_card">
-					<div class="stat_icon active">
-						<i class="fas fa-calendar-alt"></i>
+				<div class="stat_card stat_card_active">
+					<div class="stat_icon">
+						<i class="icon_calendar"></i>
 					</div>
 					<div class="stat_content">
 						<span class="stat_value"><?php echo esc_html( $opening_count ); ?></span>
@@ -118,7 +132,7 @@ if ( $author_id_image ) {
 				</div>
 				<div class="stat_card">
 					<div class="stat_icon">
-						<i class="fas fa-star"></i>
+						<i class="icon_star"></i>
 					</div>
 					<div class="stat_content">
 						<span class="stat_value">4.8</span>
@@ -128,23 +142,87 @@ if ( $author_id_image ) {
 			</div>
 		</div>
 
+		<!-- About Section (Après les stats) -->
+		<?php if ($user_description) : ?>
+			<div class="author_about_section">
+				<h2 class="about_title">
+					<?php
+					printf(
+						esc_html__( 'À propos de %s', 'eventlist' ),
+						'<span class="org_name">' . esc_html( $display_name ) . '</span>'
+					);
+					?>
+				</h2>
+				<div class="about_content">
+					<?php echo wp_kses_post( wpautop( $user_description ) ); ?>
+				</div>
+
+				<!-- Infos Pratiques -->
+				<?php if ( $org_video || $org_event_types || $org_parking || $org_pmr || $org_restaurant || $org_drink ) : ?>
+					<div class="practical_info">
+						<?php if ( $org_video ) : ?>
+							<div class="info_item">
+								<i class="icon_eye"></i>
+								<span><?php esc_html_e( 'Vidéo de présentation', 'eventlist' ); ?></span>
+							</div>
+						<?php endif; ?>
+
+						<?php if ( $org_event_types ) : ?>
+							<div class="info_item">
+								<i class="icon_tags_alt"></i>
+								<span><?php echo esc_html( $org_event_types ); ?></span>
+							</div>
+						<?php endif; ?>
+
+						<?php if ( $org_parking ) : ?>
+							<div class="info_item">
+								<i class="icon_map_alt"></i>
+								<span><?php esc_html_e( 'Stationnement', 'eventlist' ); ?></span>
+							</div>
+						<?php endif; ?>
+
+						<?php if ( $org_pmr ) : ?>
+							<div class="info_item">
+								<i class="icon_wheelchair"></i>
+								<span><?php esc_html_e( 'Accessibilité PMR', 'eventlist' ); ?></span>
+							</div>
+						<?php endif; ?>
+
+						<?php if ( $org_restaurant ) : ?>
+							<div class="info_item">
+								<i class="icon_tools"></i>
+								<span><?php esc_html_e( 'Restauration sur place', 'eventlist' ); ?></span>
+							</div>
+						<?php endif; ?>
+
+						<?php if ( $org_drink ) : ?>
+							<div class="info_item">
+								<i class="icon_wine"></i>
+								<span><?php esc_html_e( 'Boisson sur place', 'eventlist' ); ?></span>
+							</div>
+						<?php endif; ?>
+					</div>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
+
 		<!-- Events Section -->
 		<div class="event_list_section">
 			<div class="section_header">
 				<h2 class="section_title">
-					<i class="fas fa-calendar-day"></i>
-					<?php esc_html_e( 'Events', 'eventlist' ); ?>
+					<i class="icon_calendar"></i>
+					<?php esc_html_e( 'Événements', 'eventlist' ); ?>
 				</h2>
 				<div class="filter_wrap">
 					<form method="GET" class="filter_form">
 						<select name="status" class="form-select">
-							<option value="" <?php selected( $status, "" ); ?>><?php esc_html_e( 'All Events', 'eventlist' ); ?></option>
-							<option value="opening" <?php selected( $status, "opening" ); ?>><?php esc_html_e( 'Opening', 'eventlist' ); ?></option>
-							<option value="upcoming" <?php selected( $status, "upcoming" ); ?>><?php esc_html_e( 'Upcoming', 'eventlist' ); ?></option>
-							<option value="past" <?php selected( $status, "past" ); ?>><?php esc_html_e( 'Closed', 'eventlist' ); ?></option>
+							<option value="" <?php selected( $status, "" ); ?>><?php esc_html_e( 'Tous les événements', 'eventlist' ); ?></option>
+							<option value="opening" <?php selected( $status, "opening" ); ?>><?php esc_html_e( 'En cours', 'eventlist' ); ?></option>
+							<option value="upcoming" <?php selected( $status, "upcoming" ); ?>><?php esc_html_e( 'À venir', 'eventlist' ); ?></option>
+							<option value="past" <?php selected( $status, "past" ); ?>><?php esc_html_e( 'Terminés', 'eventlist' ); ?></option>
 						</select>
 						<button class="btn_filter" type="submit">
-							<i class="fas fa-filter"></i>
+							<i class="icon_search"></i>
 						</button>
 					</form>
 				</div>
@@ -192,10 +270,13 @@ if ( $author_id_image ) {
 
 		</div><!-- .event_list_section -->
 
-	</div><!-- .author_main_content -->
+		</div><!-- .author_main_content -->
 
-</div><!-- .author_page -->
+		</div><!-- .author_page -->
 
+	</div><!-- #main-content -->
+	<?php get_sidebar(); ?>
+</div><!-- .wrap_site -->
 
 <?php
 

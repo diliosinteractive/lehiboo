@@ -58,17 +58,6 @@ if( $author_id ){
 	<!-- Sidebar Info Card -->
 	<div class="sidebar_info_card event_section_white">
 
-		<!-- About Section -->
-		<?php if ($user_description) : ?>
-			<div class="info_section about_section">
-				<h3 class="section_title_sidebar">
-					<i class="fas fa-info-circle"></i>
-					<?php esc_html_e( 'About', 'eventlist' ); ?>
-				</h3>
-				<p class="description"><?php echo esc_html($user_description); ?></p>
-			</div>
-		<?php endif; ?>
-
 		<!-- Contact Section -->
 		<div class="info_section contact_section">
 			<h3 class="section_title_sidebar">
