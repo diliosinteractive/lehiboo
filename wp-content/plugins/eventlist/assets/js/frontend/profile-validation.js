@@ -452,14 +452,29 @@
                 try {
                     const response = JSON.parse(xhr.responseText);
                     if (response && response.success) {
-                        // Attendre un peu pour que l'utilisateur voie le message de succès
+                        // Stocker le message de succès pour l'afficher après le reload
+                        if (typeof ToastNotification !== 'undefined' && ToastNotification.setFlashMessage) {
+                            ToastNotification.setFlashMessage(
+                                response.data && response.data.message ? response.data.message : 'Enregistré avec succès !',
+                                'success'
+                            );
+                        }
+
+                        // Recharger la page après un court délai
                         setTimeout(function() {
                             location.reload();
-                        }, 800);
+                        }, 400);
                     } else {
                         // En cas d'erreur, retirer quand même le loader
                         $('#trigger_save_profile').removeClass('is-loading');
                         $('#trigger_save_profile').prop('disabled', false);
+
+                        // Afficher le message d'erreur
+                        if (typeof ToastNotification !== 'undefined') {
+                            ToastNotification.error(
+                                response.data && response.data.message ? response.data.message : 'Une erreur est survenue.'
+                            );
+                        }
                     }
                 } catch (e) {
                     // Si on ne peut pas parser la réponse, retirer le loader

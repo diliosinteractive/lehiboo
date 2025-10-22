@@ -56,6 +56,10 @@
 
                 // Quand des images sont sélectionnées/uploadées
                 frame.on('select', function() {
+                    // Stocker le message de succès pour l'afficher après le reload
+                    if (typeof ToastNotification !== 'undefined' && ToastNotification.setFlashMessage) {
+                        ToastNotification.setFlashMessage('Images ajoutées avec succès !', 'success');
+                    }
                     // Les images sont automatiquement ajoutées à la médiathèque WordPress
                     // On recharge la page pour les afficher
                     location.reload();
@@ -65,6 +69,10 @@
                 frame.on('close', function() {
                     const selection = frame.state().get('selection');
                     if (selection && selection.length > 0) {
+                        // Stocker le message de succès pour l'afficher après le reload
+                        if (typeof ToastNotification !== 'undefined' && ToastNotification.setFlashMessage) {
+                            ToastNotification.setFlashMessage('Images ajoutées avec succès !', 'success');
+                        }
                         location.reload();
                     }
                 });
@@ -108,17 +116,34 @@
 
                                 // Si plus d'images sur la page, recharger
                                 if ($('.galerie_item').length === 0) {
+                                    // Stocker le message de succès pour l'afficher après le reload
+                                    if (typeof ToastNotification !== 'undefined' && ToastNotification.setFlashMessage) {
+                                        ToastNotification.setFlashMessage('Image supprimée avec succès.', 'success');
+                                    }
                                     location.reload();
+                                } else {
+                                    // Afficher le toast directement si pas de reload
+                                    if (typeof ToastNotification !== 'undefined') {
+                                        ToastNotification.success('Image supprimée avec succès.');
+                                    }
                                 }
                             });
                         } else {
-                            alert(response.data.message || 'Erreur lors de la suppression');
+                            if (typeof ToastNotification !== 'undefined') {
+                                ToastNotification.error(response.data.message || 'Erreur lors de la suppression');
+                            } else {
+                                alert(response.data.message || 'Erreur lors de la suppression');
+                            }
                             item.css('opacity', '1');
                             button.prop('disabled', false);
                         }
                     },
                     error: function() {
-                        alert('Erreur de connexion au serveur');
+                        if (typeof ToastNotification !== 'undefined') {
+                            ToastNotification.error('Erreur de connexion au serveur');
+                        } else {
+                            alert('Erreur de connexion au serveur');
+                        }
                         item.css('opacity', '1');
                         button.prop('disabled', false);
                     }
@@ -171,6 +196,10 @@
 
                 // Après mise à jour
                 frame.on('select', function() {
+                    // Stocker le message de succès pour l'afficher après le reload
+                    if (typeof ToastNotification !== 'undefined' && ToastNotification.setFlashMessage) {
+                        ToastNotification.setFlashMessage('Métadonnées de l\'image mises à jour.', 'success');
+                    }
                     // Recharger la page pour afficher les modifications
                     location.reload();
                 });

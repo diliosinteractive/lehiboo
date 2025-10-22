@@ -231,10 +231,51 @@
     };
 
     /**
+     * Stocker un message flash pour le prochain chargement de page
+     */
+    window.ToastNotification.setFlashMessage = function(message, type, options) {
+        if (typeof sessionStorage !== 'undefined') {
+            var flashData = {
+                message: message,
+                type: type || 'info',
+                options: options || {}
+            };
+            sessionStorage.setItem('toast_flash_message', JSON.stringify(flashData));
+        }
+    };
+
+    /**
+     * Afficher les messages flash au chargement de la page
+     */
+    window.ToastNotification.showFlashMessages = function() {
+        if (typeof sessionStorage !== 'undefined') {
+            var flashData = sessionStorage.getItem('toast_flash_message');
+
+            if (flashData) {
+                try {
+                    var data = JSON.parse(flashData);
+                    // Supprimer le message du storage avant de l'afficher
+                    sessionStorage.removeItem('toast_flash_message');
+
+                    // Afficher le toast après un court délai pour s'assurer que le DOM est prêt
+                    setTimeout(function() {
+                        ToastNotification.show(data.message, data.type, data.options);
+                    }, 300);
+                } catch (e) {
+                    console.error('Error parsing flash message:', e);
+                    sessionStorage.removeItem('toast_flash_message');
+                }
+            }
+        }
+    };
+
+    /**
      * Initialisation automatique au chargement
      */
     $(document).ready(function() {
         ToastNotification.init();
+        // Afficher les messages flash s'il y en a
+        ToastNotification.showFlashMessages();
     });
 
 })(jQuery);

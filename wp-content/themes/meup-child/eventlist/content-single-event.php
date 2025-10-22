@@ -221,6 +221,10 @@ $event_id = get_the_ID();
 							<input type="email" id="contact_email" name="contact_email" required>
 						</div>
 						<div class="form_field">
+							<label for="contact_subject"><?php esc_html_e( 'Objet de la demande', 'eventlist' ); ?> *</label>
+							<input type="text" id="contact_subject" name="contact_subject" required>
+						</div>
+						<div class="form_field">
 							<label for="contact_message"><?php esc_html_e( 'Message', 'eventlist' ); ?> *</label>
 							<textarea id="contact_message" name="contact_message" rows="6" required></textarea>
 						</div>

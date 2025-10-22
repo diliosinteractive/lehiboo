@@ -112,6 +112,7 @@ function handle_send_organizer_message() {
 	// Récupérer les données
 	$name = isset( $_POST['contact_name'] ) ? sanitize_text_field( $_POST['contact_name'] ) : '';
 	$email = isset( $_POST['contact_email'] ) ? sanitize_email( $_POST['contact_email'] ) : '';
+	$subject = isset( $_POST['contact_subject'] ) ? sanitize_text_field( $_POST['contact_subject'] ) : '';
 	$message = isset( $_POST['contact_message'] ) ? sanitize_textarea_field( $_POST['contact_message'] ) : '';
 	$event_id = isset( $_POST['event_id'] ) ? intval( $_POST['event_id'] ) : 0;
 
@@ -159,6 +160,9 @@ function handle_send_organizer_message() {
 	}
 	if ( empty( $email ) ) {
 		$errors[] = 'Email manquant';
+	}
+	if ( empty( $subject ) ) {
+		$errors[] = 'Objet manquant';
 	}
 	if ( empty( $message ) ) {
 		$errors[] = 'Message manquant';
@@ -237,7 +241,7 @@ function handle_send_organizer_message() {
 	);
 
 	// Sauvegarder le message dans la base de données
-	$message_id = save_organizer_message( $event_id, $name, $email, $message, $author_id );
+	$message_id = save_organizer_message( $event_id, $name, $email, $subject, $message, $author_id );
 
 	// Envoyer l'email
 	$sent = wp_mail( $organizer_email, $subject, $body, $headers );
@@ -303,7 +307,7 @@ function register_organizer_messages_cpt() {
 }
 
 // Sauvegarder le message dans la base de données
-function save_organizer_message( $event_id, $from_name, $from_email, $message_content, $organizer_id ) {
+function save_organizer_message( $event_id, $from_name, $from_email, $subject, $message_content, $organizer_id ) {
 	$event_title = get_the_title( $event_id );
 
 	// Créer le post
@@ -319,6 +323,7 @@ function save_organizer_message( $event_id, $from_name, $from_email, $message_co
 		// Ajouter les métadonnées
 		update_post_meta( $message_id, '_from_name', sanitize_text_field( $from_name ) );
 		update_post_meta( $message_id, '_from_email', sanitize_email( $from_email ) );
+		update_post_meta( $message_id, '_subject', sanitize_text_field( $subject ) );
 		update_post_meta( $message_id, '_event_id', intval( $event_id ) );
 		update_post_meta( $message_id, '_sent_date', current_time( 'mysql' ) );
 		update_post_meta( $message_id, '_is_read', 0 );

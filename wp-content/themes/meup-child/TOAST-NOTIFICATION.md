@@ -48,7 +48,43 @@ ToastNotification.warning('Attention : vérifiez vos informations.');
 ToastNotification.info('Votre session expire dans 5 minutes.');
 ```
 
-### 2. Méthode avec options
+### 2. Messages flash (après rechargement de page)
+
+Pour afficher un toast après un rechargement de page (très utile pour les formulaires AJAX qui rechargent la page) :
+
+```javascript
+// Stocker le message avant le reload
+ToastNotification.setFlashMessage('Profil mis à jour !', 'success');
+location.reload();
+
+// Le toast s'affichera automatiquement après le rechargement
+```
+
+**Exemple complet avec AJAX :**
+
+```javascript
+$.ajax({
+    url: ajaxUrl,
+    type: 'POST',
+    data: formData,
+    success: function(response) {
+        if (response.success) {
+            // Stocker le message pour l'afficher après le reload
+            ToastNotification.setFlashMessage(
+                response.data.message || 'Enregistré avec succès !',
+                'success'
+            );
+
+            // Recharger la page
+            setTimeout(function() {
+                location.reload();
+            }, 400);
+        }
+    }
+});
+```
+
+### 3. Méthode avec options
 
 ```javascript
 ToastNotification.success('Profil mis à jour !', {
