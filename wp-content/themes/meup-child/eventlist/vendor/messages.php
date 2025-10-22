@@ -37,7 +37,7 @@ $messages_query = new WP_Query( $args );
 						<td class="status-col"><?php esc_html_e( 'Statut', 'eventlist' ); ?></td>
 						<td><?php esc_html_e( 'De', 'eventlist' ); ?></td>
 						<td><?php esc_html_e( 'Activité', 'eventlist' ); ?></td>
-						<td><?php esc_html_e( 'Message', 'eventlist' ); ?></td>
+						<td><?php esc_html_e( 'Objet', 'eventlist' ); ?></td>
 						<td><?php esc_html_e( 'Date', 'eventlist' ); ?></td>
 						<td><?php esc_html_e( 'Actions', 'eventlist' ); ?></td>
 					</tr>
@@ -51,13 +51,13 @@ $messages_query = new WP_Query( $args );
 							// Métadonnées
 							$from_name = get_post_meta( $message_id, '_from_name', true );
 							$from_email = get_post_meta( $message_id, '_from_email', true );
+							$subject = get_post_meta( $message_id, '_subject', true );
 							$event_id = get_post_meta( $message_id, '_event_id', true );
 							$sent_date = get_post_meta( $message_id, '_sent_date', true );
 							$is_read = get_post_meta( $message_id, '_is_read', true );
 
 							$event_title = get_the_title( $event_id );
 							$message_content = get_the_content();
-							$message_excerpt = wp_trim_words( $message_content, 10, '...' );
 
 							$row_class = $is_read ? 'message-read' : 'message-unread';
 					?>
@@ -89,9 +89,9 @@ $messages_query = new WP_Query( $args );
 								<?php endif; ?>
 							</td>
 
-							<!-- Message -->
-							<td data-colname="<?php esc_attr_e( 'Message', 'eventlist' ); ?>">
-								<?php echo esc_html( $message_excerpt ); ?>
+							<!-- Objet -->
+							<td data-colname="<?php esc_attr_e( 'Objet', 'eventlist' ); ?>">
+								<?php echo esc_html( $subject ); ?>
 							</td>
 
 							<!-- Date -->
@@ -125,6 +125,7 @@ $messages_query = new WP_Query( $args );
 										<p><strong><?php esc_html_e( 'De:', 'eventlist' ); ?></strong> <?php echo esc_html( $from_name ); ?> (<?php echo esc_html( $from_email ); ?>)</p>
 										<p><strong><?php esc_html_e( 'Activité:', 'eventlist' ); ?></strong> <?php echo esc_html( $event_title ); ?></p>
 										<p><strong><?php esc_html_e( 'Date:', 'eventlist' ); ?></strong> <?php echo date_i18n( $date_format . ' ' . $time_format, strtotime( $sent_date ) ); ?></p>
+										<p><strong><?php esc_html_e( 'Objet:', 'eventlist' ); ?></strong> <?php echo esc_html( $subject ); ?></p>
 									</div>
 									<div class="message-detail-body">
 										<?php echo nl2br( esc_html( $message_content ) ); ?>
@@ -135,9 +136,17 @@ $messages_query = new WP_Query( $args );
 												<?php esc_html_e( 'Marquer comme lu', 'eventlist' ); ?>
 											</button>
 										<?php endif; ?>
-										<a href="mailto:<?php echo esc_attr( $from_email ); ?>" class="button">
-											<?php esc_html_e( 'Répondre', 'eventlist' ); ?>
-										</a>
+										<button type="button" class="button button-primary btn-reply-message"
+											data-message-id="<?php echo esc_attr( $message_id ); ?>"
+											data-to-email="<?php echo esc_attr( $from_email ); ?>"
+											data-to-name="<?php echo esc_attr( $from_name ); ?>"
+											data-subject="Re: <?php echo esc_attr( $subject ); ?>"
+											data-event-title="<?php echo esc_attr( $event_title ); ?>">
+											<?php esc_html_e( 'Répondre par mail', 'eventlist' ); ?>
+										</button>
+										<button type="button" class="button btn-close-message">
+											<?php esc_html_e( 'Fermer', 'eventlist' ); ?>
+										</button>
 									</div>
 								</div>
 							</td>
@@ -168,6 +177,45 @@ $messages_query = new WP_Query( $args );
 
 	</div>
 
+</div>
+
+<!-- Modale de réponse par email -->
+<div id="reply-modal" class="reply-modal-overlay" style="display:none;">
+	<div class="reply-modal-container">
+		<div class="reply-modal-header">
+			<h3><?php esc_html_e( 'Répondre par email', 'eventlist' ); ?></h3>
+			<button type="button" class="reply-modal-close" aria-label="<?php esc_attr_e( 'Fermer', 'eventlist' ); ?>">
+				<span>&times;</span>
+			</button>
+		</div>
+		<div class="reply-modal-body">
+			<form id="reply-message-form" method="post">
+				<div class="form-field">
+					<label><?php esc_html_e( 'À:', 'eventlist' ); ?></label>
+					<input type="text" id="reply_to_display" readonly>
+					<input type="hidden" id="reply_to_email" name="to_email">
+					<input type="hidden" id="reply_message_id" name="message_id">
+				</div>
+				<div class="form-field">
+					<label for="reply_subject"><?php esc_html_e( 'Objet:', 'eventlist' ); ?> *</label>
+					<input type="text" id="reply_subject" name="subject" required>
+				</div>
+				<div class="form-field">
+					<label for="reply_message"><?php esc_html_e( 'Message:', 'eventlist' ); ?> *</label>
+					<textarea id="reply_message" name="message" rows="10" required></textarea>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="button button-primary">
+						<?php esc_html_e( 'Envoyer', 'eventlist' ); ?>
+					</button>
+					<button type="button" class="button reply-modal-cancel">
+						<?php esc_html_e( 'Annuler', 'eventlist' ); ?>
+					</button>
+				</div>
+				<div class="reply-status" style="display:none; margin-top: 15px;"></div>
+			</form>
+		</div>
+	</div>
 </div>
 
 <style>
@@ -274,6 +322,127 @@ $messages_query = new WP_Query( $args );
 		margin-right: 8px;
 	}
 }
+
+/* Reply Modal Styles */
+.reply-modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.6);
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+}
+
+.reply-modal-container {
+	background: #FFFFFF;
+	border-radius: 8px;
+	max-width: 700px;
+	width: 100%;
+	max-height: 90vh;
+	overflow-y: auto;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.reply-modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px 25px;
+	border-bottom: 1px solid #E0E0E0;
+}
+
+.reply-modal-header h3 {
+	margin: 0;
+	font-size: 20px;
+	color: #333;
+}
+
+.reply-modal-close {
+	background: none;
+	border: none;
+	font-size: 32px;
+	line-height: 1;
+	color: #999;
+	cursor: pointer;
+	padding: 0;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: color 0.2s;
+}
+
+.reply-modal-close:hover {
+	color: #333;
+}
+
+.reply-modal-body {
+	padding: 25px;
+}
+
+.reply-modal-body .form-field {
+	margin-bottom: 20px;
+}
+
+.reply-modal-body .form-field label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 8px;
+	color: #333;
+	font-size: 14px;
+}
+
+.reply-modal-body .form-field input[type="text"],
+.reply-modal-body .form-field textarea {
+	width: 100%;
+	padding: 10px 15px;
+	border: 1px solid #DDD;
+	border-radius: 4px;
+	font-size: 14px;
+	font-family: inherit;
+	transition: border-color 0.2s;
+}
+
+.reply-modal-body .form-field input[type="text"]:focus,
+.reply-modal-body .form-field textarea:focus {
+	outline: none;
+	border-color: #2271b1;
+}
+
+.reply-modal-body .form-field input[readonly] {
+	background-color: #F5F5F5;
+	color: #666;
+}
+
+.reply-modal-body .form-actions {
+	display: flex;
+	gap: 10px;
+	margin-top: 25px;
+}
+
+.reply-status {
+	padding: 12px 15px;
+	border-radius: 4px;
+	font-size: 14px;
+}
+
+.reply-status.success {
+	background: #E8F5E9;
+	color: #2E7D32;
+	border: 1px solid #A5D6A7;
+}
+
+.reply-status.error {
+	background: #FFEBEE;
+	color: #C62828;
+	border: 1px solid #EF9A9A;
+}
 </style>
 
 <script>
@@ -354,6 +523,93 @@ jQuery(document).ready(function($) {
 				$('#message-notification .error').text('<?php esc_html_e( "Une erreur est survenue.", "eventlist" ); ?>').show();
 				$('#message-notification .success').hide();
 				$btn.prop('disabled', false).text(originalText);
+			}
+		});
+	});
+
+	// Bouton Fermer message
+	$('.btn-close-message').on('click', function() {
+		$(this).closest('.message-details').slideUp(300);
+	});
+
+	// Ouvrir la modale de réponse
+	$('.btn-reply-message').on('click', function() {
+		var $btn = $(this);
+		var toEmail = $btn.data('to-email');
+		var toName = $btn.data('to-name');
+		var subject = $btn.data('subject');
+		var messageId = $btn.data('message-id');
+
+		// Remplir le formulaire
+		$('#reply_to_display').val(toName + ' <' + toEmail + '>');
+		$('#reply_to_email').val(toEmail);
+		$('#reply_subject').val(subject);
+		$('#reply_message_id').val(messageId);
+		$('#reply_message').val('');
+
+		// Afficher la modale
+		$('#reply-modal').fadeIn(200);
+	});
+
+	// Fermer la modale
+	$('.reply-modal-close, .reply-modal-cancel').on('click', function() {
+		$('#reply-modal').fadeOut(200);
+		$('#reply-message-form')[0].reset();
+		$('.reply-status').hide();
+	});
+
+	// Fermer si clic en dehors
+	$('#reply-modal').on('click', function(e) {
+		if ($(e.target).is('#reply-modal')) {
+			$(this).fadeOut(200);
+			$('#reply-message-form')[0].reset();
+			$('.reply-status').hide();
+		}
+	});
+
+	// Soumettre la réponse
+	$('#reply-message-form').on('submit', function(e) {
+		e.preventDefault();
+
+		var $form = $(this);
+		var $submitBtn = $form.find('button[type="submit"]');
+		var $statusDiv = $('.reply-status');
+		var originalText = $submitBtn.text();
+
+		// Désactiver le bouton
+		$submitBtn.prop('disabled', true).text('<?php esc_html_e( "Envoi en cours...", "eventlist" ); ?>');
+		$statusDiv.hide().removeClass('success error');
+
+		$.ajax({
+			url: '<?php echo admin_url( "admin-ajax.php" ); ?>',
+			type: 'POST',
+			data: {
+				action: 'reply_to_message',
+				to_email: $('#reply_to_email').val(),
+				subject: $('#reply_subject').val(),
+				message: $('#reply_message').val(),
+				message_id: $('#reply_message_id').val(),
+				nonce: '<?php echo wp_create_nonce( "reply_message_nonce" ); ?>'
+			},
+			success: function(response) {
+				if (response.success) {
+					$statusDiv.addClass('success').html(response.data.message).show();
+
+					// Réinitialiser le formulaire après 2 secondes
+					setTimeout(function() {
+						$('#reply-modal').fadeOut(200);
+						$form[0].reset();
+						$statusDiv.hide();
+						$submitBtn.prop('disabled', false).text(originalText);
+					}, 2000);
+				} else {
+					$statusDiv.addClass('error').html(response.data.message || '<?php esc_html_e( "Erreur lors de l\'envoi.", "eventlist" ); ?>').show();
+					$submitBtn.prop('disabled', false).text(originalText);
+				}
+			},
+			error: function() {
+				$statusDiv.addClass('error').html('<?php esc_html_e( "Une erreur est survenue.", "eventlist" ); ?>').show();
+				$submitBtn.prop('disabled', false).text(originalText);
 			}
 		});
 	});

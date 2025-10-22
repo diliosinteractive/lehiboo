@@ -386,6 +386,86 @@ function meup_ajax_mark_message_read() {
 }
 
 // ========================================
+// AJAX - RÉPONDRE À UN MESSAGE
+// ========================================
+add_action( 'wp_ajax_reply_to_message', 'meup_ajax_reply_to_message' );
+function meup_ajax_reply_to_message() {
+	// Vérifier le nonce
+	if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'reply_message_nonce' ) ) {
+		wp_send_json_error( array( 'message' => 'Erreur de sécurité.' ) );
+	}
+
+	$current_user_id = get_current_user_id();
+
+	// Récupérer les données
+	$to_email = isset( $_POST['to_email'] ) ? sanitize_email( $_POST['to_email'] ) : '';
+	$subject = isset( $_POST['subject'] ) ? sanitize_text_field( $_POST['subject'] ) : '';
+	$message = isset( $_POST['message'] ) ? sanitize_textarea_field( $_POST['message'] ) : '';
+	$message_id = isset( $_POST['message_id'] ) ? intval( $_POST['message_id'] ) : 0;
+
+	// Validation
+	if ( empty( $to_email ) || ! is_email( $to_email ) ) {
+		wp_send_json_error( array( 'message' => 'Email destinataire invalide.' ) );
+	}
+
+	if ( empty( $subject ) ) {
+		wp_send_json_error( array( 'message' => 'Veuillez saisir un objet.' ) );
+	}
+
+	if ( empty( $message ) ) {
+		wp_send_json_error( array( 'message' => 'Veuillez saisir un message.' ) );
+	}
+
+	// Vérifier que le message original appartient à l'utilisateur
+	if ( $message_id ) {
+		$original_message = get_post( $message_id );
+		if ( ! $original_message || $original_message->post_author != $current_user_id ) {
+			wp_send_json_error( array( 'message' => 'Accès refusé.' ) );
+		}
+	}
+
+	// Récupérer les infos de l'utilisateur connecté (le partenaire)
+	$current_user = wp_get_current_user();
+	$from_name = $current_user->display_name;
+	$from_email = $current_user->user_email;
+
+	// Vérifier si l'utilisateur a un email professionnel
+	$professional_email = get_user_meta( $current_user_id, 'user_professional_email', true );
+	if ( ! empty( $professional_email ) && is_email( $professional_email ) ) {
+		$from_email = $professional_email;
+	}
+
+	// Préparer l'email
+	$headers = array(
+		'Content-Type: text/plain; charset=UTF-8',
+		'From: ' . $from_name . ' <' . $from_email . '>',
+		'Reply-To: ' . $from_name . ' <' . $from_email . '>'
+	);
+
+	$email_body = $message . "\n\n";
+	$email_body .= "---\n";
+	$email_body .= "Cet email a été envoyé depuis " . get_bloginfo('name') . " par " . $from_name;
+
+	// Envoyer l'email
+	$sent = wp_mail( $to_email, $subject, $email_body, $headers );
+
+	if ( $sent ) {
+		// Optionnel : Marquer le message original comme lu
+		if ( $message_id ) {
+			update_post_meta( $message_id, '_is_read', 1 );
+		}
+
+		wp_send_json_success( array(
+			'message' => 'Votre réponse a été envoyée avec succès!'
+		) );
+	} else {
+		wp_send_json_error( array(
+			'message' => 'Erreur lors de l\'envoi de l\'email. Veuillez réessayer.'
+		) );
+	}
+}
+
+// ========================================
 // V1 LE HIBOO - MISE À JOUR SLUG PARTENAIRES
 // ========================================
 
