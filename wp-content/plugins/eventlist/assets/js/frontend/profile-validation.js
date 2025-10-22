@@ -455,6 +455,48 @@
             lastScroll = currentScroll;
         });
 
+        // Initialiser TinyMCE pour le champ description
+        function initWYSIWYGEditor() {
+            if (typeof wp !== 'undefined' && typeof wp.editor !== 'undefined' && $('#description').length > 0) {
+                // Vérifier si l'onglet Présentation est visible
+                const $presentationTab = $('#author_presentation');
+
+                if ($presentationTab.is(':visible')) {
+                    // Retirer l'éditeur existant s'il y en a un
+                    wp.editor.remove('description');
+
+                    // Initialiser l'éditeur
+                    wp.editor.initialize('description', {
+                        tinymce: {
+                            toolbar1: 'formatselect,bold,italic,underline,strikethrough,bullist,numlist,link,unlink,undo,redo',
+                            toolbar2: '',
+                            paste_as_text: true,
+                            wpautop: true,
+                            plugins: 'lists,paste,wordpress,wplink',
+                            height: 300,
+                        },
+                        quicktags: {
+                            buttons: 'strong,em,ul,ol,li,link'
+                        }
+                    });
+                }
+            }
+        }
+
+        // Initialiser au chargement si l'onglet Présentation est actif
+        setTimeout(function() {
+            if ($('.profile_tab_item[data-tab="author_presentation"]').hasClass('active')) {
+                initWYSIWYGEditor();
+            }
+        }, 500);
+
+        // Réinitialiser quand on clique sur l'onglet Présentation
+        $('.profile_tab_item[data-tab="author_presentation"]').on('click', function() {
+            setTimeout(function() {
+                initWYSIWYGEditor();
+            }, 300);
+        });
+
     });
 
 })(jQuery);

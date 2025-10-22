@@ -72,6 +72,7 @@
 		}
 	}
 
+	.btn_preview_profile,
 	.btn_save_profile {
 		display: inline-flex;
 		align-items: center;
@@ -152,6 +153,36 @@
 			&.is-loading::after {
 				left: 50%;
 				margin-left: -8px;
+			}
+		}
+	}
+
+	// Styles spécifiques au bouton Prévisualiser
+	.btn_preview_profile {
+		background: #f8f9fa;
+		color: #666;
+		border: 1px solid #e0e0e0;
+		text-decoration: none;
+
+		&:hover:not(:disabled) {
+			background: #e9ecef;
+			color: #333;
+			border-color: #cbd5e0;
+			transform: translateY(-1px);
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		}
+
+		&:active:not(:disabled) {
+			transform: translateY(0);
+		}
+
+		@media (max-width: 768px) {
+			span {
+				display: none;
+			}
+
+			i {
+				margin: 0;
 			}
 		}
 	}
@@ -623,6 +654,67 @@
 			min-height: 120px;
 			resize: vertical;
 			line-height: 1.6;
+		}
+
+		// Éditeur WYSIWYG WordPress - V1 Le Hiboo
+		&.wysiwyg {
+			.wp-editor-container {
+				border: 1.5px solid #e2e8f0;
+				border-radius: 8px;
+				overflow: hidden;
+				background: #fff;
+				box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+				transition: border-color 0.2s ease;
+
+				&:hover {
+					border-color: #cbd5e0;
+				}
+
+				&:focus-within {
+					border-color: #FF6B35;
+					box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+				}
+
+				.wp-editor-tools {
+					background: #f8f9fa;
+					border-bottom: 1px solid #e2e8f0;
+				}
+
+				.mce-toolbar-grp {
+					background: #f8f9fa;
+				}
+
+				.mce-btn {
+					background: transparent;
+					border-color: transparent;
+
+					&:hover {
+						background: #e2e8f0;
+						border-color: #cbd5e0;
+					}
+				}
+
+				iframe {
+					min-height: 250px;
+				}
+			}
+
+			.wp-editor-tabs {
+				.wp-switch-editor {
+					background: transparent;
+					border: none;
+					color: #64748b;
+					font-size: 13px;
+					padding: 8px 12px;
+
+					&.html-active,
+					&.tmce-active {
+						background: #fff;
+						color: #FF6B35;
+						font-weight: 600;
+					}
+				}
+			}
 		}
 
 		// Small helper text

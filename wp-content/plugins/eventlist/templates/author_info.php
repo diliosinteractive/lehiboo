@@ -35,6 +35,10 @@ if( $author_id ){
 
 	// V1 Le Hiboo - Nouvelles données organisation
 	$org_name = get_user_meta( $author_id, 'org_name', true ) ? get_user_meta( $author_id, 'org_name', true ) : '';
+	// V1 Le Hiboo - Nom à afficher publiquement (priorité sur org_name)
+	$org_display_name = get_user_meta( $author_id, 'org_display_name', true );
+	$org_public_name = ! empty( $org_display_name ) ? $org_display_name : $org_name;
+
 	$org_cover_image = get_user_meta( $author_id, 'org_cover_image', true ) ? get_user_meta( $author_id, 'org_cover_image', true ) : '';
 	$org_web = get_user_meta( $author_id, 'org_web', true ) ? get_user_meta( $author_id, 'org_web', true ) : '';
 	$user_professional_email = get_user_meta( $author_id, 'user_professional_email', true ) ? get_user_meta( $author_id, 'user_professional_email', true ) : '';
@@ -54,7 +58,7 @@ if( $author_id ){
 	<!-- V1 Le Hiboo - Image de couverture -->
 	<?php if ( !is_singular('event') && $org_cover_image ) : ?>
 		<div class="author_cover_image">
-			<img src="<?php echo esc_url( wp_get_attachment_image_url( $org_cover_image, 'full' ) ); ?>" alt="<?php echo esc_attr( $org_name ? $org_name : $display_name ); ?>" />
+			<img src="<?php echo esc_url( wp_get_attachment_image_url( $org_cover_image, 'full' ) ); ?>" alt="<?php echo esc_attr( $org_public_name ? $org_public_name : $display_name ); ?>" />
 		</div>
 	<?php endif; ?>
 
@@ -71,9 +75,9 @@ if( $author_id ){
 				<a class="name" href="<?php echo esc_url( get_author_posts_url( $author_id ) ); ?> ">
 					<?php if (is_singular('event') && $info_organizer == 'checked') {
 						echo esc_html( $name_organizer );
-					} elseif ( !is_singular('event') && $org_name ) {
-						// V1 Le Hiboo - Afficher le nom de l'organisation sur le profil public
-						echo esc_html( $org_name );
+					} elseif ( !is_singular('event') && $org_public_name ) {
+						// V1 Le Hiboo - Afficher le "Nom à afficher" de l'organisation sur le profil public
+						echo esc_html( $org_public_name );
 					} else {
 						echo esc_html( $display_name );
 					} ?>

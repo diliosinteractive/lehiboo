@@ -3,7 +3,14 @@
 get_header();
 
 $author_id = get_query_var( 'author' );
-$display_name = get_user_meta( $author_id, 'display_name', true ) ? get_user_meta( $author_id, 'display_name', true ) : get_the_author_meta( 'display_name', $author_id );
+
+// V1 Le Hiboo - Utiliser le nom de l'organisation au lieu du nom d'utilisateur WordPress
+// Priorité : org_display_name > display_name > WordPress display_name
+$org_display_name = get_user_meta( $author_id, 'org_display_name', true );
+$user_display_name = get_user_meta( $author_id, 'display_name', true );
+$wp_display_name = get_the_author_meta( 'display_name', $author_id );
+
+$display_name = ! empty( $org_display_name ) ? $org_display_name : ( ! empty( $user_display_name ) ? $user_display_name : $wp_display_name );
 
 $archive_type = 'type3'; // You can change value to typ1, type2, type3, type4, type5
 $layout_column = 'single-column'; // You can change value to single-column, two-column, three-column

@@ -46,13 +46,20 @@ $user_meta_field = get_option( 'ova_register_form' );
 		<!-- Heading caché car on utilise le titre dans la sticky bar -->
 		<div style="display: none;"><?php echo el_get_template( '/vendor/heading.php' ); ?></div>
 
-		<!-- Barre sticky avec titre et bouton Enregistrer -->
+		<!-- Barre sticky avec titre et boutons Prévisualiser/Enregistrer -->
 		<div class="profile_sticky_bar">
 			<div class="sticky_bar_inner">
 				<div class="sticky_bar_left">
 					<h3><?php esc_html_e( 'Mon profil', 'eventlist' ); ?></h3>
 				</div>
 				<div class="sticky_bar_right">
+					<?php
+					$author_url = get_author_posts_url( $user_id );
+					?>
+					<a href="<?php echo esc_url( $author_url ); ?>" target="_blank" class="btn_preview_profile">
+						<i class="icon_search"></i>
+						<span><?php esc_html_e( 'Prévisualiser', 'eventlist' ); ?></span>
+					</a>
 					<button type="button" class="btn_save_profile" id="trigger_save_profile">
 						<i class="icon_check"></i>
 						<span><?php esc_html_e( 'Enregistrer', 'eventlist' ); ?></span>
@@ -313,15 +320,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 								<input id="user_address" value="<?php echo esc_attr( $user_address ); ?>" name="user_address" type="text" placeholder="<?php esc_attr_e( '123 New York', 'eventlist' ); ?>" >
 							</div>
 						<?php } ?>
-						<!-- Description -->
-						<?php
-						$show_description = $OVALG_Settings ? $OVALG_Settings->show_description() : 'yes';
-						if( apply_filters( 'ovalg_register_user_show_description', true ) && $show_description == 'yes' ){ ?>
-							<div class="vendor_field textarea">
-								<label class="control-label" for="description"><?php esc_html_e( 'Description', 'eventlist' ); ?></label>
-								<textarea id="description" value="<?php echo esc_attr( $description ); ?>" name="description" type="text" placeholder="<?php esc_attr_e( 'Insert Description', 'eventlist' ); ?>" class="description form-control input-md "><?php echo esc_html( $description ); ?></textarea>
-							</div>
-						<?php } ?>
+						<!-- Description déplacée dans l'onglet "Ma Présentation" -->
 						<!-- User Custom Field -->
 						<div class="ova_profile_custom_field_wrapper">
 						<?php if ( $user_meta_field ) :
@@ -964,27 +963,32 @@ $user_meta_field = get_option( 'ova_register_form' );
 									<?php esc_html_e( 'Description', 'eventlist' ); ?>
 									<sup class="symbol-visible">👁</sup>
 								</label>
-								<?php
-								$description_content = get_user_meta( $user_id, 'description', true );
-								wp_editor(
-									$description_content,
-									'description',
-									array(
-										'textarea_name' => 'description',
-										'textarea_rows' => 10,
-										'media_buttons' => false,
-										'teeny'         => false,
-										'tinymce'       => array(
-											'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,|,bullist,numlist,|,link,unlink,|,undo,redo',
-											'toolbar2' => '',
-											'paste_as_text' => true,
-										),
-										'quicktags'     => array(
-											'buttons' => 'strong,em,ul,ol,li,link'
+								<div class="wysiwyg-wrapper">
+									<?php
+									$description_content = get_user_meta( $user_id, 'description', true );
+									wp_editor(
+										$description_content,
+										'description',
+										array(
+											'textarea_name' => 'description',
+											'textarea_rows' => 10,
+											'media_buttons' => false,
+											'teeny'         => false,
+											'tinymce'       => array(
+												'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,bullist,numlist,link,unlink,undo,redo',
+												'toolbar2' => '',
+												'paste_as_text' => true,
+												'content_css' => false,
+											),
+											'quicktags'     => array(
+												'buttons' => 'strong,em,ul,ol,li,link'
+											),
+											'wpautop'       => true,
+											'editor_class'  => 'el-wysiwyg-editor'
 										)
-									)
-								);
-								?>
+									);
+									?>
+								</div>
 								<small><?php esc_html_e( 'Mettez en forme votre description avec les outils de l\'éditeur.', 'eventlist' ); ?></small>
 							</div>
 

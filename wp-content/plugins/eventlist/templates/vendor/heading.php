@@ -1,5 +1,6 @@
-<?php if ( !defined( 'ABSPATH' ) ) exit(); 
+<?php if ( !defined( 'ABSPATH' ) ) exit();
 
+	// V1 Le Hiboo - Variables pour la navigation vendor
 	$vendor = isset( $_GET['vendor'] ) ? sanitize_text_field( $_GET['vendor'] ) : apply_filters( 'el_manage_vendor_default_page', 'general' );
 	$listing_type = isset( $_GET['listing_type'] ) ? sanitize_text_field( $_GET['listing_type'] ) : '';
 	$id 	= isset( $_GET['id'] ) ? sanitize_text_field( $_GET['id'] ) : '';

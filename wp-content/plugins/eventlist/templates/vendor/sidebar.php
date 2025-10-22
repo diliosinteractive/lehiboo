@@ -8,7 +8,14 @@ $author_id_image = get_user_meta( $user_id, 'author_id_image', true ) ? get_user
 
 $img_path = ( $author_id_image && wp_get_attachment_image_url($author_id_image, 'el_thumbnail') ) ? wp_get_attachment_image_url($author_id_image, 'el_thumbnail') : EL_PLUGIN_URI.'assets/img/unknow_user.png';
 
-$display_name = get_user_meta( $user_id, 'display_name', true ) ? get_user_meta( $user_id, 'display_name', true ) : get_the_author_meta( 'display_name', $user_id );
+// V1 Le Hiboo - Utiliser le nom de l'organisation si disponible
+$org_display_name = get_user_meta( $user_id, 'org_display_name', true );
+$org_name = get_user_meta( $user_id, 'org_name', true );
+$user_display_name = get_user_meta( $user_id, 'display_name', true );
+$wp_display_name = get_the_author_meta( 'display_name', $user_id );
+
+// Priorité : org_display_name > org_name > user_display_name > wp_display_name
+$display_name = ! empty( $org_display_name ) ? $org_display_name : ( ! empty( $org_name ) ? $org_name : ( ! empty( $user_display_name ) ? $user_display_name : $wp_display_name ) );
 
 $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_ticket','');
 

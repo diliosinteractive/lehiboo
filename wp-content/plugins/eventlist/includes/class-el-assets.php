@@ -231,6 +231,9 @@ class EL_Assets{
 
 		// Profile Navigation (Vertical Tabs) - V1 Le Hiboo
 		if ( isset( $_GET['vendor'] ) && $_GET['vendor'] == 'profile' ) {
+			// Enqueue WordPress editor for WYSIWYG description field
+			wp_enqueue_editor();
+
 			wp_enqueue_script('el_profile_navigation', EL_PLUGIN_URI.'assets/js/frontend/profile-navigation.js', array('jquery'),false,true );
 
 			// API data.gouv.fr - V1 Le Hiboo CDC
