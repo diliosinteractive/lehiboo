@@ -342,3 +342,37 @@ function meup_child_locate_vendor_template( $template, $template_name, $template
 	// Sinon retourner le template par défaut
 	return $template;
 }
+
+// ========================================
+// ACTION - MARQUER MESSAGE COMME LU
+// ========================================
+add_action( 'template_redirect', 'meup_handle_mark_message_read' );
+function meup_handle_mark_message_read() {
+	// Vérifier qu'on est sur la page messages
+	if ( ! isset( $_GET['vendor'] ) || $_GET['vendor'] !== 'messages' ) {
+		return;
+	}
+
+	// Vérifier la soumission du formulaire
+	if ( ! isset( $_POST['mark_as_read'] ) || ! isset( $_POST['message_id'] ) ) {
+		return;
+	}
+
+	// Vérifier le nonce
+	if ( ! isset( $_POST['message_nonce'] ) || ! wp_verify_nonce( $_POST['message_nonce'], 'mark_message_read' ) ) {
+		return;
+	}
+
+	$current_user_id = get_current_user_id();
+	$message_id = intval( $_POST['message_id'] );
+	$message = get_post( $message_id );
+
+	// Vérifier que le message appartient à l'utilisateur
+	if ( $message && $message->post_author == $current_user_id ) {
+		update_post_meta( $message_id, '_is_read', 1 );
+
+		// Redirection vers la même page
+		wp_safe_redirect( add_query_arg( array( 'vendor' => 'messages', 'marked' => 'read' ), get_myaccount_page() ) );
+		exit;
+	}
+}

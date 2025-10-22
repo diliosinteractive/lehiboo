@@ -16,17 +16,6 @@ $args = array(
 );
 
 $messages_query = new WP_Query( $args );
-
-// Gérer l'action de marquage comme lu
-if ( isset( $_POST['mark_as_read'] ) && isset( $_POST['message_id'] ) && wp_verify_nonce( $_POST['message_nonce'], 'mark_message_read' ) ) {
-	$message_id = intval( $_POST['message_id'] );
-	$message = get_post( $message_id );
-	if ( $message && $message->post_author == $current_user_id ) {
-		update_post_meta( $message_id, '_is_read', 1 );
-		wp_safe_redirect( add_query_arg( array( 'vendor' => 'messages' ), get_myaccount_page() ) );
-		exit;
-	}
-}
 ?>
 
 <div class="vendor_wrap">
@@ -35,6 +24,12 @@ if ( isset( $_POST['mark_as_read'] ) && isset( $_POST['message_id'] ) && wp_veri
 
 	<div class="contents">
 		<?php echo el_get_template( '/vendor/heading.php' ); ?>
+
+		<?php if ( isset( $_GET['marked'] ) && $_GET['marked'] === 'read' ) : ?>
+			<div class="el-notify">
+				<p class="success status"><?php esc_html_e( 'Message marqué comme lu.', 'eventlist' ); ?></p>
+			</div>
+		<?php endif; ?>
 
 		<div class="table-list-booking">
 			<table>
