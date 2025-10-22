@@ -83,13 +83,8 @@ $user_meta_field = get_option( 'ova_register_form' );
 									<span><?php esc_html_e( 'Présentation', 'eventlist' ); ?></span>
 								</a>
 							</li>
-							<li class="profile_tab_item" data-tab="author_localisation">
-								<a href="#author_localisation">
-									<i class="icon_pin_alt"></i>
-									<span><?php esc_html_e( 'Localisation', 'eventlist' ); ?></span>
-								</a>
-							</li>
 						<?php } ?>
+						<!-- L'onglet Localisation a été fusionné dans Mon Organisation -->
 
 						<li class="profile_tab_item" data-tab="author_password">
 							<a href="#author_password">
@@ -130,7 +125,11 @@ $user_meta_field = get_option( 'ova_register_form' );
 
 				<!-- Profile -->
 				<div id="author_profile" class="tab-contents">
-					
+
+					<h2><?php esc_html_e( 'Mes informations professionnelles', 'eventlist' ); ?></h2>
+					<p class="description"><?php esc_html_e( 'Ces informations sont nécessaires pour créer votre compte professionnel sur Le Hiboo', 'eventlist' ); ?></p>
+
+					<!-- Légende ajoutée dynamiquement par profile-validation.js -->
 
 					<?php if( !el_is_vendor() && apply_filters( 'el_is_update_vendor_role', true ) ){ ?>
 						<div class="author_role">
@@ -180,22 +179,20 @@ $user_meta_field = get_option( 'ova_register_form' );
 							</div>
 						<?php } ?>
 
-						<!-- username -->
-						<div class="vendor_field">
-							<label class="control-label" for="display_name"><?php esc_html_e( 'User Login', 'eventlist' ); ?></label>
-							<?php echo the_author_meta('user_login', $user_id); ?>
-						</div>
+						<!-- Username supprimé selon CDC - l'email est l'identifiant unique -->
 
 						<!-- First Name -->
 						<?php
 						$show_first_name = $OVALG_Settings ? $OVALG_Settings->show_first_name() : 'yes';
 						if ( apply_filters( 'ovalg_register_user_show_first_name', true ) && $show_first_name == 'yes' ): ?>
-							
+
 							<div class="vendor_field">
 								<label class="control-label" for="first_name">
-									<?php esc_html_e( 'Prénom <sup>*</sup>', 'eventlist' ); ?>
+									<?php esc_html_e( 'Prénom', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-needed">⭐</sup>
 								</label>
-								<input id="first_name" value="<?php echo esc_attr( $first_name ); ?>" name="first_name" type="text" required>
+								<input id="first_name" value="<?php echo esc_attr( $first_name ); ?>" name="first_name" type="text" required placeholder="<?php esc_attr_e( 'Ex: Jean', 'eventlist' ); ?>">
 							</div>
 
 						<?php endif; ?>
@@ -207,43 +204,65 @@ $user_meta_field = get_option( 'ova_register_form' );
 
 							<div class="vendor_field">
 								<label class="control-label" for="last_name">
-									<?php esc_html_e( 'Last Name', 'eventlist' ); ?>
+									<?php esc_html_e( 'Nom', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-needed">⭐</sup>
 								</label>
-								<input id="last_name" value="<?php echo esc_attr( $last_name ); ?>" name="last_name" type="text" required>
+								<input id="last_name" value="<?php echo esc_attr( $last_name ); ?>" name="last_name" type="text" required placeholder="<?php esc_attr_e( 'Ex: Dupont', 'eventlist' ); ?>">
 							</div>
 
 						<?php endif; ?>
 
-						<!-- Name -->
+						<!-- Email professionnel de connexion -->
 						<div class="vendor_field">
-							<label class="control-label" for="display_name"><?php esc_html_e( 'Display Name', 'eventlist' ); ?></label>
-							<input id="display_name" value="<?php echo esc_attr( $display_name ); ?>" name="display_name" type="text" placeholder="<?php esc_attr_e( 'William Smith', 'eventlist' ); ?>" required>
+							<label class="control-label" for="user_email">
+								<?php esc_html_e( 'Email professionnel de connexion', 'eventlist' ); ?>
+								<sup class="symbol-required">*</sup>
+							</label>
+							<input id="user_email" value="<?php the_author_meta('user_email', $user_id) ?>" name="user_email" type="email" placeholder="<?php esc_attr_e( 'contact@organisation.fr', 'eventlist' ); ?>" required>
+							<small class="form-text text-muted">
+								<?php esc_html_e( 'C\'est votre identifiant de connexion unique sur Le Hiboo', 'eventlist' ); ?>
+							</small>
 						</div>
 
-						<!-- Email -->
-						<div class="vendor_field">
-							<label class="control-label" for="user_email"><?php esc_html_e( 'Email de connexion', 'eventlist' ); ?></label>
-							<input id="user_email" value="<?php the_author_meta('user_email', $user_id) ?>" name="user_email" type="text" placeholder="<?php esc_attr_e( 'example@email.com', 'eventlist' ); ?>" disabled>
-						</div>
+						<!-- Email supprimé - fusionné avec l'email de connexion ci-dessus -->
 
-						<!-- Email Professionnel - V1 Le Hiboo -->
-						<?php if( el_is_vendor() ){
-							$user_professional_email = get_user_meta( $user_id, 'user_professional_email', true );
-						?>
-							<div class="vendor_field">
-								<label class="control-label" for="user_professional_email"><?php esc_html_e( 'Email professionnel', 'eventlist' ); ?></label>
-								<input id="user_professional_email" value="<?php echo esc_attr( $user_professional_email ); ?>" name="user_professional_email" type="email" placeholder="<?php esc_attr_e( 'contact@organisation.fr', 'eventlist' ); ?>" >
-								<small class="form-text text-muted"><?php esc_html_e( 'Email de contact public pour votre organisation', 'eventlist' ); ?></small>
-							</div>
-						<?php } ?>
-
-						<!-- Job -->
+						<!-- Poste (menu déroulant) -->
 						<?php
 						$show_job = $OVALG_Settings ? $OVALG_Settings->show_job() : 'yes';
-						if( apply_filters( 'ovalg_register_user_show_job', true ) && $show_job == 'yes' ){ ?>
+						if( apply_filters( 'ovalg_register_user_show_job', true ) && $show_job == 'yes' ){
+							$available_jobs = get_option( 'el_job_positions_list', array(
+								'directeur' => __( 'Directeur / Directrice', 'eventlist' ),
+								'responsable' => __( 'Responsable événementiel', 'eventlist' ),
+								'charge_projet' => __( 'Chargé de projet', 'eventlist' ),
+								'coordinateur' => __( 'Coordinateur', 'eventlist' ),
+								'animateur' => __( 'Animateur', 'eventlist' ),
+								'artiste' => __( 'Artiste', 'eventlist' ),
+								'technicien' => __( 'Technicien', 'eventlist' ),
+								'benevole' => __( 'Bénévole', 'eventlist' ),
+								'president' => __( 'Président(e)', 'eventlist' ),
+								'secretaire' => __( 'Secrétaire', 'eventlist' ),
+								'tresorier' => __( 'Trésorier', 'eventlist' ),
+								'autre' => __( 'Autre', 'eventlist' ),
+							));
+						?>
 							<div class="vendor_field">
-								<label class="control-label" for="user_job"><?php esc_html_e( 'Poste', 'eventlist' ); ?></label>
-								<input id="user_job" value="<?php echo esc_attr( $user_job ); ?>" name="user_job" type="text" placeholder="<?php esc_attr_e( 'CEO', 'eventlist' ); ?>" >
+								<label class="control-label" for="user_job">
+									<?php esc_html_e( 'Poste', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-needed">⭐</sup>
+								</label>
+								<select id="user_job" name="user_job" required>
+									<option value=""><?php esc_html_e( '-- Sélectionnez votre poste --', 'eventlist' ); ?></option>
+									<?php foreach( $available_jobs as $job_key => $job_label ): ?>
+										<option value="<?php echo esc_attr($job_key); ?>" <?php selected( $user_job, $job_key ); ?>>
+											<?php echo esc_html($job_label); ?>
+										</option>
+									<?php endforeach; ?>
+								</select>
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Les postes sont administrables depuis le WP Admin', 'eventlist' ); ?>
+								</small>
 							</div>
 						<?php } ?>
 
@@ -252,10 +271,13 @@ $user_meta_field = get_option( 'ova_register_form' );
 						$show_phone = $OVALG_Settings ? $OVALG_Settings->show_phone() : 'yes';
 						if( apply_filters( 'ovalg_register_user_show_phone', true ) && $show_phone == 'yes' ){ ?>
 							<div class="vendor_field">
-								<label class="control-label" for="user_phone"><?php esc_html_e( 'Phone', 'eventlist' ); ?></label>
-								<input id="user_phone" value="<?php echo esc_attr( $user_phone ); ?>" name="user_phone" type="text"
-								data-msg="<?php esc_attr_e( 'Please enter a valid phone number', 'eventlist' ); ?>"
-								placeholder="<?php esc_attr_e( '(+123) 456 7890', 'eventlist' ); ?>" />
+								<label class="control-label" for="user_phone"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></label>
+								<input id="user_phone" value="<?php echo esc_attr( $user_phone ); ?>" name="user_phone" type="tel"
+								data-msg="<?php esc_attr_e( 'Veuillez entrer un numéro de téléphone valide', 'eventlist' ); ?>"
+								placeholder="<?php esc_attr_e( '0612345678', 'eventlist' ); ?>" />
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Format: 10 chiffres sans espaces', 'eventlist' ); ?>
+								</small>
 							</div>
 						<?php } ?>
 						<?php
@@ -469,93 +491,82 @@ $user_meta_field = get_option( 'ova_register_form' );
 				<!-- Mon Organisation (NOUVEAU) -->
 				<?php if( el_is_vendor() ){ ?>
 					<div id="author_organisation" class="tab-contents">
-						<h2><?php esc_html_e( 'Informations sur votre organisation', 'eventlist' ); ?></h2>
+						<h2><?php esc_html_e( 'Informations sur mon Organisation', 'eventlist' ); ?></h2>
 						<p class="description"><?php esc_html_e( 'Ces informations administratives sont nécessaires pour identifier votre structure.', 'eventlist' ); ?></p>
 
 						<form id="el_save_organisation" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
 
-							<!-- Nom de l'organisation -->
+							<!-- Recherche d'entreprise via API -->
+							<div class="vendor_field autocomplete-wrapper">
+								<label class="control-label" for="org_name_search">
+									<?php esc_html_e( 'Rechercher votre organisation', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+								</label>
+								<div class="autocomplete-input">
+									<input id="org_name_search" name="org_name_search" type="text"
+										placeholder="<?php esc_attr_e( 'Tapez le nom ou le SIREN de votre organisation...', 'eventlist' ); ?>">
+									<div class="autocomplete-loader"></div>
+								</div>
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Recherchez votre organisation pour pré-remplir automatiquement les informations (API gouvernementale)', 'eventlist' ); ?>
+								</small>
+							</div>
+
+							<!-- Nom de l'organisation (rempli par API ou manuellement) -->
 							<div class="vendor_field">
 								<label class="control-label" for="org_name">
-									<?php esc_html_e( 'Nom de l\'organisation', 'eventlist' ); ?> <sup style="color: red;">*</sup>
+									<?php esc_html_e( 'Nom de l\'organisation', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-needed">⭐</sup>
 								</label>
 								<input id="org_name" name="org_name" type="text"
 									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_name', true ) ); ?>"
 									placeholder="<?php esc_attr_e( 'Ex: Association Le Hiboo', 'eventlist' ); ?>"
 									required>
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Auto-complété par l\'API gouvernementale ou modifiable manuellement', 'eventlist' ); ?>
+								</small>
 							</div>
 
-							<!-- Rôle de l'organisation -->
-							<div class="vendor_field checkbox">
-								<label><?php esc_html_e( 'Rôle de l\'organisation', 'eventlist' ); ?> <sup style="color: red;">*</sup></label>
-								<?php
-								$org_roles = get_user_meta( $user_id, 'org_role', true );
-								$org_roles = is_array( $org_roles ) ? $org_roles : array();
-								$available_roles = get_option( 'el_org_roles_list', array(
-									'organisateur' => __( 'Organisateur d\'événements', 'eventlist' ),
-									'lieu' => __( 'Lieu / Salle', 'eventlist' ),
-									'prestataire' => __( 'Prestataire de services', 'eventlist' ),
-									'association' => __( 'Association culturelle', 'eventlist' ),
-								));
-								?>
-								<div class="checkbox_field_wrap">
-									<?php foreach( $available_roles as $role_key => $role_label ): ?>
-										<div class="vendor_checkbox_field">
-											<input type="checkbox"
-												id="org_role_<?php echo esc_attr($role_key); ?>"
-												name="org_role[]"
-												value="<?php echo esc_attr($role_key); ?>"
-												<?php checked( in_array($role_key, $org_roles) ); ?> />
-											<label for="org_role_<?php echo esc_attr($role_key); ?>">
-												<?php echo esc_html($role_label); ?>
-											</label>
-										</div>
-									<?php endforeach; ?>
-								</div>
-							</div>
-
-							<!-- Statut juridique -->
+							<!-- Nom à afficher (nouveau champ) -->
 							<div class="vendor_field">
-								<label class="control-label" for="org_statut_juridique">
-									<?php esc_html_e( 'Statut juridique', 'eventlist' ); ?> <sup style="color: red;">*</sup>
+								<label class="control-label" for="org_display_name">
+									<?php esc_html_e( 'Nom à afficher', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-visible">👁</sup>
 								</label>
-								<?php
-								$org_statut = get_user_meta( $user_id, 'org_statut_juridique', true );
-								$statuts = get_option( 'el_statuts_juridiques_list', array(
-									'association' => __( 'Association loi 1901', 'eventlist' ),
-									'sarl' => __( 'SARL', 'eventlist' ),
-									'sas' => __( 'SAS', 'eventlist' ),
-									'auto_entrepreneur' => __( 'Auto-entrepreneur / Micro-entreprise', 'eventlist' ),
-									'eirl' => __( 'EIRL', 'eventlist' ),
-									'sa' => __( 'SA', 'eventlist' ),
-									'ei' => __( 'Entreprise Individuelle', 'eventlist' ),
-									'autre' => __( 'Autre', 'eventlist' ),
-								));
-								// Ajouter l'option vide au début
-								$statuts = array_merge( array( '' => __( '-- Sélectionnez --', 'eventlist' ) ), $statuts );
-								?>
-								<select id="org_statut_juridique" name="org_statut_juridique" required>
-									<?php foreach( $statuts as $key => $label ): ?>
-										<option value="<?php echo esc_attr($key); ?>" <?php selected( $org_statut, $key ); ?>>
-											<?php echo esc_html($label); ?>
-										</option>
-									<?php endforeach; ?>
-								</select>
+								<input id="org_display_name" name="org_display_name" type="text"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_display_name', true ) ); ?>"
+									placeholder="<?php esc_attr_e( 'Nom public de votre organisation', 'eventlist' ); ?>"
+									required>
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Ce nom sera visible sur votre profil public', 'eventlist' ); ?>
+								</small>
 							</div>
 
 							<!-- Type de structure -->
 							<div class="vendor_field checkbox">
-								<label><?php esc_html_e( 'Type de structure', 'eventlist' ); ?> <sup style="color: red;">*</sup></label>
+								<label>
+									<?php esc_html_e( 'Type de structure', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-needed">⭐</sup>
+								</label>
 								<?php
 								$org_types = get_user_meta( $user_id, 'org_type_structure', true );
 								$org_types = is_array( $org_types ) ? $org_types : array();
 								$available_types = get_option( 'el_types_structure_list', array(
-									'culturel' => __( 'Culturel', 'eventlist' ),
-									'sportif' => __( 'Sportif', 'eventlist' ),
-									'educatif' => __( 'Éducatif', 'eventlist' ),
-									'loisirs' => __( 'Loisirs', 'eventlist' ),
-									'artistique' => __( 'Artistique', 'eventlist' ),
-									'social' => __( 'Social / Solidaire', 'eventlist' ),
+									'cinema' => __( 'Cinéma', 'eventlist' ),
+									'centre_culturel' => __( 'Centre culturel', 'eventlist' ),
+									'salle_fetes' => __( 'Salle des fêtes', 'eventlist' ),
+									'theatre' => __( 'Théâtre', 'eventlist' ),
+									'salle_concert' => __( 'Salle de concert', 'eventlist' ),
+									'musee' => __( 'Musée', 'eventlist' ),
+									'galerie' => __( 'Galerie d\'art', 'eventlist' ),
+									'mediatheque' => __( 'Médiathèque / Bibliothèque', 'eventlist' ),
+									'stade' => __( 'Stade / Complexe sportif', 'eventlist' ),
+									'parc' => __( 'Parc / Espace extérieur', 'eventlist' ),
+									'association' => __( 'Association', 'eventlist' ),
+									'autre' => __( 'Autre', 'eventlist' ),
 								));
 								?>
 								<div class="checkbox_field_wrap">
@@ -572,13 +583,93 @@ $user_meta_field = get_option( 'ova_register_form' );
 										</div>
 									<?php endforeach; ?>
 								</div>
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Les options sont modifiables par le WP Admin Le Hiboo', 'eventlist' ); ?>
+								</small>
+							</div>
+
+							<!-- Rôle de l'organisation -->
+							<div class="vendor_field checkbox">
+								<label>
+									<?php esc_html_e( 'Rôle de l\'organisation', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-needed">⭐</sup>
+								</label>
+								<?php
+								$org_roles = get_user_meta( $user_id, 'org_role', true );
+								$org_roles = is_array( $org_roles ) ? $org_roles : array();
+								$available_roles = get_option( 'el_org_roles_list', array(
+									'organisateur' => __( 'Organisateur', 'eventlist' ),
+									'lieu_accueil' => __( 'Lieu d\'accueil', 'eventlist' ),
+									'producteur' => __( 'Producteur', 'eventlist' ),
+									'metteur_scene' => __( 'Metteur en scène', 'eventlist' ),
+									'prestataire' => __( 'Prestataire', 'eventlist' ),
+									'partenaire' => __( 'Partenaire', 'eventlist' ),
+									'animateur_artiste' => __( 'Animateur / Artiste', 'eventlist' ),
+								));
+								?>
+								<div class="checkbox_field_wrap">
+									<?php foreach( $available_roles as $role_key => $role_label ): ?>
+										<div class="vendor_checkbox_field">
+											<input type="checkbox"
+												id="org_role_<?php echo esc_attr($role_key); ?>"
+												name="org_role[]"
+												value="<?php echo esc_attr($role_key); ?>"
+												<?php checked( in_array($role_key, $org_roles) ); ?> />
+											<label for="org_role_<?php echo esc_attr($role_key); ?>">
+												<?php echo esc_html($role_label); ?>
+											</label>
+										</div>
+									<?php endforeach; ?>
+								</div>
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Les options sont modifiables par le WP Admin Le Hiboo', 'eventlist' ); ?>
+								</small>
+							</div>
+
+							<!-- Forme juridique (renommé depuis "Statut juridique") -->
+							<div class="vendor_field">
+								<label class="control-label" for="org_forme_juridique">
+									<?php esc_html_e( 'Forme juridique', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-needed">⭐</sup>
+								</label>
+								<?php
+								$org_forme_juridique = get_user_meta( $user_id, 'org_forme_juridique', true );
+								if ( empty($org_forme_juridique) ) {
+									// Rétro-compatibilité : récupérer l'ancien champ
+									$org_forme_juridique = get_user_meta( $user_id, 'org_statut_juridique', true );
+								}
+								$formes_juridiques = get_option( 'el_formes_juridiques_list', array(
+									'association' => __( 'Association loi 1901', 'eventlist' ),
+									'sarl' => __( 'SARL', 'eventlist' ),
+									'sas' => __( 'SAS', 'eventlist' ),
+									'auto_entrepreneur' => __( 'Auto-entrepreneur / Micro-entreprise', 'eventlist' ),
+									'eirl' => __( 'EIRL', 'eventlist' ),
+									'sa' => __( 'SA', 'eventlist' ),
+									'ei' => __( 'Entreprise Individuelle', 'eventlist' ),
+									'autre' => __( 'Autre', 'eventlist' ),
+								));
+								?>
+								<select id="org_forme_juridique" name="org_forme_juridique" required>
+									<option value=""><?php esc_html_e( '-- Sélectionnez --', 'eventlist' ); ?></option>
+									<?php foreach( $formes_juridiques as $key => $label ): ?>
+										<option value="<?php echo esc_attr($key); ?>" <?php selected( $org_forme_juridique, $key ); ?>>
+											<?php echo esc_html($label); ?>
+										</option>
+									<?php endforeach; ?>
+								</select>
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Auto-complété par l\'API gouvernementale', 'eventlist' ); ?>
+								</small>
 							</div>
 
 							<!-- SIREN -->
 							<div class="vendor_field">
 								<label class="control-label" for="org_siren">
-									<?php esc_html_e( 'SIREN', 'eventlist' ); ?> <sup style="color: red;">*</sup>
-									<span class="info-icon" title="<?php esc_attr_e( 'Numéro SIREN à 9 chiffres', 'eventlist' ); ?>">?</span>
+									<?php esc_html_e( 'SIREN', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-needed">⭐</sup>
 								</label>
 								<input id="org_siren" name="org_siren" type="text"
 									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_siren', true ) ); ?>"
@@ -586,7 +677,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 									pattern="[0-9]{9}"
 									maxlength="9"
 									required>
-								<small><?php esc_html_e( '9 chiffres uniquement', 'eventlist' ); ?></small>
+								<small><?php esc_html_e( 'Indiquez les 9 chiffres de votre numéro SIREN (auto-complété par API)', 'eventlist' ); ?></small>
 							</div>
 
 							<!-- Date de création -->
@@ -596,6 +687,186 @@ $user_meta_field = get_option( 'ova_register_form' );
 								</label>
 								<input id="org_date_creation" name="org_date_creation" type="date"
 									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_date_creation', true ) ); ?>">
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Auto-complété par l\'API gouvernementale', 'eventlist' ); ?>
+								</small>
+							</div>
+
+							<!-- Nombre d'effectifs (nouveau champ) -->
+							<div class="vendor_field">
+								<label class="control-label" for="org_nombre_effectifs">
+									<?php esc_html_e( 'Nombre d\'effectifs', 'eventlist' ); ?>
+								</label>
+								<input id="org_nombre_effectifs" name="org_nombre_effectifs" type="text"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_nombre_effectifs', true ) ); ?>"
+									placeholder="<?php esc_attr_e( 'Ex: 10 à 19 salariés', 'eventlist' ); ?>">
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Auto-complété par l\'API gouvernementale', 'eventlist' ); ?>
+								</small>
+							</div>
+
+							<!-- Séparateur avant l'adresse -->
+							<hr style="margin: 30px 0; border: 0; border-top: 1px solid #e2e8f0;">
+							<h3 style="margin-bottom: 20px; font-size: 18px;">
+								<?php esc_html_e( 'Adresse de l\'organisation', 'eventlist' ); ?>
+							</h3>
+
+							<!-- Recherche d'adresse via API -->
+							<div class="vendor_field autocomplete-wrapper">
+								<label class="control-label" for="org_address_search">
+									<?php esc_html_e( 'Rechercher une adresse', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-needed">⭐</sup>
+								</label>
+								<div class="autocomplete-input">
+									<input id="org_address_search" name="org_address_search" type="text"
+										placeholder="<?php esc_attr_e( 'Tapez une adresse...', 'eventlist' ); ?>">
+									<div class="autocomplete-loader"></div>
+								</div>
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Utilisez l\'API Adresse pour rechercher et sélectionner votre adresse', 'eventlist' ); ?>
+								</small>
+							</div>
+
+							<!-- Adresse ligne 1 -->
+							<div class="vendor_field">
+								<label class="control-label" for="user_address_line1">
+									<?php esc_html_e( 'Adresse de l\'Organisation', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-needed">⭐</sup>
+								</label>
+								<input id="user_address_line1" name="user_address_line1" type="text"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'user_address_line1', true ) ); ?>"
+									placeholder="<?php esc_attr_e( 'Numéro et nom de rue', 'eventlist' ); ?>"
+									required>
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Modifiable après sélection via API', 'eventlist' ); ?>
+								</small>
+							</div>
+
+							<!-- Adresse ligne 2 -->
+							<div class="vendor_field">
+								<label class="control-label" for="user_address_line2">
+									<?php esc_html_e( 'Complément d\'adresse', 'eventlist' ); ?>
+								</label>
+								<input id="user_address_line2" name="user_address_line2" type="text"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'user_address_line2', true ) ); ?>"
+									placeholder="<?php esc_attr_e( 'Bâtiment, appartement, etc.', 'eventlist' ); ?>">
+							</div>
+
+							<!-- Ville -->
+							<div class="vendor_field">
+								<label class="control-label" for="user_city">
+									<?php esc_html_e( 'Ville', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-needed">⭐</sup>
+								</label>
+								<input id="user_city" name="user_city" type="text"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'user_city', true ) ); ?>"
+									placeholder="<?php esc_attr_e( 'Ex: Paris', 'eventlist' ); ?>"
+									required>
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Auto-complété par l\'API Adresse, modifiable si besoin', 'eventlist' ); ?>
+								</small>
+							</div>
+
+							<!-- Code Postal -->
+							<div class="vendor_field">
+								<label class="control-label" for="user_postcode">
+									<?php esc_html_e( 'Code Postal', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-needed">⭐</sup>
+								</label>
+								<input id="user_postcode" name="user_postcode" type="text"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'user_postcode', true ) ); ?>"
+									placeholder="<?php esc_attr_e( '75001', 'eventlist' ); ?>"
+									pattern="[0-9]{5}"
+									maxlength="5"
+									required>
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Auto-complété par l\'API Adresse, modifiable si besoin', 'eventlist' ); ?>
+								</small>
+							</div>
+
+							<!-- Pays -->
+							<div class="vendor_field">
+								<label class="control-label" for="user_country">
+									<?php esc_html_e( 'Pays', 'eventlist' ); ?>
+									<sup class="symbol-required">*</sup>
+									<sup class="symbol-needed">⭐</sup>
+								</label>
+								<select id="user_country" name="user_country" required>
+									<option value=""><?php esc_html_e( '-- Sélectionner un pays --', 'eventlist' ); ?></option>
+									<?php
+									$selected_country = get_user_meta( $user_id, 'user_country', true );
+									$countries = array(
+										'FR' => __( 'France', 'eventlist' ),
+										'BE' => __( 'Belgique', 'eventlist' ),
+										'CH' => __( 'Suisse', 'eventlist' ),
+										'CA' => __( 'Canada', 'eventlist' ),
+										'LU' => __( 'Luxembourg', 'eventlist' ),
+										'MC' => __( 'Monaco', 'eventlist' ),
+									);
+									foreach( $countries as $code => $country_name ){
+										printf(
+											'<option value="%s" %s>%s</option>',
+											esc_attr( $code ),
+											selected( $selected_country, $code, false ),
+											esc_html( $country_name )
+										);
+									}
+									?>
+								</select>
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Auto-complété par l\'API Adresse, modifiable si besoin', 'eventlist' ); ?>
+								</small>
+							</div>
+
+							<!-- GPS (Latitude/Longitude) -->
+							<div class="vendor_field">
+								<label class="control-label" for="org_latitude">
+									<?php esc_html_e( 'GPS - Latitude', 'eventlist' ); ?>
+									<sup class="symbol-needed">⭐</sup>
+								</label>
+								<input id="org_latitude" name="org_latitude" type="text"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_latitude', true ) ); ?>"
+									placeholder="<?php esc_attr_e( 'Ex: 48.8566', 'eventlist' ); ?>"
+									step="any">
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Auto-complété par l\'API, nécessaire pour la géolocalisation', 'eventlist' ); ?>
+								</small>
+							</div>
+
+							<div class="vendor_field">
+								<label class="control-label" for="org_longitude">
+									<?php esc_html_e( 'GPS - Longitude', 'eventlist' ); ?>
+									<sup class="symbol-needed">⭐</sup>
+								</label>
+								<input id="org_longitude" name="org_longitude" type="text"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_longitude', true ) ); ?>"
+									placeholder="<?php esc_attr_e( 'Ex: 2.3522', 'eventlist' ); ?>"
+									step="any">
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Auto-complété par l\'API, nécessaire pour la géolocalisation', 'eventlist' ); ?>
+								</small>
+							</div>
+
+							<!-- Checkbox "Adresse visible en ligne" -->
+							<div class="vendor_field checkbox">
+								<div class="vendor_checkbox_field">
+									<input type="checkbox"
+										id="org_address_visible"
+										name="org_address_visible"
+										value="yes"
+										<?php checked( get_user_meta( $user_id, 'org_address_visible', true ), 'yes' ); ?> />
+									<label for="org_address_visible">
+										<sup class="symbol-visible">👁</sup>
+										<?php esc_html_e( 'Rendre mon adresse visible en ligne', 'eventlist' ); ?>
+									</label>
+								</div>
+								<small class="form-text text-muted">
+									<?php esc_html_e( 'Cochez cette case pour afficher l\'adresse sur votre profil public', 'eventlist' ); ?>
+								</small>
 							</div>
 
 							<div class="vendor_field">
@@ -614,6 +885,9 @@ $user_meta_field = get_option( 'ova_register_form' );
 				<!-- Présentation (Profil Public) (NOUVEAU) -->
 				<?php if( el_is_vendor() ){ ?>
 					<div id="author_presentation" class="tab-contents">
+						<h2><?php esc_html_e( 'Présentation de mon Organisation', 'eventlist' ); ?></h2>
+						<p class="description"><?php esc_html_e( 'Remplissez cette section pour créer votre vitrine et rassurer les utilisateurs ; un profil complet augmente la confiance et le nombre de vos participants.', 'eventlist' ); ?></p>
+
 						<div class="profile_public_notice">
 							<i class="icon_info"></i>
 							<p><?php esc_html_e( 'Les informations de cette section seront visibles sur votre profil public.', 'eventlist' ); ?></p>
@@ -621,16 +895,12 @@ $user_meta_field = get_option( 'ova_register_form' );
 
 						<form id="el_save_presentation" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
 
-							<!-- Description (déplacé depuis author_profile) -->
-							<div class="vendor_field textarea">
-								<label class="control-label" for="description"><?php esc_html_e( 'Description', 'eventlist' ); ?></label>
-								<textarea id="description" name="description" rows="8" placeholder="<?php esc_attr_e( 'Présentez votre organisation...', 'eventlist' ); ?>"><?php echo esc_textarea( get_user_meta( $user_id, 'description', true ) ); ?></textarea>
-								<small><?php esc_html_e( 'Les liens URL ne sont pas autorisés dans la description.', 'eventlist' ); ?></small>
-							</div>
-
-							<!-- Image à la une -->
+							<!-- Image -->
 							<div class="vendor_field">
-								<label class="control-label"><?php esc_html_e( 'Image de couverture', 'eventlist' ); ?></label>
+								<label class="control-label">
+									<?php esc_html_e( 'Image', 'eventlist' ); ?>
+									<sup class="symbol-visible">👁</sup>
+								</label>
 								<?php
 								$org_cover_image = get_user_meta( $user_id, 'org_cover_image', true );
 								?>
@@ -638,8 +908,10 @@ $user_meta_field = get_option( 'ova_register_form' );
 									<?php if( $org_cover_image ): ?>
 										<img class="preview_cover_image" src="<?php echo esc_url( wp_get_attachment_image_url($org_cover_image, 'large') ); ?>" style="max-width: 100%; height: auto; margin-bottom: 10px;">
 										<button type="button" class="button remove_cover_image"><?php esc_html_e( 'Retirer l\'image', 'eventlist' ); ?></button>
+									<?php else: ?>
+										<!-- TODO: Ajouter image par défaut Le Hiboo -->
 									<?php endif; ?>
-									<button type="button" class="button add_cover_image" data-uploader-title="<?php esc_attr_e( 'Sélectionner une image de couverture', 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( 'Utiliser cette image', 'eventlist' ); ?>">
+									<button type="button" class="button add_cover_image" data-uploader-title="<?php esc_attr_e( 'Sélectionner une image', 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( 'Utiliser cette image', 'eventlist' ); ?>">
 										<?php esc_html_e( 'Ajouter une image', 'eventlist' ); ?>
 									</button>
 									<input type="hidden" name="org_cover_image" class="org_cover_image_id" value="<?php echo esc_attr( $org_cover_image ); ?>">
@@ -647,24 +919,155 @@ $user_meta_field = get_option( 'ova_register_form' );
 								<small><?php esc_html_e( 'Format recommandé : 1200x400px', 'eventlist' ); ?></small>
 							</div>
 
+							<!-- Email de contact -->
+							<div class="vendor_field">
+								<label class="control-label" for="org_email_contact">
+									<?php esc_html_e( 'Email de contact', 'eventlist' ); ?>
+									<sup class="symbol-visible">👁</sup>
+								</label>
+								<input id="org_email_contact" name="org_email_contact" type="email"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_email_contact', true ) ); ?>"
+									placeholder="<?php esc_attr_e( 'contact@organisation.fr', 'eventlist' ); ?>">
+							</div>
+
+							<!-- Téléphone de contact -->
+							<div class="vendor_field">
+								<label class="control-label" for="org_phone_contact">
+									<?php esc_html_e( 'Téléphone de contact', 'eventlist' ); ?>
+									<sup class="symbol-visible">👁</sup>
+								</label>
+								<input id="org_phone_contact" name="org_phone_contact" type="tel"
+									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_phone_contact', true ) ); ?>"
+									placeholder="<?php esc_attr_e( '0612345678', 'eventlist' ); ?>">
+								<small><?php esc_html_e( 'Ne pas mettre d\'espace', 'eventlist' ); ?></small>
+							</div>
+
+							<!-- Description -->
+							<div class="vendor_field textarea">
+								<label class="control-label" for="description">
+									<?php esc_html_e( 'Description', 'eventlist' ); ?>
+									<sup class="symbol-visible">👁</sup>
+								</label>
+								<textarea id="description" name="description" rows="8" placeholder="<?php esc_attr_e( 'Présentez votre organisation...', 'eventlist' ); ?>"><?php echo esc_textarea( get_user_meta( $user_id, 'description', true ) ); ?></textarea>
+								<small><?php esc_html_e( 'Les liens URL ne sont pas autorisés dans la description.', 'eventlist' ); ?></small>
+							</div>
+
 							<!-- Page Web -->
 							<div class="vendor_field">
 								<label class="control-label" for="org_web">
-									<?php esc_html_e( 'Site Web de l\'organisation', 'eventlist' ); ?>
+									<?php esc_html_e( 'Page Web de l\'organisation', 'eventlist' ); ?>
+									<sup class="symbol-visible">👁</sup>
 								</label>
 								<input id="org_web" name="org_web" type="url"
 									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_web', true ) ); ?>"
 									placeholder="https://www.exemple.com">
+								<small><?php esc_html_e( 'Note: Votre site Web devrait mettre un lien vers Le Hiboo en retour', 'eventlist' ); ?></small>
 							</div>
 
-							<!-- Vidéo YouTube -->
+							<!-- Vidéo de présentation -->
 							<div class="vendor_field">
 								<label class="control-label" for="org_video_youtube">
-									<?php esc_html_e( 'Vidéo de présentation (YouTube)', 'eventlist' ); ?>
+									<?php esc_html_e( 'Vidéo de présentation', 'eventlist' ); ?>
+									<sup class="symbol-visible">👁</sup>
 								</label>
 								<input id="org_video_youtube" name="org_video_youtube" type="url"
 									value="<?php echo esc_attr( get_user_meta( $user_id, 'org_video_youtube', true ) ); ?>"
-									placeholder="https://www.youtube.com/watch?v=...">
+									placeholder="<?php esc_attr_e( 'Lien d\'intégration YouTube, Vimeo, etc.', 'eventlist' ); ?>">
+							</div>
+
+							<!-- Type d'événements organisés -->
+							<div class="vendor_field">
+								<label class="control-label">
+									<?php esc_html_e( 'Type d\'événements organisés', 'eventlist' ); ?>
+								</label>
+								<?php
+								$org_event_type = get_user_meta( $user_id, 'org_event_type', true );
+								?>
+								<div style="display: flex; gap: 20px;">
+									<label>
+										<input type="radio" name="org_event_type" value="interieur" <?php checked( $org_event_type, 'interieur' ); ?>>
+										<?php esc_html_e( 'Intérieur', 'eventlist' ); ?>
+									</label>
+									<label>
+										<input type="radio" name="org_event_type" value="exterieur" <?php checked( $org_event_type, 'exterieur' ); ?>>
+										<?php esc_html_e( 'Extérieur', 'eventlist' ); ?>
+									</label>
+									<label>
+										<input type="radio" name="org_event_type" value="interieur_exterieur" <?php checked( $org_event_type, 'interieur_exterieur' ); ?>>
+										<?php esc_html_e( 'Intérieur & Extérieur', 'eventlist' ); ?>
+									</label>
+								</div>
+							</div>
+
+							<!-- Stationnement -->
+							<div class="vendor_field">
+								<label class="control-label" for="org_stationnement">
+									<?php esc_html_e( 'Stationnement', 'eventlist' ); ?>
+								</label>
+								<textarea id="org_stationnement" name="org_stationnement" rows="3" placeholder="<?php esc_attr_e( 'Informations sur les possibilités de stationnement...', 'eventlist' ); ?>"><?php echo esc_textarea( get_user_meta( $user_id, 'org_stationnement', true ) ); ?></textarea>
+							</div>
+
+							<!-- Accessibilité PMR -->
+							<div class="vendor_field">
+								<label class="control-label">
+									<?php esc_html_e( 'Accessibilité PMR', 'eventlist' ); ?>
+								</label>
+								<?php
+								$org_pmr = get_user_meta( $user_id, 'org_pmr', true );
+								?>
+								<div style="display: flex; gap: 20px; margin-bottom: 10px;">
+									<label>
+										<input type="radio" name="org_pmr" value="oui" <?php checked( $org_pmr, 'oui' ); ?>>
+										<?php esc_html_e( 'Oui', 'eventlist' ); ?>
+									</label>
+									<label>
+										<input type="radio" name="org_pmr" value="non" <?php checked( $org_pmr, 'non' ); ?>>
+										<?php esc_html_e( 'Non', 'eventlist' ); ?>
+									</label>
+								</div>
+								<textarea id="org_pmr_infos" name="org_pmr_infos" rows="2" placeholder="<?php esc_attr_e( 'Informations complémentaires...', 'eventlist' ); ?>"><?php echo esc_textarea( get_user_meta( $user_id, 'org_pmr_infos', true ) ); ?></textarea>
+							</div>
+
+							<!-- Restauration sur place -->
+							<div class="vendor_field">
+								<label class="control-label">
+									<?php esc_html_e( 'Restauration sur place', 'eventlist' ); ?>
+								</label>
+								<?php
+								$org_restauration = get_user_meta( $user_id, 'org_restauration', true );
+								?>
+								<div style="display: flex; gap: 20px; margin-bottom: 10px;">
+									<label>
+										<input type="radio" name="org_restauration" value="oui" <?php checked( $org_restauration, 'oui' ); ?>>
+										<?php esc_html_e( 'Oui', 'eventlist' ); ?>
+									</label>
+									<label>
+										<input type="radio" name="org_restauration" value="non" <?php checked( $org_restauration, 'non' ); ?>>
+										<?php esc_html_e( 'Non', 'eventlist' ); ?>
+									</label>
+								</div>
+								<textarea id="org_restauration_infos" name="org_restauration_infos" rows="2" placeholder="<?php esc_attr_e( 'Informations complémentaires...', 'eventlist' ); ?>"><?php echo esc_textarea( get_user_meta( $user_id, 'org_restauration_infos', true ) ); ?></textarea>
+							</div>
+
+							<!-- Boisson sur place -->
+							<div class="vendor_field">
+								<label class="control-label">
+									<?php esc_html_e( 'Boisson sur place', 'eventlist' ); ?>
+								</label>
+								<?php
+								$org_boisson = get_user_meta( $user_id, 'org_boisson', true );
+								?>
+								<div style="display: flex; gap: 20px; margin-bottom: 10px;">
+									<label>
+										<input type="radio" name="org_boisson" value="oui" <?php checked( $org_boisson, 'oui' ); ?>>
+										<?php esc_html_e( 'Oui', 'eventlist' ); ?>
+									</label>
+									<label>
+										<input type="radio" name="org_boisson" value="non" <?php checked( $org_boisson, 'non' ); ?>>
+										<?php esc_html_e( 'Non', 'eventlist' ); ?>
+									</label>
+								</div>
+								<textarea id="org_boisson_infos" name="org_boisson_infos" rows="2" placeholder="<?php esc_attr_e( 'Informations complémentaires...', 'eventlist' ); ?>"><?php echo esc_textarea( get_user_meta( $user_id, 'org_boisson_infos', true ) ); ?></textarea>
 							</div>
 
 							<div class="vendor_field">
@@ -679,94 +1082,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 					</div>
 				<?php } ?>
 
-				<!-- Localisation (NOUVEAU - V1 Le Hiboo) -->
-				<div id="author_localisation" class="tab-contents">
-					<h2><?php esc_html_e( 'Localisation', 'eventlist' ); ?></h2>
-					<p class="description"><?php esc_html_e( 'Renseignez l\'adresse complète de votre organisation.', 'eventlist' ); ?></p>
-
-					<form id="el_save_localisation" enctype="multipart/form-data" method="post" autocomplete="off">
-
-						<!-- Pays -->
-						<div class="vendor_field">
-							<label class="control-label" for="user_country">
-								<?php esc_html_e( 'Pays', 'eventlist' ); ?> <sup style="color: red;">*</sup>
-							</label>
-							<select id="user_country" name="user_country" required>
-								<option value=""><?php esc_html_e( '-- Sélectionner un pays --', 'eventlist' ); ?></option>
-								<?php
-								$selected_country = get_user_meta( $user_id, 'user_country', true );
-								$countries = array(
-									'FR' => __( 'France', 'eventlist' ),
-									'BE' => __( 'Belgique', 'eventlist' ),
-									'CH' => __( 'Suisse', 'eventlist' ),
-									'CA' => __( 'Canada', 'eventlist' ),
-									'LU' => __( 'Luxembourg', 'eventlist' ),
-									'MC' => __( 'Monaco', 'eventlist' ),
-								);
-								foreach( $countries as $code => $country_name ){
-									printf(
-										'<option value="%s" %s>%s</option>',
-										esc_attr( $code ),
-										selected( $selected_country, $code, false ),
-										esc_html( $country_name )
-									);
-								}
-								?>
-							</select>
-						</div>
-
-						<!-- Ville -->
-						<div class="vendor_field">
-							<label class="control-label" for="user_city">
-								<?php esc_html_e( 'Ville', 'eventlist' ); ?> <sup style="color: red;">*</sup>
-							</label>
-							<input id="user_city" name="user_city" type="text"
-								value="<?php echo esc_attr( get_user_meta( $user_id, 'user_city', true ) ); ?>"
-								placeholder="<?php esc_attr_e( 'Ex: Paris', 'eventlist' ); ?>"
-								required>
-						</div>
-
-						<!-- Code Postal -->
-						<div class="vendor_field">
-							<label class="control-label" for="user_postcode">
-								<?php esc_html_e( 'Code Postal', 'eventlist' ); ?> <sup style="color: red;">*</sup>
-							</label>
-							<input id="user_postcode" name="user_postcode" type="text"
-								value="<?php echo esc_attr( get_user_meta( $user_id, 'user_postcode', true ) ); ?>"
-								placeholder="<?php esc_attr_e( 'Ex: 75001', 'eventlist' ); ?>"
-								required>
-						</div>
-
-						<!-- Adresse complète (ligne 1) -->
-						<div class="vendor_field">
-							<label class="control-label" for="user_address_line1">
-								<?php esc_html_e( 'Adresse (ligne 1)', 'eventlist' ); ?>
-							</label>
-							<input id="user_address_line1" name="user_address_line1" type="text"
-								value="<?php echo esc_attr( get_user_meta( $user_id, 'user_address_line1', true ) ); ?>"
-								placeholder="<?php esc_attr_e( 'Numéro et nom de rue', 'eventlist' ); ?>">
-						</div>
-
-						<!-- Adresse complète (ligne 2) -->
-						<div class="vendor_field">
-							<label class="control-label" for="user_address_line2">
-								<?php esc_html_e( 'Adresse (ligne 2)', 'eventlist' ); ?>
-							</label>
-							<input id="user_address_line2" name="user_address_line2" type="text"
-								value="<?php echo esc_attr( get_user_meta( $user_id, 'user_address_line2', true ) ); ?>"
-								placeholder="<?php esc_attr_e( 'Complément d\'adresse (optionnel)', 'eventlist' ); ?>">
-						</div>
-
-						<div class="vendor_field">
-							<input type="submit" name="el_update_localisation" class="button el_submit_btn" value="<?php esc_attr_e( 'Enregistrer', 'eventlist' ); ?>" />
-							<span class="ova__loader">
-								<img src="<?php echo esc_url( includes_url() . 'js/tinymce/skins/lightgray/img//loader.gif' ); ?>" />
-							</span>
-						</div>
-
-						<?php wp_nonce_field( 'el_update_localisation_nonce', 'el_update_localisation_nonce' ); ?>
-					</form>
-				</div>
+				<!-- Onglet Localisation supprimé - fusionné dans "Mon Organisation" -->
 
 
 				<!-- Social (existant - on le garde pour l'instant) -->
@@ -807,49 +1123,77 @@ $user_meta_field = get_option( 'ova_register_form' );
 
 				<!-- Password -->
 				<div id="author_password" class="tab-contents">
+					<h2><?php esc_html_e( 'Modifier mon mot de passe de connexion', 'eventlist' ); ?></h2>
+					<p class="description"><?php esc_html_e( 'Pour des raisons de sécurité, veuillez confirmer votre mot de passe actuel avant de définir un nouveau mot de passe.', 'eventlist' ); ?></p>
+
 					<form id="el_save_password" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
 
 						<!-- Old Password -->
 						<div class="wrap_old_password vendor_field">
-							<label class="control-label" for="old_password"><?php esc_html_e( 'Old Password', 'eventlist' ); ?></label>
+							<label class="control-label" for="old_password">
+								<?php esc_html_e( 'Ancien mot de passe', 'eventlist' ); ?>
+								<sup class="symbol-required">*</sup>
+							</label>
 							<div class="show_pass">
 								<i class="dashicons dashicons-hidden"></i>
 							</div>
-							<input autocomplete="off" id="old_password" value="" name="old_password" type="password" placeholder="<?php esc_html_e( 'Old Password', 'eventlist' ) ?>" required>
-							<div class="check_old_pass" style="display: none;"><?php esc_html_e( 'Please Check Again', 'eventlist' ); ?></div>
+							<input autocomplete="off" id="old_password" value="" name="old_password" type="password" placeholder="<?php esc_html_e( 'Entrez votre mot de passe actuel', 'eventlist' ) ?>" required>
+							<div class="check_old_pass" style="display: none;"><?php esc_html_e( 'Veuillez vérifier à nouveau', 'eventlist' ); ?></div>
+							<small>
+								<a href="<?php echo wp_lostpassword_url(); ?>" target="_blank">
+									<?php esc_html_e( 'Mot de passe oublié ?', 'eventlist' ); ?>
+								</a>
+							</small>
 						</div>
 
 						<!--New Password -->
 						<div class="wrap_new_password vendor_field">
-							<label class="control-label" for="new_password"><?php esc_html_e( 'New Password', 'eventlist' ); ?></label>
+							<label class="control-label" for="new_password">
+								<?php esc_html_e( 'Nouveau mot de passe', 'eventlist' ); ?>
+								<sup class="symbol-required">*</sup>
+							</label>
 							<div class="show_pass">
 								<i class="dashicons dashicons-hidden"></i>
 							</div>
-							<input autocomplete="off" id="new_password" value="" name="new_password" type="password" placeholder="<?php esc_html_e( 'New Password', 'eventlist' ) ?>" required>
+							<input autocomplete="off" id="new_password" value="" name="new_password" type="password" placeholder="<?php esc_html_e( 'Nouveau mot de passe', 'eventlist' ) ?>" required>
+							<!-- Les règles de validation sont ajoutées dynamiquement par profile-validation.js -->
 						</div>
 
 						<!-- Confirm Password -->
 						<div class="wrap_confirm_password vendor_field">
-							<label class="control-label" for="confirm_password"><?php esc_html_e( 'Confirm Password', 'eventlist' ); ?></label>
+							<label class="control-label" for="confirm_password">
+								<?php esc_html_e( 'Confirmer le nouveau mot de passe', 'eventlist' ); ?>
+								<sup class="symbol-required">*</sup>
+							</label>
 							<div class="show_pass">
 								<i class="dashicons dashicons-hidden"></i>
 							</div>
-							<input id="confirm_password" autocomplete="off" value="" name="confirm_password" type="password" placeholder="<?php esc_html_e( 'Confirm Password', 'eventlist' ) ?>" required>
+							<input id="confirm_password" autocomplete="off" value="" name="confirm_password" type="password" placeholder="<?php esc_html_e( 'Retapez le nouveau mot de passe', 'eventlist' ) ?>" required>
 							<div class="check"></div>
 						</div>
-						<input type="submit" name="el_update_password" class="el_submit_btn" value="<?php esc_html_e( 'Update Password', 'eventlist' ); ?>" class="el_update_password" />
+						<input type="submit" name="el_update_password" class="el_submit_btn" value="<?php esc_html_e( 'Mettre à jour mon mot de passe', 'eventlist' ); ?>" class="el_update_password" />
 						
 						<?php wp_nonce_field( 'el_update_password_nonce', 'el_update_password_nonce' ); ?>
 
 					</form>
 				</div>
-				
+
 				<?php if( el_is_vendor() && apply_filters( 'el_profile_show_bank', true ) ){ ?>
 					<div id="author_bank" class="tab-contents">
-						
+
+						<!-- Message "À venir prochainement" selon CDC -->
+						<div class="coming-soon-message">
+							<div class="icon">💳</div>
+							<h3><?php esc_html_e( 'Informations de paiement', 'eventlist' ); ?></h3>
+							<p><?php esc_html_e( 'Cette fonctionnalité sera disponible prochainement.', 'eventlist' ); ?></p>
+							<p><?php esc_html_e( 'Vous pourrez bientôt configurer vos méthodes de paiement pour recevoir vos revenus.', 'eventlist' ); ?></p>
+						</div>
+
+						<!-- Formulaire masqué temporairement - à réactiver en V2 -->
+						<?php if( false ): // Désactivé temporairement ?>
 						<form id="el_save_bank" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
 
-							<?php $_prefix = OVA_METABOX_EVENT; 
+							<?php $_prefix = OVA_METABOX_EVENT;
 								$id_author = wp_get_current_user()->ID;
 								$payout_method_user = get_user_meta($id_author, 'payout_method', true);
 
@@ -1065,6 +1409,8 @@ $user_meta_field = get_option( 'ova_register_form' );
 							<?php wp_nonce_field( 'el_update_payout_method_nonce', 'el_update_payout_method_nonce' ); ?>
 
 						</form>
+						<?php endif; // Fin du if(false) pour masquer le formulaire ?>
+
 					</div>
 				<?php } ?>
 

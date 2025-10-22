@@ -232,6 +232,12 @@ class EL_Assets{
 		// Profile Navigation (Vertical Tabs) - V1 Le Hiboo
 		if ( isset( $_GET['vendor'] ) && $_GET['vendor'] == 'profile' ) {
 			wp_enqueue_script('el_profile_navigation', EL_PLUGIN_URI.'assets/js/frontend/profile-navigation.js', array('jquery'),false,true );
+
+			// API data.gouv.fr - V1 Le Hiboo CDC
+			wp_enqueue_script('el_api_datagouv', EL_PLUGIN_URI.'assets/js/frontend/api-datagouv.js', array('jquery'),'1.0.0',true );
+
+			// Profile Validation (Score + Symboles + Validation) - V1 Le Hiboo CDC
+			wp_enqueue_script('el_profile_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-validation.js', array('jquery'),'1.0.0',true );
 		}
 
 		// Event Form Navigation (Vertical Tabs) - V1 Le Hiboo - Phase 6

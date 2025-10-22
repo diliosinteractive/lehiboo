@@ -1,0 +1,407 @@
+/* ==================================
+   VALIDATION DES ONGLETS & API AUTOCOMPLETE
+   V1 Le Hiboo
+   ================================== */
+
+/* Légende des symboles */
+.profile-legend {
+	background: #f8f9fa;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 16px 20px;
+	margin-bottom: 24px;
+
+	h4 {
+		margin: 0 0 12px 0;
+		font-size: 14px;
+		font-weight: 600;
+		color: #2d3748;
+	}
+
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px;
+
+		li {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			font-size: 13px;
+			color: #4a5568;
+
+			.symbol {
+				font-weight: 600;
+				font-size: 16px;
+
+				&.required { color: #e53e3e; } // Rouge pour *
+				&.needed { color: #FF6B35; } // Orange pour ⭐
+				&.visible { color: #3182ce; } // Bleu pour 👁
+			}
+		}
+	}
+}
+
+/* Symboles dans les labels */
+label {
+	sup, .field-symbol {
+		margin-left: 4px;
+		font-size: 14px;
+
+		&.symbol-required { color: #e53e3e; } // *
+		&.symbol-needed { color: #FF6B35; } // ⭐
+		&.symbol-visible { color: #3182ce; } // 👁
+	}
+}
+
+/* Validation des onglets - Indicateur visuel */
+.profile_tabs_nav {
+	.profile_tab_item {
+		position: relative;
+
+		// Indicateur de validation
+		&::after {
+			content: '';
+			display: none;
+			position: absolute;
+			right: 20px;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 20px;
+			height: 20px;
+			background: #48bb78;
+			border-radius: 50%;
+
+			// Checkmark
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+			background-size: 14px;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+
+		// Onglet validé
+		&.validated {
+			&::after {
+				display: block;
+			}
+
+			a {
+				padding-right: 50px; // Espace pour le checkmark
+			}
+		}
+
+		// Onglet avec erreurs
+		&.has-errors {
+			&::after {
+				display: block;
+				background: #f56565;
+				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E");
+			}
+		}
+	}
+}
+
+/* Score de complétion du profil - Design discret intégré */
+.profile-completion-score {
+	background: transparent;
+	padding: 16px 20px;
+	margin: 16px 0;
+	border-top: 1px solid #e2e8f0;
+	border-bottom: 1px solid #e2e8f0;
+
+	.score-label {
+		font-size: 11px;
+		color: #718096;
+		margin-bottom: 6px;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		font-weight: 600;
+	}
+
+	.score-value {
+		font-size: 22px;
+		font-weight: 700;
+		margin-bottom: 8px;
+		color: #FF6B35;
+		line-height: 1;
+	}
+
+	.score-bar {
+		background: #f1f3f5;
+		height: 6px;
+		border-radius: 3px;
+		overflow: hidden;
+		margin-bottom: 8px;
+		position: relative;
+
+		.score-fill {
+			height: 100%;
+			background: linear-gradient(90deg, #FF6B35 0%, #F7931E 100%);
+			border-radius: 3px;
+			transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+			position: relative;
+		}
+	}
+
+	.score-message {
+		font-size: 11px;
+		color: #718096;
+		font-weight: 400;
+		line-height: 1.4;
+	}
+}
+
+// Animation shimmer retirée pour plus de discrétion
+
+/* API Autocomplétion - Résultats */
+.api-autocomplete-results {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	background: #fff;
+	border: 1px solid #e2e8f0;
+	border-top: none;
+	border-radius: 0 0 8px 8px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	max-height: 300px;
+	overflow-y: auto;
+	z-index: 1000;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: none;
+
+	li {
+		padding: 12px 16px;
+		cursor: pointer;
+		border-bottom: 1px solid #f7fafc;
+		transition: background 0.2s;
+
+		strong {
+			color: #2d3748;
+			font-weight: 600;
+			display: block;
+			margin-bottom: 4px;
+		}
+
+		small {
+			color: #718096;
+			font-size: 12px;
+		}
+
+		&:hover {
+			background: #f7fafc;
+		}
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+
+	&.org-results {
+		strong {
+			color: #FF6B35;
+		}
+	}
+
+	&.address-results {
+		strong {
+			color: #3182ce;
+		}
+	}
+}
+
+/* Wrapper pour champ avec autocomplétion */
+.autocomplete-wrapper {
+	position: relative;
+
+	.autocomplete-input {
+		position: relative;
+
+		input {
+			padding-right: 40px;
+		}
+
+		// Icône de recherche
+		&::after {
+			content: '🔍';
+			position: absolute;
+			right: 12px;
+			top: 50%;
+			transform: translateY(-50%);
+			pointer-events: none;
+			opacity: 0.5;
+		}
+	}
+
+	// Loader pendant la recherche
+	.autocomplete-loader {
+		position: absolute;
+		right: 12px;
+		top: 50%;
+		transform: translateY(-50%);
+		display: none;
+
+		&.is-loading {
+			display: block;
+		}
+
+		&::after {
+			content: '';
+			display: block;
+			width: 16px;
+			height: 16px;
+			border: 2px solid #e2e8f0;
+			border-top-color: #FF6B35;
+			border-radius: 50%;
+			animation: spin 0.6s linear infinite;
+		}
+	}
+}
+
+@keyframes spin {
+	to { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* Champs en readonly après API */
+input[readonly].api-filled {
+	background: #f7fafc;
+	border-color: #cbd5e0;
+	cursor: not-allowed;
+
+	&:focus {
+		border-color: #cbd5e0;
+		box-shadow: none;
+	}
+}
+
+/* Bouton pour réinitialiser la recherche */
+.reset-api-search {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 16px;
+	background: #fff;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	color: #718096;
+	font-size: 13px;
+	cursor: pointer;
+	transition: all 0.2s;
+	margin-top: 8px;
+
+	&:hover {
+		background: #f7fafc;
+		border-color: #cbd5e0;
+		color: #4a5568;
+	}
+
+	&::before {
+		content: '↻';
+		font-size: 16px;
+	}
+}
+
+/* Validation des champs en temps réel */
+.vendor_field {
+	&.field-valid {
+		input, select, textarea {
+			border-color: #48bb78;
+
+			&:focus {
+				border-color: #48bb78;
+				box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
+			}
+		}
+	}
+
+	&.field-error {
+		input, select, textarea {
+			border-color: #f56565;
+
+			&:focus {
+				border-color: #f56565;
+				box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.1);
+			}
+		}
+
+		.field-error-message {
+			display: block;
+			color: #f56565;
+			font-size: 12px;
+			margin-top: 6px;
+		}
+	}
+
+	.field-error-message {
+		display: none;
+	}
+}
+
+/* Responsive mobile */
+@media (max-width: 768px) {
+	.profile-legend {
+		padding: 12px 16px;
+
+		ul {
+			flex-direction: column;
+			gap: 8px;
+		}
+	}
+
+	.profile-completion-score {
+		padding: 16px;
+
+		.score-value {
+			font-size: 28px;
+		}
+	}
+
+	.profile_tabs_nav {
+		.profile_tab_item {
+			&::after {
+				right: 12px;
+				width: 18px;
+				height: 18px;
+				background-size: 12px;
+			}
+
+			&.validated a {
+				padding-right: 40px;
+			}
+		}
+	}
+}
+
+/* Message "À venir prochainement" */
+.coming-soon-message {
+	text-align: center;
+	padding: 60px 40px;
+	background: linear-gradient(135deg, #ff601f 0%, #e86c60 100%);
+	border-radius: 12px;
+	color: #fff;
+
+	.icon {
+		font-size: 48px;
+		margin-bottom: 16px;
+		opacity: 0.9;
+	}
+
+	h3 {
+		margin: 0 0 12px 0;
+		font-size: 24px;
+		font-weight: 600;
+	}
+
+	p {
+		margin: 0;
+		font-size: 15px;
+		opacity: 0.9;
+		line-height: 1.6;
+		color: #ffffff!important;
+	}
+}

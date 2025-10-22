@@ -973,13 +973,28 @@ if( !class_exists( 'El_Ajax' ) ){
 			$first_name = isset( $post_data['first_name'] ) ? sanitize_text_field( $post_data['first_name'] ) : '';
 			$last_name = isset( $post_data['last_name'] ) ? sanitize_text_field( $post_data['last_name'] ) : '';
 			$display_name = isset( $post_data['display_name'] ) ? sanitize_text_field( $post_data['display_name'] ) : '';
-			$user_email = isset( $post_data['user_email'] ) ? sanitize_text_field( $post_data['user_email'] ) : '';
+			$user_email = isset( $post_data['user_email'] ) ? sanitize_email( $post_data['user_email'] ) : '';
 			$user_job = isset( $post_data['user_job'] ) ? sanitize_text_field( $post_data['user_job'] ) : '';
 			$user_phone = isset( $post_data['user_phone'] ) ? sanitize_text_field( $post_data['user_phone'] ) : '';
 			$user_professional_email = isset( $post_data['user_professional_email'] ) ? sanitize_email( $post_data['user_professional_email'] ) : ''; // V1 Le Hiboo
 			$user_address = isset( $post_data['user_address'] ) ? sanitize_text_field( $post_data['user_address'] ) : '';
 			$description = isset( $post_data['description'] ) ? sanitize_textarea_field( $post_data['description'] ) : '';
 			$author_id_image = isset( $post_data['author_id_image'] ) ? sanitize_text_field( $post_data['author_id_image'] ) : '';
+
+			// V1 Le Hiboo - Validation de l'email unique
+			if ( !empty( $user_email ) ) {
+				$current_user = get_userdata( $user_id );
+				// Vérifier si l'email a changé
+				if ( $current_user->user_email !== $user_email ) {
+					// Vérifier si l'email existe déjà
+					if ( email_exists( $user_email ) ) {
+						wp_send_json_error( array(
+							'message' => __( 'Cette adresse email est déjà utilisée par un autre compte.', 'eventlist' )
+						) );
+						wp_die();
+					}
+				}
+			}
 
 			wp_update_user( array( 'ID' => $user_id, 'display_name' =>  $display_name, 'user_email' => $user_email ) );
 
@@ -1085,9 +1100,24 @@ if( !class_exists( 'El_Ajax' ) ){
 
 			// Sanitize et enregistrer les données
 			$org_name = isset( $post_data['org_name'] ) ? sanitize_text_field( $post_data['org_name'] ) : '';
+			$org_display_name = isset( $post_data['org_display_name'] ) ? sanitize_text_field( $post_data['org_display_name'] ) : '';
 			$org_statut_juridique = isset( $post_data['org_statut_juridique'] ) ? sanitize_text_field( $post_data['org_statut_juridique'] ) : '';
+			$org_forme_juridique = isset( $post_data['org_forme_juridique'] ) ? sanitize_text_field( $post_data['org_forme_juridique'] ) : '';
 			$org_siren = isset( $post_data['org_siren'] ) ? sanitize_text_field( $post_data['org_siren'] ) : '';
 			$org_date_creation = isset( $post_data['org_date_creation'] ) ? sanitize_text_field( $post_data['org_date_creation'] ) : '';
+			$org_nombre_effectifs = isset( $post_data['org_nombre_effectifs'] ) ? sanitize_text_field( $post_data['org_nombre_effectifs'] ) : '';
+
+			// Adresse (fusionnée depuis Localisation)
+			$user_address_line1 = isset( $post_data['user_address_line1'] ) ? sanitize_text_field( $post_data['user_address_line1'] ) : '';
+			$user_address_line2 = isset( $post_data['user_address_line2'] ) ? sanitize_text_field( $post_data['user_address_line2'] ) : '';
+			$user_city = isset( $post_data['user_city'] ) ? sanitize_text_field( $post_data['user_city'] ) : '';
+			$user_postcode = isset( $post_data['user_postcode'] ) ? sanitize_text_field( $post_data['user_postcode'] ) : '';
+			$user_country = isset( $post_data['user_country'] ) ? sanitize_text_field( $post_data['user_country'] ) : '';
+
+			// GPS
+			$org_latitude = isset( $post_data['org_latitude'] ) ? sanitize_text_field( $post_data['org_latitude'] ) : '';
+			$org_longitude = isset( $post_data['org_longitude'] ) ? sanitize_text_field( $post_data['org_longitude'] ) : '';
+			$org_address_visible = isset( $post_data['org_address_visible'] ) ? 'yes' : 'no';
 
 			// Tableaux (checkboxes multiples)
 			$org_role = isset( $post_data['org_role'] ) && is_array( $post_data['org_role'] )
@@ -1106,11 +1136,26 @@ if( !class_exists( 'El_Ajax' ) ){
 
 			// Enregistrer les meta
 			update_user_meta( $user_id, 'org_name', $org_name );
+			update_user_meta( $user_id, 'org_display_name', $org_display_name );
 			update_user_meta( $user_id, 'org_role', $org_role );
 			update_user_meta( $user_id, 'org_statut_juridique', $org_statut_juridique );
+			update_user_meta( $user_id, 'org_forme_juridique', $org_forme_juridique );
 			update_user_meta( $user_id, 'org_type_structure', $org_type_structure );
 			update_user_meta( $user_id, 'org_siren', $org_siren );
 			update_user_meta( $user_id, 'org_date_creation', $org_date_creation );
+			update_user_meta( $user_id, 'org_nombre_effectifs', $org_nombre_effectifs );
+
+			// Adresse
+			update_user_meta( $user_id, 'user_address_line1', $user_address_line1 );
+			update_user_meta( $user_id, 'user_address_line2', $user_address_line2 );
+			update_user_meta( $user_id, 'user_city', $user_city );
+			update_user_meta( $user_id, 'user_postcode', $user_postcode );
+			update_user_meta( $user_id, 'user_country', $user_country );
+
+			// GPS
+			update_user_meta( $user_id, 'org_latitude', $org_latitude );
+			update_user_meta( $user_id, 'org_longitude', $org_longitude );
+			update_user_meta( $user_id, 'org_address_visible', $org_address_visible );
 
 			wp_send_json_success( array( 'message' => __( 'Informations de l\'organisation enregistrées avec succès', 'eventlist' ) ) );
 			wp_die();
@@ -1149,14 +1194,36 @@ if( !class_exists( 'El_Ajax' ) ){
 			}
 
 			$org_cover_image = isset( $post_data['org_cover_image'] ) ? absint( $post_data['org_cover_image'] ) : 0;
+			$org_email_contact = isset( $post_data['org_email_contact'] ) ? sanitize_email( $post_data['org_email_contact'] ) : '';
+			$org_phone_contact = isset( $post_data['org_phone_contact'] ) ? sanitize_text_field( $post_data['org_phone_contact'] ) : '';
 			$org_web = isset( $post_data['org_web'] ) ? esc_url_raw( $post_data['org_web'] ) : '';
 			$org_video_youtube = isset( $post_data['org_video_youtube'] ) ? esc_url_raw( $post_data['org_video_youtube'] ) : '';
+
+			// Nouveaux champs CDC
+			$org_event_type = isset( $post_data['org_event_type'] ) ? sanitize_text_field( $post_data['org_event_type'] ) : '';
+			$org_stationnement = isset( $post_data['org_stationnement'] ) ? sanitize_textarea_field( $post_data['org_stationnement'] ) : '';
+			$org_pmr = isset( $post_data['org_pmr'] ) ? sanitize_text_field( $post_data['org_pmr'] ) : '';
+			$org_pmr_infos = isset( $post_data['org_pmr_infos'] ) ? sanitize_textarea_field( $post_data['org_pmr_infos'] ) : '';
+			$org_restauration = isset( $post_data['org_restauration'] ) ? sanitize_text_field( $post_data['org_restauration'] ) : '';
+			$org_restauration_infos = isset( $post_data['org_restauration_infos'] ) ? sanitize_textarea_field( $post_data['org_restauration_infos'] ) : '';
+			$org_boisson = isset( $post_data['org_boisson'] ) ? sanitize_text_field( $post_data['org_boisson'] ) : '';
+			$org_boisson_infos = isset( $post_data['org_boisson_infos'] ) ? sanitize_textarea_field( $post_data['org_boisson_infos'] ) : '';
 
 			// Enregistrer les meta
 			update_user_meta( $user_id, 'description', $description );
 			update_user_meta( $user_id, 'org_cover_image', $org_cover_image );
+			update_user_meta( $user_id, 'org_email_contact', $org_email_contact );
+			update_user_meta( $user_id, 'org_phone_contact', $org_phone_contact );
 			update_user_meta( $user_id, 'org_web', $org_web );
 			update_user_meta( $user_id, 'org_video_youtube', $org_video_youtube );
+			update_user_meta( $user_id, 'org_event_type', $org_event_type );
+			update_user_meta( $user_id, 'org_stationnement', $org_stationnement );
+			update_user_meta( $user_id, 'org_pmr', $org_pmr );
+			update_user_meta( $user_id, 'org_pmr_infos', $org_pmr_infos );
+			update_user_meta( $user_id, 'org_restauration', $org_restauration );
+			update_user_meta( $user_id, 'org_restauration_infos', $org_restauration_infos );
+			update_user_meta( $user_id, 'org_boisson', $org_boisson );
+			update_user_meta( $user_id, 'org_boisson_infos', $org_boisson_infos );
 
 			wp_send_json_success( array( 'message' => __( 'Présentation enregistrée avec succès', 'eventlist' ) ) );
 			wp_die();
