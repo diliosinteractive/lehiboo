@@ -17805,34 +17805,16 @@ body.rtl .el_export_popup_wrapper .el_export_container .el_export_pagination {
   width: 100%;
 }
 
-.author_page_modern {
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 40px;
+.author_page_fullwidth {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 0 60px 0;
+  padding: 40px 0 60px 0;
 }
-@media (max-width: 991px) {
-  .author_page_modern {
-    grid-template-columns: 1fr;
-    gap: 30px;
+@media (max-width: 768px) {
+  .author_page_fullwidth {
+    padding: 20px 0 40px 0;
   }
-}
-.author_page_modern .author_page_sidebar {
-  position: relative;
-}
-@media (min-width: 992px) {
-  .author_page_modern .author_page_sidebar {
-    position: sticky;
-    top: 120px;
-    align-self: flex-start;
-    max-height: calc(100vh - 140px);
-    overflow-y: auto;
-  }
-}
-.author_page_modern .author_main_content {
-  min-width: 0;
 }
 
 .sidebar_info_card {

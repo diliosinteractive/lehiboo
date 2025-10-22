@@ -76,14 +76,7 @@ if ( $author_id_image ) {
 <div class="wrap_site <?php echo esc_attr($global_layout); ?>">
 	<div id="main-content" class="main author_main_wrapper">
 
-		<div class="author_page author_page_modern">
-
-			<div class="author_page_sidebar">
-				<?php do_action( 'el_author_info' ); ?>
-			</div>
-
-	<!-- Main Content -->
-	<div class="author_main_content">
+		<div class="author_page_fullwidth">
 
 		<!-- Statistics Section -->
 		<div class="author_stats_section">
@@ -270,12 +263,9 @@ if ( $author_id_image ) {
 
 		</div><!-- .event_list_section -->
 
-		</div><!-- .author_main_content -->
-
-		</div><!-- .author_page -->
+		</div><!-- .author_page_fullwidth -->
 
 	</div><!-- #main-content -->
-	<?php get_sidebar(); ?>
 </div><!-- .wrap_site -->
 
 <?php
