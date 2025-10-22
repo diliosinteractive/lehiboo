@@ -55,209 +55,208 @@ if( $author_id ){
 
 	?>
 
-	<!-- V1 Le Hiboo - Image de couverture -->
-	<?php if ( !is_singular('event') && $org_cover_image ) : ?>
-		<div class="author_cover_image">
-			<img src="<?php echo esc_url( wp_get_attachment_image_url( $org_cover_image, 'full' ) ); ?>" alt="<?php echo esc_attr( $org_public_name ? $org_public_name : $display_name ); ?>" />
-		</div>
-	<?php endif; ?>
+	<!-- Sidebar Info Card -->
+	<div class="sidebar_info_card event_section_white">
 
-	<!-- Info -->
-	<div class="info_user event_section_white">
-
-		<div class="top">
-
-			<div class="user_image">
-				<img src="<?php echo esc_url( $img_path ); ?>" alt="<?php echo esc_html( $display_name ); ?>" />
+		<!-- About Section -->
+		<?php if ($user_description) : ?>
+			<div class="info_section about_section">
+				<h3 class="section_title_sidebar">
+					<i class="fas fa-info-circle"></i>
+					<?php esc_html_e( 'About', 'eventlist' ); ?>
+				</h3>
+				<p class="description"><?php echo esc_html($user_description); ?></p>
 			</div>
+		<?php endif; ?>
 
-			<div class="author_name second_font">
-				<a class="name" href="<?php echo esc_url( get_author_posts_url( $author_id ) ); ?> ">
-					<?php if (is_singular('event') && $info_organizer == 'checked') {
-						echo esc_html( $name_organizer );
-					} elseif ( !is_singular('event') && $org_public_name ) {
-						// V1 Le Hiboo - Afficher le "Nom à afficher" de l'organisation sur le profil public
-						echo esc_html( $org_public_name );
-					} else {
-						echo esc_html( $display_name );
-					} ?>
-				</a>
+		<!-- Contact Section -->
+		<div class="info_section contact_section">
+			<h3 class="section_title_sidebar">
+				<i class="fas fa-address-card"></i>
+				<?php esc_html_e( 'Contact Information', 'eventlist' ); ?>
+			</h3>
 
-				<div class="user_job second_font">
-					<?php if (is_singular('event') && $info_organizer == 'checked') {
-						echo esc_html( $job_organizer );
-					} else {
-						echo esc_html( $user_job );
-					} ?>
-				</div>
-
-			</div>
-
-		</div>
-
-		<!-- rating star -->
-		<?php ova_event_author_rating_display_by_id( $author_id ); ?>
-
-		<div class="contact">
-			<?php if( apply_filters( 'el_show_phone_info', true ) ){ ?>
-				<div class="phone">
+			<div class="contact_list">
+				<?php if( apply_filters( 'el_show_phone_info', true ) ){ ?>
 					<?php if (is_singular('event') && $info_organizer == 'checked') { ?>
 						<?php if( $phone_organizer ){ ?>
-							<i class="icon_phone"></i>
-							<?php $phone = preg_replace('/[^0-9]/', '', $phone_organizer ); ?>
-							<a href="<?php echo esc_attr('tel:'.$phone); ?>"><?php echo esc_html( $phone_organizer ); ?></a>
+							<div class="contact_item">
+								<div class="contact_icon">
+									<i class="icon_phone"></i>
+								</div>
+								<div class="contact_content">
+									<span class="contact_label"><?php esc_html_e( 'Phone', 'eventlist' ); ?></span>
+									<?php $phone = preg_replace('/[^0-9]/', '', $phone_organizer ); ?>
+									<a href="<?php echo esc_attr('tel:'.$phone); ?>" class="contact_value"><?php echo esc_html( $phone_organizer ); ?></a>
+								</div>
+							</div>
 						<?php } ?>
 					<?php } else { ?>
 						<?php if( $user_phone ){ ?>
-							<i class="icon_phone"></i>
-							<?php $phone = preg_replace('/[^0-9]/', '', $user_phone ); ?>
-							<a href="<?php echo esc_attr('tel:'.$phone); ?>"><?php echo esc_html( $user_phone ); ?></a>
+							<div class="contact_item">
+								<div class="contact_icon">
+									<i class="icon_phone"></i>
+								</div>
+								<div class="contact_content">
+									<span class="contact_label"><?php esc_html_e( 'Phone', 'eventlist' ); ?></span>
+									<?php $phone = preg_replace('/[^0-9]/', '', $user_phone ); ?>
+									<a href="<?php echo esc_attr('tel:'.$phone); ?>" class="contact_value"><?php echo esc_html( $user_phone ); ?></a>
+								</div>
+							</div>
 						<?php } ?>
 					<?php	} ?>
-				</div>
-			<?php } ?>
-			
-			<?php if( apply_filters( 'el_show_mail_info', true ) ){ ?>
-				<div class="mail">
-					<i class="icon_mail"></i>
-					<?php if (is_singular('event') && $info_organizer == 'checked') { ?>
-						<a href="<?php echo esc_attr('mailto:'.$mail_organizer); ?>"><?php echo esc_html( $mail_organizer ); ?></a>
-					<?php } elseif ( !is_singular('event') && $user_professional_email ) { ?>
-						<!-- V1 Le Hiboo - Email professionnel sur profil public -->
-						<a href="<?php echo esc_attr('mailto:'.$user_professional_email); ?>"><?php echo esc_html( $user_professional_email ); ?></a>
-					<?php } else { ?>
-						<a href="<?php echo esc_attr('mailto:'.$user_email); ?>"><?php echo esc_html( $user_email ); ?></a>
-					<?php	} ?>
-				</div>
-			<?php } ?>
+				<?php } ?>
 
-			<?php if ( apply_filters( 'el_show_website_info', true ) ): ?>
-				<?php if ( !is_singular('event') && $org_web ) : ?>
-					<!-- V1 Le Hiboo - Site web de l'organisation -->
-					<div class="website">
-						<i class="fas fa-link"></i>
-						<a href="<?php echo esc_url( $org_web ); ?>" rel="nofollow" target="_blank"><?php echo esc_html( $org_web ); ?></a>
-					</div>
-				<?php elseif ( $author_data->user_url ): ?>
-					<div class="website">
-						<i class="fas fa-link"></i>
-						<a href="<?php echo esc_url( $author_data->user_url ); ?>" rel="nofollow" target="_blank"><?php echo esc_html( $author_data->user_url ); ?></a>
-					</div>
-				<?php endif; ?>
-			<?php endif; ?>
-
-			<?php if ( is_author() && apply_filters( 'el_show_address_info', true ) ) { ?>
-				<?php if ( $user_city || $user_country ) : ?>
-					<!-- V1 Le Hiboo - Localisation structurée -->
-					<div class="address">
-						<i class="icon_pin_alt"></i>
-						<span style="display: block;">
-							<?php
-							$location_parts = array();
-							if ( $user_postcode ) $location_parts[] = $user_postcode;
-							if ( $user_city ) $location_parts[] = $user_city;
-							if ( $user_country ) {
-								$countries = array(
-									'FR' => __( 'France', 'eventlist' ),
-									'BE' => __( 'Belgique', 'eventlist' ),
-									'CH' => __( 'Suisse', 'eventlist' ),
-									'CA' => __( 'Canada', 'eventlist' ),
-									'LU' => __( 'Luxembourg', 'eventlist' ),
-									'MC' => __( 'Monaco', 'eventlist' ),
-								);
-								$location_parts[] = isset( $countries[$user_country] ) ? $countries[$user_country] : $user_country;
-							}
-							echo esc_html( implode( ', ', $location_parts ) );
-							?>
-						</span>
-					</div>
-				<?php elseif ( $user_address ) : ?>
-					<!-- Fallback sur l'adresse legacy -->
-					<div class="address">
-						<i class="icon_pin_alt"></i>
-						<span style="display: block;"><?php echo esc_html($user_address); ?></span>
-					</div>
-				<?php endif; ?>
-			<?php } ?>
-			
-
-		</div>
-		
-
-		<?php if ( is_singular('event') ) { ?>
-			<?php if ( $social_organizer && $info_organizer == 'checked' ) { ?>
-				<div class="social">
-					<?php foreach ($social_organizer as $k_social => $v_social) { 
-						if ($v_social['link_social'] != '') { ?>
-
-							<div class="social_item">
-								<a href="<?php echo esc_attr($v_social['link_social']); ?>" target="_blank">
-									<i class="<?php echo esc_html($v_social['icon_social']); ?>"></i>
-									<?php foreach (el_get_social() as $k => $v) {
-										if ( $v_social['icon_social'] == $k ) {
-											echo esc_html($v);
-										}
-									} ?>
-								</a>
-							</div>
-						<?php } 
-					} ?>
-				</div>
-			<?php } elseif ( $user_profile_social && $info_organizer == '' ) { ?>
-				<div class="social">
-					<?php foreach ($user_profile_social as $k_social => $v_social) { 
-						if ($v_social[0] != '') { ?>
-
-							<div class="social_item">
-								<a href="<?php echo esc_attr($v_social[0]); ?>" target="_blank" rel="nofollow">
-									<i class="<?php echo esc_html($v_social[1]); ?>"></i>
-									<?php foreach (el_get_social() as $k => $v) {
-										if ( $v_social[1] == $k ) {
-											echo esc_html($v);
-										}
-									} ?>
-								</a>
-							</div>
-						<?php } 
-					} ?>
-				</div>
-			<?php	} ?>
-		<?php } elseif ( !is_singular('event') && $user_profile_social ) { ?>
-			<div class="social">
-				<?php foreach ($user_profile_social as $k_social => $v_social) { 
-					if ($v_social[0] != '') { ?>
-
-						<div class="social_item">
-							<a href="<?php echo esc_attr($v_social[0]); ?>" target="_blank" rel="nofollow">
-								<i class="<?php echo esc_html($v_social[1]); ?>"></i>
-								<?php foreach (el_get_social() as $k => $v) {
-									if ( $v_social[1] == $k ) {
-										echo esc_html($v);
-									}
-								} ?>
-							</a>
+				<?php if( apply_filters( 'el_show_mail_info', true ) ){ ?>
+					<div class="contact_item">
+						<div class="contact_icon">
+							<i class="icon_mail"></i>
 						</div>
-					<?php } 
-				} ?>
+						<div class="contact_content">
+							<span class="contact_label"><?php esc_html_e( 'Email', 'eventlist' ); ?></span>
+							<?php if (is_singular('event') && $info_organizer == 'checked') { ?>
+								<a href="<?php echo esc_attr('mailto:'.$mail_organizer); ?>" class="contact_value"><?php echo esc_html( $mail_organizer ); ?></a>
+							<?php } elseif ( !is_singular('event') && $user_professional_email ) { ?>
+								<a href="<?php echo esc_attr('mailto:'.$user_professional_email); ?>" class="contact_value"><?php echo esc_html( $user_professional_email ); ?></a>
+							<?php } else { ?>
+								<a href="<?php echo esc_attr('mailto:'.$user_email); ?>" class="contact_value"><?php echo esc_html( $user_email ); ?></a>
+							<?php	} ?>
+						</div>
+					</div>
+				<?php } ?>
+
+				<?php if ( apply_filters( 'el_show_website_info', true ) ): ?>
+					<?php if ( !is_singular('event') && $org_web ) : ?>
+						<div class="contact_item">
+							<div class="contact_icon">
+								<i class="fas fa-link"></i>
+							</div>
+							<div class="contact_content">
+								<span class="contact_label"><?php esc_html_e( 'Website', 'eventlist' ); ?></span>
+								<a href="<?php echo esc_url( $org_web ); ?>" rel="nofollow" target="_blank" class="contact_value"><?php echo esc_html( $org_web ); ?></a>
+							</div>
+						</div>
+					<?php elseif ( $author_data->user_url ): ?>
+						<div class="contact_item">
+							<div class="contact_icon">
+								<i class="fas fa-link"></i>
+							</div>
+							<div class="contact_content">
+								<span class="contact_label"><?php esc_html_e( 'Website', 'eventlist' ); ?></span>
+								<a href="<?php echo esc_url( $author_data->user_url ); ?>" rel="nofollow" target="_blank" class="contact_value"><?php echo esc_html( $author_data->user_url ); ?></a>
+							</div>
+						</div>
+					<?php endif; ?>
+				<?php endif; ?>
+
+				<?php if ( is_author() && apply_filters( 'el_show_address_info', true ) ) { ?>
+					<?php if ( $user_city || $user_country ) : ?>
+						<div class="contact_item">
+							<div class="contact_icon">
+								<i class="icon_pin_alt"></i>
+							</div>
+							<div class="contact_content">
+								<span class="contact_label"><?php esc_html_e( 'Location', 'eventlist' ); ?></span>
+								<span class="contact_value">
+									<?php
+									$location_parts = array();
+									if ( $user_postcode ) $location_parts[] = $user_postcode;
+									if ( $user_city ) $location_parts[] = $user_city;
+									if ( $user_country ) {
+										$countries = array(
+											'FR' => __( 'France', 'eventlist' ),
+											'BE' => __( 'Belgique', 'eventlist' ),
+											'CH' => __( 'Suisse', 'eventlist' ),
+											'CA' => __( 'Canada', 'eventlist' ),
+											'LU' => __( 'Luxembourg', 'eventlist' ),
+											'MC' => __( 'Monaco', 'eventlist' ),
+										);
+										$location_parts[] = isset( $countries[$user_country] ) ? $countries[$user_country] : $user_country;
+									}
+									echo esc_html( implode( ', ', $location_parts ) );
+									?>
+								</span>
+							</div>
+						</div>
+					<?php elseif ( $user_address ) : ?>
+						<div class="contact_item">
+							<div class="contact_icon">
+								<i class="icon_pin_alt"></i>
+							</div>
+							<div class="contact_content">
+								<span class="contact_label"><?php esc_html_e( 'Location', 'eventlist' ); ?></span>
+								<span class="contact_value"><?php echo esc_html($user_address); ?></span>
+							</div>
+						</div>
+					<?php endif; ?>
+				<?php } ?>
 			</div>
-		<?php	} ?>
+		</div>
+		<!-- Social Media Section -->
+		<?php
+		$has_social = false;
+		if ( is_singular('event') ) {
+			$has_social = ( $social_organizer && $info_organizer == 'checked' ) || ( $user_profile_social && $info_organizer == '' );
+		} elseif ( !is_singular('event') && $user_profile_social ) {
+			$has_social = true;
+		}
+		?>
 
-		<?php if ($user_description) { ?>
-			<p class="description">
-				<?php echo esc_html($user_description); ?>
-			</p>
-		<?php } ?>
+		<?php if ( $has_social ) : ?>
+			<div class="info_section social_section">
+				<h3 class="section_title_sidebar">
+					<i class="fas fa-share-nodes"></i>
+					<?php esc_html_e( 'Social Media', 'eventlist' ); ?>
+				</h3>
+				<div class="social_links">
+					<?php if ( is_singular('event') ) : ?>
+						<?php if ( $social_organizer && $info_organizer == 'checked' ) : ?>
+							<?php foreach ($social_organizer as $k_social => $v_social) :
+								if ($v_social['link_social'] != '') : ?>
+									<a href="<?php echo esc_attr($v_social['link_social']); ?>" target="_blank" class="social_link" rel="nofollow">
+										<i class="<?php echo esc_html($v_social['icon_social']); ?>"></i>
+									</a>
+								<?php endif;
+							endforeach; ?>
+						<?php elseif ( $user_profile_social && $info_organizer == '' ) : ?>
+							<?php foreach ($user_profile_social as $k_social => $v_social) :
+								if ($v_social[0] != '') : ?>
+									<a href="<?php echo esc_attr($v_social[0]); ?>" target="_blank" class="social_link" rel="nofollow">
+										<i class="<?php echo esc_html($v_social[1]); ?>"></i>
+									</a>
+								<?php endif;
+							endforeach; ?>
+						<?php endif; ?>
+					<?php elseif ( !is_singular('event') && $user_profile_social ) : ?>
+						<?php foreach ($user_profile_social as $k_social => $v_social) :
+							if ($v_social[0] != '') : ?>
+								<a href="<?php echo esc_attr($v_social[0]); ?>" target="_blank" class="social_link" rel="nofollow">
+									<i class="<?php echo esc_html($v_social[1]); ?>"></i>
+								</a>
+							<?php endif;
+						endforeach; ?>
+					<?php endif; ?>
+				</div>
+			</div>
+		<?php endif; ?>
 
+		<!-- Contact Form Section -->
 		<?php if( apply_filters( 'el_single_event_show_send_message_btn', true ) ){ ?>
-			<a href="#" rel="nofollow" class="send_mess">
-				<i class="icon_mail_alt"></i>
-				<?php esc_html_e( 'Send Message', 'eventlist' ); ?>
-			</a>
+			<div class="info_section contact_form_section" id="contact-form">
+				<h3 class="section_title_sidebar">
+					<i class="fas fa-envelope"></i>
+					<?php esc_html_e( 'Send a Message', 'eventlist' ); ?>
+				</h3>
+				<button class="btn_send_message" data-toggle="contact-form">
+					<i class="icon_mail_alt"></i>
+					<?php esc_html_e( 'Open Contact Form', 'eventlist' ); ?>
+				</button>
+			</div>
 		<?php } ?>
 
-		<?php 
+		<!-- Contact Form (Hidden by default) -->
+		<?php
 		$current_user_email = $current_user_name = $current_user_phone = '';
-
 
 		if (is_user_logged_in()) {
 			$current_user = wp_get_current_user();
@@ -266,36 +265,55 @@ if( $author_id ){
 			$current_user_email = $current_user->user_email;
 			$current_user_name = get_user_meta( $current_user_id, 'display_name', true );
 			$current_user_phone = get_user_meta( $current_user_id, 'user_phone', true );
-			
 		}
 		?>
-		<form class="el-sendmail-author">
-			<input class="input-field" type="text" name="name_customer" value="<?php echo esc_attr($current_user_name); ?>" placeholder="<?php esc_attr_e('Name', 'eventlist') ?>" required />
-			<input class="input-field" type="text" name="email_customer" placeholder="<?php esc_attr_e('Email', 'eventlist') ?>" value="<?php echo esc_attr($current_user_email); ?>" required />
-			<input class="input-field" type="text" name="phone_customer" value="<?php echo esc_attr($current_user_phone); ?>" placeholder="<?php esc_attr_e('Phone', 'eventlist') ?>" required />
-
-			<input class="input-field" type="text" name="subject_customer" placeholder="<?php esc_attr_e('Subject', 'eventlist') ?>" required />
-			<textarea class="input-field" name="content"  cols="30" rows="10" placeholder="<?php esc_attr_e('Content', 'eventlist') ?>"></textarea>
-
-			<?php do_action( 'meup_send_mail_vendor_recapcha' ); ?>
-
-			<button type="submit" data-id="<?php echo esc_attr( get_the_id() ); ?>" class="submit-sendmail" >
-				<?php esc_html_e('Send Mail', 'eventlist'); ?>
-				<div class="submit-load-more">
-					<div class="load-more">
-						<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-					</div>
+		<div class="contact_form_wrapper" style="display: none;">
+			<form class="el-sendmail-author modern-form">
+				<div class="form-group">
+					<label for="name_customer"><?php esc_html_e('Name', 'eventlist') ?></label>
+					<input class="input-field" type="text" id="name_customer" name="name_customer" value="<?php echo esc_attr($current_user_name); ?>" placeholder="<?php esc_attr_e('Your full name', 'eventlist') ?>" required />
 				</div>
-			</button>
-		</form>
-		<div class="el-notify">
-			<p class="success"><?php esc_html_e('Send mail success', 'eventlist') ?></p>
-			<p class="error"><?php esc_html_e('Send mail failed', 'eventlist') ?></p>
-			<p class="error-require"><?php esc_html_e('Please enter input field', 'eventlist') ?></p>
-			<p class="recapcha-vetify"><?php esc_html_e( 'reCAPTCHA verification failed. Please try again.', 'eventlist' ) ?></p>
+
+				<div class="form-group">
+					<label for="email_customer"><?php esc_html_e('Email', 'eventlist') ?></label>
+					<input class="input-field" type="email" id="email_customer" name="email_customer" placeholder="<?php esc_attr_e('your.email@example.com', 'eventlist') ?>" value="<?php echo esc_attr($current_user_email); ?>" required />
+				</div>
+
+				<div class="form-group">
+					<label for="phone_customer"><?php esc_html_e('Phone', 'eventlist') ?></label>
+					<input class="input-field" type="tel" id="phone_customer" name="phone_customer" value="<?php echo esc_attr($current_user_phone); ?>" placeholder="<?php esc_attr_e('+33 6 00 00 00 00', 'eventlist') ?>" required />
+				</div>
+
+				<div class="form-group">
+					<label for="subject_customer"><?php esc_html_e('Subject', 'eventlist') ?></label>
+					<input class="input-field" type="text" id="subject_customer" name="subject_customer" placeholder="<?php esc_attr_e('Message subject', 'eventlist') ?>" required />
+				</div>
+
+				<div class="form-group">
+					<label for="content_customer"><?php esc_html_e('Message', 'eventlist') ?></label>
+					<textarea class="input-field" id="content_customer" name="content" cols="30" rows="6" placeholder="<?php esc_attr_e('Type your message here...', 'eventlist') ?>" required></textarea>
+				</div>
+
+				<?php do_action( 'meup_send_mail_vendor_recapcha' ); ?>
+
+				<button type="submit" data-id="<?php echo esc_attr( get_the_id() ); ?>" class="submit-sendmail btn_primary_full">
+					<span class="btn-text"><?php esc_html_e('Send Message', 'eventlist'); ?></span>
+					<div class="submit-load-more">
+						<div class="load-more">
+							<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+						</div>
+					</div>
+				</button>
+			</form>
+			<div class="el-notify">
+				<p class="success"><i class="fas fa-check-circle"></i> <?php esc_html_e('Message sent successfully!', 'eventlist') ?></p>
+				<p class="error"><i class="fas fa-exclamation-circle"></i> <?php esc_html_e('Failed to send message. Please try again.', 'eventlist') ?></p>
+				<p class="error-require"><i class="fas fa-exclamation-triangle"></i> <?php esc_html_e('Please fill all required fields', 'eventlist') ?></p>
+				<p class="recapcha-vetify"><i class="fas fa-shield-alt"></i> <?php esc_html_e( 'reCAPTCHA verification failed. Please try again.', 'eventlist' ) ?></p>
+			</div>
 		</div>
 
-	</div>
+	</div><!-- .sidebar_info_card -->
 
 <?php
 

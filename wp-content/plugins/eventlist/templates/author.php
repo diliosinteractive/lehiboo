@@ -1,4 +1,4 @@
-<?php if( ! defined( 'ABSPATH' ) ) exit(); 
+<?php if( ! defined( 'ABSPATH' ) ) exit();
 
 get_header();
 
@@ -17,79 +17,184 @@ $layout_column = 'single-column'; // You can change value to single-column, two-
 
 $status = isset( $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : '';
 
+// V1 Le Hiboo - Récupérer les données pour le header
+$org_cover_image = get_user_meta( $author_id, 'org_cover_image', true );
+$author_id_image = get_user_meta( $author_id, 'author_id_image', true );
+if ( $author_id_image ) {
+	$avatar_url = wp_get_attachment_image_url($author_id_image, 'medium') ? wp_get_attachment_image_url($author_id_image, 'medium') : get_avatar_url($author_id);
+} else {
+	$avatar_url = get_avatar_url($author_id);
+}
+
 ?>
 
-<div class="author_page">
+<!-- Hero Header Section -->
+<div class="author_hero_header">
+	<?php if ( $org_cover_image ) : ?>
+		<div class="hero_cover_image">
+			<img src="<?php echo esc_url( wp_get_attachment_image_url( $org_cover_image, 'full' ) ); ?>" alt="<?php echo esc_attr( $display_name ); ?>" />
+			<div class="hero_overlay"></div>
+		</div>
+	<?php endif; ?>
+
+	<div class="hero_content">
+		<div class="hero_avatar">
+			<img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $display_name ); ?>" />
+			<span class="verified_badge" title="<?php esc_attr_e('Verified Organizer', 'eventlist'); ?>">
+				<i class="fas fa-check"></i>
+			</span>
+		</div>
+
+		<div class="hero_info">
+			<h1 class="hero_name"><?php echo esc_html( $display_name ); ?></h1>
+			<?php
+			$user_job = get_user_meta( $author_id, 'user_job', true );
+			if ( $user_job ) : ?>
+				<p class="hero_job"><?php echo esc_html( $user_job ); ?></p>
+			<?php endif; ?>
+			<?php ova_event_author_rating_display_by_id( $author_id ); ?>
+		</div>
+
+		<div class="hero_actions">
+			<?php if( apply_filters( 'el_single_event_show_send_message_btn', true ) ){ ?>
+				<a href="#contact-form" class="btn_primary btn_contact">
+					<i class="icon_mail_alt"></i>
+					<?php esc_html_e( 'Contact', 'eventlist' ); ?>
+				</a>
+			<?php } ?>
+			<button class="btn_secondary btn_share" aria-label="<?php esc_attr_e('Share Profile', 'eventlist'); ?>">
+				<i class="fas fa-share-alt"></i>
+				<?php esc_html_e( 'Share', 'eventlist' ); ?>
+			</button>
+		</div>
+	</div>
+</div>
+
+<div class="author_page author_page_modern">
 	
 	<div class="author_page_sidebar">
 		<?php do_action( 'el_author_info' ); ?>
 	</div>
 
-	<!-- Event List -->
-	<div class="event_list">
-		<div class="ova_heading_wrapper row">
-			<h3 class="heading second_font col-md-6">
-				<?php echo esc_html( $display_name ); esc_html_e( '\'s Listing ', 'eventlist' ); ?>
-			</h3>
-			<div class="ova_filter_wrap col-md-6 mt-md-0 mt-3">
-				<form method="GET" class="filter_form row">
-						<div class="col-sm-8">
-							<select name="status" class="form-control">
-								<option value="" <?php selected( $status, "" ); ?> ><?php esc_html_e( 'Event Status', 'eventlist' ); ?></option>
-								<option value="all" <?php selected( $status, "all" ); ?> ><?php esc_html_e( 'All', 'eventlist' ); ?></option>
-								<option value="opening" <?php selected( $status, "opening" ); ?> ><?php esc_html_e( 'Opening', 'eventlist' ); ?></option>
-								<option value="upcoming" <?php selected( $status, "upcoming" ); ?> ><?php esc_html_e( 'Upcoming', 'eventlist' ); ?></option>
-								<option value="past" <?php selected( $status, "past" ); ?> ><?php esc_html_e( 'Closed', 'eventlist' ); ?></option>
-							</select>
-						</div>
-						<div class="col-sm-4 mt-sm-0 mt-3">
-							<button class="btn ova_filter_event"><i class="fas fa-search"></i></button>
-						</div>
-				</form>
+	<!-- Main Content -->
+	<div class="author_main_content">
+
+		<!-- Statistics Section -->
+		<div class="author_stats_section">
+			<?php
+			$total_events = count_user_posts( $author_id, 'event' );
+			$opening_events = new WP_Query(array(
+				'post_type' => 'event',
+				'author' => $author_id,
+				'meta_query' => array(
+					array(
+						'key' => 'event_status',
+						'value' => 'opening',
+					)
+				),
+				'posts_per_page' => -1
+			));
+			$opening_count = $opening_events->found_posts;
+			wp_reset_postdata();
+			?>
+			<div class="stats_grid">
+				<div class="stat_card">
+					<div class="stat_icon">
+						<i class="fas fa-calendar-check"></i>
+					</div>
+					<div class="stat_content">
+						<span class="stat_value"><?php echo esc_html( $total_events ); ?></span>
+						<span class="stat_label"><?php esc_html_e( 'Total Events', 'eventlist' ); ?></span>
+					</div>
+				</div>
+				<div class="stat_card">
+					<div class="stat_icon active">
+						<i class="fas fa-calendar-alt"></i>
+					</div>
+					<div class="stat_content">
+						<span class="stat_value"><?php echo esc_html( $opening_count ); ?></span>
+						<span class="stat_label"><?php esc_html_e( 'Active Events', 'eventlist' ); ?></span>
+					</div>
+				</div>
+				<div class="stat_card">
+					<div class="stat_icon">
+						<i class="fas fa-star"></i>
+					</div>
+					<div class="stat_content">
+						<span class="stat_value">4.8</span>
+						<span class="stat_label"><?php esc_html_e( 'Average Rating', 'eventlist' ); ?></span>
+					</div>
+				</div>
 			</div>
 		</div>
+
+		<!-- Events Section -->
+		<div class="event_list_section">
+			<div class="section_header">
+				<h2 class="section_title">
+					<i class="fas fa-calendar-day"></i>
+					<?php esc_html_e( 'Events', 'eventlist' ); ?>
+				</h2>
+				<div class="filter_wrap">
+					<form method="GET" class="filter_form">
+						<select name="status" class="form-select">
+							<option value="" <?php selected( $status, "" ); ?>><?php esc_html_e( 'All Events', 'eventlist' ); ?></option>
+							<option value="opening" <?php selected( $status, "opening" ); ?>><?php esc_html_e( 'Opening', 'eventlist' ); ?></option>
+							<option value="upcoming" <?php selected( $status, "upcoming" ); ?>><?php esc_html_e( 'Upcoming', 'eventlist' ); ?></option>
+							<option value="past" <?php selected( $status, "past" ); ?>><?php esc_html_e( 'Closed', 'eventlist' ); ?></option>
+						</select>
+						<button class="btn_filter" type="submit">
+							<i class="fas fa-filter"></i>
+						</button>
+					</form>
+				</div>
+			</div>
 		
 		
-		<?php if( have_posts() ): ?>
+			<?php if( have_posts() ): ?>
 
-			<?php
-				/**
-				 * Hook: el_before_archive_loop
-				 * @hooked: 
-				 */
-				do_action( 'el_before_archive_loop' );
-			?>
-				
-					<div id="el_main_content">
-						
-						<div class="event_archive <?php echo esc_attr( $archive_type ); ?> <?php echo esc_attr( $layout_column ); ?>">
+				<?php
+					/**
+					 * Hook: el_before_archive_loop
+					 * @hooked:
+					 */
+					do_action( 'el_before_archive_loop' );
+				?>
 
-							<?php while ( have_posts() ) : the_post(); ?>
-					
-								<?php el_get_template_part( 'content', 'event-'.sanitize_file_name( $archive_type ) ); ?>
+						<div id="el_main_content">
 
-							<?php endwhile; wp_reset_query(); // end of the loop. ?>
-							
+							<div class="event_archive <?php echo esc_attr( $archive_type ); ?> <?php echo esc_attr( $layout_column ); ?>">
+
+								<?php while ( have_posts() ) : the_post(); ?>
+
+									<?php el_get_template_part( 'content', 'event-'.sanitize_file_name( $archive_type ) ); ?>
+
+								<?php endwhile; wp_reset_query(); // end of the loop. ?>
+
+							</div>
+
 						</div>
 
-					</div>
-				
-			<?php
-				/**
-				 * Hook: el_after_archive_loop.
-				 *
-				 * @hooked el_pagination - 10
-				 */
-				do_action( 'el_after_archive_loop' );
-			?>	
-		<?php else : ?>
-			<p><?php esc_html_e('Event not found', 'eventlist') ?></p>
-		<?php endif; ?>
-		
+				<?php
+					/**
+					 * Hook: el_after_archive_loop.
+					 *
+					 * @hooked el_pagination - 10
+					 */
+					do_action( 'el_after_archive_loop' );
+				?>
+			<?php else : ?>
+				<div class="no_events_found">
+					<i class="fas fa-calendar-times"></i>
+					<p><?php esc_html_e('No events found', 'eventlist') ?></p>
+				</div>
+			<?php endif; ?>
 
-	</div>
+		</div><!-- .event_list_section -->
 
-</div>
+	</div><!-- .author_main_content -->
+
+</div><!-- .author_page -->
 
 
 <?php

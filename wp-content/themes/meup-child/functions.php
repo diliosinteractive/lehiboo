@@ -46,6 +46,11 @@ function meup_child_scripts() {
             wp_enqueue_style( 'vendor-messages', get_stylesheet_directory_uri() . '/vendor-messages.css', array('meup-parent-style'), '3.4.0' );
         }
     }
+
+    // V1 Le Hiboo - Modern Author Profile JS (page auteur)
+    if( is_author() ) {
+        wp_enqueue_script( 'author-profile-modern', get_template_directory_uri() . '/wp-content/plugins/eventlist/assets/js/frontend/author-profile-modern.js', array('jquery'), '1.0.0', true );
+    }
 }
 
 // ========================================
