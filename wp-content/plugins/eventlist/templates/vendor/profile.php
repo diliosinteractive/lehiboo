@@ -43,7 +43,23 @@ $user_meta_field = get_option( 'ova_register_form' );
 
 	<div class="contents">
 
-		<?php echo el_get_template( '/vendor/heading.php' ); ?>
+		<!-- Heading caché car on utilise le titre dans la sticky bar -->
+		<div style="display: none;"><?php echo el_get_template( '/vendor/heading.php' ); ?></div>
+
+		<!-- Barre sticky avec titre et bouton Enregistrer -->
+		<div class="profile_sticky_bar">
+			<div class="sticky_bar_inner">
+				<div class="sticky_bar_left">
+					<h3><?php esc_html_e( 'Mon profil', 'eventlist' ); ?></h3>
+				</div>
+				<div class="sticky_bar_right">
+					<button type="button" class="btn_save_profile" id="trigger_save_profile">
+						<i class="icon_check"></i>
+						<span><?php esc_html_e( 'Enregistrer', 'eventlist' ); ?></span>
+					</button>
+				</div>
+			</div>
+		</div>
 
 		<div class="vendor_profile">
 
@@ -942,14 +958,34 @@ $user_meta_field = get_option( 'ova_register_form' );
 								<small><?php esc_html_e( 'Ne pas mettre d\'espace', 'eventlist' ); ?></small>
 							</div>
 
-							<!-- Description -->
-							<div class="vendor_field textarea">
+							<!-- Description - Éditeur WYSIWYG -->
+							<div class="vendor_field wysiwyg">
 								<label class="control-label" for="description">
 									<?php esc_html_e( 'Description', 'eventlist' ); ?>
 									<sup class="symbol-visible">👁</sup>
 								</label>
-								<textarea id="description" name="description" rows="8" placeholder="<?php esc_attr_e( 'Présentez votre organisation...', 'eventlist' ); ?>"><?php echo esc_textarea( get_user_meta( $user_id, 'description', true ) ); ?></textarea>
-								<small><?php esc_html_e( 'Les liens URL ne sont pas autorisés dans la description.', 'eventlist' ); ?></small>
+								<?php
+								$description_content = get_user_meta( $user_id, 'description', true );
+								wp_editor(
+									$description_content,
+									'description',
+									array(
+										'textarea_name' => 'description',
+										'textarea_rows' => 10,
+										'media_buttons' => false,
+										'teeny'         => false,
+										'tinymce'       => array(
+											'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,|,bullist,numlist,|,link,unlink,|,undo,redo',
+											'toolbar2' => '',
+											'paste_as_text' => true,
+										),
+										'quicktags'     => array(
+											'buttons' => 'strong,em,ul,ol,li,link'
+										)
+									)
+								);
+								?>
+								<small><?php esc_html_e( 'Mettez en forme votre description avec les outils de l\'éditeur.', 'eventlist' ); ?></small>
 							</div>
 
 							<!-- Page Web -->

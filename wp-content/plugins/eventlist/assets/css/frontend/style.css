@@ -14328,6 +14328,152 @@ body.rtl .vendor_wrap .modal .el_save_tickets {
 /* ==================================
    VENDOR PROFILE - NAVIGATION VERTICALE
    ================================== */
+/* Barre sticky avec titre et bouton Enregistrer - V1 Le Hiboo */
+.profile_sticky_bar {
+  background: #fff;
+  border-bottom: 2px solid #e0e0e0;
+  padding: 0;
+  position: sticky;
+  top: 80px;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+.admin-bar .profile_sticky_bar {
+  top: 112px;
+}
+@media (max-width: 782px) {
+  .admin-bar .profile_sticky_bar {
+    top: 126px;
+  }
+}
+@media (max-width: 768px) {
+  .profile_sticky_bar {
+    top: 60px;
+  }
+  .admin-bar .profile_sticky_bar {
+    top: 106px;
+  }
+}
+.profile_sticky_bar.is-scrolled {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+.profile_sticky_bar .sticky_bar_inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 30px;
+  max-width: 100%;
+}
+@media (max-width: 768px) {
+  .profile_sticky_bar .sticky_bar_inner {
+    padding: 12px 20px;
+    flex-wrap: wrap;
+  }
+}
+.profile_sticky_bar .sticky_bar_left h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+@media (max-width: 768px) {
+  .profile_sticky_bar .sticky_bar_left h3 {
+    font-size: 16px;
+  }
+}
+.profile_sticky_bar .sticky_bar_right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+@media (max-width: 768px) {
+  .profile_sticky_bar .sticky_bar_right {
+    width: 100%;
+    margin-top: 10px;
+    justify-content: flex-end;
+  }
+}
+.profile_sticky_bar .btn_save_profile {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  outline: none;
+  background: #FF6B35;
+  color: #fff;
+  position: relative;
+}
+.profile_sticky_bar .btn_save_profile i {
+  font-size: 16px;
+  transition: opacity 0.2s ease;
+}
+.profile_sticky_bar .btn_save_profile span {
+  transition: opacity 0.2s ease;
+}
+.profile_sticky_bar .btn_save_profile:hover:not(:disabled) {
+  background: #F7931E;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+.profile_sticky_bar .btn_save_profile:active:not(:disabled) {
+  transform: translateY(0);
+}
+.profile_sticky_bar .btn_save_profile.is-loading {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+.profile_sticky_bar .btn_save_profile.is-loading i, .profile_sticky_bar .btn_save_profile.is-loading span {
+  opacity: 0.3;
+}
+.profile_sticky_bar .btn_save_profile.is-loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+.profile_sticky_bar .btn_save_profile:disabled {
+  cursor: not-allowed;
+}
+@media (max-width: 768px) {
+  .profile_sticky_bar .btn_save_profile {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  .profile_sticky_bar .btn_save_profile span {
+    display: none;
+  }
+  .profile_sticky_bar .btn_save_profile i {
+    margin: 0;
+  }
+  .profile_sticky_bar .btn_save_profile.is-loading::after {
+    left: 50%;
+    margin-left: -8px;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 .vendor_profile {
   display: flex;
   background: #fff;

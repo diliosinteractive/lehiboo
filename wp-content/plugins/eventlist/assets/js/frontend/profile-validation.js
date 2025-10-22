@@ -386,6 +386,75 @@
             }, 100);
         });
 
+        // Gestion du bouton sticky "Enregistrer" - V1 Le Hiboo
+        $('#trigger_save_profile').on('click', function(e) {
+            e.preventDefault();
+
+            const $btn = $(this);
+
+            // Ne rien faire si déjà en cours de chargement
+            if ($btn.hasClass('is-loading')) {
+                return false;
+            }
+
+            // Ajouter l'état de chargement
+            $btn.addClass('is-loading');
+            $btn.prop('disabled', true);
+
+            // Trouver l'onglet actif
+            const activeTab = $('.profile_tab_item.active').data('tab');
+
+            // Cliquer sur le bouton submit de l'onglet actif
+            if (activeTab === 'author_profile') {
+                $('input[name="el_update_profile"]').click();
+            } else if (activeTab === 'author_organisation') {
+                $('input[name="el_update_organisation"]').click();
+            } else if (activeTab === 'author_presentation') {
+                $('input[name="el_update_presentation"]').click();
+            } else if (activeTab === 'author_password') {
+                $('input[name="el_update_password"]').click();
+            } else if (activeTab === 'author_bank') {
+                $('input[name="el_update_payout_method"]').click();
+            }
+
+            // Retirer l'état de chargement après 2 secondes (sécurité)
+            // Normalement, l'AJAX devrait le retirer avant
+            setTimeout(function() {
+                $btn.removeClass('is-loading');
+                $btn.prop('disabled', false);
+            }, 3000);
+        });
+
+        // Écouter les événements AJAX pour retirer le loader
+        $(document).on('ajaxComplete', function(_event, _xhr, settings) {
+            // Vérifier si c'est une requête de mise à jour du profil
+            if (settings.data && (
+                settings.data.includes('el_update_profile') ||
+                settings.data.includes('el_update_organisation') ||
+                settings.data.includes('el_update_presentation') ||
+                settings.data.includes('el_update_password') ||
+                settings.data.includes('el_update_payout_method')
+            )) {
+                // Retirer l'état de chargement du bouton sticky
+                $('#trigger_save_profile').removeClass('is-loading');
+                $('#trigger_save_profile').prop('disabled', false);
+            }
+        });
+
+        // Animation scroll pour la sticky bar
+        let lastScroll = 0;
+        $(window).on('scroll', function() {
+            const currentScroll = $(this).scrollTop();
+
+            if (currentScroll > 100) {
+                $('.profile_sticky_bar').addClass('is-scrolled');
+            } else {
+                $('.profile_sticky_bar').removeClass('is-scrolled');
+            }
+
+            lastScroll = currentScroll;
+        });
+
     });
 
 })(jQuery);
