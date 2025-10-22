@@ -850,7 +850,7 @@ $radius-lg: 16px;
 	margin-right: -50vw;
 	min-height: 400px;
 	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	margin-bottom: 40px;
+	margin-bottom: 0; // Suppression marge blanche
 	overflow: hidden;
 
 	@media (max-width: 768px) {
@@ -1059,13 +1059,14 @@ $radius-lg: 16px;
 	display: grid;
 	grid-template-columns: 360px 1fr;
 	gap: 40px;
-	max-width: 1200px;
-	margin: 0 auto;
-	padding: 0 0 60px 0;
+	width: 100%; // Largeur complète
+	margin: 0;
+	padding: 40px 0 60px 0;
 
 	@media (max-width: 991px) {
 		grid-template-columns: 1fr;
 		gap: 30px;
+		padding: 20px 0 40px 0;
 	}
 
 	.author_page_sidebar {
@@ -1082,6 +1083,7 @@ $radius-lg: 16px;
 
 	.author_main_content {
 		min-width: 0;
+		width: 100%; // Largeur complète du contenu
 	}
 }
 
@@ -1529,6 +1531,73 @@ $radius-lg: 16px;
 
 // Events Section (Charte graphique)
 .event_list_section {
+
+	// Bloc Description au-dessus des événements
+	.author_description_block {
+		background: $background-white;
+		border: 1px solid #eae9f3;
+		border-radius: 6px;
+		padding: 24px 32px;
+		margin-bottom: 40px;
+
+		.description_title {
+			margin: 0 0 16px 0;
+			font-size: 20px;
+			font-weight: 600;
+			color: #222;
+			border-bottom: 2px solid $primary-color;
+			padding-bottom: 12px;
+		}
+
+		.description_content {
+			margin-bottom: 20px;
+			font-size: 15px;
+			line-height: 1.8;
+			color: #666;
+
+			p {
+				margin-bottom: 15px;
+
+				&:last-child {
+					margin-bottom: 0;
+				}
+			}
+		}
+
+		// Infos Pratiques
+		.practical_info {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			padding-top: 20px;
+			border-top: 1px solid #eae9f3;
+
+			.info_item {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				padding: 8px 16px;
+				background: #f9f9f9;
+				border-radius: 20px;
+				font-size: 14px;
+				color: #666;
+				border: 1px solid #eae9f3;
+
+				i {
+					color: $primary-color;
+					font-size: 16px;
+
+					&:before {
+						margin: 0;
+					}
+				}
+
+				span {
+					font-weight: 500;
+				}
+			}
+		}
+	}
 
 	// Grid Layout pour les événements
 	.event_archive {

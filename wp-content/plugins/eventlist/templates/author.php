@@ -143,72 +143,66 @@ if ( $author_id_image ) {
 			</div>
 		</div>
 
-		<!-- About Section (Après les stats) -->
-		<?php if ($user_description) : ?>
-			<div class="author_about_section">
-				<h2 class="about_title">
-					<?php
-					printf(
-						esc_html__( 'À propos de %s', 'eventlist' ),
-						'<span class="org_name">' . esc_html( $display_name ) . '</span>'
-					);
-					?>
-				</h2>
-				<div class="about_content">
-					<?php echo wp_kses_post( wpautop( $user_description ) ); ?>
-				</div>
-
-				<!-- Infos Pratiques -->
-				<?php if ( $org_video || $org_event_types || $org_parking || $org_pmr || $org_restaurant || $org_drink ) : ?>
-					<div class="practical_info">
-						<?php if ( $org_video ) : ?>
-							<div class="info_item">
-								<i class="icon_eye"></i>
-								<span><?php esc_html_e( 'Vidéo de présentation', 'eventlist' ); ?></span>
-							</div>
-						<?php endif; ?>
-
-						<?php if ( $org_event_types ) : ?>
-							<div class="info_item">
-								<i class="icon_tags_alt"></i>
-								<span><?php echo esc_html( $org_event_types ); ?></span>
-							</div>
-						<?php endif; ?>
-
-						<?php if ( $org_parking ) : ?>
-							<div class="info_item">
-								<i class="icon_map_alt"></i>
-								<span><?php esc_html_e( 'Stationnement', 'eventlist' ); ?></span>
-							</div>
-						<?php endif; ?>
-
-						<?php if ( $org_pmr ) : ?>
-							<div class="info_item">
-								<i class="icon_wheelchair"></i>
-								<span><?php esc_html_e( 'Accessibilité PMR', 'eventlist' ); ?></span>
-							</div>
-						<?php endif; ?>
-
-						<?php if ( $org_restaurant ) : ?>
-							<div class="info_item">
-								<i class="icon_tools"></i>
-								<span><?php esc_html_e( 'Restauration sur place', 'eventlist' ); ?></span>
-							</div>
-						<?php endif; ?>
-
-						<?php if ( $org_drink ) : ?>
-							<div class="info_item">
-								<i class="icon_wine"></i>
-								<span><?php esc_html_e( 'Boisson sur place', 'eventlist' ); ?></span>
-							</div>
-						<?php endif; ?>
-					</div>
-				<?php endif; ?>
-			</div>
-		<?php endif; ?>
-
 		<!-- Events Section -->
 		<div class="event_list_section">
+
+			<!-- Description AU-DESSUS du titre événements -->
+			<?php if ($user_description) : ?>
+				<div class="author_description_block">
+					<h2 class="description_title">Description</h2>
+					<div class="description_content">
+						<?php echo wp_kses_post( wpautop( $user_description ) ); ?>
+					</div>
+
+					<!-- Infos Pratiques -->
+					<?php if ( $org_video || $org_event_types || $org_parking || $org_pmr || $org_restaurant || $org_drink ) : ?>
+						<div class="practical_info">
+							<?php if ( $org_video ) : ?>
+								<div class="info_item">
+									<i class="icon_eye"></i>
+									<span><?php esc_html_e( 'Vidéo de présentation', 'eventlist' ); ?></span>
+								</div>
+							<?php endif; ?>
+
+							<?php if ( $org_event_types ) : ?>
+								<div class="info_item">
+									<i class="icon_tags_alt"></i>
+									<span><?php echo esc_html( $org_event_types ); ?></span>
+								</div>
+							<?php endif; ?>
+
+							<?php if ( $org_parking ) : ?>
+								<div class="info_item">
+									<i class="icon_map_alt"></i>
+									<span><?php esc_html_e( 'Stationnement', 'eventlist' ); ?></span>
+								</div>
+							<?php endif; ?>
+
+							<?php if ( $org_pmr ) : ?>
+								<div class="info_item">
+									<i class="icon_wheelchair"></i>
+									<span><?php esc_html_e( 'Accessibilité PMR', 'eventlist' ); ?></span>
+								</div>
+							<?php endif; ?>
+
+							<?php if ( $org_restaurant ) : ?>
+								<div class="info_item">
+									<i class="icon_tools"></i>
+									<span><?php esc_html_e( 'Restauration sur place', 'eventlist' ); ?></span>
+								</div>
+							<?php endif; ?>
+
+							<?php if ( $org_drink ) : ?>
+								<div class="info_item">
+									<i class="icon_wine"></i>
+									<span><?php esc_html_e( 'Boisson sur place', 'eventlist' ); ?></span>
+								</div>
+							<?php endif; ?>
+						</div>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
+
 			<div class="section_header">
 				<h2 class="section_title">
 					<i class="icon_calendar"></i>
