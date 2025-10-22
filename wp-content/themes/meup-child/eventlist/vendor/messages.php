@@ -59,6 +59,11 @@ $messages_query = new WP_Query( $args );
 							$event_title = get_the_title( $event_id );
 							$message_content = get_the_content();
 
+							// Si pas d'objet (anciens messages), créer un objet par défaut
+							if ( empty( $subject ) ) {
+								$subject = 'Message concernant: ' . $event_title;
+							}
+
 							$row_class = $is_read ? 'message-read' : 'message-unread';
 					?>
 						<tr class="<?php echo esc_attr( $row_class ); ?> message-row-<?php echo esc_attr( $message_id ); ?>">
@@ -128,8 +133,40 @@ $messages_query = new WP_Query( $args );
 										<p><strong><?php esc_html_e( 'Objet:', 'eventlist' ); ?></strong> <?php echo esc_html( $subject ); ?></p>
 									</div>
 									<div class="message-detail-body">
-										<?php echo nl2br( esc_html( $message_content ) ); ?>
+										<strong><?php esc_html_e( 'Message:', 'eventlist' ); ?></strong>
+										<p><?php echo nl2br( esc_html( $message_content ) ); ?></p>
 									</div>
+
+									<?php
+									// Afficher l'historique des réponses
+									$replies = get_post_meta( $message_id, '_replies', true );
+									if ( ! empty( $replies ) && is_array( $replies ) ) :
+									?>
+										<div class="message-replies-section">
+											<h5><?php esc_html_e( 'Vos réponses:', 'eventlist' ); ?></h5>
+											<?php foreach ( $replies as $index => $reply ) : ?>
+												<div class="message-reply-item">
+													<div class="reply-header">
+														<span class="reply-date">
+															<?php echo date_i18n( $date_format . ' ' . $time_format, strtotime( $reply['date'] ) ); ?>
+														</span>
+														<span class="reply-from">
+															<?php echo esc_html( $reply['from_name'] ); ?>
+														</span>
+													</div>
+													<?php if ( ! empty( $reply['subject'] ) ) : ?>
+														<div class="reply-subject">
+															<strong><?php esc_html_e( 'Objet:', 'eventlist' ); ?></strong> <?php echo esc_html( $reply['subject'] ); ?>
+														</div>
+													<?php endif; ?>
+													<div class="reply-message">
+														<?php echo nl2br( esc_html( $reply['message'] ) ); ?>
+													</div>
+												</div>
+											<?php endforeach; ?>
+										</div>
+									<?php endif; ?>
+
 									<div class="message-detail-actions">
 										<?php if ( ! $is_read ) : ?>
 											<button type="button" class="button btn-mark-read" data-message-id="<?php echo esc_attr( $message_id ); ?>" data-nonce="<?php echo wp_create_nonce( 'mark_message_read_nonce' ); ?>">
@@ -285,6 +322,78 @@ $messages_query = new WP_Query( $args );
 	margin-bottom: 20px;
 	line-height: 1.6;
 	color: #333;
+}
+
+.message-detail-body strong {
+	display: block;
+	margin-bottom: 10px;
+	color: #333;
+	font-size: 14px;
+}
+
+.message-detail-body p {
+	margin: 0;
+	color: #555;
+}
+
+/* Styles pour l'historique des réponses */
+.message-replies-section {
+	margin: 20px 0;
+	padding: 20px;
+	background: #F5F5F5;
+	border-radius: 6px;
+	border-left: 4px solid #4CAF50;
+}
+
+.message-replies-section h5 {
+	margin: 0 0 15px 0;
+	font-size: 16px;
+	color: #333;
+	font-weight: 600;
+}
+
+.message-reply-item {
+	background: #FFFFFF;
+	padding: 15px;
+	border-radius: 4px;
+	margin-bottom: 12px;
+	border: 1px solid #E0E0E0;
+}
+
+.message-reply-item:last-child {
+	margin-bottom: 0;
+}
+
+.reply-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 10px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid #F0F0F0;
+}
+
+.reply-date {
+	font-size: 12px;
+	color: #999;
+}
+
+.reply-from {
+	font-size: 13px;
+	color: #4CAF50;
+	font-weight: 600;
+}
+
+.reply-subject {
+	margin-bottom: 10px;
+	font-size: 13px;
+	color: #666;
+}
+
+.reply-message {
+	font-size: 14px;
+	line-height: 1.5;
+	color: #555;
 }
 
 .message-detail-actions {

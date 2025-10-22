@@ -450,9 +450,29 @@ function meup_ajax_reply_to_message() {
 	$sent = wp_mail( $to_email, $subject, $email_body, $headers );
 
 	if ( $sent ) {
-		// Optionnel : Marquer le message original comme lu
+		// Enregistrer la réponse dans l'historique
 		if ( $message_id ) {
+			// Marquer le message original comme lu
 			update_post_meta( $message_id, '_is_read', 1 );
+
+			// Récupérer l'historique des réponses
+			$replies = get_post_meta( $message_id, '_replies', true );
+			if ( ! is_array( $replies ) ) {
+				$replies = array();
+			}
+
+			// Ajouter la nouvelle réponse
+			$replies[] = array(
+				'date' => current_time( 'mysql' ),
+				'from_name' => $from_name,
+				'from_email' => $from_email,
+				'subject' => $subject,
+				'message' => $message,
+				'to_email' => $to_email
+			);
+
+			// Sauvegarder l'historique
+			update_post_meta( $message_id, '_replies', $replies );
 		}
 
 		wp_send_json_success( array(
