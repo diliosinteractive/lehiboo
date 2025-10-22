@@ -826,7 +826,7 @@
    ============================================ */
 
 // Variables
-$primary-color: #e86c60;
+$primary-color: #ff601f;
 $text-dark: #333;
 $text-light: #666;
 $text-muted: #888;
@@ -844,6 +844,13 @@ $radius-lg: 16px;
 .author {
 	.ovatheme_breadcrumbs {
 		margin-bottom: 0 !important;
+	}
+
+	// Override theme width constraints - author page uses its own grid layout
+	#main-content {
+		flex: 1 1 100% !important;
+		max-width: 100% !important;
+		width: 100% !important;
 	}
 }
 
