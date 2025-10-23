@@ -18437,7 +18437,7 @@ body.rtl .el_export_popup_wrapper .el_export_container .el_export_pagination {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 9999;
+  z-index: 999999 !important;
   display: none;
 }
 .contact_modal.active {
@@ -18452,6 +18452,7 @@ body.rtl .el_export_popup_wrapper .el_export_container .el_export_pagination {
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
   animation: fadeIn 0.3s ease;
+  z-index: 1;
 }
 .contact_modal .contact_modal_container {
   position: relative;
@@ -18466,6 +18467,7 @@ body.rtl .el_export_popup_wrapper .el_export_container .el_export_pagination {
   animation: slideUp 0.4s ease;
   display: flex;
   flex-direction: column;
+  z-index: 2;
 }
 .contact_modal .contact_modal_header {
   display: flex;
