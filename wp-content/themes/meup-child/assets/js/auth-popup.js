@@ -164,6 +164,15 @@
 		 * Charger le template du popup via AJAX
 		 */
 		loadPopupTemplate: function(callback) {
+			// Vérifier si le popup n'existe pas déjà avant de le charger
+			if ($('#auth_popup_modal').length > 0) {
+				console.log('Popup template already exists in DOM, skipping AJAX load');
+				if (typeof callback === 'function') {
+					callback();
+				}
+				return;
+			}
+
 			$.ajax({
 				url: lehiboo_auth_ajax.ajax_url,
 				type: 'POST',
@@ -172,7 +181,10 @@
 				},
 				success: function(response) {
 					if (response.success) {
-						$('body').append(response.data.html);
+						// Double vérification avant d'ajouter
+						if ($('#auth_popup_modal').length === 0) {
+							$('body').append(response.data.html);
+						}
 						if (typeof callback === 'function') {
 							callback();
 						}
