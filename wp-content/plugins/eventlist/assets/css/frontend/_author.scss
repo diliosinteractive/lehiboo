@@ -877,7 +877,7 @@ $radius-lg: 16px;
 		left: 0;
 		width: 100%;
 		height: 100%;
-		z-index: 1;
+		//z-index: 1;
 
 		img {
 			width: 100%;
@@ -1960,7 +1960,7 @@ body.modal-open {
 	.auth_popup_overlay *,
 	.auth_popup_container,
 	.auth_popup_container * {
-		z-index: inherit !important;
+		//z-index: inherit !important;
 	}
 }
 

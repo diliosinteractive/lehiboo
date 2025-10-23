@@ -17641,7 +17641,6 @@ body.rtl .el_export_popup_wrapper .el_export_container .el_export_pagination {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
 }
 .author_hero_header .hero_cover_image img {
   width: 100%;
@@ -18531,19 +18530,6 @@ body.modal-open .hero_actions {
   animation: none !important;
   transition: none !important;
 }
-body.modal-open .contact_modal,
-body.modal-open .contact_modal *,
-body.modal-open #contact_modal_author,
-body.modal-open #contact_modal_author *,
-body.modal-open #auth_popup_modal,
-body.modal-open #auth_popup_modal *,
-body.modal-open .auth_popup_overlay,
-body.modal-open .auth_popup_overlay *,
-body.modal-open .auth_popup_container,
-body.modal-open .auth_popup_container * {
-  z-index: inherit !important;
-}
-
 .contact_modal {
   position: fixed !important;
   top: 0 !important;
