@@ -1426,3 +1426,34 @@ function lehiboo_load_otp_template() {
 
 	wp_send_json_success( array( 'html' => $html ) );
 }
+
+/**
+ * Créer automatiquement la page vendor-pending si elle n'existe pas
+ * @version 1.0.0
+ */
+function lehiboo_create_vendor_pending_page() {
+	// Vérifier si la page existe déjà
+	$page = get_page_by_path( 'vendor-pending' );
+
+	if ( ! $page ) {
+		// Créer la page
+		$page_id = wp_insert_post( array(
+			'post_title'     => 'Demande Partenaire en Attente',
+			'post_name'      => 'vendor-pending',
+			'post_content'   => '',
+			'post_status'    => 'publish',
+			'post_type'      => 'page',
+			'post_author'    => 1,
+			'comment_status' => 'closed',
+			'ping_status'    => 'closed',
+			'page_template'  => 'templates/vendor-pending.php'
+		) );
+
+		if ( $page_id && ! is_wp_error( $page_id ) ) {
+			// Mettre à jour le template
+			update_post_meta( $page_id, '_wp_page_template', 'templates/vendor-pending.php' );
+		}
+	}
+}
+add_action( 'after_switch_theme', 'lehiboo_create_vendor_pending_page' );
+add_action( 'admin_init', 'lehiboo_create_vendor_pending_page' );
