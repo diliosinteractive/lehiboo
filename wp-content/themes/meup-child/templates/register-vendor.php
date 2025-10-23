@@ -413,11 +413,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 					<div class="upload_group">
 						<label class="upload_label">Logo de l'organisation <span class="required">*</span></label>
-						<div class="upload_area" data-input="vendor_logo">
+						<div class="upload_area" data-input="vendor_logo" data-required="true">
 							<i class="fas fa-cloud-upload-alt"></i>
 							<p>Glissez-déposez ou cliquez pour télécharger</p>
 							<span class="upload_hint">PNG, JPG (max 2 MB)</span>
-							<input type="file" id="vendor_logo" name="vendor_logo" accept="image/*" hidden required>
+							<input type="file" id="vendor_logo" name="vendor_logo" accept="image/*" hidden>
 							<div class="upload_preview" style="display: none;"></div>
 						</div>
 					</div>
@@ -435,29 +435,29 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 					<div class="upload_group">
 						<label class="upload_label">Kbis ou statuts association <span class="required">*</span></label>
-						<div class="upload_area" data-input="vendor_kbis">
+						<div class="upload_area" data-input="vendor_kbis" data-required="true">
 							<i class="fas fa-file-pdf"></i>
 							<p>Glissez-déposez ou cliquez pour télécharger</p>
 							<span class="upload_hint">PDF (max 5 MB)</span>
-							<input type="file" id="vendor_kbis" name="vendor_kbis" accept=".pdf" hidden required>
+							<input type="file" id="vendor_kbis" name="vendor_kbis" accept=".pdf" hidden>
 							<div class="upload_preview" style="display: none;"></div>
 						</div>
 					</div>
 
 					<div class="upload_group">
 						<label class="upload_label">Assurance RC Pro <span class="required">*</span></label>
-						<div class="upload_area" data-input="vendor_insurance">
+						<div class="upload_area" data-input="vendor_insurance" data-required="true">
 							<i class="fas fa-file-pdf"></i>
 							<p>Glissez-déposez ou cliquez pour télécharger</p>
 							<span class="upload_hint">PDF (max 5 MB)</span>
-							<input type="file" id="vendor_insurance" name="vendor_insurance" accept=".pdf" hidden required>
+							<input type="file" id="vendor_insurance" name="vendor_insurance" accept=".pdf" hidden>
 							<div class="upload_preview" style="display: none;"></div>
 						</div>
 					</div>
 
 					<div class="form_group checkbox_group">
 						<label class="checkbox_label">
-							<input type="checkbox" id="vendor_terms" name="vendor_terms" required>
+							<input type="checkbox" id="vendor_terms" name="vendor_terms">
 							<span class="checkbox_custom"></span>
 							<span class="checkbox_text">
 								J'accepte les <a href="/cgu" target="_blank">conditions générales d'utilisation</a> et la <a href="/charte" target="_blank">charte qualité</a>

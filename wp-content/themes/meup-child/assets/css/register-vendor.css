@@ -446,6 +446,11 @@
 	background: white;
 }
 
+.upload_area.upload_error {
+	border-color: #E74C3C;
+	background: #FFEBEE;
+}
+
 .upload_area i {
 	font-size: 36px;
 	color: var(--grey-medium);

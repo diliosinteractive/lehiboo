@@ -317,6 +317,36 @@
 				}
 			}
 
+		// Validation spécifique step 3 (fichiers + CGU + Cloudflare)
+		if (step === 3) {
+			// Vérifier les uploads requis
+			$('.upload_area[data-required="true"]').each(function() {
+				const inputId = $(this).data('input');
+				const $fileInput = $('#' + inputId);
+				if (!$fileInput[0].files || $fileInput[0].files.length === 0) {
+					isValid = false;
+					$(this).addClass('upload_error');
+					VendorRegister.showNotification('error', 'Veuillez télécharger tous les documents obligatoires.');
+					return false;
+				} else {
+					$(this).removeClass('upload_error');
+				}
+			});
+
+			// Vérifier CGU
+			if (!$('#vendor_terms').is(':checked')) {
+				isValid = false;
+				VendorRegister.showNotification('error', 'Veuillez accepter les conditions générales d\'utilisation.');
+			}
+
+			// Vérifier Cloudflare Turnstile
+			const turnstileResponse = $('.cf-turnstile').find('input[name="cf-turnstile-response"]').val();
+			if (!turnstileResponse || turnstileResponse.length === 0) {
+				isValid = false;
+				VendorRegister.showNotification('error', 'Veuillez valider le CAPTCHA.');
+			}
+		}
+
 			return isValid;
 		},
 
