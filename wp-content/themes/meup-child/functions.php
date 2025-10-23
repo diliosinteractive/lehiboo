@@ -598,3 +598,97 @@ function lehiboo_update_vendor_slugs() {
 
 // Ajouter une action admin pour exécuter la fonction
 add_action( 'admin_action_update_vendor_slugs', 'lehiboo_update_vendor_slugs' );
+
+// ========================================
+// AJAX HANDLER - Contact Author Form
+// ========================================
+add_action( 'wp_ajax_send_author_message', 'lehiboo_send_author_message' );
+add_action( 'wp_ajax_nopriv_send_author_message', 'lehiboo_send_author_message' );
+
+function lehiboo_send_author_message() {
+	// Vérifier le nonce
+	check_ajax_referer( 'contact_author_nonce', 'contact_nonce' );
+
+	// Récupérer les données du formulaire
+	$author_id = isset( $_POST['author_id'] ) ? intval( $_POST['author_id'] ) : 0;
+	$name = isset( $_POST['name_customer'] ) ? sanitize_text_field( $_POST['name_customer'] ) : '';
+	$email = isset( $_POST['email_customer'] ) ? sanitize_email( $_POST['email_customer'] ) : '';
+	$phone = isset( $_POST['phone_customer'] ) ? sanitize_text_field( $_POST['phone_customer'] ) : '';
+	$subject = isset( $_POST['subject_customer'] ) ? sanitize_text_field( $_POST['subject_customer'] ) : '';
+	$message = isset( $_POST['content'] ) ? sanitize_textarea_field( $_POST['content'] ) : '';
+
+	// Validation
+	if ( empty( $name ) || empty( $email ) || empty( $subject ) || empty( $message ) || empty( $author_id ) ) {
+		wp_send_json_error( array( 'message' => 'Veuillez remplir tous les champs requis.' ) );
+	}
+
+	// Récupérer l'email de l'auteur
+	$author = get_userdata( $author_id );
+	if ( ! $author ) {
+		wp_send_json_error( array( 'message' => 'Organisateur introuvable.' ) );
+	}
+
+	$author_email = $author->user_email;
+
+	if ( ! is_email( $email ) || ! is_email( $author_email ) ) {
+		wp_send_json_error( array( 'message' => 'Adresse email invalide.' ) );
+	}
+
+	// Vérifier le CAPTCHA Turnstile
+	$turnstile_response = isset( $_POST['cf-turnstile-response'] ) ? $_POST['cf-turnstile-response'] : '';
+
+	if ( empty( $turnstile_response ) ) {
+		wp_send_json_error( array( 'message' => 'Veuillez valider le CAPTCHA.' ) );
+	}
+
+	// Valider le token Turnstile auprès de Cloudflare
+	$secret_key = '0x4AAAAAAB75T-X7AoX9nIt-M-0G2ndG4zU';
+	$verify_url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+
+	$response_verify = wp_remote_post( $verify_url, array(
+		'body' => array(
+			'secret' => $secret_key,
+			'response' => $turnstile_response,
+			'remoteip' => $_SERVER['REMOTE_ADDR']
+		)
+	));
+
+	if ( is_wp_error( $response_verify ) ) {
+		wp_send_json_error( array( 'message' => 'Erreur de validation du CAPTCHA.' ) );
+	}
+
+	$verify_data = json_decode( wp_remote_retrieve_body( $response_verify ), true );
+
+	if ( ! $verify_data['success'] ) {
+		wp_send_json_error( array( 'message' => 'CAPTCHA invalide. Veuillez réessayer.' ) );
+	}
+
+	// Préparer l'email
+	$author_name = get_user_meta( $author_id, 'org_display_name', true ) ?: $author->display_name;
+
+	$email_subject = sprintf( '[%s] Nouveau message de contact: %s', get_bloginfo('name'), $subject );
+
+	$email_body = "Vous avez reçu un nouveau message de contact:\n\n";
+	$email_body .= "De: {$name}\n";
+	$email_body .= "Email: {$email}\n";
+	$email_body .= "Téléphone: {$phone}\n";
+	$email_body .= "Objet: {$subject}\n\n";
+	$email_body .= "Message:\n{$message}\n\n";
+	$email_body .= "---\n";
+	$email_body .= "Ce message a été envoyé depuis votre profil organisateur sur " . get_bloginfo('name') . "\n";
+	$email_body .= "Profil: " . get_author_posts_url( $author_id );
+
+	$headers = array(
+		'Content-Type: text/plain; charset=UTF-8',
+		'Reply-To: ' . $name . ' <' . $email . '>'
+	);
+
+	// Envoyer l'email
+	$sent = wp_mail( $author_email, $email_subject, $email_body, $headers );
+
+	if ( $sent ) {
+		wp_send_json_success( array( 'message' => 'Message envoyé avec succès !' ) );
+	} else {
+		wp_send_json_error( array( 'message' => 'Erreur lors de l\'envoi du message. Veuillez réessayer.' ) );
+	}
+}
