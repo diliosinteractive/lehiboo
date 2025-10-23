@@ -89,6 +89,8 @@ $messages_query = new WP_Query( $args );
 									<a href="<?php echo esc_url( get_permalink( $event_id ) ); ?>" target="_blank">
 										<?php echo esc_html( $event_title ); ?>
 									</a>
+								<?php elseif ( $event_id == 0 ) : ?>
+									<strong style="color: #ff601f;"><?php esc_html_e( 'MA PAGE ORGANISATEUR', 'eventlist' ); ?></strong>
 								<?php else : ?>
 									<em><?php esc_html_e( 'Activité supprimée', 'eventlist' ); ?></em>
 								<?php endif; ?>
@@ -128,7 +130,13 @@ $messages_query = new WP_Query( $args );
 									</div>
 									<div class="message-detail-info">
 										<p><strong><?php esc_html_e( 'De:', 'eventlist' ); ?></strong> <?php echo esc_html( $from_name ); ?> (<?php echo esc_html( $from_email ); ?>)</p>
-										<p><strong><?php esc_html_e( 'Activité:', 'eventlist' ); ?></strong> <?php echo esc_html( $event_title ); ?></p>
+										<p><strong><?php esc_html_e( 'Activité:', 'eventlist' ); ?></strong>
+											<?php if ( $event_id == 0 ) : ?>
+												<strong style="color: #ff601f;"><?php esc_html_e( 'MA PAGE ORGANISATEUR', 'eventlist' ); ?></strong>
+											<?php else : ?>
+												<?php echo esc_html( $event_title ); ?>
+											<?php endif; ?>
+										</p>
 										<p><strong><?php esc_html_e( 'Date:', 'eventlist' ); ?></strong> <?php echo date_i18n( $date_format . ' ' . $time_format, strtotime( $sent_date ) ); ?></p>
 										<p><strong><?php esc_html_e( 'Objet:', 'eventlist' ); ?></strong> <?php echo esc_html( $subject ); ?></p>
 									</div>
