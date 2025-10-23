@@ -11,6 +11,10 @@
         // Open Contact Modal
         $('#open_contact_modal, .btn_contact').on('click', function(e) {
             e.preventDefault();
+
+            // Masquer tous les messages d'erreur à l'ouverture
+            $('#contact_modal_author .el-notify p').removeClass('visible');
+
             $('#contact_modal_author').addClass('active').fadeIn(300);
             $('body').addClass('modal-open').css('overflow', 'hidden');
         });
@@ -170,7 +174,7 @@
             const $notify = $form.closest('.contact_modal_body').find('.el-notify');
 
             // Hide all notifications
-            $notify.find('p').hide();
+            $notify.find('p').removeClass('visible');
 
             // Get form data
             const formData = new FormData(this);
@@ -178,7 +182,7 @@
             // Get Turnstile token
             const turnstileResponse = turnstile.getResponse();
             if (!turnstileResponse) {
-                $notify.find('.recapcha-vetify').show();
+                $notify.find('.recapcha-vetify').addClass('visible');
                 return;
             }
             formData.append('cf-turnstile-response', turnstileResponse);
@@ -195,7 +199,7 @@
                 contentType: false,
                 success: function(response) {
                     if (response.success) {
-                        $notify.find('.success').show();
+                        $notify.find('.success').addClass('visible');
                         $form[0].reset();
 
                         // Reset Turnstile
@@ -207,14 +211,14 @@
                         setTimeout(function() {
                             $('#contact_modal_author').removeClass('active').fadeOut(300);
                             $('body').removeClass('modal-open').css('overflow', '');
-                            $notify.find('p').hide();
+                            $notify.find('p').removeClass('visible');
                         }, 2000);
                     } else {
-                        $notify.find('.error').show();
+                        $notify.find('.error').addClass('visible');
                     }
                 },
                 error: function() {
-                    $notify.find('.error').show();
+                    $notify.find('.error').addClass('visible');
                 },
                 complete: function() {
                     $submitBtn.prop('disabled', false).text('Envoyer');
