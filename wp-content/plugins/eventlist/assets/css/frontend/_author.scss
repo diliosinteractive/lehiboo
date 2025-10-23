@@ -1810,17 +1810,45 @@ $radius-lg: 16px;
 body.modal-open {
 	overflow: hidden !important;
 
-	// Reset z-index de TOUS les éléments de la page
-	* {
-		z-index: auto !important;
+	// Ciblage ULTRA SPÉCIFIQUE des événements et tous les éléments
+	.event_entry,
+	.event_item,
+	.event_item *,
+	.event_archive,
+	.event_archive *,
+	.event_thumbnail,
+	.event_detail,
+	.filter_wrap,
+	.filter_wrap *,
+	select,
+	.form-select,
+	.event_loop_price,
+	.loop_title,
+	.thumbnail_figure,
+	img,
+	a,
+	div:not(.contact_modal):not(.contact_modal_overlay):not(.contact_modal_container),
+	section,
+	article,
+	header:not(.contact_modal_header),
+	.author_hero_header,
+	.author_page_sidebar,
+	.author_main_content,
+	.event_list_section,
+	.author_stats_section,
+	#main-content,
+	.wrap_site,
+	.main {
+		z-index: 1 !important;
+		position: relative !important;
 	}
 
-	// Sauf le modal
+	// Le modal et ses enfants doivent garder leur z-index élevé
 	.contact_modal,
 	.contact_modal *,
 	#contact_modal_author,
 	#contact_modal_author * {
-		z-index: unset !important;
+		z-index: inherit !important;
 	}
 }
 

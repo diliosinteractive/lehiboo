@@ -18435,14 +18435,42 @@ body.rtl .el_export_popup_wrapper .el_export_container .el_export_pagination {
 body.modal-open {
   overflow: hidden !important;
 }
-body.modal-open * {
-  z-index: auto !important;
+body.modal-open .event_entry,
+body.modal-open .event_item,
+body.modal-open .event_item *,
+body.modal-open .event_archive,
+body.modal-open .event_archive *,
+body.modal-open .event_thumbnail,
+body.modal-open .event_detail,
+body.modal-open .filter_wrap,
+body.modal-open .filter_wrap *,
+body.modal-open select,
+body.modal-open .form-select,
+body.modal-open .event_loop_price,
+body.modal-open .loop_title,
+body.modal-open .thumbnail_figure,
+body.modal-open img,
+body.modal-open a,
+body.modal-open div:not(.contact_modal):not(.contact_modal_overlay):not(.contact_modal_container),
+body.modal-open section,
+body.modal-open article,
+body.modal-open header:not(.contact_modal_header),
+body.modal-open .author_hero_header,
+body.modal-open .author_page_sidebar,
+body.modal-open .author_main_content,
+body.modal-open .event_list_section,
+body.modal-open .author_stats_section,
+body.modal-open #main-content,
+body.modal-open .wrap_site,
+body.modal-open .main {
+  z-index: 1 !important;
+  position: relative !important;
 }
 body.modal-open .contact_modal,
 body.modal-open .contact_modal *,
 body.modal-open #contact_modal_author,
 body.modal-open #contact_modal_author * {
-  z-index: unset !important;
+  z-index: inherit !important;
 }
 
 .contact_modal {
