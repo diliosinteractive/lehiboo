@@ -65,6 +65,11 @@ function meup_child_scripts() {
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
     }
 
+    // V1 Le Hiboo - Page de choix d'inscription (Utilisateur/Partenaire)
+    if ( is_page_template( 'page-templates/template-register-choice.php' ) ) {
+        wp_enqueue_style( 'lehiboo-register-choice', get_stylesheet_directory_uri() . '/assets/css/register-choice.css', array('meup-parent-style'), '1.0.0' );
+    }
+
     // V1 Le Hiboo - Popup Authentification (Connexion/Inscription) + OTP
     if ( ! is_user_logged_in() && ( is_singular('event') || is_author() ) ) {
         wp_enqueue_style( 'lehiboo-auth-popup', get_stylesheet_directory_uri() . '/assets/css/auth-popup.css', array(), '1.0.1' );

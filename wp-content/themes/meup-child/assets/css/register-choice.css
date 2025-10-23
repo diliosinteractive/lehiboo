@@ -1,0 +1,393 @@
+/**
+ * Register Choice Page Styles
+ * Design moderne et élégant inspiré d'Airbnb
+ * @version 1.0.0
+ */
+
+/* ========================================
+   WRAPPER PRINCIPAL
+======================================== */
+.lehiboo_register_choice_wrapper {
+	padding: 80px 0 120px;
+	background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+	min-height: 100vh;
+}
+
+.lehiboo_register_choice_wrapper .container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 20px;
+}
+
+/* ========================================
+   EN-TÊTE
+======================================== */
+.register_choice_header {
+	text-align: center;
+	margin-bottom: 60px;
+	animation: fadeInDown 0.6s ease-out;
+}
+
+.register_choice_title {
+	font-size: 42px;
+	font-weight: 700;
+	color: #1a1a1a;
+	margin-bottom: 16px;
+	line-height: 1.2;
+}
+
+.register_choice_subtitle {
+	font-size: 18px;
+	color: #666;
+	font-weight: 400;
+	margin: 0;
+}
+
+/* ========================================
+   CARTES DE SÉLECTION
+======================================== */
+.register_choice_cards {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 40px;
+	margin-bottom: 60px;
+}
+
+.register_choice_card {
+	background: #ffffff;
+	border-radius: 16px;
+	overflow: hidden;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+	animation: fadeInUp 0.6s ease-out;
+	animation-fill-mode: both;
+}
+
+.register_choice_card.vendor_card {
+	animation-delay: 0.1s;
+}
+
+.register_choice_card.customer_card {
+	animation-delay: 0.2s;
+}
+
+.register_choice_card:hover {
+	transform: translateY(-8px);
+	box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+}
+
+/* Image de la carte */
+.card_image_wrapper {
+	position: relative;
+	height: 280px;
+	overflow: hidden;
+}
+
+.card_image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.6s ease;
+}
+
+.register_choice_card:hover .card_image {
+	transform: scale(1.08);
+}
+
+.card_overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 100%);
+	transition: opacity 0.3s ease;
+}
+
+.register_choice_card:hover .card_overlay {
+	opacity: 0.7;
+}
+
+/* Contenu de la carte */
+.card_content {
+	padding: 40px 32px;
+}
+
+.card_icon {
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 24px;
+	font-size: 28px;
+	transition: transform 0.3s ease;
+}
+
+.vendor_card .card_icon {
+	background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+	color: white;
+}
+
+.customer_card .card_icon {
+	background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
+	color: white;
+}
+
+.register_choice_card:hover .card_icon {
+	transform: scale(1.1) rotate(5deg);
+}
+
+.card_title {
+	font-size: 24px;
+	font-weight: 700;
+	color: #1a1a1a;
+	margin-bottom: 16px;
+	line-height: 1.3;
+}
+
+.card_description {
+	font-size: 16px;
+	color: #666;
+	line-height: 1.6;
+	margin-bottom: 24px;
+}
+
+/* Features list */
+.card_features {
+	list-style: none;
+	padding: 0;
+	margin: 0 0 32px;
+}
+
+.card_features li {
+	padding: 10px 0;
+	color: #333;
+	font-size: 15px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.card_features li i {
+	color: #4CAF50;
+	font-size: 16px;
+	flex-shrink: 0;
+}
+
+/* Bouton */
+.card_button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	width: 100%;
+	padding: 18px 32px;
+	border-radius: 12px;
+	font-size: 16px;
+	font-weight: 600;
+	text-decoration: none;
+	transition: all 0.3s ease;
+	border: none;
+	cursor: pointer;
+	position: relative;
+	overflow: hidden;
+}
+
+.card_button::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: rgba(255, 255, 255, 0.2);
+	transition: left 0.5s ease;
+}
+
+.card_button:hover::before {
+	left: 100%;
+}
+
+.vendor_button {
+	background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+	color: white;
+}
+
+.vendor_button:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4);
+}
+
+.customer_button {
+	background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
+	color: white;
+}
+
+.customer_button:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 24px rgba(78, 101, 255, 0.4);
+}
+
+.card_button i {
+	transition: transform 0.3s ease;
+}
+
+.card_button:hover i {
+	transform: translateX(4px);
+}
+
+/* Note de la carte */
+.card_note {
+	text-align: center;
+	font-size: 13px;
+	color: #999;
+	margin-top: 20px;
+	margin-bottom: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+.card_note i {
+	color: #FF9800;
+}
+
+/* ========================================
+   FOOTER
+======================================== */
+.register_choice_footer {
+	text-align: center;
+	padding-top: 40px;
+	border-top: 1px solid #e0e0e0;
+	animation: fadeIn 0.8s ease-out 0.4s;
+	animation-fill-mode: both;
+}
+
+.register_choice_footer p {
+	font-size: 16px;
+	color: #666;
+	margin: 0;
+}
+
+.login_link {
+	color: #FF6B6B;
+	text-decoration: none;
+	font-weight: 600;
+	transition: color 0.3s ease;
+}
+
+.login_link:hover {
+	color: #FF8E53;
+	text-decoration: underline;
+}
+
+/* ========================================
+   ANIMATIONS
+======================================== */
+@keyframes fadeInDown {
+	from {
+		opacity: 0;
+		transform: translateY(-30px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+@media (max-width: 992px) {
+	.register_choice_cards {
+		grid-template-columns: 1fr;
+		gap: 30px;
+	}
+
+	.register_choice_title {
+		font-size: 36px;
+	}
+
+	.card_image_wrapper {
+		height: 240px;
+	}
+}
+
+@media (max-width: 768px) {
+	.lehiboo_register_choice_wrapper {
+		padding: 60px 0 80px;
+	}
+
+	.register_choice_header {
+		margin-bottom: 40px;
+	}
+
+	.register_choice_title {
+		font-size: 28px;
+	}
+
+	.register_choice_subtitle {
+		font-size: 16px;
+	}
+
+	.card_content {
+		padding: 32px 24px;
+	}
+
+	.card_title {
+		font-size: 20px;
+	}
+
+	.card_description {
+		font-size: 15px;
+	}
+
+	.card_button {
+		padding: 16px 24px;
+		font-size: 15px;
+	}
+}
+
+@media (max-width: 480px) {
+	.register_choice_title {
+		font-size: 24px;
+	}
+
+	.card_image_wrapper {
+		height: 200px;
+	}
+
+	.card_icon {
+		width: 56px;
+		height: 56px;
+		font-size: 24px;
+	}
+
+	.card_content {
+		padding: 24px 20px;
+	}
+}
