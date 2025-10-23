@@ -1537,9 +1537,11 @@ $radius-lg: 16px;
 			}
 		}
 	}
+}
 
-	// Infos Pratiques
-	.practical_info {
+// Infos Pratiques - UNIQUEMENT sur la page author
+body.author .author_about_section .practical_info,
+body.author .event_list_section .author_description_block .practical_info {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 12px;
@@ -1662,7 +1664,6 @@ $radius-lg: 16px;
 				font-weight: 500;
 			}
 		}
-	}
 }
 
 // Events Section (Charte graphique)
@@ -1696,132 +1697,6 @@ $radius-lg: 16px;
 
 				&:last-child {
 					margin-bottom: 0;
-				}
-			}
-		}
-
-		// Infos Pratiques
-		.practical_info {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 12px;
-			padding-top: 20px;
-			border-top: 1px solid #eae9f3;
-
-			.info_item {
-				position: relative;
-				display: inline-flex;
-				align-items: center;
-				gap: 8px;
-				padding: 8px 16px;
-				background: #f9f9f9;
-				border-radius: 20px;
-				font-size: 14px;
-				color: #666;
-				border: 1px solid #eae9f3;
-				cursor: help;
-				transition: all 0.3s ease;
-
-				&:hover {
-					background: #fff;
-					border-color: $primary-color;
-					transform: translateY(-2px);
-					box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
-					i {
-						transform: scale(1.1);
-					}
-
-					&::after {
-						opacity: 1;
-						visibility: visible;
-						transform: translateY(0);
-					}
-				}
-
-				// Tooltip
-				&::after {
-					content: attr(data-tooltip);
-					position: absolute;
-					bottom: calc(100% + 10px);
-					left: 50%;
-					transform: translateX(-50%) translateY(-5px);
-					background: #333;
-					color: #fff;
-					padding: 10px 14px;
-					border-radius: 6px;
-					font-size: 13px;
-					line-height: 1.4;
-					white-space: normal;
-					max-width: 280px;
-					min-width: 200px;
-					text-align: center;
-					z-index: 99999;
-					opacity: 0;
-					visibility: hidden;
-					transition: all 0.3s ease;
-					box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-					pointer-events: none;
-				}
-
-				// Ajustement automatique si le tooltip dépasse à gauche
-				&:first-child::after {
-					left: 0;
-					transform: translateX(0) translateY(-5px);
-				}
-
-				// Ajustement automatique si le tooltip dépasse à droite
-				&:last-child::after {
-					left: auto;
-					right: 0;
-					transform: translateX(0) translateY(-5px);
-				}
-
-				// Flèche du tooltip
-				&::before {
-					content: '';
-					position: absolute;
-					bottom: calc(100% + 4px);
-					left: 50%;
-					transform: translateX(-50%);
-					border: 7px solid transparent;
-					border-top-color: #333;
-					z-index: 100000;
-					opacity: 0;
-					visibility: hidden;
-					transition: all 0.3s ease;
-				}
-
-				&:hover::before {
-					opacity: 1;
-					visibility: visible;
-				}
-
-				// Ajustement flèche pour premier élément
-				&:first-child::before {
-					left: 20px;
-					transform: translateX(0);
-				}
-
-				// Ajustement flèche pour dernier élément
-				&:last-child::before {
-					left: auto;
-					right: 20px;
-					transform: translateX(0);
-				}
-
-				i {
-					color: $primary-color;
-					font-size: 16px;
-					transition: transform 0.3s ease;
-
-					&:before {
-						margin: 0;
-					}
-				}
-
-				span {
-					font-weight: 500;
 				}
 			}
 		}
