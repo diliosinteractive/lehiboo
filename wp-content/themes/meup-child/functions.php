@@ -73,17 +73,25 @@ function meup_child_scripts() {
         wp_enqueue_style( 'lehiboo-register-customer', get_stylesheet_directory_uri() . '/assets/css/register-customer.css', array('meup-parent-style'), '1.0.0' );
         wp_enqueue_script( 'lehiboo-register-customer', get_stylesheet_directory_uri() . '/assets/js/register-customer.js', array('jquery'), '1.0.0', true );
 
+        // Styles et scripts pour le formulaire partenaire
+        wp_enqueue_style( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/css/register-vendor.css', array('lehiboo-register-customer'), '1.0.0' );
+        wp_enqueue_script( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/js/register-vendor.js', array('jquery'), '1.0.0', true );
+
         // Enregistrer le script OTP (sera chargé dynamiquement si besoin)
         wp_register_script( 'lehiboo-otp-verification', get_stylesheet_directory_uri() . '/assets/js/otp-verification.js', array('jquery'), '1.0.1', true );
 
-        // Localiser les scripts
+        // Localiser les scripts (même objet pour customer et vendor)
         wp_localize_script( 'lehiboo-register-customer', 'lehiboo_register_ajax', array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
             'nonce' => wp_create_nonce( 'customer_register_nonce' ),
             'otp_script_url' => get_stylesheet_directory_uri() . '/assets/js/otp-verification.js',
-            // Données OTP incluses pour le script dynamique
             'otp_ajax_url' => admin_url( 'admin-ajax.php' ),
             'otp_nonce' => wp_create_nonce( 'lehiboo_otp_nonce' )
+        ));
+
+        wp_localize_script( 'lehiboo-register-vendor', 'lehiboo_register_ajax', array(
+            'ajax_url' => admin_url( 'admin-ajax.php' ),
+            'nonce' => wp_create_nonce( 'vendor_register_nonce' )
         ));
 
         // Localiser le script OTP
@@ -1141,6 +1149,168 @@ function lehiboo_handle_customer_register() {
 		'otp_required' => true,
 		'user_id' => $user_id,
 		'show_otp_form' => true
+	) );
+}
+
+// ========================================
+// AJAX HANDLER - INSCRIPTION PARTENAIRE
+// ========================================
+
+/**
+ * AJAX - Inscription partenaire depuis la page d'inscription
+ */
+add_action( 'wp_ajax_nopriv_lehiboo_vendor_register', 'lehiboo_handle_vendor_register' );
+
+function lehiboo_handle_vendor_register() {
+	// Vérifier le nonce
+	check_ajax_referer( 'vendor_register_nonce', 'vendor_register_nonce' );
+
+	// ÉTAPE 1 : Informations personnelles
+	$firstname = isset( $_POST['vendor_firstname'] ) ? sanitize_text_field( $_POST['vendor_firstname'] ) : '';
+	$lastname = isset( $_POST['vendor_lastname'] ) ? sanitize_text_field( $_POST['vendor_lastname'] ) : '';
+	$email = isset( $_POST['vendor_email'] ) ? sanitize_email( $_POST['vendor_email'] ) : '';
+	$phone = isset( $_POST['vendor_phone'] ) ? sanitize_text_field( $_POST['vendor_phone'] ) : '';
+	$password = isset( $_POST['vendor_password'] ) ? $_POST['vendor_password'] : '';
+
+	// ÉTAPE 2 : Organisation
+	$org_name = isset( $_POST['vendor_org_name'] ) ? sanitize_text_field( $_POST['vendor_org_name'] ) : '';
+	$org_type = isset( $_POST['vendor_org_type'] ) ? sanitize_text_field( $_POST['vendor_org_type'] ) : '';
+	$org_siret = isset( $_POST['vendor_org_siret'] ) ? sanitize_text_field( $_POST['vendor_org_siret'] ) : '';
+	$org_address = isset( $_POST['vendor_org_address'] ) ? sanitize_text_field( $_POST['vendor_org_address'] ) : '';
+	$org_city = isset( $_POST['vendor_org_city'] ) ? sanitize_text_field( $_POST['vendor_org_city'] ) : '';
+	$org_zipcode = isset( $_POST['vendor_org_zipcode'] ) ? sanitize_text_field( $_POST['vendor_org_zipcode'] ) : '';
+	$org_website = isset( $_POST['vendor_org_website'] ) ? esc_url_raw( $_POST['vendor_org_website'] ) : '';
+	$org_description = isset( $_POST['vendor_org_description'] ) ? sanitize_textarea_field( $_POST['vendor_org_description'] ) : '';
+	$categories = isset( $_POST['vendor_categories'] ) ? array_map( 'sanitize_text_field', $_POST['vendor_categories'] ) : array();
+
+	// Validation de base
+	if ( empty( $firstname ) || empty( $lastname ) || empty( $email ) || empty( $password ) ||
+	     empty( $org_name ) || empty( $org_type ) || empty( $org_siret ) ||
+	     empty( $org_address ) || empty( $org_city ) || empty( $org_zipcode ) ||
+	     empty( $org_description ) || empty( $categories ) ) {
+		wp_send_json_error( array( 'message' => 'Veuillez remplir tous les champs obligatoires.' ) );
+	}
+
+	if ( ! is_email( $email ) ) {
+		wp_send_json_error( array( 'message' => 'Adresse email invalide.' ) );
+	}
+
+	if ( email_exists( $email ) ) {
+		wp_send_json_error( array( 'message' => 'Cette adresse email est déjà utilisée.' ) );
+	}
+
+	if ( strlen( $password ) < 8 ) {
+		wp_send_json_error( array( 'message' => 'Le mot de passe doit contenir au moins 8 caractères.' ) );
+	}
+
+	// Générer username unique
+	$username = strtolower( sanitize_title( $org_name ) );
+	$username_base = $username;
+	$counter = 1;
+	while ( username_exists( $username ) ) {
+		$username = $username_base . '-' . $counter;
+		$counter++;
+	}
+
+	// Créer l'utilisateur
+	$user_id = wp_create_user( $username, $password, $email );
+
+	if ( is_wp_error( $user_id ) ) {
+		wp_send_json_error( array( 'message' => 'Erreur : ' . $user_id->get_error_message() ) );
+	}
+
+	// Mettre à jour les infos
+	wp_update_user( array(
+		'ID' => $user_id,
+		'first_name' => $firstname,
+		'last_name' => $lastname,
+		'display_name' => $org_name,
+	) );
+
+	// Assigner le rôle el_event_vendor
+	$user = new WP_User( $user_id );
+	$user->set_role( 'el_event_vendor' );
+
+	// Sauvegarder les métadonnées organisation
+	update_user_meta( $user_id, 'org_display_name', $org_name );
+	update_user_meta( $user_id, 'org_name', $org_name );
+	update_user_meta( $user_id, 'org_type', $org_type );
+	update_user_meta( $user_id, 'org_siret', $org_siret );
+	update_user_meta( $user_id, 'org_address', $org_address );
+	update_user_meta( $user_id, 'org_city', $org_city );
+	update_user_meta( $user_id, 'org_zipcode', $org_zipcode );
+	update_user_meta( $user_id, 'org_website', $org_website );
+	update_user_meta( $user_id, 'org_description', $org_description );
+	update_user_meta( $user_id, 'user_professional_email', $email );
+	update_user_meta( $user_id, 'user_phone', $phone );
+	update_user_meta( $user_id, 'vendor_categories', $categories );
+
+	// STATUT : En attente d'approbation
+	update_user_meta( $user_id, 'vendor_status', 'pending_approval' );
+	update_user_meta( $user_id, 'vendor_application_date', current_time( 'mysql' ) );
+
+	// Gestion des uploads de fichiers
+	require_once( ABSPATH . 'wp-admin/includes/file.php' );
+	require_once( ABSPATH . 'wp-admin/includes/image.php' );
+	require_once( ABSPATH . 'wp-admin/includes/media.php' );
+
+	// Upload logo
+	if ( ! empty( $_FILES['vendor_logo']['name'] ) ) {
+		$logo_id = media_handle_upload( 'vendor_logo', 0 );
+		if ( ! is_wp_error( $logo_id ) ) {
+			update_user_meta( $user_id, 'org_logo_id', $logo_id );
+		}
+	}
+
+	// Upload cover
+	if ( ! empty( $_FILES['vendor_cover']['name'] ) ) {
+		$cover_id = media_handle_upload( 'vendor_cover', 0 );
+		if ( ! is_wp_error( $cover_id ) ) {
+			update_user_meta( $user_id, 'org_cover_id', $cover_id );
+		}
+	}
+
+	// Upload Kbis
+	if ( ! empty( $_FILES['vendor_kbis']['name'] ) ) {
+		$kbis_id = media_handle_upload( 'vendor_kbis', 0 );
+		if ( ! is_wp_error( $kbis_id ) ) {
+			update_user_meta( $user_id, 'vendor_kbis_id', $kbis_id );
+		}
+	}
+
+	// Upload Assurance
+	if ( ! empty( $_FILES['vendor_insurance']['name'] ) ) {
+		$insurance_id = media_handle_upload( 'vendor_insurance', 0 );
+		if ( ! is_wp_error( $insurance_id ) ) {
+			update_user_meta( $user_id, 'vendor_insurance_id', $insurance_id );
+		}
+	}
+
+	// Email de notification à l'admin
+	$admin_email = get_option( 'admin_email' );
+	$subject = '[Le Hiboo] Nouvelle demande partenaire : ' . $org_name;
+	$message = "Une nouvelle demande de partenariat a été reçue.\n\n";
+	$message .= "Organisation : {$org_name}\n";
+	$message .= "Contact : {$firstname} {$lastname}\n";
+	$message .= "Email : {$email}\n";
+	$message .= "Type : {$org_type}\n\n";
+	$message .= "Accédez à l'administration pour valider cette demande.";
+
+	wp_mail( $admin_email, $subject, $message );
+
+	// Email de confirmation au partenaire
+	$subject_vendor = '[Le Hiboo] Votre demande de partenariat a été reçue';
+	$message_vendor = "Bonjour {$firstname},\n\n";
+	$message_vendor .= "Nous avons bien reçu votre demande de partenariat pour {$org_name}.\n\n";
+	$message_vendor .= "Votre dossier est en cours d'examen. Notre équipe reviendra vers vous sous 48h ouvrées.\n\n";
+	$message_vendor .= "Cordialement,\nL'équipe Le Hiboo";
+
+	wp_mail( $email, $subject_vendor, $message_vendor );
+
+	// Succès
+	wp_send_json_success( array(
+		'message' => 'Votre demande a été envoyée avec succès ! Vous recevrez une réponse sous 48h.',
+		'redirect_url' => home_url( '/demande-recue' )
 	) );
 }
 

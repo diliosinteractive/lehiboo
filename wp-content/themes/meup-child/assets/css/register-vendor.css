@@ -1,0 +1,450 @@
+/**
+ * Register Vendor Form Styles
+ * Formulaire multi-étapes pour inscription partenaire
+ * @version 1.0.0
+ */
+
+/* Hérite des styles de register-customer.css */
+/* Ajout des styles spécifiques au formulaire partenaire */
+
+/* ========================================
+   VENDOR SPECIFIC
+======================================== */
+.vendor_icon {
+	background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+	box-shadow: 0 8px 24px rgba(255, 107, 107, 0.3);
+}
+
+.vendor_submit {
+	background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+	box-shadow: 0 4px 16px rgba(255, 107, 107, 0.3);
+}
+
+.vendor_submit:hover:not(:disabled) {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4);
+}
+
+/* ========================================
+   PROGRESS BAR
+======================================== */
+.progress_bar_wrapper {
+	margin-top: 32px;
+}
+
+.progress_bar {
+	height: 4px;
+	background: #e0e0e0;
+	border-radius: 2px;
+	overflow: hidden;
+	margin-bottom: 24px;
+}
+
+.progress_bar_fill {
+	height: 100%;
+	background: linear-gradient(90deg, #FF6B6B 0%, #FF8E53 100%);
+	transition: width 0.4s ease;
+}
+
+.progress_steps {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.progress_step {
+	flex: 1;
+	text-align: center;
+	opacity: 0.5;
+	transition: opacity 0.3s ease;
+}
+
+.progress_step.active {
+	opacity: 1;
+}
+
+.step_number {
+	display: block;
+	width: 40px;
+	height: 40px;
+	margin: 0 auto 8px;
+	background: #e0e0e0;
+	border-radius: 50%;
+	line-height: 40px;
+	font-weight: 600;
+	color: #666;
+	transition: all 0.3s ease;
+}
+
+.progress_step.active .step_number {
+	background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+	color: white;
+	box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.step_label {
+	display: block;
+	font-size: 13px;
+	color: #666;
+	font-weight: 500;
+}
+
+/* ========================================
+   MULTI-STEP FORM
+======================================== */
+.form_step {
+	animation: fadeInUp 0.4s ease-out;
+}
+
+.step_title {
+	font-size: 22px;
+	font-weight: 700;
+	color: #1a1a1a;
+	margin-bottom: 8px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.step_title i {
+	color: #FF6B6B;
+	font-size: 24px;
+}
+
+.step_description {
+	font-size: 14px;
+	color: #666;
+	margin-bottom: 32px;
+}
+
+/* ========================================
+   FORM ROW (2 colonnes)
+======================================== */
+.form_row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 20px;
+}
+
+/* ========================================
+   TEXTAREA
+======================================== */
+.form_textarea {
+	width: 100%;
+	padding: 14px 16px;
+	border: 2px solid #e0e0e0;
+	border-radius: 10px;
+	font-size: 15px;
+	color: #333;
+	font-family: inherit;
+	resize: vertical;
+	transition: all 0.3s ease;
+	background: #fafafa;
+}
+
+.form_textarea:focus {
+	outline: none;
+	border-color: #FF6B6B;
+	background: white;
+	box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
+}
+
+/* ========================================
+   SELECT
+======================================== */
+select.form_input {
+	cursor: pointer;
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+	background-repeat: no-repeat;
+	background-position: right 16px center;
+	background-size: 20px;
+	padding-right: 48px;
+}
+
+/* ========================================
+   CATEGORIES GRID
+======================================== */
+.categories_grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: 12px;
+	margin-top: 12px;
+}
+
+.category_checkbox input {
+	display: none;
+}
+
+.category_item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	padding: 20px 16px;
+	border: 2px solid #e0e0e0;
+	border-radius: 10px;
+	background: #fafafa;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	text-align: center;
+}
+
+.category_item i {
+	font-size: 28px;
+	color: #999;
+	transition: all 0.3s ease;
+}
+
+.category_item span {
+	font-size: 13px;
+	font-weight: 600;
+	color: #666;
+}
+
+.category_checkbox input:checked + .category_item {
+	border-color: #FF6B6B;
+	background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 142, 83, 0.1) 100%);
+}
+
+.category_checkbox input:checked + .category_item i {
+	color: #FF6B6B;
+	transform: scale(1.1);
+}
+
+.category_checkbox input:checked + .category_item span {
+	color: #FF6B6B;
+}
+
+.category_item:hover {
+	border-color: #FF8E53;
+	transform: translateY(-2px);
+}
+
+/* ========================================
+   FILE UPLOAD
+======================================== */
+.file_upload_wrapper {
+	position: relative;
+}
+
+.file_input {
+	display: none;
+}
+
+.file_upload_label {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	padding: 40px 24px;
+	border: 2px dashed #d0d0d0;
+	border-radius: 10px;
+	background: #fafafa;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.file_upload_label:hover {
+	border-color: #FF6B6B;
+	background: rgba(255, 107, 107, 0.05);
+}
+
+.file_upload_label i {
+	font-size: 48px;
+	color: #999;
+}
+
+.upload_text {
+	font-size: 15px;
+	color: #666;
+	font-weight: 500;
+}
+
+.upload_filename {
+	font-size: 13px;
+	color: #FF6B6B;
+	font-weight: 600;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* File preview */
+.file_preview {
+	margin-top: 16px;
+	position: relative;
+	border-radius: 10px;
+	overflow: hidden;
+	max-width: 300px;
+}
+
+.file_preview img {
+	width: 100%;
+	height: auto;
+	display: block;
+	border-radius: 10px;
+}
+
+.remove_file {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: rgba(255, 0, 0, 0.8);
+	color: white;
+	border: none;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.3s ease;
+}
+
+.remove_file:hover {
+	background: rgba(255, 0, 0, 1);
+	transform: scale(1.1);
+}
+
+/* ========================================
+   INFO BOX
+======================================== */
+.info_box {
+	display: flex;
+	gap: 16px;
+	padding: 20px;
+	background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+	border-left: 4px solid #2196F3;
+	border-radius: 8px;
+	margin-bottom: 24px;
+}
+
+.info_box i {
+	font-size: 24px;
+	color: #2196F3;
+	flex-shrink: 0;
+}
+
+.info_content strong {
+	display: block;
+	color: #1565C0;
+	margin-bottom: 6px;
+	font-size: 15px;
+}
+
+.info_content p {
+	color: #424242;
+	font-size: 14px;
+	line-height: 1.5;
+	margin: 0;
+}
+
+/* ========================================
+   NAVIGATION BUTTONS
+======================================== */
+.form_navigation {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+	margin-top: 32px;
+	padding-top: 32px;
+	border-top: 1px solid #e0e0e0;
+}
+
+.btn_prev,
+.btn_next {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 14px 24px;
+	border: 2px solid #e0e0e0;
+	border-radius: 10px;
+	background: white;
+	color: #666;
+	font-size: 15px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.btn_prev:hover,
+.btn_next:hover {
+	border-color: #FF6B6B;
+	color: #FF6B6B;
+	background: rgba(255, 107, 107, 0.05);
+}
+
+.btn_next {
+	margin-left: auto;
+	background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+	color: white;
+	border: none;
+}
+
+.btn_next:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+@media (max-width: 768px) {
+	.progress_steps {
+		gap: 8px;
+	}
+
+	.step_number {
+		width: 32px;
+		height: 32px;
+		line-height: 32px;
+		font-size: 14px;
+	}
+
+	.step_label {
+		font-size: 11px;
+	}
+
+	.form_row {
+		grid-template-columns: 1fr;
+		gap: 16px;
+	}
+
+	.categories_grid {
+		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+		gap: 10px;
+	}
+
+	.category_item {
+		padding: 16px 12px;
+	}
+
+	.category_item i {
+		font-size: 24px;
+	}
+
+	.form_navigation {
+		flex-direction: column-reverse;
+	}
+
+	.btn_next {
+		margin-left: 0;
+	}
+}
+
+@media (max-width: 480px) {
+	.step_title {
+		font-size: 18px;
+	}
+
+	.step_title i {
+		font-size: 20px;
+	}
+
+	.categories_grid {
+		grid-template-columns: 1fr;
+	}
+}
