@@ -1914,7 +1914,7 @@ body.modal-open {
 	.thumbnail_figure,
 	img,
 	a,
-	div:not(.contact_modal):not(.contact_modal_overlay):not(.contact_modal_container),
+	div:not(.contact_modal):not(.contact_modal_overlay):not(.contact_modal_container):not(#auth_popup_modal):not(.auth_popup_overlay):not(.auth_popup_container),
 	section,
 	article,
 	header:not(.contact_modal_header),
@@ -1953,7 +1953,13 @@ body.modal-open {
 	.contact_modal,
 	.contact_modal *,
 	#contact_modal_author,
-	#contact_modal_author * {
+	#contact_modal_author *,
+	#auth_popup_modal,
+	#auth_popup_modal *,
+	.auth_popup_overlay,
+	.auth_popup_overlay *,
+	.auth_popup_container,
+	.auth_popup_container * {
 		z-index: inherit !important;
 	}
 }
