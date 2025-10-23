@@ -18455,7 +18455,6 @@ body.modal-open div:not(.contact_modal):not(.contact_modal_overlay):not(.contact
 body.modal-open section,
 body.modal-open article,
 body.modal-open header:not(.contact_modal_header),
-body.modal-open .author_hero_header,
 body.modal-open .author_page_sidebar,
 body.modal-open .author_main_content,
 body.modal-open .event_list_section,
@@ -18465,6 +18464,17 @@ body.modal-open .wrap_site,
 body.modal-open .main {
   z-index: 1 !important;
   position: relative !important;
+}
+body.modal-open .author_hero_header,
+body.modal-open .author_hero_header *,
+body.modal-open .hero_cover_image,
+body.modal-open .hero_cover_image img,
+body.modal-open .hero_overlay {
+  z-index: 1 !important;
+  position: relative !important;
+  transform: none !important;
+  animation: none !important;
+  transition: none !important;
 }
 body.modal-open .contact_modal,
 body.modal-open .contact_modal *,

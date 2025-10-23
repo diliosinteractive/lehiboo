@@ -1831,7 +1831,6 @@ body.modal-open {
 	section,
 	article,
 	header:not(.contact_modal_header),
-	.author_hero_header,
 	.author_page_sidebar,
 	.author_main_content,
 	.event_list_section,
@@ -1841,6 +1840,19 @@ body.modal-open {
 	.main {
 		z-index: 1 !important;
 		position: relative !important;
+	}
+
+	// Hero header : figer et empêcher tout mouvement
+	.author_hero_header,
+	.author_hero_header *,
+	.hero_cover_image,
+	.hero_cover_image img,
+	.hero_overlay {
+		z-index: 1 !important;
+		position: relative !important;
+		transform: none !important;
+		animation: none !important;
+		transition: none !important;
 	}
 
 	// Le modal et ses enfants doivent garder leur z-index élevé
