@@ -189,7 +189,7 @@ class LeHiboo_Vendor_Admin {
 		$message = "Bonjour,\n\n";
 		$message .= "Bonne nouvelle ! Votre demande de partenariat pour {$org_name} a été approuvée.\n\n";
 		$message .= "Vous pouvez dès maintenant vous connecter et publier vos premières activités.\n\n";
-		$message .= "Lien de connexion : " . wp_login_url() . "\n\n";
+		$message .= "Lien de connexion : " . home_url( '/member-account/' ) . "\n\n";
 		$message .= "Cordialement,\nL'équipe Le Hiboo";
 
 		wp_mail( $user->user_email, $subject, $message );

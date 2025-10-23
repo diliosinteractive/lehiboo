@@ -100,7 +100,7 @@ $application_date = get_user_meta( $current_user->ID, 'vendor_application_date',
 				<i class="fas fa-home"></i>
 				Retour à l'accueil
 			</a>
-			<a href="<?php echo wp_logout_url( home_url() ); ?>" class="btn_action btn_secondary">
+			<a href="<?php echo wp_logout_url( home_url('/member-account/') ); ?>" class="btn_action btn_secondary">
 				<i class="fas fa-sign-out-alt"></i>
 				Se déconnecter
 			</a>

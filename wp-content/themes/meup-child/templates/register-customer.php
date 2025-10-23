@@ -205,7 +205,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 				<div class="register_form_footer">
 					<p class="footer_text">
 						Vous avez déjà un compte ?
-						<a href="<?php echo esc_url( wp_login_url() ); ?>" class="login_link">
+						<a href="<?php echo esc_url( home_url( '/member-account/' ) ); ?>" class="login_link">
 							Se connecter
 						</a>
 					</p>

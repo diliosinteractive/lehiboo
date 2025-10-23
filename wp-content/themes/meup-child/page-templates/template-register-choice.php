@@ -130,7 +130,7 @@ if ( $registration_type === 'customer' ) {
 		<div class="register_choice_footer">
 			<p>
 				Vous avez déjà un compte ?
-				<a href="<?php echo esc_url( wp_login_url() ); ?>" class="login_link">
+				<a href="<?php echo esc_url( home_url( '/member-account/' ) ); ?>" class="login_link">
 					Se connecter
 				</a>
 			</p>

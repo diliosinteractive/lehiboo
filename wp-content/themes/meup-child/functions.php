@@ -1012,7 +1012,7 @@ function lehiboo_handle_ajax_register() {
  */
 function lehiboo_send_welcome_email( $user_id, $email, $password, $firstname ) {
 	$site_name = get_bloginfo( 'name' );
-	$login_url = wp_login_url();
+	$login_url = home_url( '/member-account/' );
 
 	$subject = sprintf( '[%s] Bienvenue ! Votre compte a été créé', $site_name );
 
