@@ -12,6 +12,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
 
+<!-- DEBUG: Template chargé à <?php echo date('H:i:s'); ?> - <?php echo wp_debug_backtrace_summary(); ?> -->
 <!-- Popup Authentification -->
 <div id="auth_popup_modal" class="auth_popup_overlay" style="display: none;">
 	<div class="auth_popup_container">
