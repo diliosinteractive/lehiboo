@@ -2,7 +2,7 @@
 /**
  * Template Name: Choix Type d'Inscription
  * Description: Page permettant de choisir entre inscription Utilisateur ou Partenaire
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 // Rediriger si déjà connecté
@@ -11,7 +11,25 @@ if ( is_user_logged_in() ) {
 	exit;
 }
 
+// Détecter le type d'inscription demandé
+$registration_type = isset( $_GET['type'] ) ? sanitize_text_field( $_GET['type'] ) : '';
+
 get_header();
+
+// Si un type est sélectionné, afficher le formulaire correspondant
+if ( $registration_type === 'customer' ) {
+	// Formulaire Utilisateur
+	get_template_part( 'templates/register', 'customer' );
+	get_footer();
+	return;
+} elseif ( $registration_type === 'vendor' ) {
+	// Formulaire Partenaire
+	get_template_part( 'templates/register', 'vendor' );
+	get_footer();
+	return;
+}
+
+// Sinon, afficher la page de choix
 ?>
 
 <div class="lehiboo_register_choice_wrapper">

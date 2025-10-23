@@ -1,0 +1,534 @@
+/**
+ * Register Customer Form Styles
+ * Design moderne et épuré pour l'inscription utilisateur
+ * @version 1.0.0
+ */
+
+/* ========================================
+   WRAPPER PRINCIPAL
+======================================== */
+.lehiboo_register_form_wrapper {
+	padding: 60px 0 100px;
+	background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+	min-height: 100vh;
+}
+
+.lehiboo_register_form_wrapper .container {
+	max-width: 600px;
+	margin: 0 auto;
+	padding: 0 20px;
+}
+
+/* ========================================
+   HEADER
+======================================== */
+.register_form_header {
+	margin-bottom: 40px;
+	animation: fadeInDown 0.5s ease-out;
+}
+
+.back_link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: #666;
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 500;
+	margin-bottom: 24px;
+	transition: all 0.3s ease;
+}
+
+.back_link:hover {
+	color: #333;
+	transform: translateX(-4px);
+}
+
+.back_link i {
+	font-size: 12px;
+}
+
+.register_header_content {
+	text-align: center;
+}
+
+.register_icon {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto 24px;
+	font-size: 32px;
+	color: white;
+	animation: scaleIn 0.6s ease-out 0.2s;
+	animation-fill-mode: both;
+}
+
+.customer_icon {
+	background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
+	box-shadow: 0 8px 24px rgba(78, 101, 255, 0.3);
+}
+
+.register_title {
+	font-size: 32px;
+	font-weight: 700;
+	color: #1a1a1a;
+	margin-bottom: 12px;
+	line-height: 1.2;
+}
+
+.register_subtitle {
+	font-size: 16px;
+	color: #666;
+	margin: 0;
+}
+
+/* ========================================
+   CONTAINER DU FORMULAIRE
+======================================== */
+.register_form_container {
+	animation: fadeInUp 0.6s ease-out 0.3s;
+	animation-fill-mode: both;
+}
+
+.register_form_inner {
+	background: white;
+	border-radius: 16px;
+	padding: 40px;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* ========================================
+   NOTIFICATIONS
+======================================== */
+.register_notification {
+	padding: 16px 20px;
+	border-radius: 8px;
+	margin-bottom: 24px;
+	font-size: 14px;
+	line-height: 1.5;
+	display: none;
+	animation: slideDown 0.3s ease-out;
+}
+
+.register_notification.success {
+	background: #d4edda;
+	border: 1px solid #c3e6cb;
+	color: #155724;
+}
+
+.register_notification.error {
+	background: #f8d7da;
+	border: 1px solid #f5c6cb;
+	color: #721c24;
+}
+
+/* ========================================
+   FORMULAIRE
+======================================== */
+.register_form {
+	/* Styles généraux du formulaire */
+}
+
+.form_group {
+	margin-bottom: 24px;
+}
+
+.form_label {
+	display: block;
+	font-size: 14px;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 8px;
+}
+
+.required {
+	color: #FF6B6B;
+}
+
+/* Input wrapper */
+.input_wrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.input_icon {
+	position: absolute;
+	left: 16px;
+	color: #999;
+	font-size: 16px;
+	pointer-events: none;
+	transition: color 0.3s ease;
+}
+
+.form_input {
+	width: 100%;
+	padding: 14px 16px 14px 48px;
+	border: 2px solid #e0e0e0;
+	border-radius: 10px;
+	font-size: 15px;
+	color: #333;
+	transition: all 0.3s ease;
+	background: #fafafa;
+}
+
+.form_input:focus {
+	outline: none;
+	border-color: #4E65FF;
+	background: white;
+	box-shadow: 0 0 0 4px rgba(78, 101, 255, 0.1);
+}
+
+.form_input:focus + .input_icon {
+	color: #4E65FF;
+}
+
+.form_input::placeholder {
+	color: #aaa;
+}
+
+/* Password wrapper */
+.password_wrapper {
+	position: relative;
+}
+
+.toggle_password {
+	position: absolute;
+	right: 16px;
+	background: none;
+	border: none;
+	color: #999;
+	cursor: pointer;
+	padding: 8px;
+	font-size: 16px;
+	transition: color 0.3s ease;
+}
+
+.toggle_password:hover {
+	color: #4E65FF;
+}
+
+.password_wrapper .form_input {
+	padding-right: 48px;
+}
+
+/* Password strength */
+.password_strength {
+	margin-top: 8px;
+}
+
+.strength_bar {
+	height: 4px;
+	background: #e0e0e0;
+	border-radius: 2px;
+	overflow: hidden;
+	margin-bottom: 6px;
+}
+
+.strength_bar_fill {
+	height: 100%;
+	width: 0;
+	transition: all 0.3s ease;
+	border-radius: 2px;
+}
+
+.strength_bar_fill.weak {
+	width: 33%;
+	background: #FF6B6B;
+}
+
+.strength_bar_fill.medium {
+	width: 66%;
+	background: #FFA500;
+}
+
+.strength_bar_fill.strong {
+	width: 100%;
+	background: #4CAF50;
+}
+
+.strength_text {
+	font-size: 12px;
+	color: #666;
+	margin: 0;
+}
+
+/* Field help */
+.field_help {
+	font-size: 13px;
+	color: #999;
+	margin: 6px 0 0;
+}
+
+/* ========================================
+   CHECKBOXES
+======================================== */
+.checkbox_group {
+	margin-bottom: 20px;
+}
+
+.checkbox_label {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	cursor: pointer;
+	font-size: 14px;
+	color: #555;
+	line-height: 1.5;
+}
+
+.checkbox_input {
+	display: none;
+}
+
+.checkbox_custom {
+	width: 20px;
+	height: 20px;
+	border: 2px solid #d0d0d0;
+	border-radius: 4px;
+	flex-shrink: 0;
+	position: relative;
+	transition: all 0.3s ease;
+	background: white;
+	margin-top: 2px;
+}
+
+.checkbox_input:checked + .checkbox_custom {
+	background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
+	border-color: #4E65FF;
+}
+
+.checkbox_input:checked + .checkbox_custom::after {
+	content: '\f00c';
+	font-family: 'Font Awesome 5 Free';
+	font-weight: 900;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: white;
+	font-size: 12px;
+}
+
+.checkbox_text {
+	flex: 1;
+}
+
+.checkbox_text a {
+	color: #4E65FF;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.checkbox_text a:hover {
+	text-decoration: underline;
+}
+
+/* ========================================
+   BOUTON DE SOUMISSION
+======================================== */
+.submit_group {
+	margin-top: 32px;
+	margin-bottom: 0;
+}
+
+.submit_button {
+	width: 100%;
+	padding: 16px 32px;
+	border: none;
+	border-radius: 12px;
+	font-size: 16px;
+	font-weight: 600;
+	color: white;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	position: relative;
+	overflow: hidden;
+}
+
+.customer_submit {
+	background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
+	box-shadow: 0 4px 16px rgba(78, 101, 255, 0.3);
+}
+
+.customer_submit:hover:not(:disabled) {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 24px rgba(78, 101, 255, 0.4);
+}
+
+.submit_button:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.button_loader {
+	font-size: 18px;
+}
+
+/* ========================================
+   FOOTER DU FORMULAIRE
+======================================== */
+.register_form_footer {
+	text-align: center;
+	padding-top: 24px;
+	margin-top: 24px;
+	border-top: 1px solid #e0e0e0;
+}
+
+.footer_text {
+	font-size: 14px;
+	color: #666;
+	margin: 0;
+}
+
+.login_link {
+	color: #4E65FF;
+	text-decoration: none;
+	font-weight: 600;
+	transition: color 0.3s ease;
+}
+
+.login_link:hover {
+	color: #3d52cc;
+	text-decoration: underline;
+}
+
+/* ========================================
+   AVANTAGES
+======================================== */
+.register_benefits {
+	margin-top: 32px;
+	padding-top: 32px;
+	border-top: 1px solid #e0e0e0;
+}
+
+.benefits_title {
+	font-size: 16px;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 16px;
+}
+
+.benefits_list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.benefits_list li {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 10px 0;
+	font-size: 14px;
+	color: #555;
+	line-height: 1.5;
+}
+
+.benefits_list i {
+	color: #4CAF50;
+	font-size: 18px;
+	flex-shrink: 0;
+	margin-top: 2px;
+}
+
+/* ========================================
+   ANIMATIONS
+======================================== */
+@keyframes fadeInDown {
+	from {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes scaleIn {
+	from {
+		opacity: 0;
+		transform: scale(0.5);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+@media (max-width: 768px) {
+	.lehiboo_register_form_wrapper {
+		padding: 40px 0 60px;
+	}
+
+	.register_form_inner {
+		padding: 32px 24px;
+	}
+
+	.register_icon {
+		width: 64px;
+		height: 64px;
+		font-size: 28px;
+	}
+
+	.register_title {
+		font-size: 26px;
+	}
+
+	.register_subtitle {
+		font-size: 15px;
+	}
+}
+
+@media (max-width: 480px) {
+	.register_form_inner {
+		padding: 24px 20px;
+	}
+
+	.register_title {
+		font-size: 22px;
+	}
+
+	.form_input {
+		padding: 12px 14px 12px 44px;
+		font-size: 14px;
+	}
+
+	.submit_button {
+		padding: 14px 24px;
+		font-size: 15px;
+	}
+}
