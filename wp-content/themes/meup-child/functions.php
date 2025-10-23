@@ -51,6 +51,12 @@ function meup_child_scripts() {
     if( is_author() ) {
         wp_enqueue_script( 'author-profile-modern', plugins_url( 'eventlist/assets/js/frontend/author-profile-modern.js' ), array('jquery'), '1.0.0', true );
 
+        // Localiser le script pour AJAX
+        wp_localize_script( 'author-profile-modern', 'el_ajax_object', array(
+            'ajax_url' => admin_url( 'admin-ajax.php' ),
+            'nonce' => wp_create_nonce( 'el_ajax_nonce' )
+        ));
+
         // Cloudflare Turnstile CAPTCHA pour formulaire de contact
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
     }
