@@ -1808,50 +1808,56 @@ $radius-lg: 16px;
 
 // Force les autres éléments à être derrière le modal
 body.modal-open {
-	overflow: hidden;
+	overflow: hidden !important;
 
-	.event_entry,
-	.event_item,
-	.event_archive,
-	.filter_wrap,
-	select,
-	.form-select {
-		position: relative;
-		z-index: 1 !important;
+	// Reset z-index de TOUS les éléments de la page
+	* {
+		z-index: auto !important;
+	}
+
+	// Sauf le modal
+	.contact_modal,
+	.contact_modal *,
+	#contact_modal_author,
+	#contact_modal_author * {
+		z-index: unset !important;
 	}
 }
 
 .contact_modal {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 999999 !important;
+	position: fixed !important;
+	top: 0 !important;
+	left: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	z-index: 2147483647 !important; // Max z-index possible
 	display: none;
+	isolation: isolate; // Crée un nouveau stacking context
 
 	&.active {
-		display: block;
+		display: block !important;
 	}
 
 	.contact_modal_overlay {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
+		position: fixed !important;
+		top: 0 !important;
+		left: 0 !important;
+		width: 100% !important;
+		height: 100% !important;
 		background: rgba(0, 0, 0, 0.7);
 		backdrop-filter: blur(4px);
 		animation: fadeIn 0.3s ease;
-		z-index: 1;
+		z-index: 2147483646 !important;
 	}
 
 	.contact_modal_container {
-		position: relative;
+		position: fixed !important;
+		top: 50% !important;
+		left: 50% !important;
+		transform: translate(-50%, -50%) !important;
 		width: 90%;
 		max-width: 600px;
 		max-height: 90vh;
-		margin: 5vh auto;
 		background: #fff;
 		border-radius: $radius-md;
 		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -1859,7 +1865,7 @@ body.modal-open {
 		animation: slideUp 0.4s ease;
 		display: flex;
 		flex-direction: column;
-		z-index: 2;
+		z-index: 2147483647 !important;
 	}
 
 	.contact_modal_header {
