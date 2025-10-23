@@ -120,7 +120,7 @@ if ( $author_id_image ) {
 
 		<div class="hero_actions">
 			<?php if( apply_filters( 'el_single_event_show_send_message_btn', true ) ){ ?>
-				<a href="#contact-form" class="btn_primary btn_contact">
+				<a href="#contact-form" class="btn_primary btn_contact" data-require-login="<?php echo is_user_logged_in() ? 'false' : 'true'; ?>">
 					<i class="icon_mail_alt"></i>
 					<?php esc_html_e( 'Contact', 'eventlist' ); ?>
 				</a>

@@ -64,7 +64,7 @@
 		checkButtonsRequireLogin: function() {
 			// Intercepter les boutons "Envoyer un message" - avec capture priority
 			// Utiliser l'événement direct sur les boutons pour être sûr de capter en premier
-			$(document).on('click', '#open_contact_modal, #open_contact_form, .btn_send_message, .organizer_contact_btn', function(e) {
+			$(document).on('click', '#open_contact_modal, #open_contact_form, .btn_send_message, .organizer_contact_btn, .btn_contact', function(e) {
 				const requireLogin = $(this).data('require-login');
 
 				if (requireLogin === true || requireLogin === 'true') {
@@ -83,7 +83,7 @@
 			// Cela garantit que même si notre handler ne s'exécute pas en premier,
 			// les anciens handlers seront supprimés
 			setTimeout(function() {
-				$('#open_contact_modal, #open_contact_form, .btn_send_message, .organizer_contact_btn').each(function() {
+				$('#open_contact_modal, #open_contact_form, .btn_send_message, .organizer_contact_btn, .btn_contact').each(function() {
 					const $btn = $(this);
 					const requireLogin = $btn.data('require-login');
 
