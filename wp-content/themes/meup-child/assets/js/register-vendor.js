@@ -1,237 +1,460 @@
 /**
- * Register Vendor Form JavaScript
- * Gestion formulaire multi-étapes partenaire
- * @version 1.0.0
+ * Vendor Registration JavaScript
+ * Version 2.0 - UI/UX amélioré avec API Gouv
+ * @version 2.0.0
  */
 
 (function($) {
 	'use strict';
 
 	const VendorRegister = {
+
 		currentStep: 1,
 		totalSteps: 3,
 
+		/**
+		 * Initialisation
+		 */
 		init: function() {
 			this.bindEvents();
-			this.initPasswordStrength();
+			this.initAPIs();
 		},
 
+		/**
+		 * Bind events
+		 */
 		bindEvents: function() {
 			// Navigation entre étapes
-			$(document).on('click', '.btn_next', function() {
-				const nextStep = parseInt($(this).data('next'));
-				VendorRegister.goToStep(nextStep);
+			$(document).on('click', '.btn_next', this.nextStep.bind(this));
+			$(document).on('click', '.btn_prev', this.prevStep.bind(this));
+
+			// Toggle password visibility
+			$(document).on('click', '.toggle_password', this.togglePassword);
+
+			// Upload files
+			$(document).on('click', '.upload_area', this.triggerFileUpload);
+			$(document).on('change', 'input[type="file"]', this.handleFileSelect);
+
+			// Form submission
+			$('#vendor_register_form').on('submit', this.handleSubmit.bind(this));
+
+			// Password validation
+			$('#vendor_password').on('input', this.validatePassword);
+			$('#vendor_password_confirm').on('input', this.checkPasswordMatch);
+		},
+
+		/**
+		 * Initialize APIs (Entreprise + Adresse)
+		 */
+		initAPIs: function() {
+			// API Recherche d'entreprise (SIREN/SIRET)
+			let orgSearchTimeout;
+			$('#vendor_org_name').on('input', function() {
+				clearTimeout(orgSearchTimeout);
+				const query = $(this).val().trim();
+
+				if (query.length < 3) {
+					$('#org_suggestions').hide();
+					return;
+				}
+
+				orgSearchTimeout = setTimeout(function() {
+					VendorRegister.searchEntreprise(query);
+				}, 300);
 			});
 
-			$(document).on('click', '.btn_prev', function() {
-				const prevStep = parseInt($(this).data('prev'));
-				VendorRegister.goToStep(prevStep);
+			// API Adresse gouv.fr
+			let addressSearchTimeout;
+			$('#vendor_org_address').on('input', function() {
+				clearTimeout(addressSearchTimeout);
+				const query = $(this).val().trim();
+
+				if (query.length < 5) {
+					$('#address_suggestions').hide();
+					return;
+				}
+
+				addressSearchTimeout = setTimeout(function() {
+					VendorRegister.searchAddress(query);
+				}, 300);
 			});
 
-			// Toggle password
-			$(document).on('click', '.toggle_password', function() {
-				VendorRegister.togglePasswordVisibility($(this));
-			});
-
-			// Password strength
-			$(document).on('input', '#vendor_password', function() {
-				VendorRegister.checkPasswordStrength($(this).val());
-			});
-
-			// File uploads avec preview
-			$(document).on('change', '.file_input', function() {
-				VendorRegister.handleFileUpload($(this));
-			});
-
-			// Remove file
-			$(document).on('click', '.remove_file', function() {
-				VendorRegister.removeFile($(this).data('target'));
-			});
-
-			// Submit form
-			$(document).on('submit', '#vendor_register_form', function(e) {
-				e.preventDefault();
-				VendorRegister.handleSubmit($(this));
+			// Click en dehors pour fermer les suggestions
+			$(document).on('click', function(e) {
+				if (!$(e.target).closest('#vendor_org_name, #org_suggestions').length) {
+					$('#org_suggestions').hide();
+				}
+				if (!$(e.target).closest('#vendor_org_address, #address_suggestions').length) {
+					$('#address_suggestions').hide();
+				}
 			});
 		},
 
-		goToStep: function(step) {
-			// Valider l'étape actuelle avant de continuer
-			if (step > this.currentStep && !this.validateStep(this.currentStep)) {
+		/**
+		 * API Recherche d'entreprise via API Entreprise/Annuaire
+		 */
+		searchEntreprise: function(query) {
+			const $suggestions = $('#org_suggestions');
+			$suggestions.html('<div class="suggestion_loading"><i class="fas fa-spinner fa-spin"></i> Recherche en cours...</div>').show();
+
+			// Utiliser l'API Recherche Entreprise (données publiques)
+			$.ajax({
+				url: 'https://recherche-entreprises.api.gouv.fr/search',
+				method: 'GET',
+				data: {
+					q: query,
+					per_page: 5
+				},
+				dataType: 'json',
+				success: function(response) {
+					if (response.results && response.results.length > 0) {
+						let html = '';
+						response.results.forEach(function(entreprise) {
+							const nom = entreprise.nom_complet || entreprise.nom_raison_sociale;
+							const siren = entreprise.siren;
+							const adresse = entreprise.siege ?
+								`${entreprise.siege.numero_voie || ''} ${entreprise.siege.type_voie || ''} ${entreprise.siege.libelle_voie || ''}, ${entreprise.siege.code_postal || ''} ${entreprise.siege.libelle_commune || ''}`.trim()
+								: '';
+
+							html += `
+								<div class="suggestion_item" data-siren="${siren}" data-nom="${nom}" data-adresse="${adresse}">
+									<div class="suggestion_name">${nom}</div>
+									<div class="suggestion_details">
+										<span class="suggestion_siren">SIREN: ${siren}</span>
+										${adresse ? `<span class="suggestion_address">${adresse}</span>` : ''}
+									</div>
+								</div>
+							`;
+						});
+						$suggestions.html(html).show();
+
+						// Click sur une suggestion
+						$('.suggestion_item').on('click', function() {
+							const nom = $(this).data('nom');
+							const siren = $(this).data('siren');
+							const adresse = $(this).data('adresse');
+
+							$('#vendor_org_name').val(nom);
+							$('#vendor_org_siret').val(siren);
+							if (adresse) {
+								VendorRegister.parseAndFillAddress(adresse);
+							}
+							$suggestions.hide();
+						});
+					} else {
+						$suggestions.html('<div class="suggestion_empty">Aucune entreprise trouvée</div>').show();
+					}
+				},
+				error: function() {
+					$suggestions.html('<div class="suggestion_error">Erreur de recherche</div>').show();
+				}
+			});
+		},
+
+		/**
+		 * API Adresse gouv.fr
+		 */
+		searchAddress: function(query) {
+			const $suggestions = $('#address_suggestions');
+			$suggestions.html('<div class="suggestion_loading"><i class="fas fa-spinner fa-spin"></i> Recherche en cours...</div>').show();
+
+			$.ajax({
+				url: 'https://api-adresse.data.gouv.fr/search/',
+				method: 'GET',
+				data: {
+					q: query,
+					limit: 5
+				},
+				dataType: 'json',
+				success: function(response) {
+					if (response.features && response.features.length > 0) {
+						let html = '';
+						response.features.forEach(function(feature) {
+							const address = feature.properties.label;
+							const postcode = feature.properties.postcode;
+							const city = feature.properties.city;
+							const street = feature.properties.name;
+
+							html += `
+								<div class="suggestion_item" data-address="${street}" data-postcode="${postcode}" data-city="${city}" data-full="${address}">
+									<div class="suggestion_address_full">${address}</div>
+								</div>
+							`;
+						});
+						$suggestions.html(html).show();
+
+						// Click sur une suggestion
+						$('.suggestion_item').on('click', function() {
+							const address = $(this).data('address');
+							const postcode = $(this).data('postcode');
+							const city = $(this).data('city');
+							const full = $(this).data('full');
+
+							$('#vendor_org_address').val(address);
+							$('#vendor_org_zipcode').val(postcode);
+							$('#vendor_org_city').val(city);
+							$suggestions.hide();
+						});
+					} else {
+						$suggestions.html('<div class="suggestion_empty">Aucune adresse trouvée</div>').show();
+					}
+				},
+				error: function() {
+					$suggestions.html('<div class="suggestion_error">Erreur de recherche</div>').show();
+				}
+			});
+		},
+
+		/**
+		 * Parser et remplir l'adresse depuis une chaîne
+		 */
+		parseAndFillAddress: function(adresseComplete) {
+			const parts = adresseComplete.split(',');
+			if (parts.length >= 2) {
+				const street = parts[0].trim();
+				const cityPart = parts[1].trim();
+				const cityMatch = cityPart.match(/(\d{5})\s+(.+)/);
+
+				if (cityMatch) {
+					$('#vendor_org_address').val(street);
+					$('#vendor_org_zipcode').val(cityMatch[1]);
+					$('#vendor_org_city').val(cityMatch[2]);
+				}
+			}
+		},
+
+		/**
+		 * Next step
+		 */
+		nextStep: function(e) {
+			e.preventDefault();
+			const nextStep = parseInt($(e.currentTarget).data('next'));
+
+			if (!this.validateStep(this.currentStep)) {
 				return;
 			}
 
-			// Cacher toutes les étapes
-			$('.form_step').hide();
-			$('.form_step[data-step="' + step + '"]').fadeIn(300);
+			this.goToStep(nextStep);
+		},
 
-			// Mettre à jour la progress bar
-			const progress = (step / this.totalSteps) * 100;
-			$('.progress_bar_fill').css('width', progress + '%');
+		/**
+		 * Previous step
+		 */
+		prevStep: function(e) {
+			e.preventDefault();
+			const prevStep = parseInt($(e.currentTarget).data('prev'));
+			this.goToStep(prevStep);
+		},
 
-			// Mettre à jour les steps indicators
-			$('.progress_step').removeClass('active');
-			$('.progress_step[data-step="' + step + '"]').addClass('active');
+		/**
+		 * Go to specific step
+		 */
+		goToStep: function(step) {
+			// Hide current step
+			$(`.form_step[data-step="${this.currentStep}"]`).removeClass('active');
 
+			// Show new step
+			$(`.form_step[data-step="${step}"]`).addClass('active');
+
+			// Update navigation
+			$('.step_nav_item').removeClass('active completed');
+			for (let i = 1; i < step; i++) {
+				$(`.step_nav_item[data-step="${i}"]`).addClass('completed');
+			}
+			$(`.step_nav_item[data-step="${step}"]`).addClass('active');
+
+			// Update current step
 			this.currentStep = step;
 
 			// Scroll to top
-			$('html, body').animate({
-				scrollTop: $('.register_form_container').offset().top - 100
-			}, 500);
+			$('html, body').animate({ scrollTop: 0 }, 300);
 		},
 
+		/**
+		 * Validate current step
+		 */
 		validateStep: function(step) {
+			const $currentStep = $(`.form_step[data-step="${step}"]`);
+			const $required = $currentStep.find('[required]');
 			let isValid = true;
-			const $step = $('.form_step[data-step="' + step + '"]');
 
-			// Récupérer tous les champs requis de l'étape
-			$step.find('[required]').each(function() {
+			$required.each(function() {
 				const $field = $(this);
+				const value = $field.val().trim();
 
-				if ($field.attr('type') === 'checkbox') {
-					if (!$field.is(':checked')) {
-						isValid = false;
-						$field.parent().css('border-color', '#FF6B6B');
-					}
-				} else if ($field.is('select')) {
-					if (!$field.val()) {
-						isValid = false;
-						$field.css('border-color', '#FF6B6B');
-					}
+				if (!value) {
+					isValid = false;
+					$field.addClass('error');
+					VendorRegister.showNotification('error', 'Veuillez remplir tous les champs obligatoires.');
+					return false;
 				} else {
-					if (!$field.val().trim()) {
-						isValid = false;
-						$field.css('border-color', '#FF6B6B');
-					}
+					$field.removeClass('error');
 				}
 			});
 
-			// Validation spécifique étape 1
+			// Validation spécifique step 1
 			if (step === 1) {
 				const password = $('#vendor_password').val();
-				const confirm = $('#vendor_password_confirm').val();
+				const passwordConfirm = $('#vendor_password_confirm').val();
 
-				if (password.length < 8) {
-					VendorRegister.showNotification('error', 'Le mot de passe doit contenir au moins 8 caractères.');
+				if (password !== passwordConfirm) {
 					isValid = false;
+					VendorRegister.showNotification('error', 'Les mots de passe ne correspondent pas.');
 				}
 
-				if (password !== confirm) {
-					VendorRegister.showNotification('error', 'Les mots de passe ne correspondent pas.');
+				if (!VendorRegister.isPasswordStrong(password)) {
 					isValid = false;
+					VendorRegister.showNotification('error', 'Le mot de passe ne respecte pas les critères de sécurité.');
 				}
 			}
 
-			// Validation étape 2
+			// Validation spécifique step 2
 			if (step === 2) {
 				const categoriesChecked = $('input[name="vendor_categories[]"]:checked').length;
 				if (categoriesChecked === 0) {
-					VendorRegister.showNotification('error', 'Veuillez sélectionner au moins une catégorie.');
 					isValid = false;
+					VendorRegister.showNotification('error', 'Veuillez sélectionner au moins une catégorie.');
 				}
-			}
-
-			if (!isValid) {
-				VendorRegister.showNotification('error', 'Veuillez remplir tous les champs obligatoires.');
 			}
 
 			return isValid;
 		},
 
-		togglePasswordVisibility: function($button) {
+		/**
+		 * Toggle password visibility
+		 */
+		togglePassword: function(e) {
+			e.preventDefault();
+			const $button = $(this);
 			const $input = $button.siblings('input');
 			const $icon = $button.find('i');
 
 			if ($input.attr('type') === 'password') {
 				$input.attr('type', 'text');
-				$icon.removeClass('fa-eye').addClass('fa-eye-slash');
+				$icon.removeClass('fa-eye-slash').addClass('fa-eye');
 			} else {
 				$input.attr('type', 'password');
-				$icon.removeClass('fa-eye-slash').addClass('fa-eye');
+				$icon.removeClass('fa-eye').addClass('fa-eye-slash');
 			}
 		},
 
-		initPasswordStrength: function() {
-			$('#vendor_password').on('input', function() {
-				VendorRegister.checkPasswordStrength($(this).val());
+		/**
+		 * Validate password strength
+		 */
+		validatePassword: function() {
+			const password = $(this).val();
+			const isStrong = VendorRegister.isPasswordStrong(password);
+			const $wrapper = $(this).closest('.form_group');
+
+			if (password.length > 0) {
+				if (isStrong) {
+					$wrapper.removeClass('password_weak').addClass('password_strong');
+				} else {
+					$wrapper.removeClass('password_strong').addClass('password_weak');
+				}
+			} else {
+				$wrapper.removeClass('password_weak password_strong');
+			}
+		},
+
+		/**
+		 * Check if password is strong
+		 */
+		isPasswordStrong: function(password) {
+			if (password.length < 8) return false;
+			if (!/[A-Z]/.test(password)) return false;
+			if (!/[a-z]/.test(password)) return false;
+			if (!/[0-9]/.test(password)) return false;
+			if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) return false;
+			return true;
+		},
+
+		/**
+		 * Check password match
+		 */
+		checkPasswordMatch: function() {
+			const password = $('#vendor_password').val();
+			const passwordConfirm = $(this).val();
+			const $wrapper = $(this).closest('.form_group');
+
+			if (passwordConfirm.length > 0) {
+				if (password === passwordConfirm) {
+					$wrapper.removeClass('password_mismatch').addClass('password_match');
+				} else {
+					$wrapper.removeClass('password_match').addClass('password_mismatch');
+				}
+			} else {
+				$wrapper.removeClass('password_match password_mismatch');
+			}
+		},
+
+		/**
+		 * Trigger file upload
+		 */
+		triggerFileUpload: function(e) {
+			if ($(e.target).is('input[type="file"]')) return;
+			const inputId = $(this).data('input');
+			$(`#${inputId}`).click();
+		},
+
+		/**
+		 * Handle file select
+		 */
+		handleFileSelect: function(e) {
+			const file = this.files[0];
+			if (!file) return;
+
+			const $uploadArea = $(this).closest('.upload_area');
+			const $preview = $uploadArea.find('.upload_preview');
+
+			// Check file size
+			const maxSize = $(this).attr('accept').includes('image') ? 5 * 1024 * 1024 : 5 * 1024 * 1024;
+			if (file.size > maxSize) {
+				VendorRegister.showNotification('error', 'Le fichier est trop volumineux.');
+				return;
+			}
+
+			// Show preview
+			if (file.type.startsWith('image/')) {
+				const reader = new FileReader();
+				reader.onload = function(e) {
+					$preview.html(`<img src="${e.target.result}" alt="Preview"><button type="button" class="remove_file"><i class="fas fa-times"></i></button>`).show();
+				};
+				reader.readAsDataURL(file);
+			} else {
+				$preview.html(`<div class="file_name"><i class="fas fa-file-pdf"></i> ${file.name}</div><button type="button" class="remove_file"><i class="fas fa-times"></i></button>`).show();
+			}
+
+			$uploadArea.addClass('has_file');
+
+			// Remove file event
+			$preview.find('.remove_file').on('click', function(e) {
+				e.stopPropagation();
+				$(this).closest('.upload_area').find('input[type="file"]').val('');
+				$preview.hide().html('');
+				$uploadArea.removeClass('has_file');
 			});
 		},
 
-		checkPasswordStrength: function(password) {
-			const $fill = $('.strength_bar_fill');
-			const $text = $('.strength_text');
+		/**
+		 * Handle form submission
+		 */
+		handleSubmit: function(e) {
+			e.preventDefault();
 
-			if (password.length === 0) {
-				$fill.removeClass('weak medium strong').css('width', '0');
-				$text.text('');
+			if (!this.validateStep(this.currentStep)) {
 				return;
 			}
 
-			let strength = 0;
-
-			if (password.length >= 8) strength++;
-			if (password.length >= 12) strength++;
-			if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
-			if (/\d/.test(password)) strength++;
-			if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
-
-			if (strength <= 2) {
-				$fill.removeClass('medium strong').addClass('weak');
-				$text.text('Mot de passe faible');
-			} else if (strength <= 4) {
-				$fill.removeClass('weak strong').addClass('medium');
-				$text.text('Mot de passe moyen');
-			} else {
-				$fill.removeClass('weak medium').addClass('strong');
-				$text.text('Mot de passe fort');
-			}
-		},
-
-		handleFileUpload: function($input) {
-			const file = $input[0].files[0];
-			const fieldId = $input.attr('id');
-			const $label = $input.siblings('.file_upload_label');
-
-			if (file) {
-				$label.find('.upload_filename').text(file.name);
-
-				// Preview pour images (logo et cover)
-				if ((fieldId === 'vendor_logo' || fieldId === 'vendor_cover') && file.type.match('image.*')) {
-					const reader = new FileReader();
-					reader.onload = function(e) {
-						$('#preview_' + fieldId.replace('vendor_', '')).show().find('img').attr('src', e.target.result);
-					};
-					reader.readAsDataURL(file);
-				}
-			}
-		},
-
-		removeFile: function(targetId) {
-			$('#' + targetId).val('');
-			$('#' + targetId).siblings('.file_upload_label').find('.upload_filename').text('');
-			$('#preview_' + targetId.replace('vendor_', '')).hide().find('img').attr('src', '');
-		},
-
-		handleSubmit: function($form) {
-			// Valider l'étape finale
-			if (!this.validateStep(3)) {
-				return;
-			}
-
-			const $submitBtn = $form.find('.submit_button');
-			const $btnText = $submitBtn.find('.button_text');
-			const $btnLoader = $submitBtn.find('.button_loader');
-
-			$submitBtn.prop('disabled', true);
-			$btnText.hide();
-			$btnLoader.show();
-
-			this.clearNotifications();
-
-			// Créer FormData pour gérer les fichiers
+			const $form = $('#vendor_register_form');
+			const $submitBtn = $form.find('.btn_submit');
 			const formData = new FormData($form[0]);
+
+			// Add action
 			formData.append('action', 'lehiboo_vendor_register');
+
+			// Disable submit button
+			$submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Envoi en cours...');
 
 			$.ajax({
 				url: lehiboo_register_ajax.ajax_url,
@@ -244,51 +467,42 @@
 					if (response.success) {
 						VendorRegister.showNotification('success', response.data.message);
 
-						// Redirection après 3 secondes
+						// Redirect après 2 secondes
 						setTimeout(function() {
-							if (response.data.redirect_url) {
-								window.location.href = response.data.redirect_url;
-							} else {
-								window.location.reload();
-							}
-						}, 3000);
+							window.location.href = '/vendor-pending';
+						}, 2000);
 					} else {
 						VendorRegister.showNotification('error', response.data.message);
-						$submitBtn.prop('disabled', false);
-						$btnText.show();
-						$btnLoader.hide();
+						$submitBtn.prop('disabled', false).html('<i class="fas fa-check"></i> Soumettre ma demande');
 					}
 				},
-				error: function() {
+				error: function(xhr, status, error) {
+					console.error('Erreur AJAX:', error);
 					VendorRegister.showNotification('error', 'Une erreur est survenue. Veuillez réessayer.');
-					$submitBtn.prop('disabled', false);
-					$btnText.show();
-					$btnLoader.hide();
+					$submitBtn.prop('disabled', false).html('<i class="fas fa-check"></i> Soumettre ma demande');
 				}
 			});
 		},
 
+		/**
+		 * Show notification
+		 */
 		showNotification: function(type, message) {
 			const $notification = $(`.register_notification.${type}`);
-			$notification.html(message).fadeIn(300);
+			$notification.html(message).slideDown(300);
 
-			if (type === 'success') {
-				setTimeout(function() {
-					$notification.fadeOut(300);
-				}, 5000);
-			}
+			setTimeout(function() {
+				$notification.slideUp(300);
+			}, 5000);
 
+			// Scroll to notification
 			$('html, body').animate({
-				scrollTop: $('.register_form_container').offset().top - 100
-			}, 500);
-		},
-
-		clearNotifications: function() {
-			$('.register_notification').hide().html('');
+				scrollTop: $notification.offset().top - 100
+			}, 300);
 		}
 	};
 
-	// Init
+	// Initialize on document ready
 	$(document).ready(function() {
 		if ($('#vendor_register_form').length) {
 			VendorRegister.init();
