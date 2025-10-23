@@ -1931,7 +1931,7 @@ body.modal-open {
 
 	// Hero header : figer et empêcher tout mouvement SANS changer sa position
 	.author_hero_header {
-		z-index: 1 !important;
+		//z-index: 1 !important;
 		// NE PAS changer position car il utilise width: 100vw et marges négatives
 	}
 
@@ -1943,7 +1943,7 @@ body.modal-open {
 	.hero_avatar,
 	.hero_info,
 	.hero_actions {
-		z-index: 1 !important;
+		//z-index: 1 !important;
 		transform: none !important;
 		animation: none !important;
 		transition: none !important;
