@@ -326,11 +326,23 @@ function register_organizer_messages_cpt() {
 
 // Sauvegarder le message dans la base de données
 function save_organizer_message( $event_id, $from_name, $from_email, $subject, $message_content, $organizer_id ) {
-	$event_title = get_the_title( $event_id );
+	// Si event_id = 0, c'est un message depuis le profil organisateur
+	if ( $event_id > 0 ) {
+		$event_title = get_the_title( $event_id );
+		$post_title = sprintf( '%s - Message de %s', $event_title, $from_name );
+	} else {
+		// Message depuis le profil organisateur
+		$org_name = get_user_meta( $organizer_id, 'org_display_name', true );
+		if ( empty( $org_name ) ) {
+			$user_data = get_userdata( $organizer_id );
+			$org_name = $user_data ? $user_data->display_name : 'Organisateur';
+		}
+		$post_title = sprintf( 'Profil %s - Message de %s', $org_name, $from_name );
+	}
 
 	// Créer le post
 	$message_id = wp_insert_post( array(
-		'post_title'    => sprintf( '%s - Message de %s', $event_title, $from_name ),
+		'post_title'    => $post_title,
 		'post_content'  => $message_content,
 		'post_status'   => 'private',
 		'post_type'     => 'organizer_message',
@@ -342,7 +354,7 @@ function save_organizer_message( $event_id, $from_name, $from_email, $subject, $
 		update_post_meta( $message_id, '_from_name', sanitize_text_field( $from_name ) );
 		update_post_meta( $message_id, '_from_email', sanitize_email( $from_email ) );
 		update_post_meta( $message_id, '_subject', sanitize_text_field( $subject ) );
-		update_post_meta( $message_id, '_event_id', intval( $event_id ) );
+		update_post_meta( $message_id, '_event_id', intval( $event_id ) ); // 0 si message profil
 		update_post_meta( $message_id, '_sent_date', current_time( 'mysql' ) );
 		update_post_meta( $message_id, '_is_read', 0 );
 
@@ -683,12 +695,29 @@ function lehiboo_send_author_message() {
 		'Reply-To: ' . $name . ' <' . $email . '>'
 	);
 
+	// Sauvegarder le message dans la base de données
+	// Note: Pour un message depuis le profil (pas lié à un événement), on utilise 0 comme event_id
+	$message_id = save_organizer_message( 0, $name, $email, $subject, $message, $author_id );
+
+	if ( ! $message_id ) {
+		wp_send_json_error( array( 'message' => 'Erreur lors de la sauvegarde du message.' ) );
+	}
+
+	// Ajouter le téléphone dans les métadonnées
+	if ( ! empty( $phone ) ) {
+		update_post_meta( $message_id, '_phone', sanitize_text_field( $phone ) );
+	}
+
 	// Envoyer l'email
 	$sent = wp_mail( $author_email, $email_subject, $email_body, $headers );
 
 	if ( $sent ) {
+		// Marquer l'email comme envoyé
+		update_post_meta( $message_id, '_email_sent', 1 );
 		wp_send_json_success( array( 'message' => 'Message envoyé avec succès !' ) );
 	} else {
-		wp_send_json_error( array( 'message' => 'Erreur lors de l\'envoi du message. Veuillez réessayer.' ) );
+		// Même si l'email échoue, le message est sauvegardé dans la base
+		update_post_meta( $message_id, '_email_sent', 0 );
+		wp_send_json_error( array( 'message' => 'Message sauvegardé mais erreur lors de l\'envoi de l\'email.' ) );
 	}
 }
