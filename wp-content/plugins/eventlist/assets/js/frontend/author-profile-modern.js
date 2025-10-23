@@ -8,24 +8,24 @@
 
     $(document).ready(function() {
 
-        // Toggle Contact Form
-        $('.btn_send_message, .btn_contact').on('click', function(e) {
+        // Open Contact Modal
+        $('#open_contact_modal, .btn_contact').on('click', function(e) {
             e.preventDefault();
+            $('#contact_modal_author').addClass('active').fadeIn(300);
+            $('body').css('overflow', 'hidden');
+        });
 
-            const $formWrapper = $('.contact_form_wrapper');
-            const $button = $(this);
+        // Close Contact Modal
+        $('.contact_modal_close, .contact_modal_overlay').on('click', function() {
+            $('#contact_modal_author').removeClass('active').fadeOut(300);
+            $('body').css('overflow', '');
+        });
 
-            if ($formWrapper.is(':visible')) {
-                $formWrapper.slideUp(300);
-                $button.find('i').removeClass('fa-times').addClass('icon_mail_alt');
-            } else {
-                $formWrapper.slideDown(300);
-                $button.find('i').removeClass('icon_mail_alt').addClass('fa-times');
-
-                // Scroll to form
-                $('html, body').animate({
-                    scrollTop: $formWrapper.offset().top - 100
-                }, 500);
+        // Close modal on ESC key
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape' && $('#contact_modal_author').hasClass('active')) {
+                $('#contact_modal_author').removeClass('active').fadeOut(300);
+                $('body').css('overflow', '');
             }
         });
 
@@ -159,6 +159,67 @@
         // Remove error on focus
         $('.modern-form .input-field').on('focus', function() {
             $(this).removeClass('field-error');
+        });
+
+        // Form submission handler avec Cloudflare Turnstile
+        $('#author_contact_form').on('submit', function(e) {
+            e.preventDefault();
+
+            const $form = $(this);
+            const $submitBtn = $form.find('.contact_submit_btn');
+            const $notify = $form.closest('.contact_modal_body').find('.el-notify');
+
+            // Hide all notifications
+            $notify.find('p').hide();
+
+            // Get form data
+            const formData = new FormData(this);
+
+            // Get Turnstile token
+            const turnstileResponse = turnstile.getResponse();
+            if (!turnstileResponse) {
+                $notify.find('.recapcha-vetify').show();
+                return;
+            }
+            formData.append('cf-turnstile-response', turnstileResponse);
+
+            // Disable submit button
+            $submitBtn.prop('disabled', true).text('Envoi en cours...');
+
+            // Send AJAX request
+            $.ajax({
+                url: el_ajax_object.ajax_url || '/wp-admin/admin-ajax.php',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        $notify.find('.success').show();
+                        $form[0].reset();
+
+                        // Reset Turnstile
+                        if (typeof turnstile !== 'undefined') {
+                            turnstile.reset();
+                        }
+
+                        // Close modal after 2 seconds
+                        setTimeout(function() {
+                            $('#contact_modal_author').removeClass('active').fadeOut(300);
+                            $('body').css('overflow', '');
+                            $notify.find('p').hide();
+                        }, 2000);
+                    } else {
+                        $notify.find('.error').show();
+                    }
+                },
+                error: function() {
+                    $notify.find('.error').show();
+                },
+                complete: function() {
+                    $submitBtn.prop('disabled', false).text('Envoyer');
+                }
+            });
         });
 
         // Add CSS for field errors dynamically

@@ -62,7 +62,7 @@ if( $author_id ){
 		<div class="info_section contact_section">
 			<h3 class="section_title_sidebar">
 				<i class="fas fa-address-card"></i>
-				<?php esc_html_e( 'Contact Information', 'eventlist' ); ?>
+				<?php esc_html_e( 'Informations de contact', 'eventlist' ); ?>
 			</h3>
 
 			<div class="contact_list">
@@ -74,7 +74,7 @@ if( $author_id ){
 									<i class="icon_phone"></i>
 								</div>
 								<div class="contact_content">
-									<span class="contact_label"><?php esc_html_e( 'Phone', 'eventlist' ); ?></span>
+									<span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span>
 									<?php $phone = preg_replace('/[^0-9]/', '', $phone_organizer ); ?>
 									<a href="<?php echo esc_attr('tel:'.$phone); ?>" class="contact_value"><?php echo esc_html( $phone_organizer ); ?></a>
 								</div>
@@ -87,7 +87,7 @@ if( $author_id ){
 									<i class="icon_phone"></i>
 								</div>
 								<div class="contact_content">
-									<span class="contact_label"><?php esc_html_e( 'Phone', 'eventlist' ); ?></span>
+									<span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span>
 									<?php $phone = preg_replace('/[^0-9]/', '', $user_phone ); ?>
 									<a href="<?php echo esc_attr('tel:'.$phone); ?>" class="contact_value"><?php echo esc_html( $user_phone ); ?></a>
 								</div>
@@ -121,7 +121,7 @@ if( $author_id ){
 								<i class="fas fa-link"></i>
 							</div>
 							<div class="contact_content">
-								<span class="contact_label"><?php esc_html_e( 'Website', 'eventlist' ); ?></span>
+								<span class="contact_label"><?php esc_html_e( 'Site web', 'eventlist' ); ?></span>
 								<a href="<?php echo esc_url( $org_web ); ?>" rel="nofollow" target="_blank" class="contact_value"><?php echo esc_html( $org_web ); ?></a>
 							</div>
 						</div>
@@ -131,7 +131,7 @@ if( $author_id ){
 								<i class="fas fa-link"></i>
 							</div>
 							<div class="contact_content">
-								<span class="contact_label"><?php esc_html_e( 'Website', 'eventlist' ); ?></span>
+								<span class="contact_label"><?php esc_html_e( 'Site web', 'eventlist' ); ?></span>
 								<a href="<?php echo esc_url( $author_data->user_url ); ?>" rel="nofollow" target="_blank" class="contact_value"><?php echo esc_html( $author_data->user_url ); ?></a>
 							</div>
 						</div>
@@ -145,7 +145,7 @@ if( $author_id ){
 								<i class="icon_pin_alt"></i>
 							</div>
 							<div class="contact_content">
-								<span class="contact_label"><?php esc_html_e( 'Location', 'eventlist' ); ?></span>
+								<span class="contact_label"><?php esc_html_e( 'Lieu', 'eventlist' ); ?></span>
 								<span class="contact_value">
 									<?php
 									$location_parts = array();
@@ -173,7 +173,7 @@ if( $author_id ){
 								<i class="icon_pin_alt"></i>
 							</div>
 							<div class="contact_content">
-								<span class="contact_label"><?php esc_html_e( 'Location', 'eventlist' ); ?></span>
+								<span class="contact_label"><?php esc_html_e( 'Lieu', 'eventlist' ); ?></span>
 								<span class="contact_value"><?php echo esc_html($user_address); ?></span>
 							</div>
 						</div>
@@ -195,7 +195,7 @@ if( $author_id ){
 			<div class="info_section social_section">
 				<h3 class="section_title_sidebar">
 					<i class="fas fa-share-nodes"></i>
-					<?php esc_html_e( 'Social Media', 'eventlist' ); ?>
+					<?php esc_html_e( 'Réseaux sociaux', 'eventlist' ); ?>
 				</h3>
 				<div class="social_links">
 					<?php if ( is_singular('event') ) : ?>
@@ -234,75 +234,90 @@ if( $author_id ){
 			<div class="info_section contact_form_section" id="contact-form">
 				<h3 class="section_title_sidebar">
 					<i class="fas fa-envelope"></i>
-					<?php esc_html_e( 'Send a Message', 'eventlist' ); ?>
+					<?php esc_html_e( 'Envoyer un message', 'eventlist' ); ?>
 				</h3>
-				<button class="btn_send_message" data-toggle="contact-form">
+				<button class="btn_send_message" id="open_contact_modal">
 					<i class="icon_mail_alt"></i>
-					<?php esc_html_e( 'Open Contact Form', 'eventlist' ); ?>
+					<?php esc_html_e( 'Ouvrir le formulaire', 'eventlist' ); ?>
 				</button>
 			</div>
 		<?php } ?>
 
-		<!-- Contact Form (Hidden by default) -->
-		<?php
-		$current_user_email = $current_user_name = $current_user_phone = '';
+	</div><!-- .sidebar_info_card -->
 
-		if (is_user_logged_in()) {
-			$current_user = wp_get_current_user();
-			$current_user_id = $current_user->ID;
+	<!-- Modal Popup pour Contact Form -->
+	<?php
+	$current_user_email = $current_user_name = $current_user_phone = '';
 
-			$current_user_email = $current_user->user_email;
-			$current_user_name = get_user_meta( $current_user_id, 'display_name', true );
-			$current_user_phone = get_user_meta( $current_user_id, 'user_phone', true );
-		}
-		?>
-		<div class="contact_form_wrapper" style="display: none;">
-			<form class="el-sendmail-author modern-form">
-				<div class="form-group">
-					<label for="name_customer"><?php esc_html_e('Name', 'eventlist') ?></label>
-					<input class="input-field" type="text" id="name_customer" name="name_customer" value="<?php echo esc_attr($current_user_name); ?>" placeholder="<?php esc_attr_e('Your full name', 'eventlist') ?>" required />
-				</div>
+	if (is_user_logged_in()) {
+		$current_user = wp_get_current_user();
+		$current_user_id = $current_user->ID;
 
-				<div class="form-group">
-					<label for="email_customer"><?php esc_html_e('Email', 'eventlist') ?></label>
-					<input class="input-field" type="email" id="email_customer" name="email_customer" placeholder="<?php esc_attr_e('your.email@example.com', 'eventlist') ?>" value="<?php echo esc_attr($current_user_email); ?>" required />
-				</div>
-
-				<div class="form-group">
-					<label for="phone_customer"><?php esc_html_e('Phone', 'eventlist') ?></label>
-					<input class="input-field" type="tel" id="phone_customer" name="phone_customer" value="<?php echo esc_attr($current_user_phone); ?>" placeholder="<?php esc_attr_e('+33 6 00 00 00 00', 'eventlist') ?>" required />
-				</div>
-
-				<div class="form-group">
-					<label for="subject_customer"><?php esc_html_e('Subject', 'eventlist') ?></label>
-					<input class="input-field" type="text" id="subject_customer" name="subject_customer" placeholder="<?php esc_attr_e('Message subject', 'eventlist') ?>" required />
-				</div>
-
-				<div class="form-group">
-					<label for="content_customer"><?php esc_html_e('Message', 'eventlist') ?></label>
-					<textarea class="input-field" id="content_customer" name="content" cols="30" rows="6" placeholder="<?php esc_attr_e('Type your message here...', 'eventlist') ?>" required></textarea>
-				</div>
-
-				<?php do_action( 'meup_send_mail_vendor_recapcha' ); ?>
-
-				<button type="submit" data-id="<?php echo esc_attr( get_the_id() ); ?>" class="submit-sendmail btn_primary_full">
-					<span class="btn-text"><?php esc_html_e('Send Message', 'eventlist'); ?></span>
-					<div class="submit-load-more">
-						<div class="load-more">
-							<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-						</div>
-					</div>
+		$current_user_email = $current_user->user_email;
+		$current_user_name = get_user_meta( $current_user_id, 'display_name', true );
+		$current_user_phone = get_user_meta( $current_user_id, 'user_phone', true );
+	}
+	?>
+	<div id="contact_modal_author" class="contact_modal" style="display: none;">
+		<div class="contact_modal_overlay"></div>
+		<div class="contact_modal_container">
+			<div class="contact_modal_header">
+				<h3><?php esc_html_e('Contacter l\'organisateur', 'eventlist'); ?></h3>
+				<button class="contact_modal_close" aria-label="<?php esc_attr_e('Fermer', 'eventlist'); ?>">
+					<i class="fas fa-times"></i>
 				</button>
-			</form>
-			<div class="el-notify">
-				<p class="success"><i class="fas fa-check-circle"></i> <?php esc_html_e('Message sent successfully!', 'eventlist') ?></p>
-				<p class="error"><i class="fas fa-exclamation-circle"></i> <?php esc_html_e('Failed to send message. Please try again.', 'eventlist') ?></p>
-				<p class="error-require"><i class="fas fa-exclamation-triangle"></i> <?php esc_html_e('Please fill all required fields', 'eventlist') ?></p>
-				<p class="recapcha-vetify"><i class="fas fa-shield-alt"></i> <?php esc_html_e( 'reCAPTCHA verification failed. Please try again.', 'eventlist' ) ?></p>
+			</div>
+			<div class="contact_modal_body">
+				<form class="el-sendmail-author author-contact-form" id="author_contact_form">
+					<div class="form_field">
+						<label for="name_customer"><?php esc_html_e('Votre nom', 'eventlist') ?> *</label>
+						<input type="text" id="name_customer" name="name_customer" value="<?php echo esc_attr($current_user_name); ?>" placeholder="<?php esc_attr_e('Votre nom complet', 'eventlist') ?>" required />
+					</div>
+
+					<div class="form_field">
+						<label for="email_customer"><?php esc_html_e('Votre email', 'eventlist') ?> *</label>
+						<input type="email" id="email_customer" name="email_customer" placeholder="<?php esc_attr_e('votre.email@example.com', 'eventlist') ?>" value="<?php echo esc_attr($current_user_email); ?>" required />
+					</div>
+
+					<div class="form_field">
+						<label for="phone_customer"><?php esc_html_e('Téléphone', 'eventlist') ?> *</label>
+						<input type="tel" id="phone_customer" name="phone_customer" value="<?php echo esc_attr($current_user_phone); ?>" placeholder="<?php esc_attr_e('+33 6 00 00 00 00', 'eventlist') ?>" required />
+					</div>
+
+					<div class="form_field">
+						<label for="subject_customer"><?php esc_html_e('Objet de la demande', 'eventlist') ?> *</label>
+						<input type="text" id="subject_customer" name="subject_customer" placeholder="<?php esc_attr_e('Sujet du message', 'eventlist') ?>" required />
+					</div>
+
+					<div class="form_field">
+						<label for="content_customer"><?php esc_html_e('Message', 'eventlist') ?> *</label>
+						<textarea id="content_customer" name="content" rows="6" placeholder="<?php esc_attr_e('Écrivez votre message ici...', 'eventlist') ?>" required></textarea>
+					</div>
+
+					<!-- Cloudflare Turnstile CAPTCHA -->
+					<div class="form_field">
+						<div class="cf-turnstile" data-sitekey="0x4AAAAAAB75T9T-6xfs5mqd" data-theme="light"></div>
+					</div>
+
+					<input type="hidden" name="author_id" value="<?php echo esc_attr( $author_id ); ?>">
+					<input type="hidden" name="action" value="send_author_message">
+					<?php wp_nonce_field( 'contact_author_nonce', 'contact_nonce' ); ?>
+
+					<div class="form_actions">
+						<button type="submit" class="contact_submit_btn">
+							<?php esc_html_e('Envoyer', 'eventlist'); ?>
+						</button>
+					</div>
+				</form>
+				<div class="el-notify">
+					<p class="success"><i class="fas fa-check-circle"></i> <?php esc_html_e('Message envoyé avec succès !', 'eventlist') ?></p>
+					<p class="error"><i class="fas fa-exclamation-circle"></i> <?php esc_html_e('Échec de l\'envoi du message. Veuillez réessayer.', 'eventlist') ?></p>
+					<p class="error-require"><i class="fas fa-exclamation-triangle"></i> <?php esc_html_e('Veuillez remplir tous les champs requis', 'eventlist') ?></p>
+					<p class="recapcha-vetify"><i class="fas fa-shield-alt"></i> <?php esc_html_e('La vérification CAPTCHA a échoué. Veuillez réessayer.', 'eventlist') ?></p>
+				</div>
 			</div>
 		</div>
-
-	</div><!-- .sidebar_info_card -->
+	</div>
 
 <?php
 

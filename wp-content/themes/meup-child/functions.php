@@ -50,6 +50,9 @@ function meup_child_scripts() {
     // V1 Le Hiboo - Modern Author Profile JS (page auteur)
     if( is_author() ) {
         wp_enqueue_script( 'author-profile-modern', plugins_url( 'eventlist/assets/js/frontend/author-profile-modern.js' ), array('jquery'), '1.0.0', true );
+
+        // Cloudflare Turnstile CAPTCHA pour formulaire de contact
+        wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
     }
 }
 
