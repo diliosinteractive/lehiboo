@@ -1519,6 +1519,7 @@ $radius-lg: 16px;
 		border-top: 1px solid #eae9f3;
 
 		.info_item {
+			position: relative;
 			display: inline-flex;
 			align-items: center;
 			gap: 8px;
@@ -1528,10 +1529,74 @@ $radius-lg: 16px;
 			font-size: 14px;
 			color: #666;
 			border: 1px solid #eae9f3;
+			cursor: help;
+			transition: all 0.3s ease;
+
+			&:hover {
+				background: #fff;
+				border-color: $primary-color;
+				transform: translateY(-2px);
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+				i {
+					transform: scale(1.1);
+				}
+
+				&::after {
+					opacity: 1;
+					visibility: visible;
+					transform: translateY(0);
+				}
+			}
+
+			// Tooltip
+			&::after {
+				content: attr(data-tooltip);
+				position: absolute;
+				bottom: calc(100% + 10px);
+				left: 50%;
+				transform: translateX(-50%) translateY(-5px);
+				background: #333;
+				color: #fff;
+				padding: 8px 12px;
+				border-radius: 6px;
+				font-size: 13px;
+				white-space: nowrap;
+				max-width: 250px;
+				white-space: normal;
+				text-align: center;
+				z-index: 1000;
+				opacity: 0;
+				visibility: hidden;
+				transition: all 0.3s ease;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+				pointer-events: none;
+			}
+
+			// Flèche du tooltip
+			&::before {
+				content: '';
+				position: absolute;
+				bottom: calc(100% + 4px);
+				left: 50%;
+				transform: translateX(-50%);
+				border: 6px solid transparent;
+				border-top-color: #333;
+				z-index: 1001;
+				opacity: 0;
+				visibility: hidden;
+				transition: all 0.3s ease;
+			}
+
+			&:hover::before {
+				opacity: 1;
+				visibility: visible;
+			}
 
 			i {
 				color: $primary-color;
 				font-size: 16px;
+				transition: transform 0.3s ease;
 
 				&:before {
 					margin: 0;
@@ -1589,6 +1654,7 @@ $radius-lg: 16px;
 			border-top: 1px solid #eae9f3;
 
 			.info_item {
+				position: relative;
 				display: inline-flex;
 				align-items: center;
 				gap: 8px;
@@ -1598,10 +1664,74 @@ $radius-lg: 16px;
 				font-size: 14px;
 				color: #666;
 				border: 1px solid #eae9f3;
+				cursor: help;
+				transition: all 0.3s ease;
+
+				&:hover {
+					background: #fff;
+					border-color: $primary-color;
+					transform: translateY(-2px);
+					box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+					i {
+						transform: scale(1.1);
+					}
+
+					&::after {
+						opacity: 1;
+						visibility: visible;
+						transform: translateY(0);
+					}
+				}
+
+				// Tooltip
+				&::after {
+					content: attr(data-tooltip);
+					position: absolute;
+					bottom: calc(100% + 10px);
+					left: 50%;
+					transform: translateX(-50%) translateY(-5px);
+					background: #333;
+					color: #fff;
+					padding: 8px 12px;
+					border-radius: 6px;
+					font-size: 13px;
+					white-space: nowrap;
+					max-width: 250px;
+					white-space: normal;
+					text-align: center;
+					z-index: 1000;
+					opacity: 0;
+					visibility: hidden;
+					transition: all 0.3s ease;
+					box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+					pointer-events: none;
+				}
+
+				// Flèche du tooltip
+				&::before {
+					content: '';
+					position: absolute;
+					bottom: calc(100% + 4px);
+					left: 50%;
+					transform: translateX(-50%);
+					border: 6px solid transparent;
+					border-top-color: #333;
+					z-index: 1001;
+					opacity: 0;
+					visibility: hidden;
+					transition: all 0.3s ease;
+				}
+
+				&:hover::before {
+					opacity: 1;
+					visibility: visible;
+				}
 
 				i {
 					color: $primary-color;
 					font-size: 16px;
+					transition: transform 0.3s ease;
 
 					&:before {
 						margin: 0;
