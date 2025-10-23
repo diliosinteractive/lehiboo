@@ -1558,19 +1558,33 @@ $radius-lg: 16px;
 				transform: translateX(-50%) translateY(-5px);
 				background: #333;
 				color: #fff;
-				padding: 8px 12px;
+				padding: 10px 14px;
 				border-radius: 6px;
 				font-size: 13px;
-				white-space: nowrap;
-				max-width: 250px;
+				line-height: 1.4;
 				white-space: normal;
+				max-width: 280px;
+				min-width: 200px;
 				text-align: center;
-				z-index: 1000;
+				z-index: 99999;
 				opacity: 0;
 				visibility: hidden;
 				transition: all 0.3s ease;
-				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+				box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 				pointer-events: none;
+			}
+
+			// Ajustement automatique si le tooltip dépasse à gauche
+			&:first-child::after {
+				left: 0;
+				transform: translateX(0) translateY(-5px);
+			}
+
+			// Ajustement automatique si le tooltip dépasse à droite
+			&:last-child::after {
+				left: auto;
+				right: 0;
+				transform: translateX(0) translateY(-5px);
 			}
 
 			// Flèche du tooltip
@@ -1580,9 +1594,9 @@ $radius-lg: 16px;
 				bottom: calc(100% + 4px);
 				left: 50%;
 				transform: translateX(-50%);
-				border: 6px solid transparent;
+				border: 7px solid transparent;
 				border-top-color: #333;
-				z-index: 1001;
+				z-index: 100000;
 				opacity: 0;
 				visibility: hidden;
 				transition: all 0.3s ease;
@@ -1591,6 +1605,19 @@ $radius-lg: 16px;
 			&:hover::before {
 				opacity: 1;
 				visibility: visible;
+			}
+
+			// Ajustement flèche pour premier élément
+			&:first-child::before {
+				left: 20px;
+				transform: translateX(0);
+			}
+
+			// Ajustement flèche pour dernier élément
+			&:last-child::before {
+				left: auto;
+				right: 20px;
+				transform: translateX(0);
 			}
 
 			i {
@@ -1693,19 +1720,33 @@ $radius-lg: 16px;
 					transform: translateX(-50%) translateY(-5px);
 					background: #333;
 					color: #fff;
-					padding: 8px 12px;
+					padding: 10px 14px;
 					border-radius: 6px;
 					font-size: 13px;
-					white-space: nowrap;
-					max-width: 250px;
+					line-height: 1.4;
 					white-space: normal;
+					max-width: 280px;
+					min-width: 200px;
 					text-align: center;
-					z-index: 1000;
+					z-index: 99999;
 					opacity: 0;
 					visibility: hidden;
 					transition: all 0.3s ease;
-					box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+					box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 					pointer-events: none;
+				}
+
+				// Ajustement automatique si le tooltip dépasse à gauche
+				&:first-child::after {
+					left: 0;
+					transform: translateX(0) translateY(-5px);
+				}
+
+				// Ajustement automatique si le tooltip dépasse à droite
+				&:last-child::after {
+					left: auto;
+					right: 0;
+					transform: translateX(0) translateY(-5px);
 				}
 
 				// Flèche du tooltip
@@ -1715,9 +1756,9 @@ $radius-lg: 16px;
 					bottom: calc(100% + 4px);
 					left: 50%;
 					transform: translateX(-50%);
-					border: 6px solid transparent;
+					border: 7px solid transparent;
 					border-top-color: #333;
-					z-index: 1001;
+					z-index: 100000;
 					opacity: 0;
 					visibility: hidden;
 					transition: all 0.3s ease;
@@ -1726,6 +1767,19 @@ $radius-lg: 16px;
 				&:hover::before {
 					opacity: 1;
 					visibility: visible;
+				}
+
+				// Ajustement flèche pour premier élément
+				&:first-child::before {
+					left: 20px;
+					transform: translateX(0);
+				}
+
+				// Ajustement flèche pour dernier élément
+				&:last-child::before {
+					left: auto;
+					right: 20px;
+					transform: translateX(0);
 				}
 
 				i {

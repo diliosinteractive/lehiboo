@@ -109,18 +109,16 @@ if ( $author_id_image ) {
 
 			// Récupérer les infos pratiques
 			$org_video = get_user_meta( $author_id, 'org_video', true );
-			$org_event_types = get_user_meta( $author_id, 'org_event_types', true );
-			$org_parking = get_user_meta( $author_id, 'org_parking', true );
+			$org_event_type = get_user_meta( $author_id, 'org_event_type', true );
+			$org_stationnement = get_user_meta( $author_id, 'org_stationnement', true );
 			$org_pmr = get_user_meta( $author_id, 'org_pmr', true );
-			$org_restaurant = get_user_meta( $author_id, 'org_restaurant', true );
-			$org_drink = get_user_meta( $author_id, 'org_drink', true );
+			$org_restauration = get_user_meta( $author_id, 'org_restauration', true );
+			$org_boisson = get_user_meta( $author_id, 'org_boisson', true );
 
 			// Récupérer les descriptions complémentaires
 			$org_pmr_infos = get_user_meta( $author_id, 'org_pmr_infos', true );
-			$org_restaurant_infos = get_user_meta( $author_id, 'org_restaurant_infos', true );
-			$org_drink_infos = get_user_meta( $author_id, 'org_drink_infos', true );
-			$org_parking_infos = get_user_meta( $author_id, 'org_parking_infos', true );
-			$org_event_types_infos = get_user_meta( $author_id, 'org_event_types_infos', true );
+			$org_restauration_infos = get_user_meta( $author_id, 'org_restauration_infos', true );
+			$org_boisson_infos = get_user_meta( $author_id, 'org_boisson_infos', true );
 			?>
 			<div class="stats_grid">
 				<div class="stat_card">
@@ -165,7 +163,7 @@ if ( $author_id_image ) {
 					</div>
 
 					<!-- Infos Pratiques -->
-					<?php if ( ($org_pmr && $org_pmr === 'oui') || ($org_restaurant && $org_restaurant === 'oui') || ($org_drink && $org_drink === 'oui') || ($org_parking && $org_parking === 'oui') || $org_event_types ) : ?>
+					<?php if ( ($org_pmr && $org_pmr === 'oui') || ($org_restauration && $org_restauration === 'oui') || ($org_boisson && $org_boisson === 'oui') || $org_stationnement || $org_event_type ) : ?>
 						<div class="practical_info">
 							<?php if ( $org_pmr && $org_pmr === 'oui' ) : ?>
 								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_pmr_infos ? $org_pmr_infos : __( 'Établissement accessible aux personnes à mobilité réduite', 'eventlist' ) ); ?>">
@@ -174,31 +172,41 @@ if ( $author_id_image ) {
 								</div>
 							<?php endif; ?>
 
-							<?php if ( $org_restaurant && $org_restaurant === 'oui' ) : ?>
-								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_restaurant_infos ? $org_restaurant_infos : __( 'Restauration disponible sur place', 'eventlist' ) ); ?>">
+							<?php if ( $org_restauration && $org_restauration === 'oui' ) : ?>
+								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_restauration_infos ? $org_restauration_infos : __( 'Restauration disponible sur place', 'eventlist' ) ); ?>">
 									<i class="fas fa-utensils"></i>
 									<span><?php esc_html_e( 'Restauration sur place', 'eventlist' ); ?></span>
 								</div>
 							<?php endif; ?>
 
-							<?php if ( $org_drink && $org_drink === 'oui' ) : ?>
-								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_drink_infos ? $org_drink_infos : __( 'Boissons disponibles sur place', 'eventlist' ) ); ?>">
+							<?php if ( $org_boisson && $org_boisson === 'oui' ) : ?>
+								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_boisson_infos ? $org_boisson_infos : __( 'Boissons disponibles sur place', 'eventlist' ) ); ?>">
 									<i class="fas fa-glass-cheers"></i>
 									<span><?php esc_html_e( 'Boisson sur place', 'eventlist' ); ?></span>
 								</div>
 							<?php endif; ?>
 
-							<?php if ( $org_parking && $org_parking === 'oui' ) : ?>
-								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_parking_infos ? $org_parking_infos : __( 'Stationnement disponible', 'eventlist' ) ); ?>">
+							<?php if ( $org_stationnement ) : ?>
+								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_stationnement ); ?>">
 									<i class="fas fa-parking"></i>
 									<span><?php esc_html_e( 'Stationnement', 'eventlist' ); ?></span>
 								</div>
 							<?php endif; ?>
 
-							<?php if ( $org_event_types ) : ?>
-								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_event_types_infos ? $org_event_types_infos : $org_event_types ); ?>">
+							<?php if ( $org_event_type ) : ?>
+								<?php
+								$event_type_label = '';
+								if ( $org_event_type === 'interieur' ) {
+									$event_type_label = __( 'Événements en intérieur', 'eventlist' );
+								} elseif ( $org_event_type === 'exterieur' ) {
+									$event_type_label = __( 'Événements en extérieur', 'eventlist' );
+								} elseif ( $org_event_type === 'mixte' ) {
+									$event_type_label = __( 'Événements en intérieur et extérieur', 'eventlist' );
+								}
+								?>
+								<div class="info_item" data-tooltip="<?php echo esc_attr( $event_type_label ); ?>">
 									<i class="fas fa-calendar-alt"></i>
-									<span><?php esc_html_e( 'Type d\'événements organisés', 'eventlist' ); ?></span>
+									<span><?php esc_html_e( 'Type d\'événements', 'eventlist' ); ?></span>
 								</div>
 							<?php endif; ?>
 						</div>
