@@ -162,6 +162,13 @@ if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-ad
 }
 
 // ========================================
+// RESTRICTIONS PARTENAIRES
+// ========================================
+if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-restrictions.php' ) ) {
+	require_once get_stylesheet_directory() . '/includes/class-lehiboo-vendor-restrictions.php';
+}
+
+// ========================================
 // TAXONOMIES PERSONNALISÉES
 // ========================================
 // Pour ajouter une nouvelle taxonomie, ajoutez simplement une ligne add_filter ci-dessous
