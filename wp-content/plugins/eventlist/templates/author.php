@@ -165,6 +165,25 @@ if ( $author_id_image ) {
 			$opening_count = $opening_events->found_posts;
 			wp_reset_postdata();
 
+			// Calculer le palier de réservations (estimation pour masquer le chiffre exact)
+			// TODO: Remplacer par le vrai nombre de réservations depuis la base de données
+			$total_bookings = 0; // Placeholder - à connecter à votre système de réservation
+
+			// Déterminer le palier d'affichage
+			if ($total_bookings >= 1000) {
+				$booking_display = '+1000';
+			} elseif ($total_bookings >= 500) {
+				$booking_display = '+500';
+			} elseif ($total_bookings >= 100) {
+				$booking_display = '+100';
+			} elseif ($total_bookings >= 50) {
+				$booking_display = '+50';
+			} elseif ($total_bookings >= 10) {
+				$booking_display = '+10';
+			} else {
+				$booking_display = $total_bookings;
+			}
+
 			// Récupérer les infos pratiques
 			$org_video = get_user_meta( $author_id, 'org_video', true );
 			$org_event_type = get_user_meta( $author_id, 'org_event_type', true );
@@ -185,7 +204,7 @@ if ( $author_id_image ) {
 					</div>
 					<div class="stat_content">
 						<span class="stat_value"><?php echo esc_html( $total_events ); ?></span>
-						<span class="stat_label"><?php esc_html_e( 'Total Events', 'eventlist' ); ?></span>
+						<span class="stat_label">Événements créés</span>
 					</div>
 				</div>
 				<div class="stat_card stat_card_active">
@@ -194,16 +213,16 @@ if ( $author_id_image ) {
 					</div>
 					<div class="stat_content">
 						<span class="stat_value"><?php echo esc_html( $opening_count ); ?></span>
-						<span class="stat_label"><?php esc_html_e( 'Active Events', 'eventlist' ); ?></span>
+						<span class="stat_label">Événements actifs</span>
 					</div>
 				</div>
 				<div class="stat_card">
 					<div class="stat_icon">
-						<i class="icon_star"></i>
+						<i class="icon_check"></i>
 					</div>
 					<div class="stat_content">
-						<span class="stat_value">4.8</span>
-						<span class="stat_label"><?php esc_html_e( 'Average Rating', 'eventlist' ); ?></span>
+						<span class="stat_value"><?php echo esc_html( $booking_display ); ?></span>
+						<span class="stat_label">Réservations</span>
 					</div>
 				</div>
 			</div>
