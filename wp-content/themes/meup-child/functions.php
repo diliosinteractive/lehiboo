@@ -912,14 +912,30 @@ function lehiboo_handle_ajax_register() {
 	$otp_code = LeHiboo_OTP::create_otp( $user_id, $email );
 
 	if ( ! $otp_code ) {
-		wp_send_json_error( array( 'message' => 'Erreur lors de la génération du code de vérification.' ) );
+		error_log( 'LeHiboo Registration: Échec création OTP pour user_id=' . $user_id . ', email=' . $email );
+		// Supprimer l'utilisateur créé car l'OTP a échoué
+		wp_delete_user( $user_id );
+		wp_send_json_error( array(
+			'message' => 'Erreur lors de la génération du code de vérification. Veuillez réessayer.',
+			'debug' => array(
+				'step' => 'create_otp_failed',
+				'user_id' => $user_id
+			)
+		) );
 	}
 
 	// Envoyer l'email avec le code OTP
 	$otp_sent = LeHiboo_OTP::send_otp_email( $user_id, $email, $otp_code, $firstname );
 
 	if ( ! $otp_sent ) {
-		wp_send_json_error( array( 'message' => 'Erreur lors de l\'envoi de l\'email de vérification.' ) );
+		error_log( 'LeHiboo Registration: Échec envoi email OTP pour user_id=' . $user_id );
+		wp_send_json_error( array(
+			'message' => 'Erreur lors de l\'envoi de l\'email de vérification. Veuillez vérifier votre adresse email.',
+			'debug' => array(
+				'step' => 'send_otp_email_failed',
+				'user_id' => $user_id
+			)
+		) );
 	}
 
 	// Envoyer également l'email de bienvenue avec le mot de passe

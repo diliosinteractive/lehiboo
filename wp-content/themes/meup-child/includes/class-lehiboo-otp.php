@@ -97,6 +97,19 @@ class LeHiboo_OTP {
 		global $wpdb;
 		$table = $wpdb->prefix . self::$table_name;
 
+		// Vérifier si la table existe, sinon la créer
+		$table_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$table}'" );
+		if ( $table_exists != $table ) {
+			self::create_table();
+
+			// Vérifier à nouveau après création
+			$table_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$table}'" );
+			if ( $table_exists != $table ) {
+				error_log( 'LeHiboo OTP: Impossible de créer la table ' . $table );
+				return false;
+			}
+		}
+
 		// Supprimer les anciens codes non utilisés pour cet utilisateur
 		self::delete_user_otps( $user_id );
 
@@ -124,6 +137,11 @@ class LeHiboo_OTP {
 
 		if ( $inserted ) {
 			return $otp_code;
+		}
+
+		// Log l'erreur pour le debug
+		if ( $wpdb->last_error ) {
+			error_log( 'LeHiboo OTP: Erreur insertion - ' . $wpdb->last_error );
 		}
 
 		return false;
