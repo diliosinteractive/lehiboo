@@ -18399,6 +18399,37 @@ body.rtl .el_export_popup_wrapper .el_export_container .el_export_pagination {
   font-size: 16px;
   color: #888;
 }
+.event_list_section .event_archive.type1.three-column {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+@media (max-width: 991px) {
+  .event_list_section .event_archive.type1.three-column {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+}
+@media (max-width: 600px) {
+  .event_list_section .event_archive.type1.three-column {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+.event_list_section .event_archive.type1.three-column .event_entry {
+  margin-bottom: 0;
+}
+.event_list_section .event_archive.type1.three-column .event_item.type1 {
+  transition: all 0.3s ease;
+  background: #fff;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.event_list_section .event_archive.type1.three-column .event_item.type1:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
 
 .contact_modal {
   position: fixed;

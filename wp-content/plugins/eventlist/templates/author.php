@@ -15,7 +15,7 @@ $display_name = ! empty( $org_display_name ) ? $org_display_name : ( ! empty( $u
 // V1 Le Hiboo - Récupérer la description de l'utilisateur
 $user_description = get_user_meta( $author_id, 'description', true );
 
-$archive_type = 'type6'; // Grid card layout
+$archive_type = 'type1'; // List card layout (vertical cards with image on top)
 $layout_column = 'three-column'; // 3 columns grid
 
 $status = isset( $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : '';

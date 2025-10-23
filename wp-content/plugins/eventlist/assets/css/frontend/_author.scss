@@ -1765,6 +1765,40 @@ $radius-lg: 16px;
 			color: #888;
 		}
 	}
+
+	// Event Grid Layout Type1 (vertical cards)
+	.event_archive.type1.three-column {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 30px;
+
+		@media (max-width: 991px) {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 25px;
+		}
+
+		@media (max-width: 600px) {
+			grid-template-columns: 1fr;
+			gap: 20px;
+		}
+
+		.event_entry {
+			margin-bottom: 0;
+		}
+
+		.event_item.type1 {
+			transition: all 0.3s ease;
+			background: $background-white;
+			border-radius: 5px;
+			overflow: hidden;
+			box-shadow: $shadow-sm;
+
+			&:hover {
+				transform: translateY(-4px);
+				box-shadow: $shadow-md;
+			}
+		}
+	}
 }
 
 // ============================================
