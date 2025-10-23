@@ -62,17 +62,50 @@
 		 * Vérifier les boutons nécessitant une connexion
 		 */
 		checkButtonsRequireLogin: function() {
-			// Intercepter les boutons "Envoyer un message"
-			$(document).on('click', '#open_contact_modal, #open_contact_form', function(e) {
+			// Intercepter les boutons "Envoyer un message" - avec capture priority
+			// Utiliser l'événement direct sur les boutons pour être sûr de capter en premier
+			$(document).on('click', '#open_contact_modal, #open_contact_form, .btn_send_message, .organizer_contact_btn', function(e) {
 				const requireLogin = $(this).data('require-login');
 
 				if (requireLogin === true || requireLogin === 'true') {
+					// Bloquer TOUS les événements
 					e.preventDefault();
 					e.stopPropagation();
+					e.stopImmediatePropagation();
+
+					// Ouvrir la popup d'authentification
 					AuthPopup.openPopup('login');
 					return false;
 				}
 			});
+
+			// Backup: désactiver complètement les handlers existants sur ces boutons
+			// Cela garantit que même si notre handler ne s'exécute pas en premier,
+			// les anciens handlers seront supprimés
+			setTimeout(function() {
+				$('#open_contact_modal, #open_contact_form, .btn_send_message, .organizer_contact_btn').each(function() {
+					const $btn = $(this);
+					const requireLogin = $btn.data('require-login');
+
+					if (requireLogin === true || requireLogin === 'true') {
+						// Retirer TOUS les événements click existants
+						const originalHandlers = $._data($btn[0], 'events');
+						if (originalHandlers && originalHandlers.click) {
+							// Sauvegarder et nettoyer
+							$btn.off('click');
+
+							// Ajouter SEULEMENT notre handler
+							$btn.on('click', function(e) {
+								e.preventDefault();
+								e.stopPropagation();
+								e.stopImmediatePropagation();
+								AuthPopup.openPopup('login');
+								return false;
+							});
+						}
+					}
+				});
+			}, 100);
 		},
 
 		/**
