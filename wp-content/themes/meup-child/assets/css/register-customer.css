@@ -1,51 +1,88 @@
 /**
  * Register Customer Form Styles
- * Design moderne et épuré pour l'inscription utilisateur
- * @version 1.0.0
+ * Design moderne respectant la charte graphique Le Hiboo
+ * @version 2.0.0
  */
+
+:root {
+	--orange-primary: #FF601F;
+	--orange-hover: #E5571C;
+	--orange-light: #FFF4EF;
+	--blue-primary: #4E65FF;
+	--blue-hover: #3D54E8;
+	--blue-light: #F0F2FF;
+	--grey-dark: #2C3E50;
+	--grey-medium: #7F8C8D;
+	--grey-light: #ECF0F1;
+	--green-success: #27AE60;
+	--red-error: #E74C3C;
+	--white: #FFFFFF;
+}
 
 /* ========================================
    WRAPPER PRINCIPAL
 ======================================== */
 .lehiboo_register_form_wrapper {
-	padding: 60px 0 100px;
-	background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+	padding: 80px 0 120px;
+	background: linear-gradient(135deg, var(--blue-light) 0%, var(--white) 100%);
 	min-height: 100vh;
+	position: relative;
+}
+
+.lehiboo_register_form_wrapper::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 250px;
+	background: radial-gradient(circle at 50% 0%, rgba(78, 101, 255, 0.08) 0%, transparent 70%);
+	pointer-events: none;
 }
 
 .lehiboo_register_form_wrapper .container {
-	max-width: 600px;
+	max-width: 640px;
 	margin: 0 auto;
-	padding: 0 20px;
+	padding: 0 24px;
+	position: relative;
+	z-index: 1;
 }
 
 /* ========================================
    HEADER
 ======================================== */
 .register_form_header {
-	margin-bottom: 40px;
-	animation: fadeInDown 0.5s ease-out;
+	margin-bottom: 48px;
+	animation: fadeInDown 0.6s ease-out;
 }
 
 .back_link {
 	display: inline-flex;
 	align-items: center;
-	gap: 8px;
-	color: #666;
+	gap: 10px;
+	color: var(--grey-medium);
 	text-decoration: none;
-	font-size: 14px;
-	font-weight: 500;
-	margin-bottom: 24px;
+	font-size: 15px;
+	font-weight: 600;
+	margin-bottom: 32px;
 	transition: all 0.3s ease;
+	padding: 8px 16px 8px 12px;
+	border-radius: 8px;
 }
 
 .back_link:hover {
-	color: #333;
-	transform: translateX(-4px);
+	color: var(--grey-dark);
+	background: var(--grey-light);
+	transform: translateX(-6px);
 }
 
 .back_link i {
-	font-size: 12px;
+	font-size: 14px;
+	transition: transform 0.3s ease;
+}
+
+.back_link:hover i {
+	transform: translateX(-3px);
 }
 
 .register_header_content {
@@ -53,99 +90,106 @@
 }
 
 .register_icon {
-	width: 80px;
-	height: 80px;
+	width: 90px;
+	height: 90px;
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin: 0 auto 24px;
-	font-size: 32px;
-	color: white;
-	animation: scaleIn 0.6s ease-out 0.2s;
+	margin: 0 auto 28px;
+	font-size: 36px;
+	color: var(--white);
+	animation: scaleIn 0.7s ease-out 0.2s;
 	animation-fill-mode: both;
+	box-shadow: 0 10px 30px rgba(78, 101, 255, 0.25);
 }
 
 .customer_icon {
-	background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
-	box-shadow: 0 8px 24px rgba(78, 101, 255, 0.3);
+	background: var(--blue-primary);
 }
 
 .register_title {
-	font-size: 32px;
-	font-weight: 700;
-	color: #1a1a1a;
-	margin-bottom: 12px;
+	font-size: 36px;
+	font-weight: 800;
+	color: var(--grey-dark);
+	margin-bottom: 14px;
 	line-height: 1.2;
+	letter-spacing: -0.5px;
 }
 
 .register_subtitle {
-	font-size: 16px;
-	color: #666;
+	font-size: 17px;
+	color: var(--grey-medium);
 	margin: 0;
+	font-weight: 400;
 }
 
 /* ========================================
    CONTAINER DU FORMULAIRE
 ======================================== */
 .register_form_container {
-	animation: fadeInUp 0.6s ease-out 0.3s;
+	animation: fadeInUp 0.7s ease-out 0.3s;
 	animation-fill-mode: both;
 }
 
 .register_form_inner {
-	background: white;
-	border-radius: 16px;
-	padding: 40px;
-	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+	background: var(--white);
+	border-radius: 20px;
+	padding: 48px 44px;
+	box-shadow: 0 10px 40px rgba(78, 101, 255, 0.08);
+	border: 2px solid transparent;
+	transition: border-color 0.3s ease;
+}
+
+.register_form_inner:focus-within {
+	border-color: var(--blue-primary);
 }
 
 /* ========================================
    NOTIFICATIONS
 ======================================== */
 .register_notification {
-	padding: 16px 20px;
-	border-radius: 8px;
-	margin-bottom: 24px;
-	font-size: 14px;
-	line-height: 1.5;
+	padding: 18px 22px;
+	border-radius: 12px;
+	margin-bottom: 28px;
+	font-size: 15px;
+	line-height: 1.6;
 	display: none;
-	animation: slideDown 0.3s ease-out;
+	animation: slideDown 0.4s ease-out;
+	font-weight: 500;
 }
 
 .register_notification.success {
-	background: #d4edda;
-	border: 1px solid #c3e6cb;
+	background: #D4EDDA;
+	border: 2px solid var(--green-success);
 	color: #155724;
 }
 
 .register_notification.error {
-	background: #f8d7da;
-	border: 1px solid #f5c6cb;
-	color: #721c24;
+	background: #FFEBEE;
+	border: 2px solid var(--red-error);
+	color: #721C24;
 }
 
 /* ========================================
    FORMULAIRE
 ======================================== */
-.register_form {
-	/* Styles généraux du formulaire */
-}
-
 .form_group {
-	margin-bottom: 24px;
+	margin-bottom: 28px;
 }
 
 .form_label {
 	display: block;
-	font-size: 14px;
-	font-weight: 600;
-	color: #333;
-	margin-bottom: 8px;
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--grey-dark);
+	margin-bottom: 10px;
+	letter-spacing: -0.2px;
 }
 
 .required {
-	color: #FF6B6B;
+	color: var(--orange-primary);
+	font-weight: 700;
 }
 
 /* Input wrapper */
@@ -157,37 +201,49 @@
 
 .input_icon {
 	position: absolute;
-	left: 16px;
-	color: #999;
-	font-size: 16px;
+	left: 18px;
+	color: var(--grey-medium);
+	font-size: 17px;
 	pointer-events: none;
 	transition: color 0.3s ease;
+	z-index: 1;
 }
 
 .form_input {
 	width: 100%;
-	padding: 14px 16px 14px 48px;
-	border: 2px solid #e0e0e0;
-	border-radius: 10px;
-	font-size: 15px;
-	color: #333;
+	padding: 16px 18px 16px 52px;
+	border: 2px solid var(--grey-light);
+	border-radius: 12px;
+	font-size: 16px;
+	color: var(--grey-dark);
 	transition: all 0.3s ease;
-	background: #fafafa;
+	background: #FAFBFC;
+	font-weight: 500;
 }
 
 .form_input:focus {
 	outline: none;
-	border-color: #4E65FF;
-	background: white;
-	box-shadow: 0 0 0 4px rgba(78, 101, 255, 0.1);
+	border-color: var(--blue-primary);
+	background: var(--white);
+	box-shadow: 0 0 0 4px rgba(78, 101, 255, 0.12);
 }
 
-.form_input:focus + .input_icon {
-	color: #4E65FF;
+.form_input:focus ~ .input_icon {
+	color: var(--blue-primary);
 }
 
 .form_input::placeholder {
-	color: #aaa;
+	color: var(--grey-medium);
+	font-weight: 400;
+}
+
+/* Help text */
+.field_help {
+	font-size: 13px;
+	color: var(--grey-medium);
+	margin-top: 8px;
+	margin-bottom: 0;
+	font-style: italic;
 }
 
 /* Password wrapper */
@@ -197,246 +253,310 @@
 
 .toggle_password {
 	position: absolute;
-	right: 16px;
+	right: 18px;
 	background: none;
 	border: none;
-	color: #999;
+	color: var(--grey-medium);
 	cursor: pointer;
 	padding: 8px;
-	font-size: 16px;
-	transition: color 0.3s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 6px;
+	transition: all 0.3s ease;
+	z-index: 2;
 }
 
 .toggle_password:hover {
-	color: #4E65FF;
+	color: var(--blue-primary);
+	background: var(--blue-light);
 }
 
-.password_wrapper .form_input {
-	padding-right: 48px;
+.toggle_password i {
+	font-size: 16px;
 }
 
 /* Password strength */
 .password_strength {
-	margin-top: 8px;
+	margin-top: 12px;
 }
 
 .strength_bar {
-	height: 4px;
-	background: #e0e0e0;
-	border-radius: 2px;
+	height: 6px;
+	background: var(--grey-light);
+	border-radius: 10px;
 	overflow: hidden;
-	margin-bottom: 6px;
+	margin-bottom: 8px;
 }
 
 .strength_bar_fill {
 	height: 100%;
 	width: 0;
-	transition: all 0.3s ease;
-	border-radius: 2px;
+	transition: all 0.4s ease;
+	border-radius: 10px;
 }
 
 .strength_bar_fill.weak {
 	width: 33%;
-	background: #FF6B6B;
+	background: var(--red-error);
 }
 
 .strength_bar_fill.medium {
 	width: 66%;
-	background: #FFA500;
+	background: var(--orange-primary);
 }
 
 .strength_bar_fill.strong {
 	width: 100%;
-	background: #4CAF50;
+	background: var(--green-success);
 }
 
 .strength_text {
-	font-size: 12px;
-	color: #666;
+	font-size: 13px;
 	margin: 0;
+	font-weight: 600;
 }
 
-/* Field help */
-.field_help {
-	font-size: 13px;
-	color: #999;
-	margin: 6px 0 0;
+.strength_text.weak {
+	color: var(--red-error);
+}
+
+.strength_text.medium {
+	color: var(--orange-primary);
+}
+
+.strength_text.strong {
+	color: var(--green-success);
 }
 
 /* ========================================
-   CHECKBOXES
+   CHECKBOX
 ======================================== */
 .checkbox_group {
-	margin-bottom: 20px;
+	margin-bottom: 24px;
 }
 
 .checkbox_label {
 	display: flex;
 	align-items: flex-start;
-	gap: 12px;
+	gap: 14px;
 	cursor: pointer;
-	font-size: 14px;
-	color: #555;
-	line-height: 1.5;
+	position: relative;
+	padding: 16px;
+	border-radius: 12px;
+	transition: background 0.3s ease;
+}
+
+.checkbox_label:hover {
+	background: var(--grey-light);
 }
 
 .checkbox_input {
-	display: none;
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
 }
 
 .checkbox_custom {
-	width: 20px;
-	height: 20px;
-	border: 2px solid #d0d0d0;
-	border-radius: 4px;
+	width: 22px;
+	height: 22px;
+	border: 2px solid var(--grey-light);
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	flex-shrink: 0;
-	position: relative;
-	transition: all 0.3s ease;
-	background: white;
 	margin-top: 2px;
+	transition: all 0.3s ease;
+	background: var(--white);
 }
 
-.checkbox_input:checked + .checkbox_custom {
-	background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
-	border-color: #4E65FF;
-}
-
-.checkbox_input:checked + .checkbox_custom::after {
+.checkbox_custom::after {
 	content: '\f00c';
 	font-family: 'Font Awesome 5 Free';
 	font-weight: 900;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	color: white;
 	font-size: 12px;
+	color: var(--white);
+	opacity: 0;
+	transform: scale(0);
+	transition: all 0.3s ease;
+}
+
+.checkbox_input:checked ~ .checkbox_custom {
+	background: var(--blue-primary);
+	border-color: var(--blue-primary);
+}
+
+.checkbox_input:checked ~ .checkbox_custom::after {
+	opacity: 1;
+	transform: scale(1);
 }
 
 .checkbox_text {
-	flex: 1;
+	font-size: 14px;
+	color: var(--grey-dark);
+	line-height: 1.6;
+	font-weight: 500;
 }
 
 .checkbox_text a {
-	color: #4E65FF;
+	color: var(--blue-primary);
 	text-decoration: none;
-	font-weight: 600;
+	font-weight: 700;
+	transition: color 0.3s ease;
 }
 
 .checkbox_text a:hover {
+	color: var(--blue-hover);
 	text-decoration: underline;
 }
 
 /* ========================================
-   BOUTON DE SOUMISSION
+   BOUTON SUBMIT
 ======================================== */
 .submit_group {
-	margin-top: 32px;
+	margin-top: 36px;
 	margin-bottom: 0;
 }
 
 .submit_button {
 	width: 100%;
-	padding: 16px 32px;
+	padding: 18px 32px;
+	background: var(--blue-primary);
+	color: var(--white);
 	border: none;
-	border-radius: 12px;
-	font-size: 16px;
-	font-weight: 600;
-	color: white;
+	border-radius: 14px;
+	font-size: 17px;
+	font-weight: 700;
 	cursor: pointer;
-	transition: all 0.3s ease;
+	transition: all 0.4s ease;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 12px;
 	position: relative;
 	overflow: hidden;
+	letter-spacing: -0.2px;
+	box-shadow: 0 6px 20px rgba(78, 101, 255, 0.25);
 }
 
-.customer_submit {
-	background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
-	box-shadow: 0 4px 16px rgba(78, 101, 255, 0.3);
+.submit_button::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: rgba(255, 255, 255, 0.2);
+	transition: left 0.6s ease;
 }
 
-.customer_submit:hover:not(:disabled) {
-	transform: translateY(-2px);
-	box-shadow: 0 8px 24px rgba(78, 101, 255, 0.4);
+.submit_button:hover::before {
+	left: 100%;
+}
+
+.submit_button:hover {
+	background: var(--blue-hover);
+	transform: translateY(-3px);
+	box-shadow: 0 12px 32px rgba(78, 101, 255, 0.35);
+}
+
+.submit_button:active {
+	transform: translateY(-1px);
 }
 
 .submit_button:disabled {
 	opacity: 0.6;
 	cursor: not-allowed;
+	transform: none;
 }
 
 .button_loader {
-	font-size: 18px;
+	display: none;
+}
+
+.submit_button.loading .button_text {
+	display: none;
+}
+
+.submit_button.loading .button_loader {
+	display: block;
 }
 
 /* ========================================
-   FOOTER DU FORMULAIRE
+   FOOTER FORMULAIRE
 ======================================== */
 .register_form_footer {
 	text-align: center;
-	padding-top: 24px;
-	margin-top: 24px;
-	border-top: 1px solid #e0e0e0;
+	padding-top: 28px;
+	margin-top: 32px;
+	border-top: 2px solid var(--grey-light);
 }
 
 .footer_text {
-	font-size: 14px;
-	color: #666;
+	font-size: 15px;
+	color: var(--grey-medium);
 	margin: 0;
+	font-weight: 500;
 }
 
 .login_link {
-	color: #4E65FF;
+	color: var(--blue-primary);
 	text-decoration: none;
-	font-weight: 600;
-	transition: color 0.3s ease;
+	font-weight: 700;
+	transition: all 0.3s ease;
+	padding: 4px 8px;
+	border-radius: 6px;
 }
 
 .login_link:hover {
-	color: #3d52cc;
-	text-decoration: underline;
+	color: var(--blue-hover);
+	background: var(--blue-light);
 }
 
 /* ========================================
    AVANTAGES
 ======================================== */
 .register_benefits {
-	margin-top: 32px;
-	padding-top: 32px;
-	border-top: 1px solid #e0e0e0;
+	margin-top: 40px;
+	padding: 32px;
+	background: var(--blue-light);
+	border-radius: 16px;
+	border: 2px solid rgba(78, 101, 255, 0.1);
 }
 
 .benefits_title {
-	font-size: 16px;
-	font-weight: 600;
-	color: #333;
-	margin-bottom: 16px;
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--grey-dark);
+	margin-bottom: 20px;
+	letter-spacing: -0.3px;
 }
 
 .benefits_list {
 	list-style: none;
 	padding: 0;
 	margin: 0;
+	display: grid;
+	gap: 14px;
 }
 
 .benefits_list li {
 	display: flex;
 	align-items: flex-start;
-	gap: 12px;
-	padding: 10px 0;
-	font-size: 14px;
-	color: #555;
-	line-height: 1.5;
+	gap: 14px;
+	color: var(--grey-dark);
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 1.6;
 }
 
-.benefits_list i {
-	color: #4CAF50;
+.benefits_list li i {
+	color: var(--blue-primary);
 	font-size: 18px;
-	flex-shrink: 0;
 	margin-top: 2px;
+	flex-shrink: 0;
 }
 
 /* ========================================
@@ -445,7 +565,7 @@
 @keyframes fadeInDown {
 	from {
 		opacity: 0;
-		transform: translateY(-20px);
+		transform: translateY(-30px);
 	}
 	to {
 		opacity: 1;
@@ -456,7 +576,7 @@
 @keyframes fadeInUp {
 	from {
 		opacity: 0;
-		transform: translateY(20px);
+		transform: translateY(30px);
 	}
 	to {
 		opacity: 1;
@@ -467,7 +587,7 @@
 @keyframes scaleIn {
 	from {
 		opacity: 0;
-		transform: scale(0.5);
+		transform: scale(0.8);
 	}
 	to {
 		opacity: 1;
@@ -478,11 +598,15 @@
 @keyframes slideDown {
 	from {
 		opacity: 0;
-		transform: translateY(-10px);
+		max-height: 0;
+		padding-top: 0;
+		padding-bottom: 0;
 	}
 	to {
 		opacity: 1;
-		transform: translateY(0);
+		max-height: 200px;
+		padding-top: 18px;
+		padding-bottom: 18px;
 	}
 }
 
@@ -491,44 +615,111 @@
 ======================================== */
 @media (max-width: 768px) {
 	.lehiboo_register_form_wrapper {
-		padding: 40px 0 60px;
+		padding: 60px 0 100px;
 	}
 
-	.register_form_inner {
-		padding: 32px 24px;
+	.register_form_header {
+		margin-bottom: 36px;
 	}
 
 	.register_icon {
-		width: 64px;
-		height: 64px;
-		font-size: 28px;
+		width: 75px;
+		height: 75px;
+		font-size: 30px;
+		margin-bottom: 24px;
 	}
 
 	.register_title {
-		font-size: 26px;
+		font-size: 28px;
 	}
 
 	.register_subtitle {
 		font-size: 15px;
 	}
-}
 
-@media (max-width: 480px) {
 	.register_form_inner {
-		padding: 24px 20px;
+		padding: 36px 28px;
+		border-radius: 16px;
 	}
 
-	.register_title {
-		font-size: 22px;
+	.form_group {
+		margin-bottom: 24px;
 	}
 
-	.form_input {
-		padding: 12px 14px 12px 44px;
+	.form_label {
 		font-size: 14px;
 	}
 
-	.submit_button {
-		padding: 14px 24px;
+	.form_input {
+		padding: 14px 16px 14px 48px;
 		font-size: 15px;
+	}
+
+	.submit_button {
+		padding: 16px 28px;
+		font-size: 16px;
+	}
+
+	.register_benefits {
+		padding: 24px 20px;
+	}
+}
+
+@media (max-width: 480px) {
+	.lehiboo_register_form_wrapper {
+		padding: 40px 0 80px;
+	}
+
+	.lehiboo_register_form_wrapper .container {
+		padding: 0 16px;
+	}
+
+	.register_icon {
+		width: 65px;
+		height: 65px;
+		font-size: 26px;
+	}
+
+	.register_title {
+		font-size: 24px;
+	}
+
+	.register_subtitle {
+		font-size: 14px;
+	}
+
+	.register_form_inner {
+		padding: 28px 20px;
+	}
+
+	.form_input {
+		padding: 13px 14px 13px 44px;
+		font-size: 14px;
+	}
+
+	.input_icon {
+		left: 14px;
+		font-size: 15px;
+	}
+
+	.checkbox_label {
+		padding: 12px;
+	}
+
+	.checkbox_text {
+		font-size: 13px;
+	}
+
+	.submit_button {
+		padding: 15px 24px;
+		font-size: 15px;
+	}
+
+	.benefits_title {
+		font-size: 16px;
+	}
+
+	.benefits_list li {
+		font-size: 14px;
 	}
 }
