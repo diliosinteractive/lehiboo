@@ -973,7 +973,7 @@ $radius-lg: 16px;
 		color: $background-white;
 
 		.hero_name {
-			margin: 0 0 8px 0;
+			margin: 0 0 12px 0;
 			font-size: 36px;
 			font-weight: 700;
 			color: $background-white;
@@ -984,14 +984,42 @@ $radius-lg: 16px;
 			}
 		}
 
-		.hero_job {
-			margin: 0 0 12px 0;
-			font-size: 18px;
-			color: rgba(255, 255, 255, 0.9);
-			font-weight: 400;
+		.hero_meta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 16px;
+			margin-bottom: 12px;
+			font-size: 16px;
+
+			span {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				color: rgba(255, 255, 255, 0.95);
+				font-weight: 500;
+				text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+
+				i {
+					color: rgba(255, 255, 255, 0.9);
+					font-size: 15px;
+				}
+			}
+
+			.hero_location {
+				i {
+					color: $primary-color;
+				}
+			}
+
+			.hero_structure_type {
+				i {
+					color: rgba(255, 255, 255, 0.85);
+				}
+			}
 
 			@media (max-width: 768px) {
-				font-size: 16px;
+				font-size: 14px;
+				gap: 12px;
 			}
 		}
 

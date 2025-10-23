@@ -53,10 +53,68 @@ if ( $author_id_image ) {
 		<div class="hero_info">
 			<h1 class="hero_name"><?php echo esc_html( $display_name ); ?></h1>
 			<?php
-			$user_job = get_user_meta( $author_id, 'user_job', true );
-			if ( $user_job ) : ?>
-				<p class="hero_job"><?php echo esc_html( $user_job ); ?></p>
-			<?php endif; ?>
+			// Récupérer la ville et le pays
+			$user_city = get_user_meta( $author_id, 'user_city', true );
+			$user_country = get_user_meta( $author_id, 'user_country', true );
+
+			// Récupérer les types de structure
+			$org_types = get_user_meta( $author_id, 'org_type_structure', true );
+			$org_types = is_array( $org_types ) ? $org_types : array();
+
+			$available_types = array(
+				'cinema' => __( 'Cinéma', 'eventlist' ),
+				'centre_culturel' => __( 'Centre culturel', 'eventlist' ),
+				'salle_fetes' => __( 'Salle des fêtes', 'eventlist' ),
+				'theatre' => __( 'Théâtre', 'eventlist' ),
+				'salle_concert' => __( 'Salle de concert', 'eventlist' ),
+				'musee' => __( 'Musée', 'eventlist' ),
+				'galerie' => __( 'Galerie d\'art', 'eventlist' ),
+				'mediatheque' => __( 'Médiathèque / Bibliothèque', 'eventlist' ),
+				'stade' => __( 'Stade / Complexe sportif', 'eventlist' ),
+				'parc' => __( 'Parc / Espace extérieur', 'eventlist' ),
+				'association' => __( 'Association', 'eventlist' ),
+				'autre' => __( 'Autre', 'eventlist' ),
+			);
+
+			// Construire les labels des types sélectionnés
+			$type_labels = array();
+			foreach ( $org_types as $type_key ) {
+				if ( isset( $available_types[$type_key] ) ) {
+					$type_labels[] = $available_types[$type_key];
+				}
+			}
+			?>
+
+			<div class="hero_meta">
+				<?php if ( $user_city ) : ?>
+					<span class="hero_location">
+						<i class="icon_pin_alt"></i>
+						<?php
+						echo esc_html( $user_city );
+						if ( $user_country ) {
+							$countries = array(
+								'FR' => __( 'France', 'eventlist' ),
+								'BE' => __( 'Belgique', 'eventlist' ),
+								'CH' => __( 'Suisse', 'eventlist' ),
+								'CA' => __( 'Canada', 'eventlist' ),
+								'LU' => __( 'Luxembourg', 'eventlist' ),
+								'MC' => __( 'Monaco', 'eventlist' ),
+							);
+							$country_name = isset( $countries[$user_country] ) ? $countries[$user_country] : $user_country;
+							echo ', ' . esc_html( $country_name );
+						}
+						?>
+					</span>
+				<?php endif; ?>
+
+				<?php if ( ! empty( $type_labels ) ) : ?>
+					<span class="hero_structure_type">
+						<i class="fas fa-building"></i>
+						<?php echo esc_html( implode( ', ', $type_labels ) ); ?>
+					</span>
+				<?php endif; ?>
+			</div>
+
 			<?php ova_event_author_rating_display_by_id( $author_id ); ?>
 		</div>
 
