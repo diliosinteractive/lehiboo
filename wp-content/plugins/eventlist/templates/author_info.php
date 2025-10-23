@@ -236,7 +236,7 @@ if( $author_id ){
 					<i class="fas fa-envelope"></i>
 					<?php esc_html_e( 'Envoyer un message', 'eventlist' ); ?>
 				</h3>
-				<button class="btn_send_message" id="open_contact_modal">
+				<button class="btn_send_message" id="open_contact_modal" data-require-login="<?php echo is_user_logged_in() ? 'false' : 'true'; ?>">
 					<i class="icon_mail_alt"></i>
 					<?php esc_html_e( 'Ouvrir le formulaire', 'eventlist' ); ?>
 				</button>

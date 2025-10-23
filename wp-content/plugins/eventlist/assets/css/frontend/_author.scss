@@ -2042,6 +2042,42 @@ body.modal-open {
 		overflow-y: auto;
 		flex: 1;
 
+		// Message login requis
+		.login_required_message {
+			p {
+				margin: 0 0 10px 0;
+				color: #666;
+				font-size: 14px;
+			}
+
+			.btn_login_required {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				padding: 12px 24px;
+				background: $primary-color;
+				color: $background-white;
+				border: none;
+				border-radius: $radius-sm;
+				font-size: 15px;
+				font-weight: 600;
+				text-decoration: none;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				box-shadow: $shadow-sm;
+
+				i {
+					font-size: 16px;
+				}
+
+				&:hover {
+					background: darken($primary-color, 8%);
+					box-shadow: $shadow-md;
+					transform: translateY(-2px);
+				}
+			}
+		}
+
 		.author-contact-form {
 			.form_field {
 				margin-bottom: 20px;

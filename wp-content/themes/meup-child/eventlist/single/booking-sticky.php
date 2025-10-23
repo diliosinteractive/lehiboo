@@ -119,7 +119,7 @@ $author_url = get_author_posts_url( $author_id );
 		</div>
 	</div>
 
-	<button type="button" class="organizer_contact_btn" id="open_contact_form">
+	<button type="button" class="organizer_contact_btn" id="open_contact_form" data-require-login="<?php echo is_user_logged_in() ? 'false' : 'true'; ?>">
 		<i class="icon_mail_alt"></i>
 		<?php esc_html_e( 'Envoyer un message', 'eventlist' ); ?>
 	</button>

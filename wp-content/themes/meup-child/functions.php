@@ -64,6 +64,33 @@ function meup_child_scripts() {
         // Cloudflare Turnstile CAPTCHA pour formulaire de contact
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
     }
+
+    // V1 Le Hiboo - Popup Authentification (Connexion/Inscription) + OTP
+    if ( ! is_user_logged_in() && ( is_singular('event') || is_author() ) ) {
+        wp_enqueue_style( 'lehiboo-auth-popup', get_stylesheet_directory_uri() . '/assets/css/auth-popup.css', array(), '1.0.0' );
+        wp_enqueue_script( 'lehiboo-auth-popup', get_stylesheet_directory_uri() . '/assets/js/auth-popup.js', array('jquery'), '1.0.0', true );
+
+        // Enregistrer (mais ne pas charger) le script OTP - sera chargé dynamiquement si besoin
+        wp_register_script( 'lehiboo-otp-verification', get_stylesheet_directory_uri() . '/assets/js/otp-verification.js', array('jquery'), '1.0.0', true );
+
+        wp_localize_script( 'lehiboo-auth-popup', 'lehiboo_auth_ajax', array(
+            'ajax_url' => admin_url( 'admin-ajax.php' ),
+            'nonce' => wp_create_nonce( 'lehiboo_auth_nonce' ),
+            'otp_script_url' => get_stylesheet_directory_uri() . '/assets/js/otp-verification.js'
+        ));
+
+        wp_localize_script( 'lehiboo-otp-verification', 'lehiboo_otp_ajax', array(
+            'ajax_url' => admin_url( 'admin-ajax.php' ),
+            'nonce' => wp_create_nonce( 'lehiboo_otp_nonce' )
+        ));
+    }
+}
+
+// ========================================
+// SYSTÈME OTP PERSONNALISÉ (GRATUIT)
+// ========================================
+if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-otp.php' ) ) {
+	require_once get_stylesheet_directory() . '/includes/class-lehiboo-otp.php';
 }
 
 // ========================================
@@ -122,6 +149,11 @@ add_action( 'wp_ajax_send_organizer_message', 'handle_send_organizer_message' );
 add_action( 'wp_ajax_nopriv_send_organizer_message', 'handle_send_organizer_message' );
 
 function handle_send_organizer_message() {
+	// Vérifier que l'utilisateur est connecté
+	if ( ! is_user_logged_in() ) {
+		wp_send_json_error( array( 'message' => 'Vous devez être connecté pour envoyer un message.' ) );
+	}
+
 	// Vérifier le nonce
 	if ( ! isset( $_POST['contact_nonce'] ) || ! wp_verify_nonce( $_POST['contact_nonce'], 'contact_organizer_nonce' ) ) {
 		wp_send_json_error( array( 'message' => 'Erreur de sécurité.' ) );
@@ -618,6 +650,11 @@ add_action( 'wp_ajax_send_author_message', 'lehiboo_send_author_message' );
 add_action( 'wp_ajax_nopriv_send_author_message', 'lehiboo_send_author_message' );
 
 function lehiboo_send_author_message() {
+	// Vérifier que l'utilisateur est connecté
+	if ( ! is_user_logged_in() ) {
+		wp_send_json_error( array( 'message' => 'Vous devez être connecté pour envoyer un message.' ) );
+	}
+
 	// Vérifier le nonce
 	check_ajax_referer( 'contact_author_nonce', 'contact_nonce' );
 
@@ -720,4 +757,297 @@ function lehiboo_send_author_message() {
 		update_post_meta( $message_id, '_email_sent', 0 );
 		wp_send_json_error( array( 'message' => 'Message sauvegardé mais erreur lors de l\'envoi de l\'email.' ) );
 	}
+}
+
+// ========================================
+// POPUP AUTHENTIFICATION - AJAX HANDLERS
+// ========================================
+
+/**
+ * Charger le template du popup authentification
+ */
+add_action( 'wp_ajax_load_auth_popup_template', 'lehiboo_load_auth_popup_template' );
+add_action( 'wp_ajax_nopriv_load_auth_popup_template', 'lehiboo_load_auth_popup_template' );
+
+function lehiboo_load_auth_popup_template() {
+	ob_start();
+	include get_stylesheet_directory() . '/templates/auth-popup.php';
+	$html = ob_get_clean();
+
+	wp_send_json_success( array( 'html' => $html ) );
+}
+
+/**
+ * AJAX - Connexion utilisateur
+ */
+add_action( 'wp_ajax_nopriv_lehiboo_ajax_login', 'lehiboo_handle_ajax_login' );
+
+function lehiboo_handle_ajax_login() {
+	// Vérifier le nonce
+	check_ajax_referer( 'auth_login_nonce', 'login_nonce' );
+
+	// Récupérer les données
+	$email = isset( $_POST['login_email'] ) ? sanitize_email( $_POST['login_email'] ) : '';
+	$password = isset( $_POST['login_password'] ) ? $_POST['login_password'] : '';
+	$remember = isset( $_POST['login_remember'] ) && $_POST['login_remember'] == '1';
+
+	// Validation
+	if ( empty( $email ) || empty( $password ) ) {
+		wp_send_json_error( array( 'message' => 'Veuillez remplir tous les champs.' ) );
+	}
+
+	if ( ! is_email( $email ) ) {
+		wp_send_json_error( array( 'message' => 'Adresse email invalide.' ) );
+	}
+
+	// Tentative de connexion
+	$user = get_user_by( 'email', $email );
+
+	if ( ! $user ) {
+		wp_send_json_error( array( 'message' => 'Email ou mot de passe incorrect.' ) );
+	}
+
+	$creds = array(
+		'user_login'    => $user->user_login,
+		'user_password' => $password,
+		'remember'      => $remember,
+	);
+
+	$user_signon = wp_signon( $creds, is_ssl() );
+
+	if ( is_wp_error( $user_signon ) ) {
+		wp_send_json_error( array( 'message' => 'Email ou mot de passe incorrect.' ) );
+	}
+
+	wp_send_json_success( array(
+		'message' => 'Connexion réussie ! Redirection en cours...',
+		'user_id' => $user_signon->ID
+	) );
+}
+
+/**
+ * AJAX - Inscription utilisateur
+ */
+add_action( 'wp_ajax_nopriv_lehiboo_ajax_register', 'lehiboo_handle_ajax_register' );
+
+function lehiboo_handle_ajax_register() {
+	// Vérifier le nonce
+	check_ajax_referer( 'auth_register_nonce', 'register_nonce' );
+
+	// Récupérer les données
+	$firstname = isset( $_POST['register_firstname'] ) ? sanitize_text_field( $_POST['register_firstname'] ) : '';
+	$lastname = isset( $_POST['register_lastname'] ) ? sanitize_text_field( $_POST['register_lastname'] ) : '';
+	$email = isset( $_POST['register_email'] ) ? sanitize_email( $_POST['register_email'] ) : '';
+	$terms_accepted = isset( $_POST['register_terms'] );
+
+	// Validation
+	if ( empty( $firstname ) || empty( $lastname ) || empty( $email ) ) {
+		wp_send_json_error( array( 'message' => 'Veuillez remplir tous les champs.' ) );
+	}
+
+	if ( ! is_email( $email ) ) {
+		wp_send_json_error( array( 'message' => 'Adresse email invalide.' ) );
+	}
+
+	if ( ! $terms_accepted ) {
+		wp_send_json_error( array( 'message' => 'Vous devez accepter les conditions d\'utilisation.' ) );
+	}
+
+	// Vérifier si l'email existe déjà
+	if ( email_exists( $email ) ) {
+		wp_send_json_error( array( 'message' => 'Cette adresse email est déjà utilisée.' ) );
+	}
+
+	// Générer un nom d'utilisateur unique
+	$username = strtolower( $firstname . '.' . $lastname );
+	$username_base = $username;
+	$counter = 1;
+
+	while ( username_exists( $username ) ) {
+		$username = $username_base . $counter;
+		$counter++;
+	}
+
+	// Générer un mot de passe fort aléatoire
+	$password = wp_generate_password( 12, true, true );
+
+	// Créer l'utilisateur
+	$user_id = wp_create_user( $username, $password, $email );
+
+	if ( is_wp_error( $user_id ) ) {
+		wp_send_json_error( array( 'message' => 'Erreur lors de la création du compte : ' . $user_id->get_error_message() ) );
+	}
+
+	// Mettre à jour les métadonnées utilisateur
+	wp_update_user( array(
+		'ID'           => $user_id,
+		'first_name'   => $firstname,
+		'last_name'    => $lastname,
+		'display_name' => $firstname . ' ' . $lastname,
+	) );
+
+	// Assigner le rôle subscriber par défaut
+	$user = new WP_User( $user_id );
+	$user->set_role( 'subscriber' );
+
+	// ========================================
+	// SYSTÈME OTP GRATUIT - LE HIBOO
+	// ========================================
+
+	// Créer le code OTP
+	$otp_code = LeHiboo_OTP::create_otp( $user_id, $email );
+
+	if ( ! $otp_code ) {
+		wp_send_json_error( array( 'message' => 'Erreur lors de la génération du code de vérification.' ) );
+	}
+
+	// Envoyer l'email avec le code OTP
+	$otp_sent = LeHiboo_OTP::send_otp_email( $user_id, $email, $otp_code, $firstname );
+
+	if ( ! $otp_sent ) {
+		wp_send_json_error( array( 'message' => 'Erreur lors de l\'envoi de l\'email de vérification.' ) );
+	}
+
+	// Envoyer également l'email de bienvenue avec le mot de passe
+	lehiboo_send_welcome_email( $user_id, $email, $password, $firstname );
+
+	// Retourner succès avec OTP requis
+	wp_send_json_success( array(
+		'message' => 'Votre compte a été créé ! Un code de vérification a été envoyé à votre email.',
+		'otp_required' => true,
+		'user_id' => $user_id,
+		'show_otp_form' => true
+	) );
+}
+
+/**
+ * Envoyer l'email de bienvenue avec le mot de passe
+ */
+function lehiboo_send_welcome_email( $user_id, $email, $password, $firstname ) {
+	$site_name = get_bloginfo( 'name' );
+	$login_url = wp_login_url();
+
+	$subject = sprintf( '[%s] Bienvenue ! Votre compte a été créé', $site_name );
+
+	$message = "Bonjour {$firstname},\n\n";
+	$message .= "Bienvenue sur {$site_name} !\n\n";
+	$message .= "Votre compte a été créé avec succès. Voici vos identifiants de connexion :\n\n";
+	$message .= "Email : {$email}\n";
+	$message .= "Mot de passe : {$password}\n\n";
+	$message .= "Pour vous connecter, cliquez sur le lien suivant :\n";
+	$message .= "{$login_url}\n\n";
+	$message .= "Nous vous recommandons de changer votre mot de passe après votre première connexion.\n\n";
+	$message .= "Cordialement,\n";
+	$message .= "L'équipe {$site_name}";
+
+	$headers = array( 'Content-Type: text/plain; charset=UTF-8' );
+
+	wp_mail( $email, $subject, $message, $headers );
+}
+
+/**
+ * Injecter le popup dans le footer pour les utilisateurs non connectés
+ */
+add_action( 'wp_footer', 'lehiboo_inject_auth_popup' );
+
+function lehiboo_inject_auth_popup() {
+	if ( ! is_user_logged_in() && ( is_singular('event') || is_author() ) ) {
+		include get_stylesheet_directory() . '/templates/auth-popup.php';
+	}
+}
+
+// ========================================
+// AJAX HANDLERS - VÉRIFICATION OTP
+// ========================================
+
+/**
+ * AJAX - Vérifier le code OTP
+ */
+add_action( 'wp_ajax_nopriv_lehiboo_verify_otp', 'lehiboo_ajax_verify_otp' );
+
+function lehiboo_ajax_verify_otp() {
+	// Vérifier le nonce
+	check_ajax_referer( 'otp_verification_nonce', 'otp_nonce' );
+
+	// Récupérer les données
+	$user_id = isset( $_POST['user_id'] ) ? intval( $_POST['user_id'] ) : 0;
+	$otp_code = isset( $_POST['otp_code'] ) ? sanitize_text_field( $_POST['otp_code'] ) : '';
+
+	// Validation
+	if ( ! $user_id || ! $otp_code ) {
+		wp_send_json_error( array( 'message' => 'Données manquantes.' ) );
+	}
+
+	if ( strlen( $otp_code ) !== 6 || ! ctype_digit( $otp_code ) ) {
+		wp_send_json_error( array( 'message' => 'Code invalide. Le code doit contenir 6 chiffres.' ) );
+	}
+
+	// Vérifier le code OTP
+	$result = LeHiboo_OTP::verify_otp( $user_id, $otp_code );
+
+	if ( ! $result['success'] ) {
+		wp_send_json_error( array( 'message' => $result['message'] ) );
+	}
+
+	// Connexion automatique après vérification réussie
+	$user = get_userdata( $user_id );
+
+	if ( ! $user ) {
+		wp_send_json_error( array( 'message' => 'Utilisateur introuvable.' ) );
+	}
+
+	wp_set_auth_cookie( $user_id, true, is_ssl() );
+	wp_set_current_user( $user_id );
+	do_action( 'wp_login', $user->user_login, $user );
+
+	wp_send_json_success( array(
+		'message' => 'Email vérifié ! Connexion en cours...',
+		'user_id' => $user_id
+	) );
+}
+
+/**
+ * AJAX - Renvoyer le code OTP
+ */
+add_action( 'wp_ajax_nopriv_lehiboo_resend_otp', 'lehiboo_ajax_resend_otp' );
+
+function lehiboo_ajax_resend_otp() {
+	// Récupérer l'ID utilisateur
+	$user_id = isset( $_POST['user_id'] ) ? intval( $_POST['user_id'] ) : 0;
+
+	if ( ! $user_id ) {
+		wp_send_json_error( array( 'message' => 'ID utilisateur manquant.' ) );
+	}
+
+	// Renvoyer le code
+	$result = LeHiboo_OTP::resend_otp( $user_id );
+
+	if ( ! $result['success'] ) {
+		wp_send_json_error( array( 'message' => $result['message'] ) );
+	}
+
+	wp_send_json_success( array( 'message' => $result['message'] ) );
+}
+
+/**
+ * AJAX - Charger le template OTP
+ */
+add_action( 'wp_ajax_load_otp_template', 'lehiboo_load_otp_template' );
+add_action( 'wp_ajax_nopriv_load_otp_template', 'lehiboo_load_otp_template' );
+
+function lehiboo_load_otp_template() {
+	$user_id = isset( $_POST['user_id'] ) ? intval( $_POST['user_id'] ) : 0;
+
+	if ( ! $user_id ) {
+		wp_send_json_error( array( 'message' => 'ID utilisateur manquant.' ) );
+	}
+
+	// Simuler le query param pour le template
+	$_GET['user_id'] = $user_id;
+
+	ob_start();
+	include get_stylesheet_directory() . '/templates/otp-verification.php';
+	$html = ob_get_clean();
+
+	wp_send_json_success( array( 'html' => $html ) );
 }
