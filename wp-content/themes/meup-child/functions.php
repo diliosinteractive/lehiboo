@@ -76,9 +76,13 @@ function meup_child_scripts() {
         wp_localize_script( 'lehiboo-auth-popup', 'lehiboo_auth_ajax', array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
             'nonce' => wp_create_nonce( 'lehiboo_auth_nonce' ),
-            'otp_script_url' => get_stylesheet_directory_uri() . '/assets/js/otp-verification.js'
+            'otp_script_url' => get_stylesheet_directory_uri() . '/assets/js/otp-verification.js',
+            // Données OTP incluses pour le script dynamique
+            'otp_ajax_url' => admin_url( 'admin-ajax.php' ),
+            'otp_nonce' => wp_create_nonce( 'lehiboo_otp_nonce' )
         ));
 
+        // Également localiser pour le script OTP (au cas où il serait chargé directement)
         wp_localize_script( 'lehiboo-otp-verification', 'lehiboo_otp_ajax', array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
             'nonce' => wp_create_nonce( 'lehiboo_otp_nonce' )

@@ -1,6 +1,6 @@
 /**
  * OTP Verification JavaScript
- * @version 1.0.0
+ * @version 1.0.1
  */
 
 (function($) {
@@ -10,6 +10,35 @@
 
 		countdown: 60,
 		countdownInterval: null,
+
+		/**
+		 * Récupérer les données AJAX
+		 * Support pour le script chargé dynamiquement ou via WordPress
+		 */
+		getAjaxData: function() {
+			// Priorité 1: lehiboo_otp_ajax (si le script est chargé via wp_enqueue_script)
+			if (typeof lehiboo_otp_ajax !== 'undefined') {
+				return {
+					ajax_url: lehiboo_otp_ajax.ajax_url,
+					nonce: lehiboo_otp_ajax.nonce
+				};
+			}
+			// Priorité 2: lehiboo_auth_ajax (données OTP incluses, pour chargement dynamique)
+			else if (typeof lehiboo_auth_ajax !== 'undefined') {
+				return {
+					ajax_url: lehiboo_auth_ajax.otp_ajax_url || lehiboo_auth_ajax.ajax_url,
+					nonce: lehiboo_auth_ajax.otp_nonce || lehiboo_auth_ajax.nonce
+				};
+			}
+			// Fallback: utiliser les URLs par défaut WordPress
+			else {
+				console.error('OTP: Aucune donnée AJAX disponible');
+				return {
+					ajax_url: '/wp-admin/admin-ajax.php',
+					nonce: ''
+				};
+			}
+		},
 
 		/**
 		 * Initialisation
@@ -179,8 +208,11 @@
 
 			this.clearNotifications();
 
+			// Récupérer les données AJAX
+			const ajaxData = this.getAjaxData();
+
 			$.ajax({
-				url: lehiboo_otp_ajax.ajax_url,
+				url: ajaxData.ajax_url,
 				type: 'POST',
 				data: {
 					action: 'lehiboo_verify_otp',
@@ -224,8 +256,11 @@
 			$btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Envoi en cours...');
 			this.clearNotifications();
 
+			// Récupérer les données AJAX
+			const ajaxData = this.getAjaxData();
+
 			$.ajax({
-				url: lehiboo_otp_ajax.ajax_url,
+				url: ajaxData.ajax_url,
 				type: 'POST',
 				data: {
 					action: 'lehiboo_resend_otp',
