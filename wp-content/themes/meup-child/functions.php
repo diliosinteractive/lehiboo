@@ -155,6 +155,13 @@ if( file_exists( get_stylesheet_directory() . '/includes/event-metabox-extension
 }
 
 // ========================================
+// INTERFACE ADMIN GESTION PARTENAIRES
+// ========================================
+if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-admin.php' ) ) {
+	require_once get_stylesheet_directory() . '/includes/class-lehiboo-vendor-admin.php';
+}
+
+// ========================================
 // TAXONOMIES PERSONNALISÉES
 // ========================================
 // Pour ajouter une nouvelle taxonomie, ajoutez simplement une ligne add_filter ci-dessous
