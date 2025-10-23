@@ -49,13 +49,17 @@ function meup_child_scripts() {
 
     // V1 Le Hiboo - Modern Author Profile JS (page auteur)
     if( is_author() ) {
-        wp_enqueue_script( 'author-profile-modern', plugins_url( 'eventlist/assets/js/frontend/author-profile-modern.js' ), array('jquery'), '1.0.0', true );
+        // Enregistrer le script d'abord
+        wp_register_script( 'author-profile-modern', plugins_url( 'eventlist/assets/js/frontend/author-profile-modern.js' ), array('jquery'), '1.0.1', true );
 
-        // Localiser le script pour AJAX
+        // Localiser APRÈS l'enregistrement
         wp_localize_script( 'author-profile-modern', 'el_ajax_object', array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
             'nonce' => wp_create_nonce( 'el_ajax_nonce' )
         ));
+
+        // Enqueue le script
+        wp_enqueue_script( 'author-profile-modern' );
 
         // Cloudflare Turnstile CAPTCHA pour formulaire de contact
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
