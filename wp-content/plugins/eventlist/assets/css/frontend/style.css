@@ -18400,24 +18400,25 @@ body.rtl .el_export_popup_wrapper .el_export_container .el_export_pagination {
   color: #888;
 }
 .event_list_section .event_archive.type1.three-column {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
   gap: 30px;
 }
 @media (max-width: 991px) {
   .event_list_section .event_archive.type1.three-column {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 25px;
   }
 }
 @media (max-width: 600px) {
   .event_list_section .event_archive.type1.three-column {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
     gap: 20px;
   }
 }
 .event_list_section .event_archive.type1.three-column .event_entry {
   margin-bottom: 0;
+  flex-basis: auto !important;
 }
 .event_list_section .event_archive.type1.three-column .event_item.type1 {
   transition: all 0.3s ease;
