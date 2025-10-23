@@ -12,20 +12,20 @@
         $('#open_contact_modal, .btn_contact').on('click', function(e) {
             e.preventDefault();
             $('#contact_modal_author').addClass('active').fadeIn(300);
-            $('body').css('overflow', 'hidden');
+            $('body').addClass('modal-open').css('overflow', 'hidden');
         });
 
         // Close Contact Modal
         $('.contact_modal_close, .contact_modal_overlay').on('click', function() {
             $('#contact_modal_author').removeClass('active').fadeOut(300);
-            $('body').css('overflow', '');
+            $('body').removeClass('modal-open').css('overflow', '');
         });
 
         // Close modal on ESC key
         $(document).on('keydown', function(e) {
             if (e.key === 'Escape' && $('#contact_modal_author').hasClass('active')) {
                 $('#contact_modal_author').removeClass('active').fadeOut(300);
-                $('body').css('overflow', '');
+                $('body').removeClass('modal-open').css('overflow', '');
             }
         });
 
@@ -206,7 +206,7 @@
                         // Close modal after 2 seconds
                         setTimeout(function() {
                             $('#contact_modal_author').removeClass('active').fadeOut(300);
-                            $('body').css('overflow', '');
+                            $('body').removeClass('modal-open').css('overflow', '');
                             $notify.find('p').hide();
                         }, 2000);
                     } else {

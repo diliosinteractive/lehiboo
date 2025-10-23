@@ -1805,6 +1805,22 @@ $radius-lg: 16px;
 // ============================================
 // Modal Popup pour Contact Form Author
 // ============================================
+
+// Force les autres éléments à être derrière le modal
+body.modal-open {
+	overflow: hidden;
+
+	.event_entry,
+	.event_item,
+	.event_archive,
+	.filter_wrap,
+	select,
+	.form-select {
+		position: relative;
+		z-index: 1 !important;
+	}
+}
+
 .contact_modal {
 	position: fixed;
 	top: 0;

@@ -18432,6 +18432,19 @@ body.rtl .el_export_popup_wrapper .el_export_container .el_export_pagination {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
+body.modal-open {
+  overflow: hidden;
+}
+body.modal-open .event_entry,
+body.modal-open .event_item,
+body.modal-open .event_archive,
+body.modal-open .filter_wrap,
+body.modal-open select,
+body.modal-open .form-select {
+  position: relative;
+  z-index: 1 !important;
+}
+
 .contact_modal {
   position: fixed;
   top: 0;
