@@ -1,22 +1,50 @@
 /**
  * Register Choice Page Styles
- * Design moderne et élégant inspiré d'Airbnb
- * @version 1.0.0
+ * Design moderne respectant la charte graphique Le Hiboo
+ * @version 2.0.0
  */
+
+:root {
+	--orange-primary: #FF601F;
+	--orange-hover: #E5571C;
+	--orange-light: #FFF4EF;
+	--blue-primary: #4E65FF;
+	--blue-hover: #3D54E8;
+	--blue-light: #F0F2FF;
+	--grey-dark: #2C3E50;
+	--grey-medium: #7F8C8D;
+	--grey-light: #ECF0F1;
+	--green-success: #27AE60;
+	--white: #FFFFFF;
+}
 
 /* ========================================
    WRAPPER PRINCIPAL
 ======================================== */
 .lehiboo_register_choice_wrapper {
-	padding: 80px 0 120px;
-	background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+	padding: 100px 0 140px;
+	background: linear-gradient(135deg, var(--orange-light) 0%, var(--white) 100%);
 	min-height: 100vh;
+	position: relative;
+}
+
+.lehiboo_register_choice_wrapper::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 300px;
+	background: radial-gradient(circle at 50% 0%, rgba(255, 96, 31, 0.05) 0%, transparent 70%);
+	pointer-events: none;
 }
 
 .lehiboo_register_choice_wrapper .container {
-	max-width: 1200px;
+	max-width: 1280px;
 	margin: 0 auto;
-	padding: 0 20px;
+	padding: 0 24px;
+	position: relative;
+	z-index: 1;
 }
 
 /* ========================================
@@ -24,23 +52,26 @@
 ======================================== */
 .register_choice_header {
 	text-align: center;
-	margin-bottom: 60px;
-	animation: fadeInDown 0.6s ease-out;
+	margin-bottom: 70px;
+	animation: fadeInDown 0.7s ease-out;
 }
 
 .register_choice_title {
-	font-size: 42px;
-	font-weight: 700;
-	color: #1a1a1a;
-	margin-bottom: 16px;
+	font-size: 48px;
+	font-weight: 800;
+	color: var(--grey-dark);
+	margin-bottom: 20px;
 	line-height: 1.2;
+	letter-spacing: -0.5px;
 }
 
 .register_choice_subtitle {
-	font-size: 18px;
-	color: #666;
+	font-size: 20px;
+	color: var(--grey-medium);
 	font-weight: 400;
 	margin: 0;
+	max-width: 600px;
+	margin: 0 auto;
 }
 
 /* ========================================
@@ -49,38 +80,50 @@
 .register_choice_cards {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	gap: 40px;
-	margin-bottom: 60px;
+	gap: 48px;
+	margin-bottom: 80px;
+	max-width: 1400px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .register_choice_card {
-	background: #ffffff;
-	border-radius: 16px;
+	background: var(--white);
+	border-radius: 24px;
 	overflow: hidden;
-	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	box-shadow: 0 8px 32px rgba(255, 96, 31, 0.08);
+	transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 	position: relative;
-	animation: fadeInUp 0.6s ease-out;
+	animation: fadeInUp 0.7s ease-out;
 	animation-fill-mode: both;
+	border: 2px solid transparent;
 }
 
 .register_choice_card.vendor_card {
-	animation-delay: 0.1s;
+	animation-delay: 0.15s;
 }
 
 .register_choice_card.customer_card {
-	animation-delay: 0.2s;
+	animation-delay: 0.25s;
 }
 
 .register_choice_card:hover {
-	transform: translateY(-8px);
-	box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+	transform: translateY(-12px);
+	box-shadow: 0 20px 60px rgba(255, 96, 31, 0.15);
+}
+
+.vendor_card:hover {
+	border-color: var(--orange-primary);
+}
+
+.customer_card:hover {
+	border-color: var(--blue-primary);
 }
 
 /* Image de la carte */
 .card_image_wrapper {
 	position: relative;
-	height: 280px;
+	height: 320px;
 	overflow: hidden;
 }
 
@@ -88,11 +131,11 @@
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	transition: transform 0.6s ease;
+	transition: transform 0.7s ease;
 }
 
 .register_choice_card:hover .card_image {
-	transform: scale(1.08);
+	transform: scale(1.1);
 }
 
 .card_overlay {
@@ -101,79 +144,96 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 100%);
-	transition: opacity 0.3s ease;
+	background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.4) 100%);
+	transition: opacity 0.4s ease;
 }
 
 .register_choice_card:hover .card_overlay {
-	opacity: 0.7;
+	opacity: 0.8;
 }
 
 /* Contenu de la carte */
 .card_content {
-	padding: 40px 32px;
+	padding: 48px 40px;
 }
 
 .card_icon {
-	width: 64px;
-	height: 64px;
+	width: 72px;
+	height: 72px;
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin-bottom: 24px;
-	font-size: 28px;
-	transition: transform 0.3s ease;
+	margin-bottom: 28px;
+	font-size: 32px;
+	transition: all 0.4s ease;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .vendor_card .card_icon {
-	background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
-	color: white;
+	background: var(--orange-primary);
+	color: var(--white);
 }
 
 .customer_card .card_icon {
-	background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
-	color: white;
+	background: var(--blue-primary);
+	color: var(--white);
 }
 
 .register_choice_card:hover .card_icon {
-	transform: scale(1.1) rotate(5deg);
+	transform: scale(1.15) rotate(8deg);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .card_title {
-	font-size: 24px;
+	font-size: 26px;
 	font-weight: 700;
-	color: #1a1a1a;
-	margin-bottom: 16px;
+	color: var(--grey-dark);
+	margin-bottom: 18px;
 	line-height: 1.3;
+	letter-spacing: -0.3px;
 }
 
 .card_description {
-	font-size: 16px;
-	color: #666;
-	line-height: 1.6;
-	margin-bottom: 24px;
+	font-size: 17px;
+	color: var(--grey-medium);
+	line-height: 1.7;
+	margin-bottom: 28px;
 }
 
 /* Features list */
 .card_features {
 	list-style: none;
 	padding: 0;
-	margin: 0 0 32px;
+	margin: 0 0 36px;
+	background: var(--grey-light);
+	border-radius: 12px;
+	padding: 20px 24px;
 }
 
 .card_features li {
-	padding: 10px 0;
-	color: #333;
-	font-size: 15px;
+	padding: 12px 0;
+	color: var(--grey-dark);
+	font-size: 16px;
 	display: flex;
 	align-items: center;
-	gap: 12px;
+	gap: 14px;
+	font-weight: 500;
 }
 
-.card_features li i {
-	color: #4CAF50;
-	font-size: 16px;
+.card_features li:not(:last-child) {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.vendor_card .card_features li i {
+	color: var(--orange-primary);
+	font-size: 18px;
+	flex-shrink: 0;
+}
+
+.customer_card .card_features li i {
+	color: var(--blue-primary);
+	font-size: 18px;
 	flex-shrink: 0;
 }
 
@@ -182,18 +242,19 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 12px;
+	gap: 14px;
 	width: 100%;
-	padding: 18px 32px;
-	border-radius: 12px;
-	font-size: 16px;
-	font-weight: 600;
+	padding: 20px 36px;
+	border-radius: 14px;
+	font-size: 17px;
+	font-weight: 700;
 	text-decoration: none;
-	transition: all 0.3s ease;
+	transition: all 0.4s ease;
 	border: none;
 	cursor: pointer;
 	position: relative;
 	overflow: hidden;
+	letter-spacing: -0.2px;
 }
 
 .card_button::before {
@@ -203,8 +264,8 @@
 	left: -100%;
 	width: 100%;
 	height: 100%;
-	background: rgba(255, 255, 255, 0.2);
-	transition: left 0.5s ease;
+	background: rgba(255, 255, 255, 0.25);
+	transition: left 0.6s ease;
 }
 
 .card_button:hover::before {
@@ -212,48 +273,71 @@
 }
 
 .vendor_button {
-	background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
-	color: white;
+	background: var(--orange-primary);
+	color: var(--white);
+	box-shadow: 0 6px 20px rgba(255, 96, 31, 0.25);
 }
 
 .vendor_button:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4);
+	background: var(--orange-hover);
+	transform: translateY(-3px);
+	box-shadow: 0 12px 32px rgba(255, 96, 31, 0.35);
 }
 
 .customer_button {
-	background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
-	color: white;
+	background: var(--blue-primary);
+	color: var(--white);
+	box-shadow: 0 6px 20px rgba(78, 101, 255, 0.25);
 }
 
 .customer_button:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 8px 24px rgba(78, 101, 255, 0.4);
+	background: var(--blue-hover);
+	transform: translateY(-3px);
+	box-shadow: 0 12px 32px rgba(78, 101, 255, 0.35);
 }
 
 .card_button i {
-	transition: transform 0.3s ease;
+	transition: transform 0.4s ease;
+	font-size: 20px;
 }
 
 .card_button:hover i {
-	transform: translateX(4px);
+	transform: translateX(6px);
 }
 
 /* Note de la carte */
 .card_note {
 	text-align: center;
-	font-size: 13px;
-	color: #999;
-	margin-top: 20px;
+	font-size: 14px;
+	color: var(--grey-medium);
+	margin-top: 24px;
 	margin-bottom: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 8px;
+	gap: 10px;
+	padding: 14px 20px;
+	background: var(--orange-light);
+	border-radius: 10px;
+	font-weight: 500;
 }
 
-.card_note i {
-	color: #FF9800;
+.vendor_card .card_note {
+	background: var(--orange-light);
+}
+
+.customer_card .card_note {
+	background: var(--blue-light);
+}
+
+.vendor_card .card_note i {
+	color: var(--orange-primary);
+	font-size: 16px;
+}
+
+.customer_card .card_note i {
+	color: var(--blue-primary);
+	font-size: 16px;
 }
 
 /* ========================================
@@ -261,28 +345,32 @@
 ======================================== */
 .register_choice_footer {
 	text-align: center;
-	padding-top: 40px;
-	border-top: 1px solid #e0e0e0;
-	animation: fadeIn 0.8s ease-out 0.4s;
+	padding-top: 50px;
+	border-top: 2px solid rgba(255, 96, 31, 0.1);
+	animation: fadeIn 0.9s ease-out 0.5s;
 	animation-fill-mode: both;
 }
 
 .register_choice_footer p {
-	font-size: 16px;
-	color: #666;
+	font-size: 18px;
+	color: var(--grey-medium);
 	margin: 0;
+	font-weight: 500;
 }
 
 .login_link {
-	color: #FF6B6B;
+	color: var(--orange-primary);
 	text-decoration: none;
-	font-weight: 600;
-	transition: color 0.3s ease;
+	font-weight: 700;
+	transition: all 0.3s ease;
+	padding: 4px 8px;
+	border-radius: 6px;
 }
 
 .login_link:hover {
-	color: #FF8E53;
-	text-decoration: underline;
+	color: var(--orange-hover);
+	background: var(--orange-light);
+	text-decoration: none;
 }
 
 /* ========================================
@@ -291,7 +379,7 @@
 @keyframes fadeInDown {
 	from {
 		opacity: 0;
-		transform: translateY(-30px);
+		transform: translateY(-40px);
 	}
 	to {
 		opacity: 1;
@@ -302,7 +390,7 @@
 @keyframes fadeInUp {
 	from {
 		opacity: 0;
-		transform: translateY(30px);
+		transform: translateY(40px);
 	}
 	to {
 		opacity: 1;
@@ -325,37 +413,83 @@
 @media (max-width: 992px) {
 	.register_choice_cards {
 		grid-template-columns: 1fr;
-		gap: 30px;
+		gap: 40px;
+		max-width: 600px;
 	}
 
 	.register_choice_title {
-		font-size: 36px;
+		font-size: 40px;
 	}
 
 	.card_image_wrapper {
-		height: 240px;
+		height: 280px;
 	}
 }
 
 @media (max-width: 768px) {
 	.lehiboo_register_choice_wrapper {
-		padding: 60px 0 80px;
+		padding: 70px 0 100px;
 	}
 
 	.register_choice_header {
-		margin-bottom: 40px;
+		margin-bottom: 50px;
 	}
 
 	.register_choice_title {
-		font-size: 28px;
+		font-size: 32px;
 	}
 
 	.register_choice_subtitle {
-		font-size: 16px;
+		font-size: 17px;
 	}
 
 	.card_content {
-		padding: 32px 24px;
+		padding: 36px 28px;
+	}
+
+	.card_title {
+		font-size: 22px;
+	}
+
+	.card_description {
+		font-size: 16px;
+	}
+
+	.card_button {
+		padding: 18px 28px;
+		font-size: 16px;
+	}
+
+	.register_choice_cards {
+		gap: 32px;
+	}
+}
+
+@media (max-width: 480px) {
+	.lehiboo_register_choice_wrapper {
+		padding: 50px 0 80px;
+	}
+
+	.register_choice_title {
+		font-size: 26px;
+	}
+
+	.register_choice_subtitle {
+		font-size: 15px;
+	}
+
+	.card_image_wrapper {
+		height: 220px;
+	}
+
+	.card_icon {
+		width: 60px;
+		height: 60px;
+		font-size: 26px;
+	}
+
+	.card_content {
+		padding: 28px 22px;
 	}
 
 	.card_title {
@@ -366,28 +500,22 @@
 		font-size: 15px;
 	}
 
+	.card_features {
+		padding: 16px 18px;
+	}
+
+	.card_features li {
+		font-size: 14px;
+		padding: 10px 0;
+	}
+
 	.card_button {
 		padding: 16px 24px;
 		font-size: 15px;
 	}
-}
 
-@media (max-width: 480px) {
-	.register_choice_title {
-		font-size: 24px;
-	}
-
-	.card_image_wrapper {
-		height: 200px;
-	}
-
-	.card_icon {
-		width: 56px;
-		height: 56px;
-		font-size: 24px;
-	}
-
-	.card_content {
-		padding: 24px 20px;
+	.card_note {
+		font-size: 13px;
+		padding: 12px 16px;
 	}
 }
