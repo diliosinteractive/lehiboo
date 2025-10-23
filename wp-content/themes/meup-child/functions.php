@@ -67,8 +67,8 @@ function meup_child_scripts() {
 
     // V1 Le Hiboo - Popup Authentification (Connexion/Inscription) + OTP
     if ( ! is_user_logged_in() && ( is_singular('event') || is_author() ) ) {
-        wp_enqueue_style( 'lehiboo-auth-popup', get_stylesheet_directory_uri() . '/assets/css/auth-popup.css', array(), '1.0.0' );
-        wp_enqueue_script( 'lehiboo-auth-popup', get_stylesheet_directory_uri() . '/assets/js/auth-popup.js', array('jquery'), '1.0.0', true );
+        wp_enqueue_style( 'lehiboo-auth-popup', get_stylesheet_directory_uri() . '/assets/css/auth-popup.css', array(), '1.0.1' );
+        wp_enqueue_script( 'lehiboo-auth-popup', get_stylesheet_directory_uri() . '/assets/js/auth-popup.js', array('jquery'), '1.0.1', true );
 
         // Enregistrer (mais ne pas charger) le script OTP - sera chargé dynamiquement si besoin
         wp_register_script( 'lehiboo-otp-verification', get_stylesheet_directory_uri() . '/assets/js/otp-verification.js', array('jquery'), '1.0.0', true );
@@ -83,6 +83,20 @@ function meup_child_scripts() {
             'ajax_url' => admin_url( 'admin-ajax.php' ),
             'nonce' => wp_create_nonce( 'lehiboo_otp_nonce' )
         ));
+    }
+}
+
+/**
+ * V1 Le Hiboo - Inclure le template du popup d'authentification dans le footer
+ */
+add_action( 'wp_footer', 'lehiboo_include_auth_popup_template' );
+function lehiboo_include_auth_popup_template() {
+    // Uniquement si non connecté et sur les pages event/author
+    if ( ! is_user_logged_in() && ( is_singular('event') || is_author() ) ) {
+        $template_path = get_stylesheet_directory() . '/templates/auth-popup.php';
+        if ( file_exists( $template_path ) ) {
+            include $template_path;
+        }
     }
 }
 

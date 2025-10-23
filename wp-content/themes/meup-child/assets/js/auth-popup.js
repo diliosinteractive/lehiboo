@@ -112,13 +112,15 @@
 		 * Ouvrir le popup
 		 */
 		openPopup: function(tab = 'login') {
-			// Charger le template si nécessaire
-			if ($('#auth_popup_modal').length === 0) {
+			// Le template est déjà dans la page (chargé via wp_footer)
+			if ($('#auth_popup_modal').length > 0) {
+				AuthPopup.showPopup(tab);
+			} else {
+				// Fallback: charger via AJAX si pas trouvé
+				console.warn('Template popup non trouvé, chargement via AJAX...');
 				AuthPopup.loadPopupTemplate(function() {
 					AuthPopup.showPopup(tab);
 				});
-			} else {
-				AuthPopup.showPopup(tab);
 			}
 		},
 
