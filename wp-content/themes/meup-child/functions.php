@@ -961,14 +961,15 @@ function lehiboo_send_welcome_email( $user_id, $email, $password, $firstname ) {
 
 /**
  * Injecter le popup dans le footer pour les utilisateurs non connectés
+ * SUPPRIMÉ: Fonction dupliquée avec lehiboo_include_auth_popup_template() (ligne 92)
+ * Cette fonction causait un double chargement du template popup
  */
-add_action( 'wp_footer', 'lehiboo_inject_auth_popup' );
-
-function lehiboo_inject_auth_popup() {
-	if ( ! is_user_logged_in() && ( is_singular('event') || is_author() ) ) {
-		include get_stylesheet_directory() . '/templates/auth-popup.php';
-	}
-}
+// add_action( 'wp_footer', 'lehiboo_inject_auth_popup' );
+// function lehiboo_inject_auth_popup() {
+// 	if ( ! is_user_logged_in() && ( is_singular('event') || is_author() ) ) {
+// 		include get_stylesheet_directory() . '/templates/auth-popup.php';
+// 	}
+// }
 
 // ========================================
 // AJAX HANDLERS - VÉRIFICATION OTP
