@@ -1198,6 +1198,7 @@ function lehiboo_handle_vendor_register() {
 	$org_zipcode = isset( $_POST['vendor_org_zipcode'] ) ? sanitize_text_field( $_POST['vendor_org_zipcode'] ) : '';
 	$org_website = isset( $_POST['vendor_org_website'] ) ? esc_url_raw( $_POST['vendor_org_website'] ) : '';
 	$org_description = isset( $_POST['vendor_org_description'] ) ? sanitize_textarea_field( $_POST['vendor_org_description'] ) : '';
+	$org_roles = isset( $_POST['vendor_org_roles'] ) ? array_map( 'sanitize_text_field', $_POST['vendor_org_roles'] ) : array();
 	$categories = isset( $_POST['vendor_categories'] ) ? array_map( 'sanitize_text_field', $_POST['vendor_categories'] ) : array();
 
 	// Validation de base
@@ -1260,7 +1261,9 @@ function lehiboo_handle_vendor_register() {
 	update_user_meta( $user_id, 'org_description', $org_description );
 	update_user_meta( $user_id, 'user_professional_email', $email );
 	update_user_meta( $user_id, 'user_phone', $phone );
-	update_user_meta( $user_id, 'vendor_categories', $categories );
+	update_user_meta( $user_id, 'org_phone', $phone );
+	update_user_meta( $user_id, 'org_roles', $org_roles );
+	update_user_meta( $user_id, 'org_categories', $categories );
 
 	// STATUT : En attente d'approbation
 	update_user_meta( $user_id, 'vendor_status', 'pending_approval' );
@@ -1291,7 +1294,7 @@ function lehiboo_handle_vendor_register() {
 	if ( ! empty( $_FILES['vendor_kbis']['name'] ) ) {
 		$kbis_id = media_handle_upload( 'vendor_kbis', 0 );
 		if ( ! is_wp_error( $kbis_id ) ) {
-			update_user_meta( $user_id, 'vendor_kbis_id', $kbis_id );
+			update_user_meta( $user_id, 'org_kbis_id', $kbis_id );
 		}
 	}
 
@@ -1299,7 +1302,7 @@ function lehiboo_handle_vendor_register() {
 	if ( ! empty( $_FILES['vendor_insurance']['name'] ) ) {
 		$insurance_id = media_handle_upload( 'vendor_insurance', 0 );
 		if ( ! is_wp_error( $insurance_id ) ) {
-			update_user_meta( $user_id, 'vendor_insurance_id', $insurance_id );
+			update_user_meta( $user_id, 'org_insurance_id', $insurance_id );
 		}
 	}
 

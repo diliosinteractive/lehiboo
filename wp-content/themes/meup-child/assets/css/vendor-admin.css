@@ -366,6 +366,24 @@
 	color: #50575e;
 }
 
+/* Roles List */
+.roles_list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.role_tag {
+	display: inline-block;
+	padding: 8px 16px;
+	background: #FF601F;
+	color: white;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	text-transform: capitalize;
+}
+
 /* Categories List */
 .categories_list {
 	display: flex;
@@ -375,11 +393,11 @@
 
 .category_tag {
 	display: inline-block;
-	padding: 6px 12px;
-	background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+	padding: 8px 16px;
+	background: #2271b1;
 	color: white;
-	border-radius: 20px;
-	font-size: 12px;
+	border-radius: 8px;
+	font-size: 13px;
 	font-weight: 600;
 }
 

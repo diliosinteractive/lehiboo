@@ -224,15 +224,54 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 									</div>
 								</div>
 
-								<!-- Categories -->
+								<!-- Rôles de l'Organisation -->
 								<div class="details_section">
-									<h3><i class="fas fa-tags"></i> Catégories d'activités</h3>
+									<h3><i class="fas fa-user-tag"></i> Rôle de l'Organisation</h3>
+									<div class="roles_list">
+										<?php
+										$roles = get_user_meta( $vendor->ID, 'org_roles', true );
+										$roles_labels = array(
+											'organisateur' => 'Organisateur',
+											'lieu_accueil' => 'Lieu d\'accueil',
+											'prestataire' => 'Prestataire',
+											'autre' => 'Autre'
+										);
+										if ( is_array( $roles ) && ! empty( $roles ) ) {
+											foreach ( $roles as $role ) {
+												$label = isset( $roles_labels[$role] ) ? $roles_labels[$role] : $role;
+												echo '<span class="role_tag">' . esc_html( $label ) . '</span>';
+											}
+										} else {
+											echo '<span class="no_data">Aucun rôle sélectionné</span>';
+										}
+										?>
+									</div>
+								</div>
+
+								<!-- Type de structure -->
+								<div class="details_section">
+									<h3><i class="fas fa-tags"></i> Type de structure</h3>
 									<div class="categories_list">
 										<?php
 										$categories = get_user_meta( $vendor->ID, 'org_categories', true );
+										$cat_labels = array(
+											'cinema' => 'Cinéma',
+											'centre_culturel' => 'Centre culturel',
+											'theatre' => 'Théâtre',
+											'musee' => 'Musée',
+											'salle_concert' => 'Salle de concert',
+											'galerie_art' => 'Galerie d\'art',
+											'bibliotheque' => 'Bibliothèque',
+											'espace_sportif' => 'Espace sportif',
+											'parc_loisirs' => 'Parc de loisirs',
+											'association' => 'Association',
+											'collectivite' => 'Collectivité',
+											'autre' => 'Autre'
+										);
 										if ( is_array( $categories ) && ! empty( $categories ) ) {
 											foreach ( $categories as $cat ) {
-												echo '<span class="category_tag">' . esc_html( $cat ) . '</span>';
+												$label = isset( $cat_labels[$cat] ) ? $cat_labels[$cat] : $cat;
+												echo '<span class="category_tag">' . esc_html( $label ) . '</span>';
 											}
 										} else {
 											echo '<span class="no_data">Aucune catégorie sélectionnée</span>';
