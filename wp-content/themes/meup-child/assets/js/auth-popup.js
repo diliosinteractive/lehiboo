@@ -128,6 +128,16 @@
 		 * Afficher le popup
 		 */
 		showPopup: function(tab) {
+			// Calculer la largeur de la scrollbar pour éviter le décalage
+			const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+			// Ajouter padding-right au body pour compenser la scrollbar
+			if (scrollbarWidth > 0) {
+				$('body').css('padding-right', scrollbarWidth + 'px');
+				// Appliquer aussi aux éléments fixed (header, etc.)
+				$('.site-header, .fixed-element').css('padding-right', scrollbarWidth + 'px');
+			}
+
 			$('#auth_popup_modal').fadeIn(300);
 			$('body').addClass('modal-open').css('overflow', 'hidden');
 			this.switchTab(tab);
@@ -140,7 +150,12 @@
 		 */
 		closePopup: function() {
 			$('#auth_popup_modal').fadeOut(300);
-			$('body').removeClass('modal-open').css('overflow', '');
+			$('body').removeClass('modal-open').css({
+				'overflow': '',
+				'padding-right': ''
+			});
+			// Retirer le padding des éléments fixed
+			$('.site-header, .fixed-element').css('padding-right', '');
 			this.clearForms();
 			this.clearNotifications();
 		},
