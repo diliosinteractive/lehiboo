@@ -1,6 +1,6 @@
 /**
  * OTP Verification JavaScript
- * @version 1.2.0
+ * @version 1.2.1
  */
 
 (function($) {
@@ -262,11 +262,13 @@
 				dataType: 'json',
 				success: function(response) {
 					if (response.success) {
+						console.log('OTP: Verification success response:', response);
 						OTPVerification.showNotification('success', response.data.message);
 
 						// Connexion automatique et redirection vers le compte
 						setTimeout(function() {
 							const redirectUrl = response.data.redirect_url || '/member-account/';
+							console.log('OTP: Full redirect URL:', redirectUrl);
 							console.log('OTP: Redirecting to', redirectUrl);
 							window.location.href = redirectUrl;
 						}, 1500);

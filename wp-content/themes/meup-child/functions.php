@@ -81,7 +81,7 @@ function meup_child_scripts() {
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
 
         // Enregistrer le script OTP (sera chargé dynamiquement si besoin)
-        wp_register_script( 'lehiboo-otp-verification', get_stylesheet_directory_uri() . '/assets/js/otp-verification.js', array('jquery'), '1.2.0', true );
+        wp_register_script( 'lehiboo-otp-verification', get_stylesheet_directory_uri() . '/assets/js/otp-verification.js', array('jquery'), '1.2.1', true );
 
         // Localiser les scripts (même objet pour customer et vendor)
         wp_localize_script( 'lehiboo-register-customer', 'lehiboo_register_ajax', array(
@@ -110,7 +110,7 @@ function meup_child_scripts() {
         wp_enqueue_script( 'lehiboo-auth-popup', get_stylesheet_directory_uri() . '/assets/js/auth-popup.js', array('jquery'), '1.0.1', true );
 
         // Enregistrer (mais ne pas charger) le script OTP - sera chargé dynamiquement si besoin
-        wp_register_script( 'lehiboo-otp-verification', get_stylesheet_directory_uri() . '/assets/js/otp-verification.js', array('jquery'), '1.2.0', true );
+        wp_register_script( 'lehiboo-otp-verification', get_stylesheet_directory_uri() . '/assets/js/otp-verification.js', array('jquery'), '1.2.1', true );
 
         wp_localize_script( 'lehiboo-auth-popup', 'lehiboo_auth_ajax', array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -1382,6 +1382,9 @@ function lehiboo_ajax_verify_otp() {
 	$vendor_status = get_user_meta( $user_id, 'vendor_status', true );
 	$is_vendor = ! empty( $vendor_status );
 
+	// Log pour debug
+	error_log( 'LeHiboo OTP: User ID ' . $user_id . ' - vendor_status: ' . $vendor_status . ' - is_vendor: ' . ( $is_vendor ? 'YES' : 'NO' ) );
+
 	// Redirection et message selon le type d'utilisateur
 	if ( $is_vendor ) {
 		$redirect_url = home_url( '/member-account/?vendor=profile' );
@@ -1391,10 +1394,15 @@ function lehiboo_ajax_verify_otp() {
 		$message = 'Email vérifié ! Connexion en cours...';
 	}
 
+	// Log l'URL de redirection
+	error_log( 'LeHiboo OTP: Redirect URL: ' . $redirect_url );
+
 	wp_send_json_success( array(
 		'message' => $message,
 		'user_id' => $user_id,
-		'redirect_url' => $redirect_url
+		'redirect_url' => $redirect_url,
+		'is_vendor' => $is_vendor,
+		'vendor_status' => $vendor_status
 	) );
 }
 
