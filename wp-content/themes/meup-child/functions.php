@@ -71,7 +71,7 @@ function meup_child_scripts() {
 
         // Styles et scripts pour le formulaire utilisateur
         wp_enqueue_style( 'lehiboo-register-customer', get_stylesheet_directory_uri() . '/assets/css/register-customer.css', array('meup-parent-style'), '4.0.0' );
-        wp_enqueue_script( 'lehiboo-register-customer', get_stylesheet_directory_uri() . '/assets/js/register-customer.js', array('jquery'), '1.0.0', true );
+        wp_enqueue_script( 'lehiboo-register-customer', get_stylesheet_directory_uri() . '/assets/js/register-customer.js', array('jquery'), '1.1.0', true );
 
         // Styles et scripts pour le formulaire partenaire
         wp_enqueue_style( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/css/register-vendor.css', array('lehiboo-register-customer'), '2.1.0' );
@@ -1380,7 +1380,8 @@ function lehiboo_ajax_verify_otp() {
 
 	wp_send_json_success( array(
 		'message' => 'Email vérifié ! Connexion en cours...',
-		'user_id' => $user_id
+		'user_id' => $user_id,
+		'redirect_url' => home_url( '/member-account/' )
 	) );
 }
 

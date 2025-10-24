@@ -1,7 +1,7 @@
 /**
  * Register Customer Form JavaScript
  * Gestion du formulaire d'inscription utilisateur
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 (function($) {
@@ -311,16 +311,41 @@
 		 * Charger le script OTP dynamiquement
 		 */
 		loadOTPScript: function() {
-			if (!$('script[src*="otp-verification.js"]').length) {
-				const script = document.createElement('script');
-				script.src = lehiboo_register_ajax.otp_script_url;
-				script.onload = function() {
-					if (typeof OTPVerification !== 'undefined' && typeof OTPVerification.init === 'function') {
-						OTPVerification.init();
-					}
-				};
-				document.head.appendChild(script);
+			console.log('Loading OTP script...');
+
+			// Vérifier si le script est déjà chargé
+			if ($('script[src*="otp-verification.js"]').length) {
+				console.log('OTP script already loaded, reinitializing...');
+				if (typeof OTPVerification !== 'undefined' && typeof OTPVerification.init === 'function') {
+					OTPVerification.init();
+				}
+				return;
 			}
+
+			// Construire l'URL du script
+			let scriptUrl = lehiboo_register_ajax.otp_script_url;
+
+			// Fallback si l'URL n'est pas définie
+			if (!scriptUrl || scriptUrl === 'undefined') {
+				console.warn('OTP script URL not defined in lehiboo_register_ajax, using fallback');
+				const themeUrl = window.location.origin + '/wp-content/themes/meup-child';
+				scriptUrl = themeUrl + '/assets/js/otp-verification.js';
+			}
+
+			console.log('Loading OTP script from:', scriptUrl);
+
+			const script = document.createElement('script');
+			script.src = scriptUrl;
+			script.onload = function() {
+				console.log('OTP script loaded successfully');
+				if (typeof OTPVerification !== 'undefined' && typeof OTPVerification.init === 'function') {
+					OTPVerification.init();
+				}
+			};
+			script.onerror = function() {
+				console.error('Failed to load OTP script from:', scriptUrl);
+			};
+			document.head.appendChild(script);
 		}
 	};
 

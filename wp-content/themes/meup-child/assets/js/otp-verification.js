@@ -256,8 +256,9 @@
 
 						// Connexion automatique et redirection vers le compte
 						setTimeout(function() {
-							// Rediriger vers la page mon compte au lieu de recharger
-							window.location.href = '/member-account/';
+							const redirectUrl = response.data.redirect_url || '/member-account/';
+							console.log('OTP: Redirecting to', redirectUrl);
+							window.location.href = redirectUrl;
 						}, 1500);
 					} else {
 						OTPVerification.showNotification('error', response.data.message);
