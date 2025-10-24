@@ -97,33 +97,8 @@ $author_name = get_the_author_meta('display_name', $author_id);
 $author_url = get_author_posts_url( $author_id );
 ?>
 
-<!-- Organisateur (hors sticky) -->
-<div class="booking_organizer_card">
-	<?php
-	$author_id = get_the_author_meta('ID');
-	$author_name = get_the_author_meta('display_name', $author_id);
-	$author_avatar = get_avatar_url( $author_id, array('size' => 64) );
-	$author_url = get_author_posts_url( $author_id );
-	$author_description = get_the_author_meta('description', $author_id);
-	?>
-
-	<div class="organizer_header">
-		<a href="<?php echo esc_url( $author_url ); ?>" class="organizer_avatar">
-			<img src="<?php echo esc_url( $author_avatar ); ?>" alt="<?php echo esc_attr( $author_name ); ?>">
-		</a>
-		<div class="organizer_info">
-			<div class="organizer_label"><?php esc_html_e( 'Organisé par', 'eventlist' ); ?></div>
-			<h3 class="organizer_name">
-				<a href="<?php echo esc_url( $author_url ); ?>"><?php echo esc_html( $author_name ); ?></a>
-			</h3>
-		</div>
-	</div>
-
-	<button type="button" class="organizer_contact_btn" id="open_contact_form" data-require-login="<?php echo is_user_logged_in() ? 'false' : 'true'; ?>">
-		<i class="icon_mail_alt"></i>
-		<?php esc_html_e( 'Envoyer un message', 'eventlist' ); ?>
-	</button>
-</div>
+<!-- Organisateur Optimisé UX (hors sticky) -->
+<?php el_get_template( 'author_info.php' ); ?>
 
 <div class="event_booking_sticky" id="booking_sticky_widget" data-price="<?php echo esc_attr( $ticket_price ); ?>">
 

@@ -98,11 +98,6 @@ $event_id = get_the_ID();
 					<?php el_get_template( 'single/highlights.php' ); ?>
 				</div>
 
-				<!-- Carte Organisateur -->
-				<div class="event_organizer_card">
-					<?php do_action( 'el_author_info' ); ?>
-				</div>
-
 				<!-- Description -->
 				<div class="event_description_section">
 					<?php do_action( 'el_single_event_content' ); ?>
