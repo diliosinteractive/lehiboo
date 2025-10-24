@@ -1378,10 +1378,23 @@ function lehiboo_ajax_verify_otp() {
 	wp_set_current_user( $user_id );
 	do_action( 'wp_login', $user->user_login, $user );
 
+	// Vérifier si c'est un vendor (partenaire)
+	$vendor_status = get_user_meta( $user_id, 'vendor_status', true );
+	$is_vendor = ! empty( $vendor_status );
+
+	// Redirection et message selon le type d'utilisateur
+	if ( $is_vendor ) {
+		$redirect_url = home_url( '/member-account/?vendor=profile' );
+		$message = 'Email vérifié ! Nous vous recommandons de compléter tous les champs de votre profil pour une expérience optimale sur Le Hiboo.';
+	} else {
+		$redirect_url = home_url( '/member-account/' );
+		$message = 'Email vérifié ! Connexion en cours...';
+	}
+
 	wp_send_json_success( array(
-		'message' => 'Email vérifié ! Connexion en cours...',
+		'message' => $message,
 		'user_id' => $user_id,
-		'redirect_url' => home_url( '/member-account/' )
+		'redirect_url' => $redirect_url
 	) );
 }
 
