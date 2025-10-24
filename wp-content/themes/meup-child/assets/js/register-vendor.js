@@ -1,7 +1,7 @@
 /**
  * Vendor Registration JavaScript
- * Version 3.0 - Ajout système OTP pour vérification email
- * @version 3.0.0
+ * Version 3.1 - Fix: Loader + sélecteur container + otp_script_url
+ * @version 3.1.0
  */
 
 (function($) {
@@ -501,6 +501,11 @@
 						if (response.data.otp_required && response.data.show_otp_form) {
 							console.log('Vendor Registration: OTP required, loading OTP form...');
 
+							// Afficher un loader
+							setTimeout(function() {
+								VendorRegister.showNotification('success', '<i class="fas fa-spinner fa-spin"></i> Chargement du formulaire de vérification...');
+							}, 1500);
+
 							// Cacher le formulaire d'inscription
 							$('#vendor_register_form').slideUp(300, function() {
 								$(this).hide();
@@ -510,7 +515,7 @@
 							setTimeout(function() {
 								VendorRegister.loadOTPScript();
 								VendorRegister.showOTPForm(response.data.user_id);
-							}, 1000);
+							}, 2500);
 						} else {
 							// Redirection directe si pas d'OTP (cas par défaut, ne devrait plus arriver)
 							setTimeout(function() {
@@ -581,8 +586,10 @@
 			let $otpContainer = $('#otp_verification_container');
 			if ($otpContainer.length === 0) {
 				$otpContainer = $('<div id="otp_verification_container"></div>');
-				$('.lehiboo_vendor_register_wrapper .container').append($otpContainer);
+				$('.lehiboo_register_form_wrapper .container').append($otpContainer);
 			}
+
+			console.log('Vendor: OTP container found/created, length:', $otpContainer.length);
 
 			// Générer le HTML du formulaire OTP
 			const otpFormHTML = `
@@ -626,6 +633,9 @@
 				</div>
 			`;
 
+			// Masquer la notification de chargement
+			$('.register_notification').slideUp(200);
+
 			// Injecter le formulaire et l'afficher avec animation
 			$otpContainer.html(otpFormHTML).hide().slideDown(400);
 
@@ -639,10 +649,12 @@
 				}
 			}
 
-			// Scroll vers le formulaire OTP
-			$('html, body').animate({
-				scrollTop: $otpContainer.offset().top - 100
-			}, 400);
+			// Scroll vers le formulaire OTP après un court délai
+			setTimeout(function() {
+				$('html, body').animate({
+					scrollTop: $otpContainer.offset().top - 100
+				}, 400);
+			}, 200);
 		},
 
 		/**

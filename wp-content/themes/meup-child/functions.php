@@ -75,7 +75,7 @@ function meup_child_scripts() {
 
         // Styles et scripts pour le formulaire partenaire
         wp_enqueue_style( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/css/register-vendor.css', array('lehiboo-register-customer'), '2.1.0' );
-        wp_enqueue_script( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/js/register-vendor.js', array('jquery'), '3.0.0', true );
+        wp_enqueue_script( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/js/register-vendor.js', array('jquery'), '3.1.0', true );
 
         // Cloudflare Turnstile CAPTCHA pour formulaire partenaire
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
@@ -94,7 +94,10 @@ function meup_child_scripts() {
 
         wp_localize_script( 'lehiboo-register-vendor', 'lehiboo_register_ajax', array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'nonce' => wp_create_nonce( 'vendor_register_nonce' )
+            'nonce' => wp_create_nonce( 'vendor_register_nonce' ),
+            'otp_script_url' => get_stylesheet_directory_uri() . '/assets/js/otp-verification.js',
+            'otp_ajax_url' => admin_url( 'admin-ajax.php' ),
+            'otp_nonce' => wp_create_nonce( 'lehiboo_otp_nonce' )
         ));
 
         // Localiser le script OTP
