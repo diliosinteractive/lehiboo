@@ -1,6 +1,6 @@
 /**
  * OTP Verification JavaScript
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 (function($) {
@@ -18,13 +18,23 @@
 		getAjaxData: function() {
 			// Priorité 1: lehiboo_otp_ajax (si le script est chargé via wp_enqueue_script)
 			if (typeof lehiboo_otp_ajax !== 'undefined') {
+				console.log('OTP: Using lehiboo_otp_ajax data');
 				return {
 					ajax_url: lehiboo_otp_ajax.ajax_url,
 					nonce: lehiboo_otp_ajax.nonce
 				};
 			}
-			// Priorité 2: lehiboo_auth_ajax (données OTP incluses, pour chargement dynamique)
+			// Priorité 2: lehiboo_register_ajax (contient aussi les données OTP pour customer/vendor)
+			else if (typeof lehiboo_register_ajax !== 'undefined' && lehiboo_register_ajax.otp_ajax_url) {
+				console.log('OTP: Using lehiboo_register_ajax OTP data');
+				return {
+					ajax_url: lehiboo_register_ajax.otp_ajax_url,
+					nonce: lehiboo_register_ajax.otp_nonce
+				};
+			}
+			// Priorité 3: lehiboo_auth_ajax (données OTP incluses, pour popup)
 			else if (typeof lehiboo_auth_ajax !== 'undefined') {
+				console.log('OTP: Using lehiboo_auth_ajax data');
 				return {
 					ajax_url: lehiboo_auth_ajax.otp_ajax_url || lehiboo_auth_ajax.ajax_url,
 					nonce: lehiboo_auth_ajax.otp_nonce || lehiboo_auth_ajax.nonce
@@ -32,7 +42,7 @@
 			}
 			// Fallback: utiliser les URLs par défaut WordPress
 			else {
-				console.error('OTP: Aucune donnée AJAX disponible');
+				console.warn('OTP: Aucune donnée AJAX localisée trouvée, utilisation du fallback');
 				return {
 					ajax_url: '/wp-admin/admin-ajax.php',
 					nonce: ''

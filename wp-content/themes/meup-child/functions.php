@@ -81,7 +81,7 @@ function meup_child_scripts() {
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
 
         // Enregistrer le script OTP (sera chargé dynamiquement si besoin)
-        wp_register_script( 'lehiboo-otp-verification', get_stylesheet_directory_uri() . '/assets/js/otp-verification.js', array('jquery'), '1.1.0', true );
+        wp_register_script( 'lehiboo-otp-verification', get_stylesheet_directory_uri() . '/assets/js/otp-verification.js', array('jquery'), '1.2.0', true );
 
         // Localiser les scripts (même objet pour customer et vendor)
         wp_localize_script( 'lehiboo-register-customer', 'lehiboo_register_ajax', array(
@@ -110,7 +110,7 @@ function meup_child_scripts() {
         wp_enqueue_script( 'lehiboo-auth-popup', get_stylesheet_directory_uri() . '/assets/js/auth-popup.js', array('jquery'), '1.0.1', true );
 
         // Enregistrer (mais ne pas charger) le script OTP - sera chargé dynamiquement si besoin
-        wp_register_script( 'lehiboo-otp-verification', get_stylesheet_directory_uri() . '/assets/js/otp-verification.js', array('jquery'), '1.1.0', true );
+        wp_register_script( 'lehiboo-otp-verification', get_stylesheet_directory_uri() . '/assets/js/otp-verification.js', array('jquery'), '1.2.0', true );
 
         wp_localize_script( 'lehiboo-auth-popup', 'lehiboo_auth_ajax', array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
