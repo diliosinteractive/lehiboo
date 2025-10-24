@@ -1,7 +1,7 @@
 /**
  * Vendor Registration JavaScript
- * Version 3.1 - Fix: Loader + sélecteur container + otp_script_url
- * @version 3.1.0
+ * Version 3.2 - Auto-save: Sauvegarde automatique dans localStorage
+ * @version 3.2.0
  */
 
 (function($) {
@@ -11,6 +11,8 @@
 
 		currentStep: 1,
 		totalSteps: 3,
+		storageKey: 'lehiboo_vendor_registration_draft',
+		autoSaveTimer: null,
 
 		/**
 		 * Initialisation
@@ -18,6 +20,8 @@
 		init: function() {
 			this.bindEvents();
 			this.initAPIs();
+			this.restoreFormData();
+			this.initAutoSave();
 		},
 
 		/**
@@ -41,6 +45,168 @@
 			// Password validation
 			$('#vendor_password').on('input', this.validatePassword);
 			$('#vendor_password_confirm').on('input', this.checkPasswordMatch);
+		},
+
+		/**
+		 * Initialiser la sauvegarde automatique
+		 */
+		initAutoSave: function() {
+			const self = this;
+
+			// Sauvegarder automatiquement lors de la saisie (debounced)
+			$('#vendor_register_form').on('input change', 'input:not([type="file"]), textarea, select', function() {
+				clearTimeout(self.autoSaveTimer);
+				self.autoSaveTimer = setTimeout(function() {
+					self.saveFormData();
+				}, 1000); // Sauvegarde 1s après la dernière modification
+			});
+
+			// Sauvegarder aussi les checkboxes/radios
+			$('#vendor_register_form').on('change', 'input[type="checkbox"], input[type="radio"]', function() {
+				self.saveFormData();
+			});
+
+			console.log('Vendor: Auto-save initialized');
+		},
+
+		/**
+		 * Sauvegarder les données du formulaire dans localStorage
+		 */
+		saveFormData: function() {
+			const formData = {
+				step: this.currentStep,
+				timestamp: Date.now(),
+				fields: {}
+			};
+
+			// Sauvegarder tous les champs sauf les fichiers et mots de passe
+			$('#vendor_register_form').find('input:not([type="file"]):not([type="password"]), textarea, select').each(function() {
+				const $field = $(this);
+				const name = $field.attr('name');
+
+				if (!name) return;
+
+				if ($field.attr('type') === 'checkbox') {
+					formData.fields[name] = $field.is(':checked');
+				} else if ($field.attr('type') === 'radio') {
+					if ($field.is(':checked')) {
+						formData.fields[name] = $field.val();
+					}
+				} else {
+					formData.fields[name] = $field.val();
+				}
+			});
+
+			// Sauvegarder les catégories sélectionnées
+			const categories = [];
+			$('input[name="vendor_categories[]"]:checked').each(function() {
+				categories.push($(this).val());
+			});
+			if (categories.length > 0) {
+				formData.fields['vendor_categories'] = categories;
+			}
+
+			// Sauvegarder les rôles sélectionnés
+			const roles = [];
+			$('input[name="vendor_org_roles[]"]:checked').each(function() {
+				roles.push($(this).val());
+			});
+			if (roles.length > 0) {
+				formData.fields['vendor_org_roles'] = roles;
+			}
+
+			try {
+				localStorage.setItem(this.storageKey, JSON.stringify(formData));
+				console.log('Vendor: Form data auto-saved', formData);
+			} catch (e) {
+				console.error('Vendor: Failed to save form data', e);
+			}
+		},
+
+		/**
+		 * Restaurer les données du formulaire depuis localStorage
+		 */
+		restoreFormData: function() {
+			try {
+				const savedData = localStorage.getItem(this.storageKey);
+
+				if (!savedData) {
+					console.log('Vendor: No saved data found');
+					return;
+				}
+
+				const formData = JSON.parse(savedData);
+
+				// Vérifier si les données ne sont pas trop anciennes (7 jours)
+				const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 jours en millisecondes
+				if (Date.now() - formData.timestamp > maxAge) {
+					console.log('Vendor: Saved data expired, clearing');
+					localStorage.removeItem(this.storageKey);
+					return;
+				}
+
+				console.log('Vendor: Restoring form data', formData);
+
+				// Restaurer les champs
+				$.each(formData.fields, function(name, value) {
+					const $field = $('[name="' + name + '"]');
+
+					if ($field.length === 0) return;
+
+					if ($field.attr('type') === 'checkbox') {
+						if (Array.isArray(value)) {
+							// Pour les checkboxes multiples (catégories, rôles)
+							value.forEach(function(val) {
+								$('[name="' + name + '"][value="' + val + '"]').prop('checked', true);
+							});
+						} else {
+							$field.prop('checked', value);
+						}
+					} else if ($field.attr('type') === 'radio') {
+						$('[name="' + name + '"][value="' + value + '"]').prop('checked', true);
+					} else {
+						$field.val(value);
+					}
+				});
+
+				// Restaurer les catégories
+				if (formData.fields.vendor_categories && Array.isArray(formData.fields.vendor_categories)) {
+					formData.fields.vendor_categories.forEach(function(cat) {
+						$('input[name="vendor_categories[]"][value="' + cat + '"]').prop('checked', true);
+					});
+				}
+
+				// Restaurer les rôles
+				if (formData.fields.vendor_org_roles && Array.isArray(formData.fields.vendor_org_roles)) {
+					formData.fields.vendor_org_roles.forEach(function(role) {
+						$('input[name="vendor_org_roles[]"][value="' + role + '"]').prop('checked', true);
+					});
+				}
+
+				// Restaurer l'étape
+				if (formData.step && formData.step !== this.currentStep) {
+					this.goToStep(formData.step);
+				}
+
+				// Afficher une notification
+				this.showNotification('success', '<i class="fas fa-sync"></i> Vos données ont été restaurées. Vous pouvez continuer où vous vous êtes arrêté.');
+
+			} catch (e) {
+				console.error('Vendor: Failed to restore form data', e);
+				localStorage.removeItem(this.storageKey);
+			}
+		},
+
+		/**
+		 * Nettoyer les données sauvegardées
+		 */
+		clearSavedData: function() {
+			try {
+				localStorage.removeItem(this.storageKey);
+				console.log('Vendor: Saved data cleared');
+			} catch (e) {
+				console.error('Vendor: Failed to clear saved data', e);
+			}
 		},
 
 		/**
@@ -265,6 +431,9 @@
 
 			// Update current step
 			this.currentStep = step;
+
+			// Sauvegarder l'étape actuelle
+			this.saveFormData();
 
 			// Scroll to top
 			$('html, body').animate({ scrollTop: 0 }, 300);
@@ -500,6 +669,9 @@
 						// Vérifier si l'OTP est requis
 						if (response.data.otp_required && response.data.show_otp_form) {
 							console.log('Vendor Registration: OTP required, loading OTP form...');
+
+							// Nettoyer les données sauvegardées (inscription réussie)
+							VendorRegister.clearSavedData();
 
 							// Afficher un loader
 							setTimeout(function() {

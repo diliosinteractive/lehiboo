@@ -1,6 +1,6 @@
 /**
  * OTP Verification JavaScript
- * @version 1.2.1
+ * @version 1.2.2
  */
 
 (function($) {
@@ -250,6 +250,12 @@
 			// Récupérer les données AJAX
 			const ajaxData = this.getAjaxData();
 
+			// Récupérer le nonce depuis le formulaire OU depuis ajaxData
+			const formNonce = $form.find('[name="otp_nonce"]').val();
+			const nonce = formNonce || ajaxData.nonce;
+
+			console.log('OTP: Using nonce:', nonce);
+
 			$.ajax({
 				url: ajaxData.ajax_url,
 				type: 'POST',
@@ -257,7 +263,7 @@
 					action: 'lehiboo_verify_otp',
 					user_id: $form.find('[name="user_id"]').val(),
 					otp_code: code,
-					otp_nonce: $form.find('[name="otp_nonce"]').val()
+					otp_nonce: nonce
 				},
 				dataType: 'json',
 				success: function(response) {
@@ -307,7 +313,8 @@
 				type: 'POST',
 				data: {
 					action: 'lehiboo_resend_otp',
-					user_id: userId
+					user_id: userId,
+					otp_nonce: ajaxData.nonce
 				},
 				dataType: 'json',
 				success: function(response) {
