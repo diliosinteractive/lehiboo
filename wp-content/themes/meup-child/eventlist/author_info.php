@@ -154,16 +154,12 @@ if( $author_id ){
 
 		</div>
 
-		<!-- Actions CTA -->
-		<div class="organizer_actions">
-			<button class="btn_learn_more" id="open_organizer_details_popup" data-author-id="<?php echo esc_attr( $author_id ); ?>">
+		<!-- Bouton "En savoir plus" centré pleine largeur -->
+		<div class="organizer_learn_more_cta">
+			<button class="btn_learn_more_full" id="open_organizer_details_popup" data-author-id="<?php echo esc_attr( $author_id ); ?>">
 				<i class="fas fa-info-circle"></i>
 				<?php esc_html_e( 'En savoir plus', 'eventlist' ); ?>
 			</button>
-			<a href="<?php echo esc_url( $organizer_page_url ); ?>" class="btn_view_profile">
-				<i class="fas fa-user"></i>
-				<?php esc_html_e( 'Voir le profil', 'eventlist' ); ?>
-			</a>
 		</div>
 
 		<!-- Bouton Contact -->
@@ -352,8 +348,8 @@ if( $author_id ){
 				<!-- CTA vers page organisateur -->
 				<div class="popup_footer_cta">
 					<a href="<?php echo esc_url( $organizer_page_url ); ?>" class="btn_view_full_profile">
-						<i class="fas fa-external-link-alt"></i>
-						<?php esc_html_e( 'Voir toutes les activités', 'eventlist' ); ?>
+						<i class="fas fa-user-circle"></i>
+						<?php esc_html_e( 'Voir la page organisateur', 'eventlist' ); ?>
 					</a>
 				</div>
 

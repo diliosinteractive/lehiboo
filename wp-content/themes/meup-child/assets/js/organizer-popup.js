@@ -18,24 +18,28 @@
         // ============================================
 
         // Ouvrir le popup détails organisateur
-        $(document).on('click', '#open_organizer_details_popup', function(e) {
+        $(document).on('click', '#open_organizer_details_popup, .btn_learn_more_full', function(e) {
             e.preventDefault();
 
             const popup = $('#organizer_details_popup');
 
             if (popup.length) {
                 popup.fadeIn(300);
-                $('body').addClass('organizer-popup-open');
+                $('body').addClass('organizer-popup-open').css({
+                    'overflow': 'hidden'
+                });
 
-                // Animation du container
-                popup.find('.organizer_popup_container').css({
-                    'transform': 'translateY(20px)',
+                // Forcer le centrage du container
+                const container = popup.find('.organizer_popup_container');
+                container.css({
+                    'position': 'fixed',
+                    'top': '50%',
+                    'left': '50%',
+                    'transform': 'translate(-50%, -50%)',
                     'opacity': '0'
                 }).animate({
                     'opacity': '1'
-                }, 300).css({
-                    'transform': 'translateY(0)'
-                });
+                }, 300);
             }
         });
 
