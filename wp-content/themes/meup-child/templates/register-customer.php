@@ -1,8 +1,8 @@
 <?php
 /**
  * Template Formulaire d'Inscription Utilisateur
- * Formulaire simple pour inscription client
- * @version 1.0.0
+ * Formulaire simple pour inscription client - Design minimal selon charte
+ * @version 2.0.0
  */
 
 // Sécurité : empêcher l'accès direct
@@ -12,13 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 <div class="lehiboo_register_form_wrapper customer_register">
 	<div class="container">
 
-		<!-- Header avec retour -->
+		<!-- Header -->
 		<div class="register_form_header">
-			<a href="<?php echo esc_url( remove_query_arg( 'type' ) ); ?>" class="back_link">
-				<i class="fas fa-arrow-left"></i>
-				<span>Retour au choix</span>
-			</a>
-
 			<div class="register_header_content">
 				<div class="register_icon customer_icon">
 					<i class="fas fa-user"></i>
@@ -39,38 +34,35 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 				<!-- Formulaire d'inscription -->
 				<form id="customer_register_form" class="register_form" method="post">
 
-					<!-- Prénom -->
-					<div class="form_group">
-						<label for="customer_firstname" class="form_label">
-							Prénom <span class="required">*</span>
-						</label>
-						<div class="input_wrapper">
-							<i class="fas fa-user input_icon"></i>
+					<!-- Prénom et Nom en 2 colonnes -->
+					<div class="form_row">
+						<!-- Prénom -->
+						<div class="form_group">
+							<label for="customer_firstname" class="form_label">
+								Prénom <span class="required">*</span>
+							</label>
 							<input
 								type="text"
 								id="customer_firstname"
 								name="customer_firstname"
 								class="form_input"
-								placeholder="Votre prénom"
+								placeholder="Mettez votre prénom"
 								required
 								autocomplete="given-name"
 							>
 						</div>
-					</div>
 
-					<!-- Nom -->
-					<div class="form_group">
-						<label for="customer_lastname" class="form_label">
-							Nom <span class="required">*</span>
-						</label>
-						<div class="input_wrapper">
-							<i class="fas fa-user input_icon"></i>
+						<!-- Nom -->
+						<div class="form_group">
+							<label for="customer_lastname" class="form_label">
+								Nom <span class="required">*</span>
+							</label>
 							<input
 								type="text"
 								id="customer_lastname"
 								name="customer_lastname"
 								class="form_input"
-								placeholder="Votre nom"
+								placeholder="Mettez votre nom"
 								required
 								autocomplete="family-name"
 							>
@@ -82,18 +74,15 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 						<label for="customer_email" class="form_label">
 							Adresse email <span class="required">*</span>
 						</label>
-						<div class="input_wrapper">
-							<i class="fas fa-envelope input_icon"></i>
-							<input
-								type="email"
-								id="customer_email"
-								name="customer_email"
-								class="form_input"
-								placeholder="votre@email.com"
-								required
-								autocomplete="email"
-							>
-						</div>
+						<input
+							type="email"
+							id="customer_email"
+							name="customer_email"
+							class="form_input"
+							placeholder="votre@email.com"
+							required
+							autocomplete="email"
+						>
 						<p class="field_help">Nous vous enverrons un code de vérification à cette adresse</p>
 					</div>
 
@@ -102,8 +91,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 						<label for="customer_password" class="form_label">
 							Mot de passe <span class="required">*</span>
 						</label>
-						<div class="input_wrapper password_wrapper">
-							<i class="fas fa-lock input_icon"></i>
+						<div class="password_wrapper">
 							<input
 								type="password"
 								id="customer_password"
@@ -131,8 +119,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 						<label for="customer_password_confirm" class="form_label">
 							Confirmer le mot de passe <span class="required">*</span>
 						</label>
-						<div class="input_wrapper password_wrapper">
-							<i class="fas fa-lock input_icon"></i>
+						<div class="password_wrapper">
 							<input
 								type="password"
 								id="customer_password_confirm"
@@ -209,6 +196,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 							Se connecter
 						</a>
 					</p>
+				</div>
+
+				<!-- Bouton retour en bas -->
+				<div class="back_link_bottom">
+					<a href="<?php echo esc_url( remove_query_arg( 'type' ) ); ?>" class="back_link">
+						<i class="fas fa-arrow-left"></i>
+						<span>Retour au choix</span>
+					</a>
 				</div>
 
 				<!-- Avantages -->
