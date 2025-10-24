@@ -1,6 +1,6 @@
 /**
  * OTP Verification JavaScript
- * @version 1.0.1
+ * @version 1.1.0
  */
 
 (function($) {
@@ -44,8 +44,18 @@
 		 * Initialisation
 		 */
 		init: function() {
+			console.log('OTP Verification: Initializing...');
+			// Nettoyer les anciens événements pour éviter les doublons
+			$(document).off('input', '.otp_digit');
+			$(document).off('keydown', '.otp_digit');
+			$(document).off('paste', '.otp_digit');
+			$(document).off('submit', '#otp_verification_form');
+			$(document).off('click', '#resend_otp_btn');
+
 			this.bindEvents();
-			this.focusFirstInput();
+			setTimeout(() => {
+				this.focusFirstInput();
+			}, 100);
 		},
 
 		/**
@@ -88,6 +98,7 @@
 		 */
 		handleInput: function($input, e) {
 			const value = $input.val();
+			console.log('OTP: Input event on index', $input.data('index'), 'value:', value);
 
 			// Ne garder que le dernier chiffre si plusieurs sont saisis
 			if (value.length > 1) {
@@ -108,7 +119,10 @@
 
 			// Vérifier si tous les champs sont remplis
 			if (this.isCodeComplete()) {
-				$('#otp_verification_form').submit();
+				console.log('OTP: Code complete, submitting');
+				setTimeout(function() {
+					$('#otp_verification_form').submit();
+				}, 100);
 			}
 		},
 
@@ -116,17 +130,31 @@
 		 * Gérer le paste (collage)
 		 */
 		handlePaste: function(e) {
+			console.log('OTP: Paste event triggered');
 			const pastedData = (e.clipboardData || window.clipboardData).getData('text');
 			const code = pastedData.replace(/[^0-9]/g, '').slice(0, 6);
+			console.log('OTP: Pasted code:', code);
 
-			if (code.length === 6) {
-				// Remplir tous les champs
+			if (code.length > 0) {
+				// Remplir tous les champs à partir du code
 				$('.otp_digit').each(function(index) {
-					$(this).val(code[index]).addClass('filled');
+					if (code[index]) {
+						$(this).val(code[index]).addClass('filled');
+					}
 				});
 
-				// Auto-submit
-				$('#otp_verification_form').submit();
+				// Focus sur le dernier champ rempli
+				if (code.length === 6) {
+					$('.otp_digit').last().focus();
+					// Auto-submit si code complet
+					setTimeout(function() {
+						console.log('OTP: Auto-submitting form');
+						$('#otp_verification_form').submit();
+					}, 100);
+				} else {
+					// Focus sur le prochain champ vide
+					$(`.otp_digit[data-index="${code.length}"]`).focus();
+				}
 			}
 		},
 
@@ -136,6 +164,7 @@
 		focusNextInput: function($input) {
 			const index = parseInt($input.data('index'));
 			const $nextInput = $(`.otp_digit[data-index="${index + 1}"]`);
+			console.log('OTP: Focusing next input from', index, 'to', index + 1, 'found:', $nextInput.length);
 
 			if ($nextInput.length) {
 				$nextInput.focus().select();
@@ -225,9 +254,10 @@
 					if (response.success) {
 						OTPVerification.showNotification('success', response.data.message);
 
-						// Connexion automatique et redirection
+						// Connexion automatique et redirection vers le compte
 						setTimeout(function() {
-							window.location.reload();
+							// Rediriger vers la page mon compte au lieu de recharger
+							window.location.href = '/member-account/';
 						}, 1500);
 					} else {
 						OTPVerification.showNotification('error', response.data.message);
