@@ -55,6 +55,16 @@ if( $author_id ){
 	$user_city = get_user_meta( $author_id, 'user_city', true ) ? get_user_meta( $author_id, 'user_city', true ) : '';
 	$user_country = get_user_meta( $author_id, 'user_country', true ) ? get_user_meta( $author_id, 'user_country', true ) : '';
 
+	// Infos pratiques organisateur
+	$org_event_type = get_user_meta( $author_id, 'org_event_type', true );
+	$org_stationnement = get_user_meta( $author_id, 'org_stationnement', true );
+	$org_pmr = get_user_meta( $author_id, 'org_pmr', true );
+	$org_restauration = get_user_meta( $author_id, 'org_restauration', true );
+	$org_boisson = get_user_meta( $author_id, 'org_boisson', true );
+	$org_pmr_infos = get_user_meta( $author_id, 'org_pmr_infos', true );
+	$org_restauration_infos = get_user_meta( $author_id, 'org_restauration_infos', true );
+	$org_boisson_infos = get_user_meta( $author_id, 'org_boisson_infos', true );
+
 	// Info organisateur custom de l'event
 	$info_organizer = get_post_meta( $eid, OVA_METABOX_EVENT.'info_organizer', true ) ? get_post_meta( $eid, OVA_METABOX_EVENT.'info_organizer', true ) : '';
 	$name_organizer = ( get_post_meta( $eid, OVA_METABOX_EVENT.'name_organizer', true ) ? get_post_meta( $eid, OVA_METABOX_EVENT.'name_organizer', true ) : '' );
@@ -153,6 +163,58 @@ if( $author_id ){
 			<?php } ?>
 
 		</div>
+
+		<!-- Infos pratiques organisateur -->
+		<?php if ( ($org_pmr && $org_pmr === 'oui') || ($org_restauration && $org_restauration === 'oui') || ($org_boisson && $org_boisson === 'oui') || $org_stationnement || $org_event_type ) : ?>
+			<div class="organizer_practical_info">
+				<?php if ( $org_pmr && $org_pmr === 'oui' ) : ?>
+					<div class="practical_badge" data-tooltip="<?php echo esc_attr( $org_pmr_infos ? $org_pmr_infos : __( 'Établissement accessible aux personnes à mobilité réduite', 'eventlist' ) ); ?>">
+						<i class="fas fa-wheelchair"></i>
+						<span><?php esc_html_e( 'PMR', 'eventlist' ); ?></span>
+					</div>
+				<?php endif; ?>
+
+				<?php if ( $org_restauration && $org_restauration === 'oui' ) : ?>
+					<div class="practical_badge" data-tooltip="<?php echo esc_attr( $org_restauration_infos ? $org_restauration_infos : __( 'Restauration disponible sur place', 'eventlist' ) ); ?>">
+						<i class="fas fa-utensils"></i>
+						<span><?php esc_html_e( 'Restauration', 'eventlist' ); ?></span>
+					</div>
+				<?php endif; ?>
+
+				<?php if ( $org_boisson && $org_boisson === 'oui' ) : ?>
+					<div class="practical_badge" data-tooltip="<?php echo esc_attr( $org_boisson_infos ? $org_boisson_infos : __( 'Boissons disponibles sur place', 'eventlist' ) ); ?>">
+						<i class="fas fa-glass-martini-alt"></i>
+						<span><?php esc_html_e( 'Boissons', 'eventlist' ); ?></span>
+					</div>
+				<?php endif; ?>
+
+				<?php if ( $org_stationnement ) : ?>
+					<div class="practical_badge" data-tooltip="<?php echo esc_attr( $org_stationnement ); ?>">
+						<i class="fas fa-parking"></i>
+						<span><?php esc_html_e( 'Parking', 'eventlist' ); ?></span>
+					</div>
+				<?php endif; ?>
+
+				<?php if ( $org_event_type ) : ?>
+					<?php if ( $org_event_type === 'interieur' ) : ?>
+						<div class="practical_badge" data-tooltip="<?php esc_attr_e( 'Événements en intérieur', 'eventlist' ); ?>">
+							<i class="fas fa-door-open"></i>
+							<span><?php esc_html_e( 'Intérieur', 'eventlist' ); ?></span>
+						</div>
+					<?php elseif ( $org_event_type === 'exterieur' ) : ?>
+						<div class="practical_badge" data-tooltip="<?php esc_attr_e( 'Événements en extérieur', 'eventlist' ); ?>">
+							<i class="fas fa-sun"></i>
+							<span><?php esc_html_e( 'Extérieur', 'eventlist' ); ?></span>
+						</div>
+					<?php elseif ( $org_event_type === 'mix' ) : ?>
+						<div class="practical_badge" data-tooltip="<?php esc_attr_e( 'Événements en intérieur et extérieur', 'eventlist' ); ?>">
+							<i class="fas fa-random"></i>
+							<span><?php esc_html_e( 'Mixte', 'eventlist' ); ?></span>
+						</div>
+					<?php endif; ?>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
 
 		<!-- Bouton "En savoir plus" centré pleine largeur -->
 		<div class="organizer_learn_more_cta">
