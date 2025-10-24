@@ -1,9 +1,8 @@
 <?php
 /**
- * Template Override: Author Info Card - Optimized for Single Event
+ * Template Override: Author Info Card
  *
- * Bloc organisateur optimisé UX pour la page de détail d'activité.
- * Affiche les infos essentielles avec un bouton "En savoir plus" qui ouvre un popup.
+ * Version optimisée pour Single Event, version classique pour page Author.
  *
  * @package LeHiboo
  * @since 1.0.0
@@ -18,6 +17,13 @@ if( is_singular( 'event' ) ){
 	$author_id = get_the_author_meta('ID');
 }
 
+// Si on est sur la page author, charger le template original du plugin
+if( is_author() ) {
+	include( WP_PLUGIN_DIR . '/eventlist/templates/author_info.php' );
+	return;
+}
+
+// Sinon, afficher le bloc optimisé pour single event
 if( $author_id ){
 
 	$author_data = get_userdata( $author_id );
