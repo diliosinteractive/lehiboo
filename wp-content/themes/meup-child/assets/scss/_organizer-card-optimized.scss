@@ -428,6 +428,29 @@ body.organizer-popup-open {
 		overflow-y: auto;
 		flex: 1;
 
+		// Forcer l'affichage de la scrollbar pour indiquer qu'il y a du contenu
+		&::-webkit-scrollbar {
+			width: 8px;
+		}
+
+		&::-webkit-scrollbar-track {
+			background: $background-light;
+			border-radius: 4px;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background: lighten($primary-color, 20%);
+			border-radius: 4px;
+
+			&:hover {
+				background: $primary-color;
+			}
+		}
+
+		// Firefox
+		scrollbar-width: thin;
+		scrollbar-color: lighten($primary-color, 20%) $background-light;
+
 		@media (max-width: 768px) {
 			padding: 20px;
 		}
