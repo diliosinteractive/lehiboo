@@ -1,0 +1,245 @@
+/**
+ * OTP Verification Styles
+ * Styles pour le formulaire de vérification OTP (6 chiffres)
+ * @version 1.0.0
+ */
+
+/* Container principal */
+#otp_verification_container {
+	max-width: 600px;
+	margin: 40px auto;
+}
+
+/* Wrapper OTP */
+.otp_verification_wrapper {
+	background: var(--white, #ffffff);
+	border-radius: 12px;
+	padding: 40px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Header */
+.otp_header {
+	text-align: center;
+	margin-bottom: 32px;
+}
+
+.otp_icon {
+	width: 64px;
+	height: 64px;
+	margin: 0 auto 20px;
+	background: var(--orange-light, #FFF4ED);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--orange-primary, #FF601F);
+	font-size: 28px;
+}
+
+.otp_title {
+	font-size: 24px;
+	font-weight: 700;
+	color: var(--text-primary, #1F2937);
+	margin: 0 0 8px 0;
+	line-height: 1.3;
+}
+
+.otp_subtitle {
+	font-size: 15px;
+	color: var(--text-secondary, #6B7280);
+	margin: 0;
+	line-height: 1.5;
+}
+
+/* Formulaire OTP */
+.otp_form {
+	margin: 0;
+}
+
+/* Inputs wrapper */
+.otp_inputs_wrapper,
+.otp_inputs {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-bottom: 24px;
+}
+
+/* Champs OTP */
+.otp_digit {
+	width: 56px;
+	height: 64px;
+	font-size: 24px;
+	font-weight: 600;
+	text-align: center;
+	border: 2px solid var(--grey-light, #E5E7EB);
+	border-radius: 8px;
+	background: var(--white, #ffffff);
+	color: var(--text-primary, #1F2937);
+	transition: all 0.2s ease;
+	outline: none;
+}
+
+.otp_digit:focus {
+	border-color: var(--orange-primary, #FF601F);
+	box-shadow: 0 0 0 3px rgba(255, 96, 31, 0.1);
+}
+
+.otp_digit.filled {
+	border-color: var(--orange-primary, #FF601F);
+	background: var(--orange-light, #FFF4ED);
+}
+
+.otp_digit:hover {
+	border-color: var(--grey-medium, #D1D5DB);
+}
+
+/* Bouton Submit */
+.otp_submit_btn {
+	width: 100%;
+	padding: 14px 24px;
+	background: var(--orange-primary, #FF601F);
+	color: var(--white, #ffffff);
+	border: none;
+	border-radius: 8px;
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	margin-bottom: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+.otp_submit_btn:hover {
+	background: var(--orange-hover, #E55519);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(255, 96, 31, 0.25);
+}
+
+.otp_submit_btn:active {
+	transform: translateY(0);
+}
+
+.otp_submit_btn:disabled {
+	background: var(--grey-light, #E5E7EB);
+	color: var(--text-secondary, #6B7280);
+	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
+}
+
+/* Resend section */
+.otp_resend_wrapper {
+	text-align: center;
+	margin-top: 20px;
+}
+
+.otp_resend_text {
+	font-size: 14px;
+	color: var(--text-secondary, #6B7280);
+	margin: 0;
+}
+
+.otp_resend_btn {
+	background: none;
+	border: none;
+	color: var(--orange-primary, #FF601F);
+	font-weight: 600;
+	font-size: 14px;
+	cursor: pointer;
+	text-decoration: none;
+	padding: 0;
+	margin-left: 4px;
+	transition: color 0.2s ease;
+}
+
+.otp_resend_btn:hover {
+	color: var(--orange-hover, #E55519);
+	text-decoration: underline;
+}
+
+.otp_resend_btn:disabled {
+	color: var(--text-secondary, #6B7280);
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+/* Notifications */
+.otp_notification {
+	padding: 12px 16px;
+	border-radius: 8px;
+	font-size: 14px;
+	margin-top: 16px;
+	display: none;
+	animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.otp_notification.success {
+	background: #ECFDF5;
+	color: #065F46;
+	border: 1px solid #10B981;
+}
+
+.otp_notification.error {
+	background: #FEF2F2;
+	color: #991B1B;
+	border: 1px solid #EF4444;
+}
+
+.otp_notification i {
+	margin-right: 8px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+	.otp_verification_wrapper {
+		padding: 32px 20px;
+	}
+
+	.otp_digit {
+		width: 48px;
+		height: 56px;
+		font-size: 20px;
+	}
+
+	.otp_inputs_wrapper,
+	.otp_inputs {
+		gap: 8px;
+	}
+
+	.otp_title {
+		font-size: 20px;
+	}
+
+	.otp_subtitle {
+		font-size: 14px;
+	}
+}
+
+@media (max-width: 480px) {
+	.otp_digit {
+		width: 42px;
+		height: 52px;
+		font-size: 18px;
+	}
+
+	.otp_inputs_wrapper,
+	.otp_inputs {
+		gap: 6px;
+	}
+}

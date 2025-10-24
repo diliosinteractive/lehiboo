@@ -80,6 +80,9 @@ function meup_child_scripts() {
         // Cloudflare Turnstile CAPTCHA pour formulaire partenaire
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
 
+        // CSS OTP (toujours chargé car le formulaire peut être affiché dynamiquement)
+        wp_enqueue_style( 'lehiboo-otp-verification', get_stylesheet_directory_uri() . '/assets/css/otp-verification.css', array('meup-parent-style'), '1.0.0' );
+
         // Enregistrer le script OTP (sera chargé dynamiquement si besoin)
         wp_register_script( 'lehiboo-otp-verification', get_stylesheet_directory_uri() . '/assets/js/otp-verification.js', array('jquery'), '1.2.1', true );
 
@@ -1379,8 +1382,14 @@ function lehiboo_handle_vendor_register() {
 add_action( 'wp_ajax_nopriv_lehiboo_verify_otp', 'lehiboo_ajax_verify_otp' );
 
 function lehiboo_ajax_verify_otp() {
-	// Vérifier le nonce
-	check_ajax_referer( 'otp_verification_nonce', 'otp_nonce' );
+	// Vérifier le nonce (peut venir de différentes sources)
+	$nonce_field = isset( $_POST['otp_nonce'] ) ? 'otp_nonce' : 'nonce';
+	$nonce_action = 'lehiboo_otp_nonce';
+
+	if ( ! wp_verify_nonce( $_POST[$nonce_field], $nonce_action ) ) {
+		// Fallback pour l'ancien système
+		check_ajax_referer( 'otp_verification_nonce', 'otp_nonce' );
+	}
 
 	// Récupérer les données
 	$user_id = isset( $_POST['user_id'] ) ? intval( $_POST['user_id'] ) : 0;
@@ -1480,6 +1489,17 @@ function lehiboo_ajax_verify_otp() {
 add_action( 'wp_ajax_nopriv_lehiboo_resend_otp', 'lehiboo_ajax_resend_otp' );
 
 function lehiboo_ajax_resend_otp() {
+	// Vérifier le nonce (peut venir de différentes sources)
+	$nonce_field = isset( $_POST['otp_nonce'] ) ? 'otp_nonce' : 'nonce';
+	$nonce_action = 'lehiboo_otp_nonce';
+
+	if ( ! wp_verify_nonce( $_POST[$nonce_field], $nonce_action ) ) {
+		// Fallback pour l'ancien système
+		if ( isset( $_POST['otp_nonce'] ) ) {
+			check_ajax_referer( 'otp_verification_nonce', 'otp_nonce' );
+		}
+	}
+
 	// Récupérer l'ID utilisateur
 	$user_id = isset( $_POST['user_id'] ) ? intval( $_POST['user_id'] ) : 0;
 
