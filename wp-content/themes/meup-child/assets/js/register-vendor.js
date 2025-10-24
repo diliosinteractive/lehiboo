@@ -1,7 +1,7 @@
 /**
  * Vendor Registration JavaScript
- * Version 2.0 - UI/UX amélioré avec API Gouv
- * @version 2.0.0
+ * Version 3.0 - Ajout système OTP pour vérification email
+ * @version 3.0.0
  */
 
 (function($) {
@@ -497,10 +497,26 @@
 					if (response.success) {
 						VendorRegister.showNotification('success', response.data.message);
 
-						// Redirect après 2 secondes
-						setTimeout(function() {
-							window.location.href = '/vendor-pending';
-						}, 2000);
+						// Vérifier si l'OTP est requis
+						if (response.data.otp_required && response.data.show_otp_form) {
+							console.log('Vendor Registration: OTP required, loading OTP form...');
+
+							// Cacher le formulaire d'inscription
+							$('#vendor_register_form').slideUp(300, function() {
+								$(this).hide();
+							});
+
+							// Charger le script OTP et afficher le formulaire
+							setTimeout(function() {
+								VendorRegister.loadOTPScript();
+								VendorRegister.showOTPForm(response.data.user_id);
+							}, 1000);
+						} else {
+							// Redirection directe si pas d'OTP (cas par défaut, ne devrait plus arriver)
+							setTimeout(function() {
+								window.location.href = '/vendor-pending';
+							}, 2000);
+						}
 					} else {
 						VendorRegister.showNotification('error', response.data.message);
 						$submitBtn.prop('disabled', false).html('<i class="fas fa-check"></i> Soumettre ma demande');
@@ -512,6 +528,121 @@
 					$submitBtn.prop('disabled', false).html('<i class="fas fa-check"></i> Soumettre ma demande');
 				}
 			});
+		},
+
+		/**
+		 * Charger le script OTP dynamiquement
+		 */
+		loadOTPScript: function() {
+			console.log('Vendor: Loading OTP script...');
+
+			// Vérifier si le script est déjà chargé
+			if ($('script[src*="otp-verification.js"]').length) {
+				console.log('Vendor: OTP script already loaded, reinitializing...');
+				if (typeof OTPVerification !== 'undefined' && typeof OTPVerification.init === 'function') {
+					OTPVerification.init();
+				}
+				return;
+			}
+
+			// Construire l'URL du script
+			let scriptUrl = lehiboo_register_ajax.otp_script_url;
+
+			// Fallback si l'URL n'est pas définie
+			if (!scriptUrl || scriptUrl === 'undefined') {
+				console.warn('Vendor: OTP script URL not defined, using fallback');
+				const themeUrl = window.location.origin + '/wp-content/themes/meup-child';
+				scriptUrl = themeUrl + '/assets/js/otp-verification.js';
+			}
+
+			console.log('Vendor: Loading OTP script from:', scriptUrl);
+
+			const script = document.createElement('script');
+			script.src = scriptUrl;
+			script.onload = function() {
+				console.log('Vendor: OTP script loaded successfully');
+				if (typeof OTPVerification !== 'undefined' && typeof OTPVerification.init === 'function') {
+					OTPVerification.init();
+				}
+			};
+			script.onerror = function() {
+				console.error('Vendor: Failed to load OTP script from:', scriptUrl);
+			};
+			document.head.appendChild(script);
+		},
+
+		/**
+		 * Afficher le formulaire OTP
+		 */
+		showOTPForm: function(userId) {
+			console.log('Vendor: Showing OTP form for user ID:', userId);
+
+			// Créer le conteneur OTP s'il n'existe pas
+			let $otpContainer = $('#otp_verification_container');
+			if ($otpContainer.length === 0) {
+				$otpContainer = $('<div id="otp_verification_container"></div>');
+				$('.lehiboo_vendor_register_wrapper .container').append($otpContainer);
+			}
+
+			// Générer le HTML du formulaire OTP
+			const otpFormHTML = `
+				<div class="otp_verification_wrapper">
+					<div class="otp_header">
+						<div class="otp_icon">
+							<i class="fas fa-envelope"></i>
+						</div>
+						<h2 class="otp_title">Vérification de votre email</h2>
+						<p class="otp_subtitle">Entrez le code à 6 chiffres envoyé à votre adresse email</p>
+					</div>
+
+					<form id="otp_verification_form" class="otp_form">
+						<input type="hidden" name="user_id" value="${userId}" id="otp_user_id">
+
+						<div class="otp_inputs_wrapper">
+							<input type="text" class="otp_digit" data-index="0" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="one-time-code">
+							<input type="text" class="otp_digit" data-index="1" maxlength="1" pattern="[0-9]" inputmode="numeric">
+							<input type="text" class="otp_digit" data-index="2" maxlength="1" pattern="[0-9]" inputmode="numeric">
+							<input type="text" class="otp_digit" data-index="3" maxlength="1" pattern="[0-9]" inputmode="numeric">
+							<input type="text" class="otp_digit" data-index="4" maxlength="1" pattern="[0-9]" inputmode="numeric">
+							<input type="text" class="otp_digit" data-index="5" maxlength="1" pattern="[0-9]" inputmode="numeric">
+						</div>
+
+						<button type="submit" class="otp_submit_btn">
+							<span>Vérifier le code</span>
+						</button>
+
+						<div class="otp_resend_wrapper">
+							<p class="otp_resend_text">
+								Vous n'avez pas reçu le code ?
+								<button type="button" id="resend_otp_btn" class="otp_resend_btn">
+									Renvoyer le code
+								</button>
+							</p>
+						</div>
+					</form>
+
+					<div class="otp_notification success" style="display:none;"></div>
+					<div class="otp_notification error" style="display:none;"></div>
+				</div>
+			`;
+
+			// Injecter le formulaire et l'afficher avec animation
+			$otpContainer.html(otpFormHTML).hide().slideDown(400);
+
+			// Charger le script OTP si pas encore fait
+			if (!$('script[src*="otp-verification.js"]').length) {
+				this.loadOTPScript();
+			} else {
+				// Si déjà chargé, réinitialiser
+				if (typeof OTPVerification !== 'undefined' && typeof OTPVerification.init === 'function') {
+					OTPVerification.init();
+				}
+			}
+
+			// Scroll vers le formulaire OTP
+			$('html, body').animate({
+				scrollTop: $otpContainer.offset().top - 100
+			}, 400);
 		},
 
 		/**

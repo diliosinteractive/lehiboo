@@ -75,7 +75,7 @@ function meup_child_scripts() {
 
         // Styles et scripts pour le formulaire partenaire
         wp_enqueue_style( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/css/register-vendor.css', array('lehiboo-register-customer'), '2.1.0' );
-        wp_enqueue_script( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/js/register-vendor.js', array('jquery'), '2.1.0', true );
+        wp_enqueue_script( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/js/register-vendor.js', array('jquery'), '3.0.0', true );
 
         // Cloudflare Turnstile CAPTCHA pour formulaire partenaire
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
@@ -1306,31 +1306,63 @@ function lehiboo_handle_vendor_register() {
 		}
 	}
 
-	// Email de notification à l'admin
-	$admin_email = get_option( 'admin_email' );
-	$subject = '[Le Hiboo] Nouvelle demande partenaire : ' . $org_name;
-	$message = "Une nouvelle demande de partenariat a été reçue.\n\n";
-	$message .= "Organisation : {$org_name}\n";
-	$message .= "Contact : {$firstname} {$lastname}\n";
-	$message .= "Email : {$email}\n";
-	$message .= "Type : {$org_type}\n\n";
-	$message .= "Accédez à l'administration pour valider cette demande.";
+	// Préparer les données pour l'email de confirmation (envoyé après validation OTP)
+	// On sauvegarde ces infos pour les utiliser après validation OTP
+	update_user_meta( $user_id, 'pending_confirmation_email', array(
+		'firstname' => $firstname,
+		'org_name' => $org_name,
+		'admin_email_data' => array(
+			'subject' => '[Le Hiboo] Nouvelle demande partenaire : ' . $org_name,
+			'message' => "Une nouvelle demande de partenariat a été reçue.\n\n" .
+			             "Organisation : {$org_name}\n" .
+			             "Contact : {$firstname} {$lastname}\n" .
+			             "Email : {$email}\n" .
+			             "Type : {$org_type}\n\n" .
+			             "Accédez à l'administration pour valider cette demande."
+		)
+	) );
 
-	wp_mail( $admin_email, $subject, $message );
+	// ========================================
+	// SYSTÈME OTP - VÉRIFICATION EMAIL
+	// ========================================
 
-	// Email de confirmation au partenaire
-	$subject_vendor = '[Le Hiboo] Votre demande de partenariat a été reçue';
-	$message_vendor = "Bonjour {$firstname},\n\n";
-	$message_vendor .= "Nous avons bien reçu votre demande de partenariat pour {$org_name}.\n\n";
-	$message_vendor .= "Votre dossier est en cours d'examen. Notre équipe reviendra vers vous sous 48h ouvrées.\n\n";
-	$message_vendor .= "Cordialement,\nL'équipe Le Hiboo";
+	// Créer le code OTP
+	$otp_code = LeHiboo_OTP::create_otp( $user_id, $email );
 
-	wp_mail( $email, $subject_vendor, $message_vendor );
+	if ( ! $otp_code ) {
+		error_log( 'LeHiboo Vendor Registration: Échec création OTP pour user_id=' . $user_id . ', email=' . $email );
+		// Supprimer l'utilisateur créé car l'OTP a échoué
+		wp_delete_user( $user_id );
+		wp_send_json_error( array(
+			'message' => 'Erreur lors de la génération du code de vérification. Veuillez réessayer.',
+			'debug' => array(
+				'step' => 'create_otp_failed',
+				'user_id' => $user_id
+			)
+		) );
+	}
 
-	// Succès
+	// Envoyer l'email avec le code OTP
+	$otp_sent = LeHiboo_OTP::send_otp_email( $user_id, $email, $otp_code, $firstname );
+
+	if ( ! $otp_sent ) {
+		error_log( 'LeHiboo Vendor Registration: Échec envoi email OTP pour user_id=' . $user_id );
+		wp_send_json_error( array(
+			'message' => 'Erreur lors de l\'envoi de l\'email de vérification. Veuillez vérifier votre adresse email.',
+			'debug' => array(
+				'step' => 'send_otp_email_failed',
+				'user_id' => $user_id
+			)
+		) );
+	}
+
+	// Retourner succès avec OTP requis
+	// Les emails seront envoyés après validation OTP
 	wp_send_json_success( array(
-		'message' => 'Votre demande a été envoyée avec succès ! Vous recevrez une réponse sous 48h.',
-		'redirect_url' => home_url( '/demande-recue' )
+		'message' => 'Votre demande a été créée ! Un code de vérification a été envoyé à votre email.',
+		'otp_required' => true,
+		'user_id' => $user_id,
+		'show_otp_form' => true
 	) );
 }
 
@@ -1387,8 +1419,41 @@ function lehiboo_ajax_verify_otp() {
 
 	// Redirection et message selon le type d'utilisateur
 	if ( $is_vendor ) {
-		$redirect_url = home_url( '/member-account/?vendor=profile' );
-		$message = 'Email vérifié ! Nous vous recommandons de compléter tous les champs de votre profil pour une expérience optimale sur Le Hiboo.';
+		// Envoyer les emails de confirmation pour les vendors
+		$pending_email_data = get_user_meta( $user_id, 'pending_confirmation_email', true );
+
+		if ( $pending_email_data && is_array( $pending_email_data ) ) {
+			$firstname = $pending_email_data['firstname'];
+			$org_name = $pending_email_data['org_name'];
+			$user_email = $user->user_email;
+
+			// Email au vendor
+			$subject_vendor = '[Le Hiboo] Votre demande de partenariat a été reçue';
+			$message_vendor = "Bonjour {$firstname},\n\n";
+			$message_vendor .= "Nous avons bien reçu votre demande de partenariat pour {$org_name}.\n\n";
+			$message_vendor .= "Votre dossier est en cours d'examen. Notre équipe reviendra vers vous sous 48h ouvrées.\n\n";
+			$message_vendor .= "Cordialement,\nL'équipe Le Hiboo";
+
+			wp_mail( $user_email, $subject_vendor, $message_vendor );
+
+			// Email à l'admin
+			if ( isset( $pending_email_data['admin_email_data'] ) ) {
+				$admin_email = get_option( 'admin_email' );
+				$admin_subject = $pending_email_data['admin_email_data']['subject'];
+				$admin_message = $pending_email_data['admin_email_data']['message'];
+
+				wp_mail( $admin_email, $admin_subject, $admin_message );
+			}
+
+			// Nettoyer les données temporaires
+			delete_user_meta( $user_id, 'pending_confirmation_email' );
+
+			error_log( 'LeHiboo OTP: Emails de confirmation envoyés pour vendor ' . $user_id );
+		}
+
+		// Rediriger vers vendor-pending au lieu de member-account
+		$redirect_url = home_url( '/vendor-pending/' );
+		$message = 'Email vérifié ! Votre demande de partenariat a bien été envoyée. Vous recevrez une réponse sous 48h.';
 	} else {
 		$redirect_url = home_url( '/member-account/' );
 		$message = 'Email vérifié ! Connexion en cours...';
