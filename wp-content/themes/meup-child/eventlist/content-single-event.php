@@ -15,7 +15,7 @@ global $event;
 $event_id = get_the_ID();
 ?>
 
-<!-- AIRBNB TEMPLATE LOADED -->
+<!-- AIRBNB TEMPLATE LOADED v3.3.2 - ORGANIZER CARD OPTIMIZED -->
 <article id="event_<?php the_ID(); ?>" <?php post_class( 'event_single event_single_airbnb' ); ?>>
 
 	<?php if ( ! post_password_required( $event_id ) ): ?>
