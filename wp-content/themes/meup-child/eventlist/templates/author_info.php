@@ -1,0 +1,433 @@
+<?php
+/**
+ * Template Override: Author Info Card - Optimized for Single Event
+ *
+ * Bloc organisateur optimisé UX pour la page de détail d'activité.
+ * Affiche les infos essentielles avec un bouton "En savoir plus" qui ouvre un popup.
+ *
+ * @package LeHiboo
+ * @since 1.0.0
+ */
+
+if( ! defined( 'ABSPATH' ) ) exit();
+
+$author_id = get_query_var( 'author' );
+$eid = get_the_ID();
+
+if( is_singular( 'event' ) ){
+	$author_id = get_the_author_meta('ID');
+}
+
+if( $author_id ){
+
+	$author_data = get_userdata( $author_id );
+
+	// Avatar
+	$author_id_image = get_user_meta( $author_id, 'author_id_image', true ) ? get_user_meta( $author_id, 'author_id_image', true ) : '';
+	if ( $author_id_image ) {
+		$img_path = wp_get_attachment_image_url($author_id_image, 'el_thumbnail') ? wp_get_attachment_image_url($author_id_image, 'el_thumbnail') : wp_get_attachment_image_url($author_id_image, 'full');
+	} else {
+		$img_path = get_avatar_url($author_id);
+	}
+
+	// Données utilisateur
+	$display_name = get_user_meta( $author_id, 'display_name', true ) ? get_user_meta( $author_id, 'display_name', true ) : get_the_author_meta( 'display_name', $author_id );
+	$user_description = get_user_meta( $author_id, 'description', true ) ? get_user_meta( $author_id, 'description', true ) : '';
+	$user_phone = get_user_meta( $author_id, 'user_phone', true ) ? get_user_meta( $author_id, 'user_phone', true ) : '';
+	$user_email = get_user_meta( $author_id, 'user_email', true ) ? get_user_meta( $author_id, 'user_email', true ) : get_the_author_meta( 'user_email', $author_id );
+	$user_professional_email = get_user_meta( $author_id, 'user_professional_email', true ) ? get_user_meta( $author_id, 'user_professional_email', true ) : '';
+	$user_profile_social = get_user_meta( $author_id, 'user_profile_social', true ) ? get_user_meta( $author_id, 'user_profile_social', true ) : '';
+
+	// Organisation
+	$org_name = get_user_meta( $author_id, 'org_name', true ) ? get_user_meta( $author_id, 'org_name', true ) : '';
+	$org_display_name = get_user_meta( $author_id, 'org_display_name', true );
+	$org_public_name = ! empty( $org_display_name ) ? $org_display_name : $org_name;
+	$org_web = get_user_meta( $author_id, 'org_web', true ) ? get_user_meta( $author_id, 'org_web', true ) : '';
+	$org_cover_image = get_user_meta( $author_id, 'org_cover_image', true ) ? get_user_meta( $author_id, 'org_cover_image', true ) : '';
+
+	// Localisation
+	$user_city = get_user_meta( $author_id, 'user_city', true ) ? get_user_meta( $author_id, 'user_city', true ) : '';
+	$user_country = get_user_meta( $author_id, 'user_country', true ) ? get_user_meta( $author_id, 'user_country', true ) : '';
+
+	// Info organisateur custom de l'event
+	$info_organizer = get_post_meta( $eid, OVA_METABOX_EVENT.'info_organizer', true ) ? get_post_meta( $eid, OVA_METABOX_EVENT.'info_organizer', true ) : '';
+	$name_organizer = ( get_post_meta( $eid, OVA_METABOX_EVENT.'name_organizer', true ) ? get_post_meta( $eid, OVA_METABOX_EVENT.'name_organizer', true ) : '' );
+	$phone_organizer = ( get_post_meta( $eid, OVA_METABOX_EVENT.'phone_organizer', true ) ? get_post_meta( $eid, OVA_METABOX_EVENT.'phone_organizer', true ) : '' );
+	$mail_organizer = ( get_post_meta( $eid, OVA_METABOX_EVENT.'mail_organizer', true ) ? get_post_meta( $eid, OVA_METABOX_EVENT.'mail_organizer', true ) : '' );
+	$social_organizer = ( get_post_meta( $eid, OVA_METABOX_EVENT.'social_organizer', true ) ? get_post_meta( $eid, OVA_METABOX_EVENT.'social_organizer', true ) : array() );
+
+	// Tronquer la description pour l'aperçu
+	$short_description = '';
+	if ( $user_description ) {
+		$short_description = wp_trim_words( $user_description, 20, '...' );
+	}
+
+	// Lien vers la page organisateur
+	$organizer_page_url = get_author_posts_url( $author_id );
+
+	?>
+
+	<!-- Bloc Organisateur Optimisé UX -->
+	<div class="organizer_card_optimized event_section_white">
+
+		<!-- En-tête avec avatar et nom -->
+		<div class="organizer_header">
+			<div class="organizer_avatar">
+				<img src="<?php echo esc_url( $img_path ); ?>" alt="<?php echo esc_attr( $org_public_name ? $org_public_name : $display_name ); ?>">
+			</div>
+			<div class="organizer_identity">
+				<h3 class="organizer_name">
+					<?php echo esc_html( $org_public_name ? $org_public_name : $display_name ); ?>
+				</h3>
+				<?php if ( $user_city || $user_country ) : ?>
+					<p class="organizer_location">
+						<i class="icon_pin_alt"></i>
+						<?php
+						$location_parts = array();
+						if ( $user_city ) $location_parts[] = $user_city;
+						if ( $user_country ) {
+							$countries = array(
+								'FR' => __( 'France', 'eventlist' ),
+								'BE' => __( 'Belgique', 'eventlist' ),
+								'CH' => __( 'Suisse', 'eventlist' ),
+								'CA' => __( 'Canada', 'eventlist' ),
+								'LU' => __( 'Luxembourg', 'eventlist' ),
+								'MC' => __( 'Monaco', 'eventlist' ),
+							);
+							$location_parts[] = isset( $countries[$user_country] ) ? $countries[$user_country] : $user_country;
+						}
+						echo esc_html( implode( ', ', $location_parts ) );
+						?>
+					</p>
+				<?php endif; ?>
+			</div>
+		</div>
+
+		<!-- Description courte -->
+		<?php if ( $short_description ) : ?>
+			<div class="organizer_description">
+				<p><?php echo esc_html( $short_description ); ?></p>
+			</div>
+		<?php endif; ?>
+
+		<!-- Informations essentielles -->
+		<div class="organizer_quick_info">
+
+			<?php if( apply_filters( 'el_show_phone_info', true ) ){ ?>
+				<?php if (is_singular('event') && $info_organizer == 'checked') { ?>
+					<?php if( $phone_organizer ){ ?>
+						<div class="quick_info_item">
+							<i class="icon_phone"></i>
+							<?php $phone = preg_replace('/[^0-9]/', '', $phone_organizer ); ?>
+							<a href="<?php echo esc_attr('tel:'.$phone); ?>"><?php echo esc_html( $phone_organizer ); ?></a>
+						</div>
+					<?php } ?>
+				<?php } else { ?>
+					<?php if( $user_phone ){ ?>
+						<div class="quick_info_item">
+							<i class="icon_phone"></i>
+							<?php $phone = preg_replace('/[^0-9]/', '', $user_phone ); ?>
+							<a href="<?php echo esc_attr('tel:'.$phone); ?>"><?php echo esc_html( $user_phone ); ?></a>
+						</div>
+					<?php } ?>
+				<?php } ?>
+			<?php } ?>
+
+			<?php if( apply_filters( 'el_show_mail_info', true ) ){ ?>
+				<div class="quick_info_item">
+					<i class="icon_mail"></i>
+					<?php if (is_singular('event') && $info_organizer == 'checked') { ?>
+						<a href="<?php echo esc_attr('mailto:'.$mail_organizer); ?>"><?php echo esc_html( $mail_organizer ); ?></a>
+					<?php } elseif ( !is_singular('event') && $user_professional_email ) { ?>
+						<a href="<?php echo esc_attr('mailto:'.$user_professional_email); ?>"><?php echo esc_html( $user_professional_email ); ?></a>
+					<?php } else { ?>
+						<a href="<?php echo esc_attr('mailto:'.$user_email); ?>"><?php echo esc_html( $user_email ); ?></a>
+					<?php } ?>
+				</div>
+			<?php } ?>
+
+		</div>
+
+		<!-- Actions CTA -->
+		<div class="organizer_actions">
+			<button class="btn_learn_more" id="open_organizer_details_popup" data-author-id="<?php echo esc_attr( $author_id ); ?>">
+				<i class="fas fa-info-circle"></i>
+				<?php esc_html_e( 'En savoir plus', 'eventlist' ); ?>
+			</button>
+			<a href="<?php echo esc_url( $organizer_page_url ); ?>" class="btn_view_profile">
+				<i class="fas fa-user"></i>
+				<?php esc_html_e( 'Voir le profil', 'eventlist' ); ?>
+			</a>
+		</div>
+
+		<!-- Bouton Contact -->
+		<?php if( apply_filters( 'el_single_event_show_send_message_btn', true ) ){ ?>
+			<div class="organizer_contact_cta">
+				<button class="btn_contact_organizer" id="open_contact_modal" data-require-login="<?php echo is_user_logged_in() ? 'false' : 'true'; ?>">
+					<i class="icon_mail_alt"></i>
+					<?php esc_html_e( 'Contacter l\'organisateur', 'eventlist' ); ?>
+				</button>
+			</div>
+		<?php } ?>
+
+	</div><!-- .organizer_card_optimized -->
+
+	<!-- Popup Détails Organisateur -->
+	<div id="organizer_details_popup" class="organizer_popup_modal" style="display: none;">
+		<div class="organizer_popup_overlay"></div>
+		<div class="organizer_popup_container">
+
+			<!-- Header -->
+			<div class="organizer_popup_header">
+				<?php if ( $org_cover_image ) : ?>
+					<div class="popup_cover_image">
+						<img src="<?php echo esc_url( wp_get_attachment_image_url($org_cover_image, 'large') ); ?>" alt="<?php echo esc_attr( $org_public_name ? $org_public_name : $display_name ); ?>">
+						<div class="cover_overlay"></div>
+					</div>
+				<?php endif; ?>
+
+				<div class="popup_header_content">
+					<div class="popup_avatar">
+						<img src="<?php echo esc_url( $img_path ); ?>" alt="<?php echo esc_attr( $org_public_name ? $org_public_name : $display_name ); ?>">
+					</div>
+					<div class="popup_identity">
+						<h3><?php echo esc_html( $org_public_name ? $org_public_name : $display_name ); ?></h3>
+						<?php if ( $user_city || $user_country ) : ?>
+							<p class="popup_location">
+								<i class="icon_pin_alt"></i>
+								<?php echo esc_html( implode( ', ', $location_parts ) ); ?>
+							</p>
+						<?php endif; ?>
+					</div>
+				</div>
+
+				<button class="organizer_popup_close" aria-label="<?php esc_attr_e('Fermer', 'eventlist'); ?>">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+
+			<!-- Body -->
+			<div class="organizer_popup_body">
+
+				<!-- Description complète -->
+				<?php if ( $user_description ) : ?>
+					<div class="popup_section popup_description">
+						<h4 class="popup_section_title">
+							<i class="fas fa-info-circle"></i>
+							<?php esc_html_e( 'À propos', 'eventlist' ); ?>
+						</h4>
+						<div class="popup_section_content">
+							<?php echo wpautop( wp_kses_post( $user_description ) ); ?>
+						</div>
+					</div>
+				<?php endif; ?>
+
+				<!-- Informations de contact -->
+				<div class="popup_section popup_contact">
+					<h4 class="popup_section_title">
+						<i class="fas fa-address-card"></i>
+						<?php esc_html_e( 'Contact', 'eventlist' ); ?>
+					</h4>
+					<div class="popup_contact_list">
+
+						<?php if( apply_filters( 'el_show_phone_info', true ) ){ ?>
+							<?php if (is_singular('event') && $info_organizer == 'checked') { ?>
+								<?php if( $phone_organizer ){ ?>
+									<div class="popup_contact_item">
+										<i class="icon_phone"></i>
+										<div>
+											<span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span>
+											<?php $phone = preg_replace('/[^0-9]/', '', $phone_organizer ); ?>
+											<a href="<?php echo esc_attr('tel:'.$phone); ?>"><?php echo esc_html( $phone_organizer ); ?></a>
+										</div>
+									</div>
+								<?php } ?>
+							<?php } else { ?>
+								<?php if( $user_phone ){ ?>
+									<div class="popup_contact_item">
+										<i class="icon_phone"></i>
+										<div>
+											<span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span>
+											<?php $phone = preg_replace('/[^0-9]/', '', $user_phone ); ?>
+											<a href="<?php echo esc_attr('tel:'.$phone); ?>"><?php echo esc_html( $user_phone ); ?></a>
+										</div>
+									</div>
+								<?php } ?>
+							<?php } ?>
+						<?php } ?>
+
+						<?php if( apply_filters( 'el_show_mail_info', true ) ){ ?>
+							<div class="popup_contact_item">
+								<i class="icon_mail"></i>
+								<div>
+									<span class="contact_label"><?php esc_html_e( 'Email', 'eventlist' ); ?></span>
+									<?php if (is_singular('event') && $info_organizer == 'checked') { ?>
+										<a href="<?php echo esc_attr('mailto:'.$mail_organizer); ?>"><?php echo esc_html( $mail_organizer ); ?></a>
+									<?php } elseif ( !is_singular('event') && $user_professional_email ) { ?>
+										<a href="<?php echo esc_attr('mailto:'.$user_professional_email); ?>"><?php echo esc_html( $user_professional_email ); ?></a>
+									<?php } else { ?>
+										<a href="<?php echo esc_attr('mailto:'.$user_email); ?>"><?php echo esc_html( $user_email ); ?></a>
+									<?php } ?>
+								</div>
+							</div>
+						<?php } ?>
+
+						<?php if ( apply_filters( 'el_show_website_info', true ) ): ?>
+							<?php if ( !is_singular('event') && $org_web ) : ?>
+								<div class="popup_contact_item">
+									<i class="fas fa-link"></i>
+									<div>
+										<span class="contact_label"><?php esc_html_e( 'Site web', 'eventlist' ); ?></span>
+										<a href="<?php echo esc_url( $org_web ); ?>" rel="nofollow" target="_blank"><?php echo esc_html( $org_web ); ?></a>
+									</div>
+								</div>
+							<?php elseif ( $author_data->user_url ): ?>
+								<div class="popup_contact_item">
+									<i class="fas fa-link"></i>
+									<div>
+										<span class="contact_label"><?php esc_html_e( 'Site web', 'eventlist' ); ?></span>
+										<a href="<?php echo esc_url( $author_data->user_url ); ?>" rel="nofollow" target="_blank"><?php echo esc_html( $author_data->user_url ); ?></a>
+									</div>
+								</div>
+							<?php endif; ?>
+						<?php endif; ?>
+
+					</div>
+				</div>
+
+				<!-- Réseaux sociaux -->
+				<?php
+				$has_social = false;
+				if ( is_singular('event') ) {
+					$has_social = ( $social_organizer && $info_organizer == 'checked' ) || ( $user_profile_social && $info_organizer == '' );
+				} elseif ( !is_singular('event') && $user_profile_social ) {
+					$has_social = true;
+				}
+				?>
+
+				<?php if ( $has_social ) : ?>
+					<div class="popup_section popup_social">
+						<h4 class="popup_section_title">
+							<i class="fas fa-share-nodes"></i>
+							<?php esc_html_e( 'Réseaux sociaux', 'eventlist' ); ?>
+						</h4>
+						<div class="popup_social_links">
+							<?php if ( is_singular('event') ) : ?>
+								<?php if ( $social_organizer && $info_organizer == 'checked' ) : ?>
+									<?php foreach ($social_organizer as $k_social => $v_social) :
+										if ($v_social['link_social'] != '') : ?>
+											<a href="<?php echo esc_attr($v_social['link_social']); ?>" target="_blank" class="social_link" rel="nofollow">
+												<i class="<?php echo esc_html($v_social['icon_social']); ?>"></i>
+											</a>
+										<?php endif;
+									endforeach; ?>
+								<?php elseif ( $user_profile_social && $info_organizer == '' ) : ?>
+									<?php foreach ($user_profile_social as $k_social => $v_social) :
+										if ($v_social[0] != '') : ?>
+											<a href="<?php echo esc_attr($v_social[0]); ?>" target="_blank" class="social_link" rel="nofollow">
+												<i class="<?php echo esc_html($v_social[1]); ?>"></i>
+											</a>
+										<?php endif;
+									endforeach; ?>
+								<?php endif; ?>
+							<?php elseif ( !is_singular('event') && $user_profile_social ) : ?>
+								<?php foreach ($user_profile_social as $k_social => $v_social) :
+									if ($v_social[0] != '') : ?>
+										<a href="<?php echo esc_attr($v_social[0]); ?>" target="_blank" class="social_link" rel="nofollow">
+											<i class="<?php echo esc_html($v_social[1]); ?>"></i>
+										</a>
+									<?php endif;
+								endforeach; ?>
+							<?php endif; ?>
+						</div>
+					</div>
+				<?php endif; ?>
+
+				<!-- CTA vers page organisateur -->
+				<div class="popup_footer_cta">
+					<a href="<?php echo esc_url( $organizer_page_url ); ?>" class="btn_view_full_profile">
+						<i class="fas fa-external-link-alt"></i>
+						<?php esc_html_e( 'Voir toutes les activités', 'eventlist' ); ?>
+					</a>
+				</div>
+
+			</div><!-- .organizer_popup_body -->
+
+		</div><!-- .organizer_popup_container -->
+	</div><!-- #organizer_details_popup -->
+
+	<!-- Modal Popup pour Contact Form (existant - gardé tel quel) -->
+	<?php
+	$current_user_email = $current_user_name = $current_user_phone = '';
+
+	if (is_user_logged_in()) {
+		$current_user = wp_get_current_user();
+		$current_user_id = $current_user->ID;
+
+		$current_user_email = $current_user->user_email;
+		$current_user_name = get_user_meta( $current_user_id, 'display_name', true );
+		$current_user_phone = get_user_meta( $current_user_id, 'user_phone', true );
+	}
+	?>
+	<div id="contact_modal_author" class="contact_modal" style="display: none;">
+		<div class="contact_modal_overlay"></div>
+		<div class="contact_modal_container">
+			<div class="contact_modal_header">
+				<h3><?php esc_html_e('Contacter l\'organisateur', 'eventlist'); ?></h3>
+				<button class="contact_modal_close" aria-label="<?php esc_attr_e('Fermer', 'eventlist'); ?>">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+			<div class="contact_modal_body">
+				<form class="el-sendmail-author author-contact-form" id="author_contact_form">
+					<div class="form_field">
+						<label for="name_customer"><?php esc_html_e('Votre nom', 'eventlist') ?> *</label>
+						<input type="text" id="name_customer" name="name_customer" value="<?php echo esc_attr($current_user_name); ?>" placeholder="<?php esc_attr_e('Votre nom complet', 'eventlist') ?>" required />
+					</div>
+
+					<div class="form_field">
+						<label for="email_customer"><?php esc_html_e('Votre email', 'eventlist') ?> *</label>
+						<input type="email" id="email_customer" name="email_customer" placeholder="<?php esc_attr_e('votre.email@example.com', 'eventlist') ?>" value="<?php echo esc_attr($current_user_email); ?>" required />
+					</div>
+
+					<div class="form_field">
+						<label for="phone_customer"><?php esc_html_e('Téléphone', 'eventlist') ?> *</label>
+						<input type="tel" id="phone_customer" name="phone_customer" value="<?php echo esc_attr($current_user_phone); ?>" placeholder="<?php esc_attr_e('+33 6 00 00 00 00', 'eventlist') ?>" required />
+					</div>
+
+					<div class="form_field">
+						<label for="subject_customer"><?php esc_html_e('Objet de la demande', 'eventlist') ?> *</label>
+						<input type="text" id="subject_customer" name="subject_customer" placeholder="<?php esc_attr_e('Sujet du message', 'eventlist') ?>" required />
+					</div>
+
+					<div class="form_field">
+						<label for="content_customer"><?php esc_html_e('Message', 'eventlist') ?> *</label>
+						<textarea id="content_customer" name="content" rows="6" placeholder="<?php esc_attr_e('Écrivez votre message ici...', 'eventlist') ?>" required></textarea>
+					</div>
+
+					<!-- Cloudflare Turnstile CAPTCHA -->
+					<div class="form_field">
+						<div class="cf-turnstile" data-sitekey="0x4AAAAAAB75T9T-6xfs5mqd" data-theme="light"></div>
+					</div>
+
+					<input type="hidden" name="author_id" value="<?php echo esc_attr( $author_id ); ?>">
+					<input type="hidden" name="action" value="send_author_message">
+					<?php wp_nonce_field( 'contact_author_nonce', 'contact_nonce' ); ?>
+
+					<div class="form_actions">
+						<button type="submit" class="contact_submit_btn">
+							<?php esc_html_e('Envoyer', 'eventlist'); ?>
+						</button>
+					</div>
+				</form>
+				<div class="el-notify">
+					<p class="success"><i class="fas fa-check-circle"></i> <?php esc_html_e('Message envoyé avec succès !', 'eventlist') ?></p>
+					<p class="error"><i class="fas fa-exclamation-circle"></i> <?php esc_html_e('Échec de l\'envoi du message. Veuillez réessayer.', 'eventlist') ?></p>
+					<p class="error-require"><i class="fas fa-exclamation-triangle"></i> <?php esc_html_e('Veuillez remplir tous les champs requis', 'eventlist') ?></p>
+					<p class="recapcha-vetify"><i class="fas fa-shield-alt"></i> <?php esc_html_e('La vérification CAPTCHA a échoué. Veuillez réessayer.', 'eventlist') ?></p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<?php } ?>

@@ -28,6 +28,9 @@ function meup_child_scripts() {
         wp_enqueue_style( 'single-event-airbnb', get_stylesheet_directory_uri() . '/single-event-airbnb.css', array('meup-parent-style'), '3.3.1' );
         wp_enqueue_script( 'single-event-airbnb', get_stylesheet_directory_uri() . '/assets/js/single-event-airbnb.js', array('jquery', 'toast-notification'), '3.3.1', true );
 
+        // V1 Le Hiboo - Organizer Popup (Bloc partenaire optimisé)
+        wp_enqueue_script( 'organizer-popup', get_stylesheet_directory_uri() . '/assets/js/organizer-popup.js', array('jquery'), '1.0.0', true );
+
         // Cloudflare Turnstile CAPTCHA
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
 
