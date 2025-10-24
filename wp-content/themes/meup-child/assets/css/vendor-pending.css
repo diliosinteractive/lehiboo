@@ -1,7 +1,7 @@
 /**
  * Vendor Pending Page Styles
  * Page d'attente après inscription partenaire
- * @version 2.0.0
+ * @version 2.1.0
  */
 
 :root {
@@ -34,30 +34,22 @@
 	text-align: center;
 }
 
-/* Icon horloge */
+/* Icon horloge - Sans animation */
 .pending_icon {
-	margin-bottom: 32px;
-	animation: pendulum 2s ease-in-out infinite;
+	margin-bottom: 24px;
+	display: inline-block;
 }
 
-@keyframes pendulum {
-	0%, 100% { transform: rotate(-5deg); }
-	50% { transform: rotate(5deg); }
+.pending_icon svg {
+	display: block;
 }
 
 .pending_icon svg circle {
 	stroke: var(--orange-primary);
-	stroke-dasharray: 12 8;
-	animation: rotate 20s linear infinite;
 }
 
 .pending_icon svg path {
 	stroke: var(--orange-primary);
-}
-
-@keyframes rotate {
-	from { transform: rotate(0deg); }
-	to { transform: rotate(360deg); }
 }
 
 /* Title */

@@ -2,7 +2,7 @@
 /**
  * Template Formulaire d'Inscription Utilisateur
  * Formulaire simple pour inscription client - Design minimal selon charte
- * @version 2.0.0
+ * @version 4.0.0
  */
 
 // Sécurité : empêcher l'accès direct
@@ -12,20 +12,19 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 <div class="lehiboo_register_form_wrapper customer_register">
 	<div class="container">
 
-		<!-- Header -->
-		<div class="register_form_header">
-			<div class="register_header_content">
-				<div class="register_icon customer_icon">
-					<i class="fas fa-user"></i>
-				</div>
-				<h1 class="register_title">Créer un compte Utilisateur</h1>
-				<p class="register_subtitle">Rejoignez Le Hiboo et découvrez des activités passionnantes</p>
-			</div>
-		</div>
-
-		<!-- Formulaire -->
 		<div class="register_form_container">
 			<div class="register_form_inner">
+
+				<!-- Header intégré dans le bloc blanc -->
+				<div class="register_header_content">
+					<div class="register_icon customer_icon">
+						<i class="fas fa-user"></i>
+					</div>
+					<div class="register_header_text">
+						<h1 class="register_title">Créer un compte Utilisateur</h1>
+						<p class="register_subtitle">Rejoignez Le Hiboo et découvrez des activités passionnantes</p>
+					</div>
+				</div>
 
 				<!-- Notifications -->
 				<div class="register_notification success" style="display: none;"></div>
@@ -176,8 +175,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					<!-- Nonce de sécurité -->
 					<?php wp_nonce_field( 'customer_register_nonce', 'customer_register_nonce' ); ?>
 
-					<!-- Bouton de soumission -->
+					<!-- Boutons de soumission et retour -->
 					<div class="form_group submit_group">
+						<a href="<?php echo esc_url( remove_query_arg( 'type' ) ); ?>" class="back_link">
+							<i class="fas fa-arrow-left"></i>
+							<span>Retour au choix</span>
+						</a>
 						<button type="submit" class="submit_button customer_submit">
 							<span class="button_text">Créer mon compte</span>
 							<span class="button_loader" style="display: none;">
@@ -196,14 +199,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 							Se connecter
 						</a>
 					</p>
-				</div>
-
-				<!-- Bouton retour en bas -->
-				<div class="back_link_bottom">
-					<a href="<?php echo esc_url( remove_query_arg( 'type' ) ); ?>" class="back_link">
-						<i class="fas fa-arrow-left"></i>
-						<span>Retour au choix</span>
-					</a>
 				</div>
 
 				<!-- Avantages -->

@@ -8,7 +8,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Enqueue le CSS spécifique
-wp_enqueue_style( 'vendor-pending', get_stylesheet_directory_uri() . '/assets/css/vendor-pending.css', array(), '2.0.0' );
+wp_enqueue_style( 'vendor-pending', get_stylesheet_directory_uri() . '/assets/css/vendor-pending.css', array(), '2.1.0' );
 
 get_header();
 
@@ -21,9 +21,9 @@ $application_date = get_user_meta( $current_user->ID, 'vendor_application_date',
 <div class="vendor_pending_wrapper">
 	<div class="vendor_pending_container">
 		<div class="pending_icon">
-			<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<circle cx="60" cy="60" r="58" stroke="#FFA500" stroke-width="4" stroke-dasharray="8 8"/>
-				<path d="M60 30V60L75 75" stroke="#FFA500" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+			<svg width="70" height="70" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<circle cx="60" cy="60" r="58" stroke="#FF601F" stroke-width="4"/>
+				<path d="M60 30V60L75 75" stroke="#FF601F" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
 			</svg>
 		</div>
 

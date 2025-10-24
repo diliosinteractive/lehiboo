@@ -70,7 +70,7 @@ function meup_child_scripts() {
         wp_enqueue_style( 'lehiboo-register-choice', get_stylesheet_directory_uri() . '/assets/css/register-choice.css', array('meup-parent-style'), '1.0.0' );
 
         // Styles et scripts pour le formulaire utilisateur
-        wp_enqueue_style( 'lehiboo-register-customer', get_stylesheet_directory_uri() . '/assets/css/register-customer.css', array('meup-parent-style'), '1.0.0' );
+        wp_enqueue_style( 'lehiboo-register-customer', get_stylesheet_directory_uri() . '/assets/css/register-customer.css', array('meup-parent-style'), '4.0.0' );
         wp_enqueue_script( 'lehiboo-register-customer', get_stylesheet_directory_uri() . '/assets/js/register-customer.js', array('jquery'), '1.0.0', true );
 
         // Styles et scripts pour le formulaire partenaire

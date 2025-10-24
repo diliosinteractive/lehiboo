@@ -1,7 +1,7 @@
 /**
  * Register Customer Form Styles
  * Design épuré et minimaliste correspondant à la charte Le Hiboo
- * @version 3.0.0
+ * @version 4.0.0
  */
 
 :root {
@@ -62,43 +62,49 @@
 	font-size: 12px;
 }
 
-/* Bouton retour en bas du formulaire */
+/* Bouton retour en bas du formulaire - Non utilisé, gardé pour compatibilité */
 .back_link_bottom {
-	margin-top: 24px;
-	padding-top: 24px;
-	border-top: 1px solid var(--grey-light);
-	text-align: center;
+	display: none;
 }
 
 .register_header_content {
-	text-align: center;
+	text-align: left;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 24px 40px;
+	background: var(--white);
+	border-radius: 8px 8px 0 0;
+	border-bottom: 1px solid var(--grey-light);
 }
 
 .register_icon {
-	width: 60px;
-	height: 60px;
+	width: 44px;
+	height: 44px;
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin: 0 auto 16px;
-	font-size: 24px;
-	color: var(--white);
-	background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
-	animation: fadeIn 0.6s ease-out 0.2s;
-	animation-fill-mode: both;
+	font-size: 18px;
+	color: var(--orange-primary);
+	background: var(--orange-light);
+	flex-shrink: 0;
+}
+
+.register_header_text {
+	flex: 1;
 }
 
 .register_title {
-	font-size: 24px;
+	font-size: 20px;
 	font-weight: 700;
 	color: var(--text-primary);
-	margin-bottom: 8px;
+	margin-bottom: 4px;
 	line-height: 1.2;
 }
 
 .register_subtitle {
-	font-size: 14px;
+	font-size: 13px;
 	color: var(--text-secondary);
 	margin: 0;
 	font-weight: 400;
@@ -115,8 +121,11 @@
 .register_form_inner {
 	background: var(--white);
 	border-radius: 8px;
-	padding: 40px;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.register_form {
+	padding: 40px;
 }
 
 /* ========================================
@@ -385,17 +394,20 @@
 }
 
 /* ========================================
-   BOUTON SUBMIT
+   BOUTON SUBMIT ET FOOTER
 ======================================== */
 .submit_group {
 	margin-top: 32px;
 	margin-bottom: 0;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 16px;
 }
 
 .submit_button {
-	width: 100%;
-	padding: 14px 24px;
-	background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+	padding: 14px 32px;
+	background: var(--orange-primary);
 	color: var(--white);
 	border: none;
 	border-radius: 6px;
@@ -410,8 +422,9 @@
 }
 
 .submit_button:hover {
+	background: var(--orange-hover);
 	transform: translateY(-1px);
-	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+	box-shadow: 0 4px 12px rgba(255, 96, 31, 0.25);
 }
 
 .submit_button:active {
@@ -422,6 +435,11 @@
 	opacity: 0.6;
 	cursor: not-allowed;
 	transform: none;
+}
+
+/* Bouton retour dans le footer du formulaire */
+.submit_group .back_link {
+	margin-right: auto;
 }
 
 .button_loader {
@@ -441,9 +459,7 @@
 ======================================== */
 .register_form_footer {
 	text-align: center;
-	padding-top: 24px;
-	margin-top: 24px;
-	border-top: 1px solid var(--grey-light);
+	padding: 24px 40px;
 }
 
 .footer_text {
@@ -556,27 +572,31 @@
 		padding: 40px 0 80px;
 	}
 
-	.register_form_header {
-		margin-bottom: 32px;
+	.register_header_content {
+		padding: 20px 24px;
+		gap: 12px;
 	}
 
 	.register_icon {
-		width: 55px;
-		height: 55px;
-		font-size: 22px;
-		margin-bottom: 14px;
+		width: 40px;
+		height: 40px;
+		font-size: 16px;
 	}
 
 	.register_title {
-		font-size: 22px;
+		font-size: 18px;
 	}
 
 	.register_subtitle {
-		font-size: 13px;
+		font-size: 12px;
 	}
 
-	.register_form_inner {
+	.register_form {
 		padding: 32px 24px;
+	}
+
+	.register_form_footer {
+		padding: 24px 24px;
 	}
 
 	.form_row {
@@ -597,9 +617,20 @@
 		font-size: 14px;
 	}
 
+	.submit_group {
+		flex-direction: column-reverse;
+		gap: 16px;
+	}
+
+	.submit_group .back_link {
+		margin-right: 0;
+		text-align: center;
+	}
+
 	.submit_button {
 		padding: 13px 20px;
 		font-size: 15px;
+		width: 100%;
 	}
 
 	.register_benefits {
@@ -616,23 +647,30 @@
 		padding: 0 16px;
 	}
 
+	.register_header_content {
+		padding: 16px 20px;
+	}
+
 	.register_icon {
-		width: 55px;
-		height: 55px;
-		font-size: 22px;
+		width: 36px;
+		height: 36px;
+		font-size: 14px;
 	}
 
 	.register_title {
-		font-size: 22px;
+		font-size: 16px;
 	}
 
-	.register_form_inner {
+	.register_form {
 		padding: 24px 20px;
-		border-radius: 6px;
+	}
+
+	.register_form_footer {
+		padding: 20px;
 	}
 
 	.form_input {
-		padding: 10px 12px 10px 36px;
+		padding: 10px 12px;
 		font-size: 14px;
 	}
 
