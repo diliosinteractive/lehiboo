@@ -2,7 +2,7 @@
 /**
  * Template Name: Choix Type d'Inscription
  * Description: Page permettant de choisir entre inscription Utilisateur ou Partenaire
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 // Rediriger si déjà connecté
@@ -56,10 +56,12 @@ if ( $registration_type === 'customer' ) {
 				</div>
 
 				<div class="card_content">
-					<div class="card_icon">
-						<i class="fas fa-calendar-alt"></i>
+					<div class="card_header">
+						<div class="card_icon">
+							<i class="fas fa-calendar-alt"></i>
+						</div>
+						<h2 class="card_title">Je suis un Organisateur d'activités</h2>
 					</div>
-					<h2 class="card_title">Je suis un Organisateur d'activités</h2>
 					<p class="card_description">
 						Créez et gérez vos événements, ateliers et activités.
 						Touchez une large audience et développez votre activité.
@@ -96,10 +98,12 @@ if ( $registration_type === 'customer' ) {
 				</div>
 
 				<div class="card_content">
-					<div class="card_icon">
-						<i class="fas fa-search"></i>
+					<div class="card_header">
+						<div class="card_icon">
+							<i class="fas fa-search"></i>
+						</div>
+						<h2 class="card_title">Je suis un Utilisateur qui recherche des activités</h2>
 					</div>
-					<h2 class="card_title">Je suis un Utilisateur qui recherche des activités</h2>
 					<p class="card_description">
 						Découvrez et réservez des activités passionnantes près de chez vous.
 						Profitez d'expériences uniques en famille ou entre amis.
