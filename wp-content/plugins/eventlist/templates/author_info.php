@@ -74,7 +74,7 @@ if( $author_id ){
 									<i class="icon_phone"></i>
 								</div>
 								<div class="contact_content">
-									<span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span>
+									<?php /* ?> <span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span> <?php */ ?> 
 									<?php $phone = preg_replace('/[^0-9]/', '', $phone_organizer ); ?>
 									<a href="<?php echo esc_attr('tel:'.$phone); ?>" class="contact_value"><?php echo esc_html( $phone_organizer ); ?></a>
 								</div>
@@ -87,7 +87,7 @@ if( $author_id ){
 									<i class="icon_phone"></i>
 								</div>
 								<div class="contact_content">
-									<span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span>
+									<?php /* ?> <span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span> <?php */ ?> 
 									<?php $phone = preg_replace('/[^0-9]/', '', $user_phone ); ?>
 									<a href="<?php echo esc_attr('tel:'.$phone); ?>" class="contact_value"><?php echo esc_html( $user_phone ); ?></a>
 								</div>

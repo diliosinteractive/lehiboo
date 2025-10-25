@@ -82,7 +82,7 @@ if( $author_id ){
 								<i class="icon_phone"></i>
 							</div>
 							<div class="contact_content contact_reveal_content">
-								<span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span>
+								<?php /* ?> <span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span> <?php */ ?> 
 								<button class="btn_reveal_phone btn_reveal_contact"
 									data-organizer-id="<?php echo esc_attr( $author_id ); ?>"
 									data-event-id="0"
@@ -169,7 +169,8 @@ if( $author_id ){
 								<i class="icon_pin_alt"></i>
 							</div>
 							<div class="contact_content contact_reveal_content">
-								<span class="contact_label"><?php esc_html_e( 'Adresse', 'eventlist' ); ?></span>
+								<?php /* ?>							 <span class="contact_label"><?php esc_html_e( 'Adresse', 'eventlist' ); ?></span><?php */ ?>
+
 								<button class="btn_reveal_address btn_reveal_contact"
 									data-organizer-id="<?php echo esc_attr( $author_id ); ?>"
 									data-event-id="0"

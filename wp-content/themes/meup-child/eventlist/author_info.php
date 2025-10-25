@@ -173,7 +173,7 @@ if( $author_id ){
 					<div class="quick_info_item contact_reveal_container">
 						<i class="icon_phone"></i>
 						<div class="contact_reveal_content">
-							<span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span>
+							<?php /* ?> <span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span> <?php */ ?> 
 							<button class="btn_reveal_phone btn_reveal_contact"
 								data-organizer-id="<?php echo esc_attr( $author_id ); ?>"
 								data-event-id="<?php echo esc_attr( $eid ); ?>"
@@ -193,7 +193,8 @@ if( $author_id ){
 				<div class="quick_info_item contact_reveal_container">
 					<i class="icon_pin_alt"></i>
 					<div class="contact_reveal_content">
-						<span class="contact_label"><?php esc_html_e( 'Adresse', 'eventlist' ); ?></span>
+						<?php /* ?>							 <span class="contact_label"><?php esc_html_e( 'Adresse', 'eventlist' ); ?></span><?php */ ?>
+
 						<button class="btn_reveal_address btn_reveal_contact"
 							data-organizer-id="<?php echo esc_attr( $author_id ); ?>"
 							data-event-id="<?php echo esc_attr( $eid ); ?>"
@@ -341,7 +342,7 @@ if( $author_id ){
 							<div class="popup_contact_item contact_reveal_container">
 								<i class="icon_phone"></i>
 								<div class="contact_reveal_content">
-									<span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span>
+									<?php /* ?> <span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span> <?php */ ?> 
 									<button class="btn_reveal_phone btn_reveal_contact"
 										data-organizer-id="<?php echo esc_attr( $author_id ); ?>"
 										data-event-id="<?php echo esc_attr( $eid ); ?>"
@@ -396,7 +397,8 @@ if( $author_id ){
 							<div class="popup_contact_item contact_reveal_container">
 								<i class="icon_pin_alt"></i>
 								<div class="contact_reveal_content">
-									<span class="contact_label"><?php esc_html_e( 'Adresse', 'eventlist' ); ?></span>
+									<?php /* ?>							 <span class="contact_label"><?php esc_html_e( 'Adresse', 'eventlist' ); ?></span><?php */ ?>
+
 									<button class="btn_reveal_address btn_reveal_contact"
 										data-organizer-id="<?php echo esc_attr( $author_id ); ?>"
 										data-event-id="<?php echo esc_attr( $eid ); ?>"
