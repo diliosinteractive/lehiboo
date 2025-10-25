@@ -82,6 +82,11 @@ $event_id = get_the_ID();
 
 		</div>
 
+		<!-- Bloc Organisateur (hors sticky) -->
+		<div class="event_organizer_wrapper">
+			<?php el_get_template( 'author_info.php' ); ?>
+		</div>
+
 		<!-- Contenu principal (2 colonnes sur desktop) -->
 		<div class="event_main_grid">
 

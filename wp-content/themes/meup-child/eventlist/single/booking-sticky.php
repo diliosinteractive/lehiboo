@@ -97,9 +97,6 @@ $author_name = get_the_author_meta('display_name', $author_id);
 $author_url = get_author_posts_url( $author_id );
 ?>
 
-<!-- Organisateur Optimisé UX (hors sticky) -->
-<?php el_get_template( 'author_info.php' ); ?>
-
 <div class="event_booking_sticky" id="booking_sticky_widget" data-price="<?php echo esc_attr( $ticket_price ); ?>">
 
 	<!-- Prix -->
