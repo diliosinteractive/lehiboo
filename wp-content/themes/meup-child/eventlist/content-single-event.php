@@ -79,6 +79,10 @@ $event_id = get_the_ID();
 			<div class="event_gallery_mosaic">
 				<?php el_get_template( 'single/gallery-mosaic.php' ); ?>
 			</div>
+			<!-- Bloc Organisateur -->
+			<div class="event_organizer_wrapper">
+				<?php el_get_template( 'author_info.php' ); ?>
+			</div>
 
 		</div>
 
@@ -139,11 +143,6 @@ $event_id = get_the_ID();
 
 			<!-- Colonne de droite: Sidebar -->
 			<div class="event_sidebar_column">
-
-				<!-- Bloc Organisateur -->
-				<div class="event_organizer_wrapper">
-					<?php el_get_template( 'author_info.php' ); ?>
-				</div>
 
 				<!-- Widget Réservation Sticky -->
 				<div class="event_booking_sticky_wrapper">
