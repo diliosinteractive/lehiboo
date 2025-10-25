@@ -72,10 +72,10 @@ if( $author_id ){
 	$mail_organizer = ( get_post_meta( $eid, OVA_METABOX_EVENT.'mail_organizer', true ) ? get_post_meta( $eid, OVA_METABOX_EVENT.'mail_organizer', true ) : '' );
 	$social_organizer = ( get_post_meta( $eid, OVA_METABOX_EVENT.'social_organizer', true ) ? get_post_meta( $eid, OVA_METABOX_EVENT.'social_organizer', true ) : array() );
 
-	// Tronquer la description pour l'aperçu
+	// Tronquer la description pour l'aperçu (2 lignes max, environ 25 mots)
 	$short_description = '';
 	if ( $user_description ) {
-		$short_description = wp_trim_words( $user_description, 20, '...' );
+		$short_description = wp_trim_words( $user_description, 25, '...' );
 	}
 
 	// Lien vers la page organisateur
@@ -126,7 +126,7 @@ if( $author_id ){
 			</div>
 		<?php endif; ?>
 
-		<!-- Informations essentielles -->
+		<!-- Informations essentielles (uniquement téléphone) -->
 		<div class="organizer_quick_info">
 
 			<?php if( apply_filters( 'el_show_phone_info', true ) ){ ?>
@@ -147,19 +147,6 @@ if( $author_id ){
 						</div>
 					<?php } ?>
 				<?php } ?>
-			<?php } ?>
-
-			<?php if( apply_filters( 'el_show_mail_info', true ) ){ ?>
-				<div class="quick_info_item">
-					<i class="icon_mail"></i>
-					<?php if (is_singular('event') && $info_organizer == 'checked') { ?>
-						<a href="<?php echo esc_attr('mailto:'.$mail_organizer); ?>"><?php echo esc_html( $mail_organizer ); ?></a>
-					<?php } elseif ( !is_singular('event') && $user_professional_email ) { ?>
-						<a href="<?php echo esc_attr('mailto:'.$user_professional_email); ?>"><?php echo esc_html( $user_professional_email ); ?></a>
-					<?php } else { ?>
-						<a href="<?php echo esc_attr('mailto:'.$user_email); ?>"><?php echo esc_html( $user_email ); ?></a>
-					<?php } ?>
-				</div>
 			<?php } ?>
 
 		</div>
@@ -216,23 +203,20 @@ if( $author_id ){
 			</div>
 		<?php endif; ?>
 
-		<!-- Bouton "En savoir plus" centré pleine largeur -->
-		<div class="organizer_learn_more_cta">
-			<button class="btn_learn_more_full" id="open_organizer_details_popup" data-author-id="<?php echo esc_attr( $author_id ); ?>">
+		<!-- Boutons côte à côte: En savoir plus + Contacter -->
+		<div class="organizer_actions_row">
+			<button class="btn_learn_more_half" id="open_organizer_details_popup" data-author-id="<?php echo esc_attr( $author_id ); ?>">
 				<i class="fas fa-info-circle"></i>
-				<?php esc_html_e( 'En savoir plus', 'eventlist' ); ?>
+				<span><?php esc_html_e( 'En savoir plus', 'eventlist' ); ?></span>
 			</button>
-		</div>
 
-		<!-- Bouton Contact -->
-		<?php if( apply_filters( 'el_single_event_show_send_message_btn', true ) ){ ?>
-			<div class="organizer_contact_cta">
-				<button class="btn_contact_organizer" id="open_contact_modal" data-require-login="<?php echo is_user_logged_in() ? 'false' : 'true'; ?>">
+			<?php if( apply_filters( 'el_single_event_show_send_message_btn', true ) ){ ?>
+				<button class="btn_contact_half" id="open_contact_modal" data-require-login="<?php echo is_user_logged_in() ? 'false' : 'true'; ?>">
 					<i class="icon_mail_alt"></i>
-					<?php esc_html_e( 'Contacter l\'organisateur', 'eventlist' ); ?>
+					<span><?php esc_html_e( 'Contacter', 'eventlist' ); ?></span>
 				</button>
-			</div>
-		<?php } ?>
+			<?php } ?>
+		</div>
 
 	</div><!-- .organizer_card_optimized -->
 

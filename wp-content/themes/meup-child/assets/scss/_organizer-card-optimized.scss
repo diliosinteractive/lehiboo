@@ -34,7 +34,7 @@ $radius-lg: 16px;
 	background: $background-white !important;
 	border: 1px solid $border-color;
 	border-radius: $radius-md;
-	padding: 24px;
+	padding: 20px;
 	box-shadow: $shadow-sm;
 	transition: all 0.3s ease;
 
@@ -70,7 +70,7 @@ $radius-lg: 16px;
 			min-width: 0;
 
 			.organizer_name {
-				margin: 0 0 4px 0;
+				margin: 0 0 2px 0;
 				font-size: 18px;
 				font-weight: 600;
 				color: $text-dark;
@@ -258,34 +258,44 @@ $radius-lg: 16px;
 		}
 	}
 
-	// Bouton "En savoir plus" pleine largeur
-	.organizer_learn_more_cta {
-		margin-bottom: 12px;
+	// Boutons côte à côte: En savoir plus + Contacter
+	.organizer_actions_row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
 
-		.btn_learn_more_full {
-			width: 100%;
+		.btn_learn_more_half,
+		.btn_contact_half {
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			gap: 8px;
-			padding: 12px 20px;
+			gap: 6px;
+			padding: 12px 16px;
 			font-size: 14px;
 			font-weight: 600;
-			background: $background-light;
-			color: $text-dark;
-			border: 1px solid $border-color;
 			border-radius: $radius-sm;
 			cursor: pointer;
 			transition: all 0.3s ease;
+			border: none;
 			outline: none;
 
 			i {
-				font-size: 16px;
+				font-size: 15px;
 
 				&:before {
 					margin: 0;
 				}
 			}
+
+			span {
+				line-height: 1;
+			}
+		}
+
+		.btn_learn_more_half {
+			background: $background-light;
+			color: $text-dark;
+			border: 1px solid $border-color;
 
 			&:hover {
 				background: $background-white;
@@ -295,40 +305,21 @@ $radius-lg: 16px;
 				box-shadow: $shadow-sm;
 			}
 		}
-	}
 
-	// Bouton Contact
-	.organizer_contact_cta {
-		.btn_contact_organizer {
-			width: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			gap: 8px;
-			padding: 12px 20px;
-			background: $background-white;
-			color: $primary-color;
-			border: 2px solid $primary-color;
-			border-radius: $radius-sm;
-			font-size: 14px;
-			font-weight: 600;
-			cursor: pointer;
-			transition: all 0.3s ease;
-
-			i {
-				font-size: 16px;
-
-				&:before {
-					margin: 0;
-				}
-			}
+		.btn_contact_half {
+			background: $primary-color;
+			color: $background-white;
 
 			&:hover {
-				background: $primary-color;
-				color: $background-white;
+				background: darken($primary-color, 8%);
 				transform: translateY(-2px);
 				box-shadow: $shadow-md;
 			}
+		}
+
+		@media (max-width: 480px) {
+			grid-template-columns: 1fr;
+			gap: 8px;
 		}
 	}
 }
