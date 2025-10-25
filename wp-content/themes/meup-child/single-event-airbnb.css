@@ -3329,3 +3329,340 @@ body.organizer-popup-open {
     height: 300px;
   }
 }
+@charset "UTF-8";
+/**
+ * Crosssell Carousels - Activités vues & Organisateur
+ * Design Airbnb style pour les carousels de recommandations
+ */
+.crosssell_section {
+  padding: 48px 0;
+  border-bottom: 1px solid #DDDDDD;
+}
+.crosssell_section:last-child {
+  border-bottom: none;
+}
+
+.crosssell_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 16px;
+}
+@media (max-width: 768px) {
+  .crosssell_header {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+}
+
+.crosssell_title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #222222;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  line-height: 1.3;
+}
+.crosssell_title .title_icon {
+  width: 28px;
+  height: 28px;
+  color: #FF5A5F;
+  flex-shrink: 0;
+}
+.crosssell_title .organizer_name {
+  color: #FF5A5F;
+}
+@media (max-width: 768px) {
+  .crosssell_title {
+    font-size: 20px;
+  }
+  .crosssell_title .title_icon {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.crosssell_view_all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: white;
+  color: #222222;
+  border: 1px solid #DDDDDD;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.crosssell_view_all svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+.crosssell_view_all:hover {
+  border-color: #222222;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.crosssell_view_all:hover svg {
+  transform: translateX(3px);
+}
+
+.crosssell_carousel_wrapper {
+  position: relative;
+  padding: 0 48px;
+}
+@media (max-width: 768px) {
+  .crosssell_carousel_wrapper {
+    padding: 0 40px;
+  }
+}
+
+.crosssell_carousel {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.crosssell_carousel::-webkit-scrollbar {
+  display: none;
+}
+@media (max-width: 768px) {
+  .crosssell_carousel {
+    gap: 16px;
+  }
+}
+
+.carousel_loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+  color: #717171;
+}
+.carousel_loading .loading_spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #F7F7F7;
+  border-top-color: #FF5A5F;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.carousel_loading p {
+  font-size: 14px;
+  margin: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.carousel_nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: white;
+  border: 1px solid #DDDDDD;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+.carousel_nav svg {
+  width: 24px;
+  height: 24px;
+  color: #222222;
+}
+.carousel_nav:hover {
+  background: #F7F7F7;
+  border-color: #222222;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.carousel_nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.carousel_nav.carousel_prev {
+  left: 0;
+}
+.carousel_nav.carousel_next {
+  right: 0;
+}
+@media (max-width: 768px) {
+  .carousel_nav {
+    width: 36px;
+    height: 36px;
+  }
+  .carousel_nav svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.crosssell_card {
+  flex: 0 0 280px;
+  width: 280px;
+  transition: transform 0.2s ease;
+}
+.crosssell_card:hover {
+  transform: translateY(-4px);
+}
+@media (max-width: 768px) {
+  .crosssell_card {
+    flex: 0 0 240px;
+    width: 240px;
+  }
+}
+
+.card_link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card_image {
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: #F7F7F7;
+}
+.card_image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.crosssell_card:hover .card_image img {
+  transform: scale(1.05);
+}
+@media (max-width: 768px) {
+  .card_image {
+    height: 180px;
+  }
+}
+
+.card_content {
+  padding: 0;
+}
+
+.card_location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #717171;
+  margin-bottom: 6px;
+}
+.card_location svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.card_title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #222222;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.card_link:hover .card_title {
+  color: #FF5A5F;
+}
+
+.card_rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.card_rating svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.card_rating .rating_value {
+  font-weight: 600;
+  color: #222222;
+}
+.card_rating .rating_count {
+  color: #717171;
+}
+
+.card_price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 14px;
+  margin-top: 8px;
+}
+.card_price .price_label {
+  color: #717171;
+  font-size: 13px;
+}
+.card_price .price_amount {
+  font-size: 18px;
+  font-weight: 600;
+  color: #222222;
+}
+.card_price .price_unit {
+  color: #717171;
+  font-size: 13px;
+}
+.card_price .price_free {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FF5A5F;
+}
+
+@media (max-width: 768px) {
+  .crosssell_section {
+    padding: 32px 0;
+  }
+  .crosssell_carousel_wrapper {
+    padding: 0 36px;
+  }
+}
+@media (max-width: 480px) {
+  .crosssell_carousel_wrapper {
+    padding: 0 32px;
+  }
+  .carousel_nav {
+    width: 32px;
+    height: 32px;
+  }
+  .carousel_nav svg {
+    width: 18px;
+    height: 18px;
+  }
+  .crosssell_card {
+    flex: 0 0 220px;
+    width: 220px;
+  }
+  .card_image {
+    height: 160px;
+  }
+}

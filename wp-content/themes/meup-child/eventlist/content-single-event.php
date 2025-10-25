@@ -208,6 +208,12 @@ $event_id = get_the_ID();
 
 		</div><!-- .event_main_grid -->
 
+		<!-- Activités déjà vues (Carousel) -->
+		<?php el_get_template( 'single/viewed-activities.php' ); ?>
+
+		<!-- Autres activités de l'organisateur (Carousel) -->
+		<?php el_get_template( 'single/organizer-activities.php' ); ?>
+
 		<!-- Événements liés (full width) -->
 		<div class="event_related_section">
 			<?php do_action('el_single_event_related'); ?>

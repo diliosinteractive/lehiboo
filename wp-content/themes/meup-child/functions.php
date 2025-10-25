@@ -37,11 +37,16 @@ function meup_child_scripts() {
         // Cloudflare Turnstile CAPTCHA
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
 
+        // V1 Le Hiboo - Carousels crosssell
+        wp_enqueue_script( 'viewed-activities-tracker', get_stylesheet_directory_uri() . '/assets/js/viewed-activities-tracker.js', array('jquery'), '1.0.0', true );
+        wp_enqueue_script( 'crosssell-carousels', get_stylesheet_directory_uri() . '/assets/js/crosssell-carousels.js', array('jquery', 'viewed-activities-tracker'), '1.0.0', true );
+
         // Localiser le script pour AJAX
         wp_localize_script( 'single-event-airbnb', 'el_ajax_object', array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
             'nonce' => wp_create_nonce( 'el_ajax_nonce' ),
             'tracking_nonce' => wp_create_nonce( 'organizer_tracking_nonce' ),
+            'current_event_id' => get_the_ID(),
             'turnstile_sitekey' => '0x4AAAAAAB75T9T-6xfs5mqd' // À remplacer par votre clé
         ));
     }
@@ -1598,3 +1603,115 @@ add_action( 'admin_init', 'lehiboo_create_vendor_pending_page' );
  * Systèmes de tracking des vues téléphone et adresse
  */
 require_once get_stylesheet_directory() . '/inc/organizer-tracking.php';
+
+/**
+ * V1 Le Hiboo - AJAX: Récupérer les activités vues
+ */
+function lehiboo_get_viewed_activities() {
+	check_ajax_referer( 'el_ajax_nonce', 'nonce' );
+
+	$event_ids = isset( $_POST['event_ids'] ) ? array_map( 'intval', $_POST['event_ids'] ) : array();
+
+	if ( empty( $event_ids ) ) {
+		wp_send_json_error( array( 'message' => 'No event IDs provided' ) );
+	}
+
+	// Limiter à 12 événements max
+	$event_ids = array_slice( $event_ids, 0, 12 );
+
+	$args = array(
+		'post_type' => 'event',
+		'post__in' => $event_ids,
+		'posts_per_page' => 12,
+		'post_status' => 'publish',
+		'orderby' => 'post__in' // Garder l'ordre des IDs
+	);
+
+	$query = new WP_Query( $args );
+
+	if ( ! $query->have_posts() ) {
+		wp_send_json_error( array( 'message' => 'No events found' ) );
+	}
+
+	$currency = el_get_currency_symbol();
+	ob_start();
+
+	while ( $query->have_posts() ) : $query->the_post();
+		$event_id = get_the_ID();
+		$thumbnail = get_the_post_thumbnail_url( $event_id, 'medium' );
+		$placeholder = get_stylesheet_directory_uri() . '/assets/images/event-placeholder.jpg';
+		$event_url = get_permalink( $event_id );
+
+		// Prix
+		$list_type_ticket = get_post_meta( $event_id, OVA_METABOX_EVENT . 'ticket', true );
+		$ticket_price = 0;
+
+		if( !empty($list_type_ticket) && is_array($list_type_ticket) ) {
+			$first_ticket = $list_type_ticket[0];
+			$ticket_price = isset($first_ticket['ticket_price']) ? floatval($first_ticket['ticket_price']) : 0;
+		}
+
+		// Ville
+		$venue_terms = get_the_terms( $event_id, 'event_city' );
+		$city = '';
+		if ( $venue_terms && !is_wp_error($venue_terms) ) {
+			$city = $venue_terms[0]->name;
+		}
+
+		// Note moyenne
+		$comments_count = get_comments_number( $event_id );
+		$rating = 5.0; // TODO: calculer la vraie note
+	?>
+		<div class="crosssell_card">
+			<a href="<?php echo esc_url( $event_url ); ?>" class="card_link">
+				<div class="card_image">
+					<img src="<?php echo esc_url( $thumbnail ? $thumbnail : $placeholder ); ?>"
+					     alt="<?php echo esc_attr( get_the_title() ); ?>"
+					     loading="lazy">
+				</div>
+
+				<div class="card_content">
+					<?php if( $city ) : ?>
+						<div class="card_location">
+							<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+								<circle cx="12" cy="10" r="3"></circle>
+							</svg>
+							<?php echo esc_html( $city ); ?>
+						</div>
+					<?php endif; ?>
+
+					<h3 class="card_title"><?php echo esc_html( get_the_title() ); ?></h3>
+
+					<?php if( $comments_count > 0 ) : ?>
+						<div class="card_rating">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="#FFB400" stroke="#FFB400" stroke-width="2">
+								<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+							</svg>
+							<span class="rating_value"><?php echo esc_html( number_format($rating, 1) ); ?></span>
+							<span class="rating_count">(<?php echo esc_html( $comments_count ); ?>)</span>
+						</div>
+					<?php endif; ?>
+
+					<div class="card_price">
+						<?php if( $ticket_price > 0 ) : ?>
+							<span class="price_label"><?php esc_html_e( 'À partir de', 'eventlist' ); ?></span>
+							<span class="price_amount"><?php echo esc_html( $currency . number_format($ticket_price, 0) ); ?></span>
+							<span class="price_unit"><?php esc_html_e( '/ personne', 'eventlist' ); ?></span>
+						<?php else : ?>
+							<span class="price_free"><?php esc_html_e( 'Gratuit', 'eventlist' ); ?></span>
+						<?php endif; ?>
+					</div>
+				</div>
+			</a>
+		</div>
+	<?php
+	endwhile;
+	wp_reset_postdata();
+
+	$html = ob_get_clean();
+
+	wp_send_json_success( array( 'html' => $html ) );
+}
+add_action( 'wp_ajax_get_viewed_activities', 'lehiboo_get_viewed_activities' );
+add_action( 'wp_ajax_nopriv_get_viewed_activities', 'lehiboo_get_viewed_activities' );
