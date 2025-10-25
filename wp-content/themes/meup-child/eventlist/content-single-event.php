@@ -80,11 +80,6 @@ $event_id = get_the_ID();
 				<?php el_get_template( 'single/gallery-mosaic.php' ); ?>
 			</div>
 
-			<!-- Widget Réservation Sticky (Desktop uniquement) -->
-			<div class="event_booking_sticky_wrapper">
-				<?php el_get_template( 'single/booking-sticky.php' ); ?>
-			</div>
-
 		</div>
 
 		<!-- Contenu principal (2 colonnes sur desktop) -->
@@ -142,8 +137,13 @@ $event_id = get_the_ID();
 
 			</div><!-- .event_content_column -->
 
-			<!-- Colonne de droite: Sidebar (masquée sur desktop car sticky en haut) -->
+			<!-- Colonne de droite: Sidebar -->
 			<div class="event_sidebar_column">
+
+				<!-- Widget Réservation Sticky -->
+				<div class="event_booking_sticky_wrapper">
+					<?php el_get_template( 'single/booking-sticky.php' ); ?>
+				</div>
 
 				<!-- Taxonomies & Tags -->
 				<div class="event_sidebar_taxonomies">
