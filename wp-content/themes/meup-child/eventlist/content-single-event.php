@@ -80,11 +80,11 @@ $event_id = get_the_ID();
 				<?php el_get_template( 'single/gallery-mosaic.php' ); ?>
 			</div>
 
-		</div>
+			<!-- Bloc Organisateur (hors sticky) -->
+			<div class="event_organizer_wrapper">
+				<?php el_get_template( 'author_info.php' ); ?>
+			</div>
 
-		<!-- Bloc Organisateur (hors sticky) -->
-		<div class="event_organizer_wrapper">
-			<?php el_get_template( 'author_info.php' ); ?>
 		</div>
 
 		<!-- Contenu principal (2 colonnes sur desktop) -->
