@@ -11,7 +11,12 @@ if( ! defined( 'ABSPATH' ) ) exit();
 
 $current_event_id = get_the_ID();
 $author_id = get_post_field( 'post_author', $current_event_id );
-$author_name = get_the_author_meta( 'display_name', $author_id );
+
+// Nom public de l'organisateur (priorité: org_display_name > org_name > display_name)
+$org_display_name = get_user_meta( $author_id, 'org_display_name', true );
+$org_name = get_user_meta( $author_id, 'org_name', true );
+$org_public_name = ! empty( $org_display_name ) ? $org_display_name : $org_name;
+$author_name = $org_public_name ? $org_public_name : get_the_author_meta( 'display_name', $author_id );
 
 // Récupérer les autres activités de l'organisateur
 $args = array(
