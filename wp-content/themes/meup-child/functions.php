@@ -54,8 +54,12 @@ function meup_child_scripts() {
         }
     }
 
-    // V1 Le Hiboo - Scripts pour page Author (organisateur)
+    // V1 Le Hiboo - Scripts et styles pour page Author (organisateur)
     if( is_author() ) {
+        // Styles organizer card pour sidebar
+        wp_enqueue_style( 'organizer-card-styles', get_stylesheet_directory_uri() . '/single-event-airbnb-organizer.css', array('meup-parent-style'), '1.0.0' );
+
+        // Script révélation contact
         wp_enqueue_script( 'organizer-contact-reveal', get_stylesheet_directory_uri() . '/assets/js/organizer-contact-reveal.js', array('jquery'), '1.0.0', true );
 
         // Localiser le script pour AJAX

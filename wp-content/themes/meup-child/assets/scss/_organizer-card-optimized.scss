@@ -242,6 +242,75 @@ $radius-lg: 16px;
 			transform: translateY(0);
 		}
 	}
+}
+
+// ============================================
+// Sidebar Info Card (Page Author)
+// ============================================
+
+// Styles pour le template sidebar sur page author
+.sidebar_info_card {
+	.contact_item {
+		// Contact reveal dans sidebar
+		&.contact_reveal_container {
+			.contact_content.contact_reveal_content {
+				display: flex;
+				flex-direction: column;
+				gap: 6px;
+
+				.btn_reveal_contact {
+					display: inline-flex;
+					align-items: center;
+					gap: 6px;
+					padding: 8px 12px;
+					background: lighten($primary-color, 40%);
+					color: darken($primary-color, 10%);
+					border: 1px solid lighten($primary-color, 30%);
+					border-radius: $radius-sm;
+					font-size: 13px;
+					font-weight: 500;
+					cursor: pointer;
+					transition: all 0.3s ease;
+					align-self: flex-start;
+					border: none;
+					outline: none;
+
+					i {
+						font-size: 13px;
+						color: $primary-color;
+					}
+
+					&:hover {
+						background: lighten($primary-color, 35%);
+						border: 1px solid $primary-color;
+						transform: translateY(-1px);
+						box-shadow: $shadow-sm;
+					}
+				}
+
+				.contact_hidden_value {
+					display: none;
+					font-size: 14px;
+					color: $text-dark;
+					font-weight: 500;
+
+					&.revealed {
+						display: block;
+						animation: fadeIn 0.3s ease;
+					}
+
+					a {
+						color: $text-dark;
+						text-decoration: none;
+
+						&:hover {
+							color: $primary-color;
+						}
+					}
+				}
+			}
+		}
+	}
 
 	// Infos pratiques organisateur (badges avec tooltips)
 	.organizer_practical_info {

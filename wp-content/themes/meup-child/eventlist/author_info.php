@@ -17,8 +17,12 @@ if( is_singular( 'event' ) ){
 	$author_id = get_the_author_meta('ID');
 }
 
-// Note: Nous gérons aussi la page author avec notre template personnalisé
-// qui inclut les boutons de révélation pour téléphone et adresse
+// Si on est sur la page author, charger notre template personnalisé pour la sidebar
+if( is_author() ) {
+	// Inclure notre template sidebar avec boutons révélation
+	include( get_stylesheet_directory() . '/eventlist/author_info_sidebar.php' );
+	return;
+}
 
 // Sinon, afficher le bloc optimisé pour single event
 if( $author_id ){
@@ -102,16 +106,14 @@ if( $author_id ){
 		$full_address = $user_address;
 	}
 
-	// Déterminer le contexte d'affichage
-	$is_author_page = is_author();
-	$context_class = $is_author_page ? 'sidebar_info_card' : 'organizer_card_optimized';
-	$tracking_context = $is_author_page ? 'author_page' : 'single_event_card';
-	$tracking_context_popup = $is_author_page ? 'author_page_popup' : 'single_event_popup';
+	// Contexte tracking pour page single event
+	$tracking_context = 'single_event_card';
+	$tracking_context_popup = 'single_event_popup';
 
 	?>
 
-	<!-- Bloc Organisateur (Sidebar ou Card) -->
-	<div class="<?php echo esc_attr( $context_class ); ?> event_section_white">
+	<!-- Bloc Organisateur Optimisé UX -->
+	<div class="organizer_card_optimized event_section_white">
 
 		<!-- En-tête avec avatar et nom -->
 		<div class="organizer_header">
