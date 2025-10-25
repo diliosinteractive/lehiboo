@@ -49,56 +49,46 @@ if( empty($includes) && empty($excludes) ) {
 }
 ?>
 
-<div class="event_includes event_section_white">
-	<h3 class="includes_title second_font"><?php esc_html_e( 'Ce qui est inclus', 'eventlist' ); ?></h3>
+<div class="includes_wrapper">
 
-	<div class="includes_grid">
+	<!-- Liste Inclus -->
+	<?php if( !empty($includes) ) : ?>
+		<div class="includes_column">
+			<h3><?php esc_html_e( 'Inclus', 'eventlist' ); ?></h3>
+			<ul>
+				<?php
+				if( is_string($includes) ) {
+					$includes = explode("\n", $includes);
+				}
 
-		<!-- Liste Inclus -->
-		<?php if( !empty($includes) ) : ?>
-			<div class="includes_column">
-				<h4 class="column_title"><?php esc_html_e( 'Inclus', 'eventlist' ); ?></h4>
-				<ul class="includes_list">
-					<?php
-					if( is_string($includes) ) {
-						$includes = explode("\n", $includes);
-					}
+				foreach( (array)$includes as $item ) :
+					$item = trim($item);
+					if( empty($item) ) continue;
+				?>
+					<li><?php echo esc_html( $item ); ?></li>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+	<?php endif; ?>
 
-					foreach( (array)$includes as $item ) :
-						$item = trim($item);
-						if( empty($item) ) continue;
-					?>
-						<li class="include_item included">
-							<i class="icon_check"></i>
-							<span><?php echo esc_html( $item ); ?></span>
-						</li>
-					<?php endforeach; ?>
-				</ul>
-			</div>
-		<?php endif; ?>
+	<!-- Liste Non inclus -->
+	<?php if( !empty($excludes) ) : ?>
+		<div class="not_includes_column">
+			<h3><?php esc_html_e( 'Non inclus', 'eventlist' ); ?></h3>
+			<ul>
+				<?php
+				if( is_string($excludes) ) {
+					$excludes = explode("\n", $excludes);
+				}
 
-		<!-- Liste Non inclus -->
-		<?php if( !empty($excludes) ) : ?>
-			<div class="includes_column">
-				<h4 class="column_title"><?php esc_html_e( 'Non inclus', 'eventlist' ); ?></h4>
-				<ul class="includes_list">
-					<?php
-					if( is_string($excludes) ) {
-						$excludes = explode("\n", $excludes);
-					}
+				foreach( (array)$excludes as $item ) :
+					$item = trim($item);
+					if( empty($item) ) continue;
+				?>
+					<li><?php echo esc_html( $item ); ?></li>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+	<?php endif; ?>
 
-					foreach( (array)$excludes as $item ) :
-						$item = trim($item);
-						if( empty($item) ) continue;
-					?>
-						<li class="include_item excluded">
-							<i class="icon_close"></i>
-							<span><?php echo esc_html( $item ); ?></span>
-						</li>
-					<?php endforeach; ?>
-				</ul>
-			</div>
-		<?php endif; ?>
-
-	</div>
 </div>

@@ -107,16 +107,11 @@ if( $is_featured == 'yes' ) {
 
 // Affichage
 if( !empty($highlights) ) : ?>
-	<div class="event_highlights event_section_white">
-		<h3 class="highlights_title second_font"><?php esc_html_e( 'À savoir', 'eventlist' ); ?></h3>
-
-		<ul class="highlights_list">
-			<?php foreach( $highlights as $highlight ) : ?>
-				<li class="highlight_item">
-					<i class="<?php echo esc_attr( $highlight['icon'] ); ?>"></i>
-					<span><?php echo esc_html( $highlight['label'] ); ?></span>
-				</li>
-			<?php endforeach; ?>
-		</ul>
-	</div>
+	<ul class="highlight_list">
+		<?php foreach( $highlights as $highlight ) : ?>
+			<li class="highlight_item">
+				<span class="highlight_text"><?php echo esc_html( $highlight['label'] ); ?></span>
+			</li>
+		<?php endforeach; ?>
+	</ul>
 <?php endif; ?>

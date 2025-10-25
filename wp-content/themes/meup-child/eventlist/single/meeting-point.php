@@ -45,24 +45,31 @@ if( $map_lat && $map_lng ) {
 }
 ?>
 
-<div class="event_meeting_point event_section_white">
-	<h3 class="meeting_point_title second_font"><?php esc_html_e( 'Lieu de rendez-vous', 'eventlist' ); ?></h3>
+<div class="meeting_point_card">
+	<div class="meeting_icon">
+		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+			<circle cx="12" cy="10" r="3"></circle>
+		</svg>
+	</div>
 
-	<div class="meeting_point_content">
-
+	<div class="meeting_details">
 		<!-- Nom du lieu -->
 		<?php if( $venue_name ) : ?>
-			<h4 class="venue_name">
-				<i class="icon_pin_alt"></i>
-				<?php echo esc_html( stripslashes_deep($venue_name) ); ?>
-			</h4>
+			<h3><?php echo esc_html( stripslashes_deep($venue_name) ); ?></h3>
 		<?php endif; ?>
 
 		<!-- Adresse complète -->
 		<?php if( $address ) : ?>
-			<p class="venue_address">
-				<?php echo esc_html( stripslashes_deep($address) ); ?>
-			</p>
+			<p><?php echo esc_html( stripslashes_deep($address) ); ?></p>
+		<?php endif; ?>
+
+		<!-- Instructions additionnelles -->
+		<?php
+		$meeting_instructions = get_post_meta( $event_id, OVA_METABOX_EVENT . 'meeting_instructions', true );
+		if( $meeting_instructions ) :
+		?>
+			<p><?php echo wp_kses_post( $meeting_instructions ); ?></p>
 		<?php endif; ?>
 
 		<!-- Bouton Itinéraire -->
@@ -70,21 +77,14 @@ if( $map_lat && $map_lng ) {
 			<a href="<?php echo esc_url( $directions_url ); ?>"
 			   class="btn_get_directions"
 			   target="_blank"
-			   rel="noopener">
-				<i class="icon_cursor_alt"></i>
+			   rel="noopener"
+			   style="display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 16px; background: #FF5A5F; color: white; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 500;">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="5" y1="12" x2="19" y2="12"></line>
+					<polyline points="12 5 19 12 12 19"></polyline>
+				</svg>
 				<?php esc_html_e( 'Obtenir l\'itinéraire', 'eventlist' ); ?>
 			</a>
 		<?php endif; ?>
-
-		<!-- Instructions additionnelles (si métabox disponible) -->
-		<?php
-		$meeting_instructions = get_post_meta( $event_id, OVA_METABOX_EVENT . 'meeting_instructions', true );
-		if( $meeting_instructions ) :
-		?>
-			<div class="meeting_instructions">
-				<p><?php echo wp_kses_post( $meeting_instructions ); ?></p>
-			</div>
-		<?php endif; ?>
-
 	</div>
 </div>

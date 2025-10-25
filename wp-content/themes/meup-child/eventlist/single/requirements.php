@@ -40,30 +40,16 @@ if( empty($requirements) ) {
 }
 ?>
 
-<div class="event_requirements event_section_white">
-	<h3 class="requirements_title second_font"><?php esc_html_e( 'Conditions requises', 'eventlist' ); ?></h3>
+<ul class="requirements_list">
+	<?php
+	if( is_string($requirements) ) {
+		$requirements = explode("\n", $requirements);
+	}
 
-	<ul class="requirements_list">
-		<?php
-		if( is_string($requirements) ) {
-			$requirements = explode("\n", $requirements);
-		}
-
-		foreach( (array)$requirements as $requirement ) :
-			$requirement = trim($requirement);
-			if( empty($requirement) ) continue;
-		?>
-			<li class="requirement_item">
-				<i class="icon_document_alt"></i>
-				<span><?php echo esc_html( $requirement ); ?></span>
-			</li>
-		<?php endforeach; ?>
-	</ul>
-
-	<!-- Message par défaut si liste vide -->
-	<?php if( count($requirements) == 0 ) : ?>
-		<p class="no_requirements">
-			<?php esc_html_e( 'Aucune condition particulière requise.', 'eventlist' ); ?>
-		</p>
-	<?php endif; ?>
-</div>
+	foreach( (array)$requirements as $requirement ) :
+		$requirement = trim($requirement);
+		if( empty($requirement) ) continue;
+	?>
+		<li class="requirement_item"><?php echo esc_html( $requirement ); ?></li>
+	<?php endforeach; ?>
+</ul>

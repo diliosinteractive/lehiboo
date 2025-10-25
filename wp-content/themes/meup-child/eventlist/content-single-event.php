@@ -92,52 +92,87 @@ $event_id = get_the_ID();
 			<!-- Colonne de gauche: Contenu -->
 			<div class="event_content_column">
 
-				<!-- Highlights / À savoir -->
-				<div class="event_highlights_section">
-					<?php el_get_template( 'single/highlights.php' ); ?>
-				</div>
-
-				<!-- Description -->
-				<div class="event_description_section">
-					<?php do_action( 'el_single_event_content' ); ?>
-				</div>
-
-				<!-- Inclus / Non inclus -->
-				<div class="event_includes_section">
-					<?php el_get_template( 'single/includes.php' ); ?>
-				</div>
-
-				<!-- Exigences -->
-				<div class="event_requirements_section">
-					<?php el_get_template( 'single/requirements.php' ); ?>
-				</div>
-
-				<!-- Point de RDV -->
-				<div class="event_meeting_point_section">
-					<?php el_get_template( 'single/meeting-point.php' ); ?>
-				</div>
-
-				<!-- Carte (Map) -->
-				<div class="event_map_section">
-					<?php do_action( 'el_single_event_map' ); ?>
-				</div>
-
-				<!-- Calendrier / Disponibilités - Moved to sidebar -->
-				<!-- <div class="event_calendar_section">
-					<?php // do_action( 'el_single_event_ticket_calendar' ); ?>
-				</div> -->
-
-				<!-- Avis -->
-				<?php if( is_singular('event') && comments_open( $event_id ) ) { ?>
-					<div class="event_reviews_section">
-						<?php do_action( 'el_single_event_comment' ); ?>
+				<!-- Description de l'activité -->
+				<section class="event_section event_description_modern">
+					<h2 class="event_section_title">À propos de cette activité</h2>
+					<div class="event_section_divider"></div>
+					<div class="event_description_content">
+						<?php do_action( 'el_single_event_content' ); ?>
 					</div>
+				</section>
+
+				<!-- Points forts / Highlights -->
+				<section class="event_section event_highlights_modern">
+					<h2 class="event_section_title">Points forts de l'expérience</h2>
+					<div class="event_section_divider"></div>
+					<?php el_get_template( 'single/highlights.php' ); ?>
+				</section>
+
+				<!-- Ce qui est inclus / Non inclus -->
+				<section class="event_section event_includes_modern">
+					<h2 class="event_section_title">Ce qui est inclus</h2>
+					<div class="event_section_divider"></div>
+					<?php el_get_template( 'single/includes.php' ); ?>
+				</section>
+
+				<!-- Exigences et informations importantes -->
+				<section class="event_section event_requirements_modern">
+					<h2 class="event_section_title">
+						<svg class="section_icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<circle cx="12" cy="12" r="10"></circle>
+							<line x1="12" y1="8" x2="12" y2="12"></line>
+							<line x1="12" y1="16" x2="12.01" y2="16"></line>
+						</svg>
+						Informations importantes
+					</h2>
+					<div class="event_section_divider"></div>
+					<?php el_get_template( 'single/requirements.php' ); ?>
+				</section>
+
+				<!-- Point de rendez-vous -->
+				<section class="event_section event_meeting_modern">
+					<h2 class="event_section_title">
+						<svg class="section_icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+							<circle cx="12" cy="10" r="3"></circle>
+						</svg>
+						Point de rendez-vous
+					</h2>
+					<div class="event_section_divider"></div>
+					<?php el_get_template( 'single/meeting-point.php' ); ?>
+				</section>
+
+				<!-- Carte interactive -->
+				<section class="event_section event_map_modern">
+					<h2 class="event_section_title">Où nous trouver</h2>
+					<div class="event_section_divider"></div>
+					<div class="event_map_wrapper">
+						<?php do_action( 'el_single_event_map' ); ?>
+					</div>
+				</section>
+
+				<!-- Avis clients -->
+				<?php if( is_singular('event') && comments_open( $event_id ) ) { ?>
+					<section class="event_section event_reviews_modern">
+						<h2 class="event_section_title">
+							<svg class="section_icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+							</svg>
+							Avis des participants
+						</h2>
+						<div class="event_section_divider"></div>
+						<div class="event_reviews_content">
+							<?php do_action( 'el_single_event_comment' ); ?>
+						</div>
+					</section>
 				<?php } ?>
 
 				<!-- FAQ -->
-				<div class="event_faq_section">
+				<section class="event_section event_faq_modern">
+					<h2 class="event_section_title">Questions fréquentes</h2>
+					<div class="event_section_divider"></div>
 					<?php el_get_template( 'single/faq.php' ); ?>
-				</div>
+				</section>
 
 			</div><!-- .event_content_column -->
 

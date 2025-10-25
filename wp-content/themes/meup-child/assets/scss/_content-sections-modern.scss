@@ -1,0 +1,495 @@
+/**
+ * Modern Content Sections - Airbnb Style
+ * Design moderne pour les sections de contenu de l'activité
+ */
+
+// Variables
+$primary-color: #FF5A5F;
+$text-dark: #222222;
+$text-gray: #717171;
+$border-light: #DDDDDD;
+$bg-light: #F7F7F7;
+$success-green: #008489;
+$warning-orange: #FF8C00;
+
+// Section générique
+.event_section {
+	padding: 48px 0;
+	border-bottom: 1px solid $border-light;
+
+	&:first-child {
+		padding-top: 32px;
+	}
+
+	&:last-child {
+		border-bottom: none;
+		padding-bottom: 32px;
+	}
+}
+
+// Titre de section avec icône optionnelle
+.event_section_title {
+	font-size: 22px;
+	font-weight: 600;
+	color: $text-dark;
+	margin: 0 0 8px 0;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	line-height: 1.3;
+
+	.section_icon {
+		width: 28px;
+		height: 28px;
+		color: $primary-color;
+		flex-shrink: 0;
+	}
+}
+
+// Séparateur sous le titre
+.event_section_divider {
+	width: 64px;
+	height: 3px;
+	background: linear-gradient(90deg, $primary-color 0%, rgba($primary-color, 0.3) 100%);
+	margin: 0 0 24px 0;
+	border-radius: 2px;
+}
+
+// =========================================
+// 1. DESCRIPTION
+// =========================================
+.event_description_modern {
+
+	.event_description_content {
+		font-size: 16px;
+		line-height: 1.7;
+		color: $text-dark;
+
+		p {
+			margin: 0 0 16px 0;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+
+		strong {
+			font-weight: 600;
+			color: $text-dark;
+		}
+
+		a {
+			color: $primary-color;
+			text-decoration: underline;
+
+			&:hover {
+				text-decoration: none;
+			}
+		}
+	}
+}
+
+// =========================================
+// 2. POINTS FORTS / HIGHLIGHTS
+// =========================================
+.event_highlights_modern {
+
+	.highlight_list,
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 20px;
+	}
+
+	.highlight_item,
+	li {
+		display: flex;
+		align-items: flex-start;
+		gap: 12px;
+		padding: 16px;
+		background: $bg-light;
+		border-radius: 12px;
+		border: 1px solid transparent;
+		transition: all 0.2s ease;
+
+		&:hover {
+			border-color: $primary-color;
+			background: white;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+			transform: translateY(-2px);
+		}
+
+		&::before {
+			content: "✓";
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 24px;
+			height: 24px;
+			background: $success-green;
+			color: white;
+			border-radius: 50%;
+			flex-shrink: 0;
+			font-weight: 600;
+			font-size: 14px;
+			margin-top: 2px;
+		}
+	}
+
+	.highlight_text {
+		font-size: 15px;
+		line-height: 1.5;
+		color: $text-dark;
+		flex: 1;
+	}
+}
+
+// =========================================
+// 3. CE QUI EST INCLUS
+// =========================================
+.event_includes_modern {
+
+	.includes_wrapper {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 32px;
+
+		@media (min-width: 768px) {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	.includes_column,
+	.not_includes_column {
+		h3 {
+			font-size: 18px;
+			font-weight: 600;
+			margin: 0 0 16px 0;
+			color: $text-dark;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+
+			&::before {
+				content: "";
+				width: 6px;
+				height: 6px;
+				border-radius: 50%;
+				flex-shrink: 0;
+			}
+		}
+
+		ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+		}
+
+		li {
+			display: flex;
+			align-items: flex-start;
+			gap: 10px;
+			font-size: 15px;
+			line-height: 1.5;
+			color: $text-dark;
+
+			&::before {
+				content: "";
+				display: inline-block;
+				width: 20px;
+				height: 20px;
+				flex-shrink: 0;
+				border-radius: 4px;
+				margin-top: 2px;
+				background-size: 12px 12px;
+				background-repeat: no-repeat;
+				background-position: center;
+			}
+		}
+	}
+
+	// Inclus = checkmark vert
+	.includes_column {
+		h3::before {
+			background: $success-green;
+		}
+
+		li::before {
+			background-color: rgba($success-green, 0.1);
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23008489' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+		}
+	}
+
+	// Non inclus = croix rouge
+	.not_includes_column {
+		h3::before {
+			background: #C13515;
+		}
+
+		li::before {
+			background-color: rgba(#C13515, 0.1);
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23C13515' stroke-width='3'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E");
+		}
+	}
+}
+
+// =========================================
+// 4. EXIGENCES / INFORMATIONS IMPORTANTES
+// =========================================
+.event_requirements_modern {
+
+	.requirements_list,
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		background: #FFF4E6;
+		border-left: 4px solid $warning-orange;
+		border-radius: 8px;
+		padding: 20px 24px;
+	}
+
+	.requirement_item,
+	li {
+		display: flex;
+		align-items: flex-start;
+		gap: 12px;
+		font-size: 15px;
+		line-height: 1.6;
+		color: $text-dark;
+		margin-bottom: 12px;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+
+		&::before {
+			content: "⚠";
+			color: $warning-orange;
+			font-size: 18px;
+			flex-shrink: 0;
+			margin-top: 1px;
+		}
+	}
+}
+
+// =========================================
+// 5. POINT DE RENDEZ-VOUS
+// =========================================
+.event_meeting_modern {
+
+	.meeting_point_card {
+		background: white;
+		border: 1px solid $border-light;
+		border-radius: 12px;
+		padding: 24px;
+		display: flex;
+		gap: 16px;
+		transition: all 0.2s ease;
+
+		&:hover {
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		}
+	}
+
+	.meeting_icon {
+		width: 48px;
+		height: 48px;
+		background: rgba($primary-color, 0.1);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+
+		svg {
+			width: 24px;
+			height: 24px;
+			color: $primary-color;
+		}
+	}
+
+	.meeting_details {
+		flex: 1;
+
+		h3 {
+			font-size: 16px;
+			font-weight: 600;
+			color: $text-dark;
+			margin: 0 0 8px 0;
+		}
+
+		p {
+			font-size: 15px;
+			line-height: 1.6;
+			color: $text-gray;
+			margin: 0;
+		}
+	}
+}
+
+// =========================================
+// 6. CARTE INTERACTIVE
+// =========================================
+.event_map_modern {
+
+	.event_map_wrapper {
+		border-radius: 12px;
+		overflow: hidden;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		height: 400px;
+
+		iframe,
+		.map_container {
+			width: 100%;
+			height: 100%;
+			border: none;
+		}
+	}
+}
+
+// =========================================
+// 7. AVIS CLIENTS
+// =========================================
+.event_reviews_modern {
+
+	.event_reviews_content {
+		// Le contenu des avis sera stylé par le plugin
+		// On ajoute juste un espacement
+	}
+
+	.review_summary {
+		display: flex;
+		align-items: center;
+		gap: 24px;
+		padding: 24px;
+		background: $bg-light;
+		border-radius: 12px;
+		margin-bottom: 32px;
+
+		.rating_number {
+			font-size: 48px;
+			font-weight: 700;
+			color: $text-dark;
+			line-height: 1;
+		}
+
+		.rating_stars {
+			display: flex;
+			gap: 4px;
+			color: #FFB400;
+			font-size: 20px;
+		}
+
+		.rating_text {
+			font-size: 14px;
+			color: $text-gray;
+			margin-top: 4px;
+		}
+	}
+}
+
+// =========================================
+// 8. FAQ
+// =========================================
+.event_faq_modern {
+
+	.faq_item {
+		border-bottom: 1px solid $border-light;
+		padding: 20px 0;
+
+		&:first-child {
+			padding-top: 0;
+		}
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+
+	.faq_question {
+		font-size: 16px;
+		font-weight: 600;
+		color: $text-dark;
+		margin: 0 0 12px 0;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		transition: color 0.2s ease;
+
+		&:hover {
+			color: $primary-color;
+		}
+
+		&::after {
+			content: "+";
+			font-size: 24px;
+			font-weight: 400;
+			color: $text-gray;
+			flex-shrink: 0;
+			transition: transform 0.2s ease;
+		}
+
+		&.active::after {
+			content: "−";
+			transform: rotate(180deg);
+		}
+	}
+
+	.faq_answer {
+		font-size: 15px;
+		line-height: 1.6;
+		color: $text-gray;
+		margin: 0;
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.3s ease;
+
+		&.active {
+			max-height: 500px;
+			margin-top: 12px;
+		}
+	}
+}
+
+// =========================================
+// RESPONSIVE
+// =========================================
+@media (max-width: 768px) {
+	.event_section {
+		padding: 32px 0;
+
+		&:first-child {
+			padding-top: 24px;
+		}
+	}
+
+	.event_section_title {
+		font-size: 20px;
+
+		.section_icon {
+			width: 24px;
+			height: 24px;
+		}
+	}
+
+	.event_highlights_modern {
+		.highlight_list,
+		ul {
+			grid-template-columns: 1fr;
+			gap: 12px;
+		}
+	}
+
+	.event_map_modern .event_map_wrapper {
+		height: 300px;
+	}
+}
