@@ -17,11 +17,8 @@ if( is_singular( 'event' ) ){
 	$author_id = get_the_author_meta('ID');
 }
 
-// Si on est sur la page author, charger le template original du plugin
-if( is_author() ) {
-	include( WP_PLUGIN_DIR . '/eventlist/templates/author_info.php' );
-	return;
-}
+// Note: Nous gérons aussi la page author avec notre template personnalisé
+// qui inclut les boutons de révélation pour téléphone et adresse
 
 // Sinon, afficher le bloc optimisé pour single event
 if( $author_id ){
@@ -54,6 +51,8 @@ if( $author_id ){
 	// Localisation
 	$user_city = get_user_meta( $author_id, 'user_city', true ) ? get_user_meta( $author_id, 'user_city', true ) : '';
 	$user_country = get_user_meta( $author_id, 'user_country', true ) ? get_user_meta( $author_id, 'user_country', true ) : '';
+	$user_postcode = get_user_meta( $author_id, 'user_postcode', true ) ? get_user_meta( $author_id, 'user_postcode', true ) : '';
+	$user_address = get_user_meta( $author_id, 'user_address', true ) ? get_user_meta( $author_id, 'user_address', true ) : '';
 
 	// Infos pratiques organisateur
 	$org_event_type = get_user_meta( $author_id, 'org_event_type', true );
@@ -81,10 +80,38 @@ if( $author_id ){
 	// Lien vers la page organisateur
 	$organizer_page_url = get_author_posts_url( $author_id );
 
+	// Construire l'adresse complète pour l'affichage
+	$full_address = '';
+	if ( $user_city || $user_country || $user_postcode ) {
+		$location_parts = array();
+		if ( $user_postcode ) $location_parts[] = $user_postcode;
+		if ( $user_city ) $location_parts[] = $user_city;
+		if ( $user_country ) {
+			$countries = array(
+				'FR' => __( 'France', 'eventlist' ),
+				'BE' => __( 'Belgique', 'eventlist' ),
+				'CH' => __( 'Suisse', 'eventlist' ),
+				'CA' => __( 'Canada', 'eventlist' ),
+				'LU' => __( 'Luxembourg', 'eventlist' ),
+				'MC' => __( 'Monaco', 'eventlist' ),
+			);
+			$location_parts[] = isset( $countries[$user_country] ) ? $countries[$user_country] : $user_country;
+		}
+		$full_address = implode( ', ', $location_parts );
+	} elseif ( $user_address ) {
+		$full_address = $user_address;
+	}
+
+	// Déterminer le contexte d'affichage
+	$is_author_page = is_author();
+	$context_class = $is_author_page ? 'sidebar_info_card' : 'organizer_card_optimized';
+	$tracking_context = $is_author_page ? 'author_page' : 'single_event_card';
+	$tracking_context_popup = $is_author_page ? 'author_page_popup' : 'single_event_popup';
+
 	?>
 
-	<!-- Bloc Organisateur Optimisé UX -->
-	<div class="organizer_card_optimized event_section_white">
+	<!-- Bloc Organisateur (Sidebar ou Card) -->
+	<div class="<?php echo esc_attr( $context_class ); ?> event_section_white">
 
 		<!-- En-tête avec avatar et nom -->
 		<div class="organizer_header">
@@ -126,27 +153,56 @@ if( $author_id ){
 			</div>
 		<?php endif; ?>
 
-		<!-- Informations essentielles (uniquement téléphone) -->
+		<!-- Informations essentielles -->
 		<div class="organizer_quick_info">
 
+			<!-- Téléphone avec bouton révélation -->
 			<?php if( apply_filters( 'el_show_phone_info', true ) ){ ?>
-				<?php if (is_singular('event') && $info_organizer == 'checked') { ?>
-					<?php if( $phone_organizer ){ ?>
-						<div class="quick_info_item">
-							<i class="icon_phone"></i>
-							<?php $phone = preg_replace('/[^0-9]/', '', $phone_organizer ); ?>
-							<a href="<?php echo esc_attr('tel:'.$phone); ?>"><?php echo esc_html( $phone_organizer ); ?></a>
+				<?php
+				// Déterm iner le numéro de téléphone à afficher
+				$display_phone = '';
+				if (is_singular('event') && $info_organizer == 'checked' && $phone_organizer) {
+					$display_phone = $phone_organizer;
+				} elseif ( $user_phone ) {
+					$display_phone = $user_phone;
+				}
+				?>
+				<?php if( $display_phone ){ ?>
+					<div class="quick_info_item contact_reveal_container">
+						<i class="icon_phone"></i>
+						<div class="contact_reveal_content">
+							<span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span>
+							<button class="btn_reveal_phone btn_reveal_contact"
+								data-organizer-id="<?php echo esc_attr( $author_id ); ?>"
+								data-event-id="<?php echo esc_attr( $eid ); ?>"
+								data-context="<?php echo esc_attr( $tracking_context ); ?>"
+								data-phone="<?php echo esc_attr( $display_phone ); ?>">
+								<i class="fas fa-eye"></i>
+								<span><?php esc_html_e( 'Voir le numéro', 'eventlist' ); ?></span>
+							</button>
+							<div class="contact_hidden_value"></div>
 						</div>
-					<?php } ?>
-				<?php } else { ?>
-					<?php if( $user_phone ){ ?>
-						<div class="quick_info_item">
-							<i class="icon_phone"></i>
-							<?php $phone = preg_replace('/[^0-9]/', '', $user_phone ); ?>
-							<a href="<?php echo esc_attr('tel:'.$phone); ?>"><?php echo esc_html( $user_phone ); ?></a>
-						</div>
-					<?php } ?>
+					</div>
 				<?php } ?>
+			<?php } ?>
+
+			<!-- Adresse avec bouton révélation -->
+			<?php if( apply_filters( 'el_show_address_info', true ) && $full_address ){ ?>
+				<div class="quick_info_item contact_reveal_container">
+					<i class="icon_pin_alt"></i>
+					<div class="contact_reveal_content">
+						<span class="contact_label"><?php esc_html_e( 'Adresse', 'eventlist' ); ?></span>
+						<button class="btn_reveal_address btn_reveal_contact"
+							data-organizer-id="<?php echo esc_attr( $author_id ); ?>"
+							data-event-id="<?php echo esc_attr( $eid ); ?>"
+							data-context="<?php echo esc_attr( $tracking_context ); ?>"
+							data-address="<?php echo esc_attr( $full_address ); ?>">
+							<i class="fas fa-map-marker-alt"></i>
+							<span><?php esc_html_e( 'Voir l\'adresse', 'eventlist' ); ?></span>
+						</button>
+						<div class="contact_hidden_value"></div>
+					</div>
+				</div>
 			<?php } ?>
 
 		</div>
@@ -278,30 +334,23 @@ if( $author_id ){
 					</h4>
 					<div class="popup_contact_list">
 
-						<?php if( apply_filters( 'el_show_phone_info', true ) ){ ?>
-							<?php if (is_singular('event') && $info_organizer == 'checked') { ?>
-								<?php if( $phone_organizer ){ ?>
-									<div class="popup_contact_item">
-										<i class="icon_phone"></i>
-										<div>
-											<span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span>
-											<?php $phone = preg_replace('/[^0-9]/', '', $phone_organizer ); ?>
-											<a href="<?php echo esc_attr('tel:'.$phone); ?>"><?php echo esc_html( $phone_organizer ); ?></a>
-										</div>
-									</div>
-								<?php } ?>
-							<?php } else { ?>
-								<?php if( $user_phone ){ ?>
-									<div class="popup_contact_item">
-										<i class="icon_phone"></i>
-										<div>
-											<span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span>
-											<?php $phone = preg_replace('/[^0-9]/', '', $user_phone ); ?>
-											<a href="<?php echo esc_attr('tel:'.$phone); ?>"><?php echo esc_html( $user_phone ); ?></a>
-										</div>
-									</div>
-								<?php } ?>
-							<?php } ?>
+						<!-- Téléphone avec bouton révélation -->
+						<?php if( apply_filters( 'el_show_phone_info', true ) && $display_phone ){ ?>
+							<div class="popup_contact_item contact_reveal_container">
+								<i class="icon_phone"></i>
+								<div class="contact_reveal_content">
+									<span class="contact_label"><?php esc_html_e( 'Téléphone', 'eventlist' ); ?></span>
+									<button class="btn_reveal_phone btn_reveal_contact"
+										data-organizer-id="<?php echo esc_attr( $author_id ); ?>"
+										data-event-id="<?php echo esc_attr( $eid ); ?>"
+										data-context="<?php echo esc_attr( $tracking_context_popup ); ?>"
+										data-phone="<?php echo esc_attr( $display_phone ); ?>">
+										<i class="fas fa-eye"></i>
+										<span><?php esc_html_e( 'Voir le numéro', 'eventlist' ); ?></span>
+									</button>
+									<div class="contact_hidden_value"></div>
+								</div>
+							</div>
 						<?php } ?>
 
 						<?php if( apply_filters( 'el_show_mail_info', true ) ){ ?>
@@ -339,6 +388,25 @@ if( $author_id ){
 								</div>
 							<?php endif; ?>
 						<?php endif; ?>
+
+						<!-- Adresse avec bouton révélation -->
+						<?php if( apply_filters( 'el_show_address_info', true ) && $full_address ){ ?>
+							<div class="popup_contact_item contact_reveal_container">
+								<i class="icon_pin_alt"></i>
+								<div class="contact_reveal_content">
+									<span class="contact_label"><?php esc_html_e( 'Adresse', 'eventlist' ); ?></span>
+									<button class="btn_reveal_address btn_reveal_contact"
+										data-organizer-id="<?php echo esc_attr( $author_id ); ?>"
+										data-event-id="<?php echo esc_attr( $eid ); ?>"
+										data-context="<?php echo esc_attr( $tracking_context_popup ); ?>"
+										data-address="<?php echo esc_attr( $full_address ); ?>">
+										<i class="fas fa-map-marker-alt"></i>
+										<span><?php esc_html_e( 'Voir l\'adresse', 'eventlist' ); ?></span>
+									</button>
+									<div class="contact_hidden_value"></div>
+								</div>
+							</div>
+						<?php } ?>
 
 					</div>
 				</div>

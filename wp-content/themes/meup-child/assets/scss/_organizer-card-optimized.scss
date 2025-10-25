@@ -121,13 +121,13 @@ $radius-lg: 16px;
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
-		margin-bottom: 20px;
+		margin-bottom: 0;
 		padding-bottom: 20px;
-		border-bottom: 1px solid $border-color;
+		border-bottom: none;
 
 		.quick_info_item {
 			display: flex;
-			align-items: center;
+			align-items: flex-start;
 			gap: 10px;
 			font-size: 14px;
 
@@ -158,6 +158,88 @@ $radius-lg: 16px;
 					color: $primary-color;
 				}
 			}
+
+			// Contact reveal system
+			&.contact_reveal_container {
+				.contact_reveal_content {
+					flex: 1;
+					display: flex;
+					flex-direction: column;
+					gap: 6px;
+
+					.contact_label {
+						font-size: 11px;
+						font-weight: 600;
+						color: $text-muted;
+						text-transform: uppercase;
+						letter-spacing: 0.5px;
+					}
+
+					.btn_reveal_contact {
+						display: inline-flex;
+						align-items: center;
+						gap: 6px;
+						padding: 8px 12px;
+						background: lighten($primary-color, 40%);
+						color: darken($primary-color, 10%);
+						border: 1px solid lighten($primary-color, 30%);
+						border-radius: $radius-sm;
+						font-size: 13px;
+						font-weight: 500;
+						cursor: pointer;
+						transition: all 0.3s ease;
+						align-self: flex-start;
+
+						i {
+							width: auto;
+							height: auto;
+							background: none;
+							font-size: 13px;
+							color: $primary-color;
+						}
+
+						&:hover {
+							background: lighten($primary-color, 35%);
+							border-color: $primary-color;
+							transform: translateY(-1px);
+							box-shadow: $shadow-sm;
+						}
+					}
+
+					.contact_hidden_value {
+						display: none;
+						font-size: 14px;
+						color: $text-dark;
+						font-weight: 500;
+
+						&.revealed {
+							display: block;
+							animation: fadeIn 0.3s ease;
+						}
+
+						a {
+							color: $text-dark;
+							text-decoration: none;
+
+							&:hover {
+								color: $primary-color;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Animation fade in
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(-5px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
 		}
 	}
 
@@ -659,6 +741,78 @@ body.organizer-popup-open {
 
 						&:hover {
 							color: $primary-color;
+						}
+					}
+				}
+
+				// Contact reveal dans popup
+				&.contact_reveal_container {
+					.contact_reveal_content {
+						flex: 1;
+						display: flex;
+						flex-direction: column;
+						gap: 8px;
+						min-width: 0;
+
+						.contact_label {
+							font-size: 11px;
+							font-weight: 600;
+							color: $text-muted;
+							text-transform: uppercase;
+							letter-spacing: 0.5px;
+						}
+
+						.btn_reveal_contact {
+							display: inline-flex;
+							align-items: center;
+							gap: 6px;
+							padding: 10px 16px;
+							background: lighten($primary-color, 40%);
+							color: darken($primary-color, 10%);
+							border: 1px solid lighten($primary-color, 30%);
+							border-radius: $radius-sm;
+							font-size: 14px;
+							font-weight: 500;
+							cursor: pointer;
+							transition: all 0.3s ease;
+							align-self: flex-start;
+
+							i {
+								width: auto;
+								height: auto;
+								background: none;
+								font-size: 14px;
+								color: $primary-color;
+							}
+
+							&:hover {
+								background: lighten($primary-color, 35%);
+								border-color: $primary-color;
+								transform: translateY(-1px);
+								box-shadow: $shadow-sm;
+							}
+						}
+
+						.contact_hidden_value {
+							display: none;
+							font-size: 14px;
+							color: $text-dark;
+							font-weight: 500;
+							word-break: break-word;
+
+							&.revealed {
+								display: block;
+								animation: fadeIn 0.3s ease;
+							}
+
+							a {
+								color: $text-dark;
+								text-decoration: none;
+
+								&:hover {
+									color: $primary-color;
+								}
+							}
 						}
 					}
 				}

@@ -31,6 +31,9 @@ function meup_child_scripts() {
         // V1 Le Hiboo - Organizer Popup (Bloc partenaire optimisé)
         wp_enqueue_script( 'organizer-popup', get_stylesheet_directory_uri() . '/assets/js/organizer-popup.js', array('jquery'), '1.0.0', true );
 
+        // V1 Le Hiboo - Organizer Contact Reveal & Tracking
+        wp_enqueue_script( 'organizer-contact-reveal', get_stylesheet_directory_uri() . '/assets/js/organizer-contact-reveal.js', array('jquery'), '1.0.0', true );
+
         // Cloudflare Turnstile CAPTCHA
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
 
@@ -38,6 +41,7 @@ function meup_child_scripts() {
         wp_localize_script( 'single-event-airbnb', 'el_ajax_object', array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
             'nonce' => wp_create_nonce( 'el_ajax_nonce' ),
+            'tracking_nonce' => wp_create_nonce( 'organizer_tracking_nonce' ),
             'turnstile_sitekey' => '0x4AAAAAAB75T9T-6xfs5mqd' // À remplacer par votre clé
         ));
     }
@@ -48,6 +52,17 @@ function meup_child_scripts() {
         if( $post && has_shortcode( $post->post_content, 'el_member_account' ) ) {
             wp_enqueue_style( 'vendor-messages', get_stylesheet_directory_uri() . '/vendor-messages.css', array('meup-parent-style'), '3.4.0' );
         }
+    }
+
+    // V1 Le Hiboo - Scripts pour page Author (organisateur)
+    if( is_author() ) {
+        wp_enqueue_script( 'organizer-contact-reveal', get_stylesheet_directory_uri() . '/assets/js/organizer-contact-reveal.js', array('jquery'), '1.0.0', true );
+
+        // Localiser le script pour AJAX
+        wp_localize_script( 'organizer-contact-reveal', 'el_ajax_object', array(
+            'ajax_url' => admin_url( 'admin-ajax.php' ),
+            'tracking_nonce' => wp_create_nonce( 'organizer_tracking_nonce' )
+        ));
     }
 
     // V1 Le Hiboo - Modern Author Profile JS (page auteur)
@@ -1573,3 +1588,9 @@ function lehiboo_create_vendor_pending_page() {
 }
 add_action( 'after_switch_theme', 'lehiboo_create_vendor_pending_page' );
 add_action( 'admin_init', 'lehiboo_create_vendor_pending_page' );
+
+/**
+ * V1 Le Hiboo - Organizer Contact Tracking System
+ * Systèmes de tracking des vues téléphone et adresse
+ */
+require_once get_stylesheet_directory() . '/inc/organizer-tracking.php';
