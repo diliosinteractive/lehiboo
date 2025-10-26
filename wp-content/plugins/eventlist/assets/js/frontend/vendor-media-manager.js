@@ -782,7 +782,7 @@
                 data: {
                     action: 'el_vendor_move_images',
                     nonce: window.EL_MediaManager.nonce,
-                    image_ids: this.imagesToMove,
+                    attachment_ids: this.imagesToMove,
                     folder_id: this.targetFolderId
                 },
                 success: function(response) {
