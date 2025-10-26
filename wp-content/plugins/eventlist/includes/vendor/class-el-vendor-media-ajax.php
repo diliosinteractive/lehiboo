@@ -235,7 +235,12 @@ class EL_Vendor_Media_Ajax {
             wp_send_json_error( array( 'message' => __( 'Vous devez être connecté', 'eventlist' ) ) );
         }
 
-        $folder_id = isset( $_POST['folder_id'] ) ? absint( $_POST['folder_id'] ) : 0;
+        // Gérer folder_id: null signifie "toutes les images", sinon absint() pour sécurité
+        $folder_id = null;
+        if ( isset( $_POST['folder_id'] ) && $_POST['folder_id'] !== null && $_POST['folder_id'] !== '' ) {
+            $folder_id = absint( $_POST['folder_id'] );
+        }
+
         $page = isset( $_POST['page'] ) ? absint( $_POST['page'] ) : 1;
         $per_page = isset( $_POST['per_page'] ) ? absint( $_POST['per_page'] ) : 24;
         $search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';

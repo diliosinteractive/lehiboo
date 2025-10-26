@@ -79,6 +79,15 @@ function el_render_folder_tree( $folders, $current_folder = 0, $level = 0 ) {
 <div class="folders_tree">
 
     <!-- Toutes les images -->
+    <?php
+    // Compter le nombre total d'images de l'utilisateur
+    global $wpdb;
+    $table_images = $wpdb->prefix . 'vendor_gallery_images';
+    $total_images = (int) $wpdb->get_var( $wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table_images} WHERE user_id = %d",
+        $user_id
+    ) );
+    ?>
     <ul class="folders_list level_0">
         <li class="folder_item folder_all <?php echo $current_folder === null ? 'active' : ''; ?>"
             data-folder-id="-1">
@@ -89,7 +98,7 @@ function el_render_folder_tree( $folders, $current_folder = 0, $level = 0 ) {
                         <i class="fa fa-home"></i>
                     </span>
                     <span class="folder_name"><?php esc_html_e( 'Toutes les images', 'eventlist' ); ?></span>
-                    <span class="folder_count" id="all_count">(0)</span>
+                    <span class="folder_count" id="all_count">(<?php echo $total_images; ?>)</span>
                 </a>
             </div>
         </li>
