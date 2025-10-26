@@ -1,7 +1,11 @@
 /**
  * EventList - Profile Presentation Validation
  * V1 Le Hiboo - Validation minimum 500 caractères pour présentation organisateur
- * @version 1.0.0
+ * @version 1.0.1
+ *
+ * Changelog:
+ * - v1.0.1: Ajout compatibilité TinyMCE (wp_editor) pour le champ Description
+ * - v1.0.0: Version initiale (textarea simple uniquement)
  */
 
 (function($) {
@@ -21,15 +25,26 @@
 
         /**
          * Compter les caractères dans le textarea de description
+         * Compatible avec TinyMCE et textarea simple
          */
         function getDescriptionLength() {
-            const $textarea = $('#description');
-            if (!$textarea.length) {
-                return 0;
+            let content = '';
+
+            // Vérifier si TinyMCE est initialisé pour ce champ
+            if (typeof tinymce !== 'undefined' && tinymce.get('description')) {
+                const editor = tinymce.get('description');
+                content = editor.getContent({format: 'text'}) || '';
+            } else {
+                // Fallback sur textarea standard
+                const $textarea = $('#description');
+                if ($textarea.length) {
+                    content = $textarea.val() || '';
+                }
             }
 
-            const content = $textarea.val() || '';
-            return content.trim().length;
+            // Retirer les balises HTML et compter
+            const textOnly = content.replace(/<[^>]*>/g, '').trim();
+            return textOnly.length;
         }
 
         /**
@@ -43,11 +58,21 @@
 
             // Créer le compteur s'il n'existe pas
             if (!$counter.length) {
-                const $descriptionField = $('#description').closest('.vendor_field');
+                // Chercher le wrapper WYSIWYG qui contient l'éditeur
+                const $descriptionField = $('.vendor_field.wysiwyg');
                 if ($descriptionField.length) {
-                    $descriptionField.append(
-                        '<div id="presentation-char-counter" class="description-counter"></div>'
-                    );
+                    // Insérer après le div.wysiwyg-wrapper (après l'éditeur)
+                    const $wrapper = $descriptionField.find('.wysiwyg-wrapper');
+                    if ($wrapper.length) {
+                        $wrapper.after(
+                            '<div id="presentation-char-counter" class="description-counter"></div>'
+                        );
+                    } else {
+                        // Fallback : insérer à la fin du champ
+                        $descriptionField.append(
+                            '<div id="presentation-char-counter" class="description-counter"></div>'
+                        );
+                    }
                     $counter = $('#presentation-char-counter');
                 }
             }
@@ -96,14 +121,24 @@
                 );
 
                 // Scroller vers la description
-                const $descriptionField = $('#description');
-                if ($descriptionField.length) {
+                const $wysiwyg = $('.vendor_field.wysiwyg');
+                if ($wysiwyg.length) {
                     $('html, body').animate({
-                        scrollTop: $descriptionField.offset().top - 100
+                        scrollTop: $wysiwyg.offset().top - 100
                     }, 500);
 
-                    // Focus sur le champ
-                    $descriptionField.focus();
+                    // Focus sur TinyMCE si disponible
+                    if (typeof tinymce !== 'undefined' && tinymce.get('description')) {
+                        setTimeout(function() {
+                            tinymce.get('description').focus();
+                        }, 600);
+                    } else {
+                        // Fallback sur textarea
+                        const $descriptionField = $('#description');
+                        if ($descriptionField.length) {
+                            $descriptionField.focus();
+                        }
+                    }
                 }
 
                 return false;
@@ -113,12 +148,38 @@
         }
 
         // Initialiser le compteur de caractères
-        updateCharacterCounter();
+        // Attendre que TinyMCE soit chargé
+        function initCharacterCounter() {
+            if (typeof tinymce !== 'undefined' && tinymce.get('description')) {
+                const editor = tinymce.get('description');
 
-        // Mettre à jour le compteur à chaque modification
-        $('#description').on('keyup change input', function() {
-            updateCharacterCounter();
-        });
+                // Mettre à jour immédiatement
+                updateCharacterCounter();
+
+                // Écouter les changements dans TinyMCE
+                editor.on('keyup change input NodeChange', function() {
+                    updateCharacterCounter();
+                });
+            } else {
+                // Fallback pour textarea standard
+                updateCharacterCounter();
+                $('#description').on('keyup change input', function() {
+                    updateCharacterCounter();
+                });
+            }
+        }
+
+        // Attendre que TinyMCE soit initialisé
+        if (typeof tinymce !== 'undefined') {
+            tinymce.on('AddEditor', function(e) {
+                if (e.editor.id === 'description') {
+                    setTimeout(initCharacterCounter, 300);
+                }
+            });
+        }
+
+        // Fallback si TinyMCE n'est pas là après 2 secondes
+        setTimeout(initCharacterCounter, 2000);
 
         // Intercepter les clics sur le bouton de sauvegarde
         // Utiliser capture phase pour être exécuté en premier
