@@ -14,7 +14,7 @@
         currentImage: null,
 
         /**
-         * Ouvrir l'éditeur d'image
+         * Ouvrir l'éditeur d'image depuis un fichier
          */
         openEditor: function(file, callback) {
             const self = this;
@@ -29,6 +29,17 @@
             };
 
             reader.readAsDataURL(file);
+        },
+
+        /**
+         * Ouvrir l'éditeur depuis une URL (pour éditer une image existante)
+         */
+        openEditorFromUrl: function(imageUrl, attachmentId, callback) {
+            const self = this;
+            this.currentFile = null;
+            this.currentAttachmentId = attachmentId;
+            this.callback = callback;
+            this.showEditorModal(imageUrl);
         },
 
         /**
@@ -251,21 +262,66 @@
 
             // Convertir en Blob
             canvas.toBlob(function(blob) {
-                // Créer un nouveau File à partir du Blob
-                const fileName = self.currentFile.name;
-                const file = new File([blob], fileName, {
-                    type: self.currentFile.type,
-                    lastModified: Date.now()
-                });
+                // Si c'est une image existante (depuis URL), uploader via AJAX
+                if (self.currentAttachmentId && !self.currentFile) {
+                    self.uploadEditedImage(blob);
+                } else {
+                    // Sinon, c'est un nouveau fichier avant upload
+                    const fileName = self.currentFile.name;
+                    const file = new File([blob], fileName, {
+                        type: self.currentFile.type,
+                        lastModified: Date.now()
+                    });
 
-                // Callback avec le fichier édité
-                if (self.callback) {
-                    self.callback(file);
+                    // Callback avec le fichier édité
+                    if (self.callback) {
+                        self.callback(file);
+                    }
+
+                    self.closeEditor();
                 }
+            }, self.currentFile ? self.currentFile.type : 'image/jpeg', 0.92);
+        },
 
-                self.closeEditor();
+        /**
+         * Uploader l'image éditée pour remplacer l'originale
+         */
+        uploadEditedImage: function(blob) {
+            const self = this;
 
-            }, self.currentFile.type, 0.92);
+            // Créer FormData
+            const formData = new FormData();
+            formData.append('action', 'el_vendor_update_image');
+            formData.append('nonce', window.EL_MediaManager.nonce);
+            formData.append('attachment_id', this.currentAttachmentId);
+            formData.append('image', blob, 'edited-image.jpg');
+
+            // Désactiver le bouton de sauvegarde
+            $('#media_editor_modal .btn_save').prop('disabled', true).text('Sauvegarde...');
+
+            $.ajax({
+                url: window.EL_MediaManager.ajaxUrl,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        // Callback avec succès
+                        if (self.callback) {
+                            self.callback(response.data);
+                        }
+                        self.closeEditor();
+                    } else {
+                        alert('Erreur: ' + (response.data.message || 'Impossible de sauvegarder l\'image'));
+                        $('#media_editor_modal .btn_save').prop('disabled', false).text('Sauvegarder');
+                    }
+                },
+                error: function() {
+                    alert('Erreur lors de la sauvegarde de l\'image');
+                    $('#media_editor_modal .btn_save').prop('disabled', false).text('Sauvegarder');
+                }
+            });
         },
 
         /**

@@ -26,6 +26,7 @@ class EL_Vendor_Media_Ajax {
         add_action( 'wp_ajax_el_vendor_move_images', array( __CLASS__, 'move_images' ) );
         add_action( 'wp_ajax_el_vendor_delete_image', array( __CLASS__, 'delete_image' ) );
         add_action( 'wp_ajax_el_vendor_search_images', array( __CLASS__, 'search_images' ) );
+        add_action( 'wp_ajax_el_vendor_update_image', array( __CLASS__, 'update_image' ) );
     }
 
     /**
@@ -356,6 +357,70 @@ class EL_Vendor_Media_Ajax {
         ) );
 
         wp_send_json_success( $result );
+    }
+
+    /**
+     * Mettre à jour une image (après édition)
+     */
+    public static function update_image() {
+        check_ajax_referer( 'el_vendor_media_nonce', 'nonce' );
+
+        if ( ! is_user_logged_in() ) {
+            wp_send_json_error( array( 'message' => __( 'Vous devez être connecté', 'eventlist' ) ) );
+        }
+
+        $attachment_id = isset( $_POST['attachment_id'] ) ? absint( $_POST['attachment_id'] ) : 0;
+
+        if ( ! $attachment_id ) {
+            wp_send_json_error( array( 'message' => __( 'ID de l\'image manquant', 'eventlist' ) ) );
+        }
+
+        // Vérifier que l'utilisateur est propriétaire de l'image
+        $attachment = get_post( $attachment_id );
+        if ( ! $attachment || $attachment->post_author != get_current_user_id() ) {
+            wp_send_json_error( array( 'message' => __( 'Vous n\'avez pas les permissions pour modifier cette image', 'eventlist' ) ) );
+        }
+
+        // Vérifier qu'un fichier a été uploadé
+        if ( ! isset( $_FILES['image'] ) || $_FILES['image']['error'] !== UPLOAD_ERR_OK ) {
+            wp_send_json_error( array( 'message' => __( 'Aucune image fournie', 'eventlist' ) ) );
+        }
+
+        // Récupérer le fichier uploadé
+        $uploaded_file = $_FILES['image'];
+
+        // Validation basique du fichier
+        $allowed_types = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp' );
+        $file_type = wp_check_filetype( $uploaded_file['name'] );
+
+        if ( ! in_array( $uploaded_file['type'], $allowed_types ) ) {
+            wp_send_json_error( array( 'message' => __( 'Type de fichier non autorisé', 'eventlist' ) ) );
+        }
+
+        // Récupérer le chemin du fichier original
+        $original_file = get_attached_file( $attachment_id );
+        $upload_dir = wp_upload_dir();
+
+        // Sauvegarder la nouvelle image en écrasant l'ancienne
+        $moved = move_uploaded_file( $uploaded_file['tmp_name'], $original_file );
+
+        if ( ! $moved ) {
+            wp_send_json_error( array( 'message' => __( 'Erreur lors de la sauvegarde de l\'image', 'eventlist' ) ) );
+        }
+
+        // Régénérer les miniatures
+        require_once( ABSPATH . 'wp-admin/includes/image.php' );
+        $attach_data = wp_generate_attachment_metadata( $attachment_id, $original_file );
+        wp_update_attachment_metadata( $attachment_id, $attach_data );
+
+        // Nettoyer le cache
+        clean_post_cache( $attachment_id );
+
+        wp_send_json_success( array(
+            'message' => __( 'Image mise à jour avec succès', 'eventlist' ),
+            'attachment_id' => $attachment_id,
+            'url' => wp_get_attachment_url( $attachment_id ),
+        ) );
     }
 }
 

@@ -198,6 +198,13 @@
                 self.viewImage(id);
             });
 
+            $(document).on('click', '.btn_edit', function() {
+                const $item = $(this).closest('[data-id]');
+                const id = $item.data('id');
+                const imageUrl = $item.find('.media_item_thumb img').attr('src');
+                self.editImage(id, imageUrl);
+            });
+
             $(document).on('click', '.btn_delete', function() {
                 const id = $(this).closest('[data-id]').data('id');
                 self.deleteImage(id);
@@ -675,6 +682,31 @@
             $('.modal_viewer .viewer_image').attr('src', $img.attr('src').replace('150x150', 'full'));
             $('.modal_viewer .viewer_title').text(title);
             $('.modal_viewer').fadeIn(200);
+        },
+
+        /**
+         * Edit image
+         */
+        editImage: function(attachmentId, imageUrl) {
+            const self = this;
+
+            if (!window.EL_MediaEditor) {
+                alert('L\'éditeur d\'image n\'est pas disponible');
+                return;
+            }
+
+            // Utiliser l'URL complète plutôt que le thumbnail
+            const fullImageUrl = imageUrl.replace(/(-\d+x\d+)(\.[^.]+)$/, '$2');
+
+            // Ouvrir l'éditeur depuis l'URL
+            window.EL_MediaEditor.openEditorFromUrl(fullImageUrl, attachmentId, function(response) {
+                // Callback après sauvegarde réussie
+                self.showSuccess('Image mise à jour avec succès');
+                // Recharger les images pour afficher la nouvelle version
+                setTimeout(function() {
+                    self.loadImages();
+                }, 500);
+            });
         },
 
         /**

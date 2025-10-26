@@ -48,6 +48,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
                 <button type="button" class="overlay_btn btn_view" title="<?php esc_attr_e( 'Voir', 'eventlist' ); ?>">
                     <i class="fa fa-eye"></i>
                 </button>
+                <button type="button" class="overlay_btn btn_edit" title="<?php esc_attr_e( 'Éditer', 'eventlist' ); ?>">
+                    <i class="fa fa-edit"></i>
+                </button>
                 <button type="button" class="overlay_btn btn_delete" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
                     <i class="fa fa-trash"></i>
                 </button>
