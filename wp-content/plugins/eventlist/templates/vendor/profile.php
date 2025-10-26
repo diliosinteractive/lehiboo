@@ -1013,7 +1013,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 								<div class="wysiwyg-wrapper">
 									<?php
 									$description_content = get_user_meta( $user_id, 'description', true );
-									// V1 Le Hiboo - Configuration TinyMCE identique à la page événement
+									// V1 Le Hiboo - Configuration TinyMCE sans possibilité de liens
 									wp_editor(
 										$description_content,
 										'description',
@@ -1023,6 +1023,10 @@ $user_meta_field = get_option( 'ova_register_form' );
 											'editor_height' => 230,
 											'media_buttons' => false,
 											'wpautop'       => false,
+											'tinymce'       => array(
+												'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,bullist,numlist,blockquote,alignleft,aligncenter,alignright,undo,redo',
+												'toolbar2' => '',
+											),
 										)
 									);
 									?>

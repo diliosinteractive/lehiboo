@@ -24,9 +24,12 @@ class EL_Assets{
 	 * Constructor
 	 */
 	public function __construct(){
-		
+
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 11, 2 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'ova_admin_enqueue_scripts' ) );
+
+		// V1 Le Hiboo - Désactiver le plugin link de TinyMCE pour profil et événements
+		add_filter( 'tiny_mce_plugins', array( $this, 'el_disable_tinymce_link_plugin' ) );
 	}
 
 	/**
@@ -280,7 +283,23 @@ class EL_Assets{
 		wp_enqueue_style( 'select2', EL_PLUGIN_URI. 'assets/libs/select2/select2.min.css', array(), null );
 		wp_enqueue_script( 'event-setting', EL_PLUGIN_URI. 'assets/js/admin/setting.js', array('jquery'), false, true );
 	}
-	
+
+	/**
+	 * V1 Le Hiboo - Désactiver le plugin link de TinyMCE
+	 * Empêche l'ajout de liens externes dans les descriptions profil et événements
+	 */
+	public function el_disable_tinymce_link_plugin( $plugins ) {
+		// Vérifier si on est sur la page profil ou création/édition d'événement
+		if ( isset( $_GET['vendor'] ) &&
+			 ( $_GET['vendor'] == 'profile' ||
+			   $_GET['vendor'] == 'create-event' ||
+			   $_GET['vendor'] == 'listing-edit' ) ) {
+			// Retirer le plugin 'link' de la liste des plugins TinyMCE
+			$plugins = array_diff( $plugins, array( 'link' ) );
+		}
+		return $plugins;
+	}
+
 }
 
 EL_Assets::instance();

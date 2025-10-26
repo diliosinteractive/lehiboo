@@ -37,6 +37,10 @@ $social_organizer = get_post_meta( $post_id, $_prefix.'social_organizer', true) 
 			'textarea_rows' => 10,
 			'editor_height' => 230,
 			'wpautop' 		=> false,
+			'tinymce'       => array(
+				'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,bullist,numlist,blockquote,alignleft,aligncenter,alignright,undo,redo',
+				'toolbar2' => '',
+			),
 		);
 		?>
 		<?php if ( $post_id != '' ) {

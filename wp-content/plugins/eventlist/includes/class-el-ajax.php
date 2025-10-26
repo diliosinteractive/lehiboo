@@ -1217,10 +1217,47 @@ if( !class_exists( 'El_Ajax' ) ){
 			// Sanitize et enregistrer les données
 			$description = isset( $post_data['description'] ) ? sanitize_textarea_field( $post_data['description'] ) : '';
 
-			// Bloquer les URLs dans la description
-			if( preg_match( '/(http|https|www\.)/i', $description ) ) {
-				wp_send_json_error( array( 'message' => __( 'Les liens URL ne sont pas autorisés dans la description', 'eventlist' ) ) );
-				wp_die();
+			// V1 Le Hiboo - Bloquer les liens externes dans la description du profil
+			// Autoriser les liens internes vers le site uniquement
+			$site_url = get_site_url();
+			$site_domain = parse_url( $site_url, PHP_URL_HOST );
+
+			// Rechercher tous les liens dans le contenu
+			if( preg_match_all( '/<a\s+[^>]*href=["\']([^"\']+)["\'][^>]*>/i', $description, $matches ) ) {
+				foreach( $matches[1] as $link ) {
+					// Ignorer les liens relatifs (commençant par / ou #)
+					if( strpos( $link, '/' ) === 0 || strpos( $link, '#' ) === 0 ) {
+						continue;
+					}
+
+					// Vérifier si le lien est externe
+					$link_domain = parse_url( $link, PHP_URL_HOST );
+					if( $link_domain && $link_domain !== $site_domain ) {
+						wp_send_json_error( array(
+							'message' => __( 'Les liens externes ne sont pas autorisés dans la description. Seuls les liens internes vers ce site sont permis.', 'eventlist' )
+						) );
+						wp_die();
+					}
+				}
+			}
+
+			// Bloquer les URL en texte brut (http, https, www)
+			if( preg_match( '/(https?:\/\/|www\.)/i', $description ) ) {
+				// Vérifier si ces URLs ne sont pas des liens internes
+				preg_match_all( '/(https?:\/\/[^\s<]+|www\.[^\s<]+)/i', $description, $url_matches );
+				foreach( $url_matches[0] as $url ) {
+					$url_domain = parse_url( $url, PHP_URL_HOST );
+					if( !$url_domain ) {
+						// Si www. sans protocole, ajouter http pour parser
+						$url_domain = parse_url( 'http://' . $url, PHP_URL_HOST );
+					}
+					if( $url_domain && $url_domain !== $site_domain ) {
+						wp_send_json_error( array(
+							'message' => __( 'Les liens externes ne sont pas autorisés dans la description. Seuls les liens internes vers ce site sont permis.', 'eventlist' )
+						) );
+						wp_die();
+					}
+				}
 			}
 
 			// V1 Le Hiboo - Validation minimum 500 caractères pour la présentation
@@ -1771,6 +1808,32 @@ if( !class_exists( 'El_Ajax' ) ){
 			}
 
 			$content_event 	= isset( $post_data['content_event'] ) ? wp_kses_post( $post_data['content_event'] ) : '';
+
+			// V1 Le Hiboo - Bloquer les liens externes dans la description
+			// Autoriser les liens internes vers le site uniquement
+			$site_url = get_site_url();
+			$site_domain = parse_url( $site_url, PHP_URL_HOST );
+
+			// Rechercher tous les liens dans le contenu
+			if( preg_match_all( '/<a\s+[^>]*href=["\']([^"\']+)["\'][^>]*>/i', $content_event, $matches ) ) {
+				foreach( $matches[1] as $link ) {
+					// Ignorer les liens relatifs (commençant par / ou #)
+					if( strpos( $link, '/' ) === 0 || strpos( $link, '#' ) === 0 ) {
+						continue;
+					}
+
+					// Vérifier si le lien est externe
+					$link_domain = parse_url( $link, PHP_URL_HOST );
+					if( $link_domain && $link_domain !== $site_domain ) {
+						wp_send_json( array(
+							'status' => 'error',
+							'message' => __( 'Les liens externes ne sont pas autorisés dans la description. Seuls les liens internes vers ce site sont permis.', 'eventlist' )
+						) );
+						wp_die();
+					}
+				}
+			}
+
 			$post_id 		= isset( $post_data['post_id'] ) ? $post_data['post_id'] : '';
 
 			$author_id 		= get_post_field( 'post_author', $post_id ) ? get_post_field( 'post_author', $post_id ) : '';
