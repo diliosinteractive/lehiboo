@@ -148,7 +148,9 @@ class EL_Assets{
 				'prefix' 		=> OVA_METABOX_EVENT
 			) );
 
-			
+			// V1 Le Hiboo - Fix: Ajouter el_custom_tax_slug manquant sur frontend
+			wp_localize_script( 'el_script_admin', 'el_custom_tax_slug', el_get_custom_taxonomy_slug_arr() );
+
 		}
 
 		/* Select2 */
