@@ -302,7 +302,8 @@
             formData.append('image', blob, 'edited-image.jpg');
 
             // Désactiver le bouton de sauvegarde
-            $('#media_editor_modal .btn_save').prop('disabled', true).text('Sauvegarde...');
+            const $btn = $('#media_editor_modal .btn_apply_edit');
+            $btn.prop('disabled', true).text('Sauvegarde...');
 
             $.ajax({
                 url: window.EL_MediaManager.ajaxUrl,
@@ -324,7 +325,7 @@
                         } else {
                             alert('Erreur: ' + errorMsg);
                         }
-                        $('#media_editor_modal .btn_save').prop('disabled', false).text('Sauvegarder');
+                        $btn.prop('disabled', false).text('Appliquer');
                     }
                 },
                 error: function() {
@@ -333,7 +334,7 @@
                     } else {
                         alert('Erreur lors de la sauvegarde de l\'image');
                     }
-                    $('#media_editor_modal .btn_save').prop('disabled', false).text('Sauvegarder');
+                    $btn.prop('disabled', false).text('Appliquer');
                 }
             });
         },
