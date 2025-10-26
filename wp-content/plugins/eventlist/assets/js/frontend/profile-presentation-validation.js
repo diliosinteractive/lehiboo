@@ -1,9 +1,10 @@
 /**
  * EventList - Profile Presentation Validation
  * V1 Le Hiboo - Validation minimum 500 caractères pour présentation organisateur
- * @version 1.0.7
+ * @version 1.0.8
  *
  * Changelog:
+ * - v1.0.8: Uniformisation du texte avec la page événement (ajout "pour enregistrement")
  * - v1.0.7: Suppression styles inline - styles maintenant dans _validation-counter.scss
  * - v1.0.6: FIX CRITIQUE - Correction sélecteur page (.vendor_profile au lieu de .vendor_profile_wrapper)
  * - v1.0.5: Ajout logs complets pour debugging - identifier pourquoi compteur ne s'affiche pas
@@ -92,7 +93,7 @@
                         '<span class="counter-warning">' +
                         '<i class="icon_info_alt"></i> ' +
                         'Il manque <strong>' + remaining + ' caractères</strong> pour pouvoir enregistrer la présentation. ' +
-                        '(Minimum requis : 500 caractères)' +
+                        '(Minimum requis : 500 caractères pour enregistrement)' +
                         '</span>'
                     );
                     $counter.removeClass('counter-valid').addClass('counter-invalid');
