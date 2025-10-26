@@ -181,24 +181,47 @@ $user_meta_field = get_option( 'ova_register_form' );
 
 					<form id="el_save_profile" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
 
-						<!-- Image -->
+						<!-- Image de profil -->
 						<?php if( ( isset( $_GET['vendor'] ) && $_GET['vendor'] != '' && is_user_logged_in() ) || ( is_user_logged_in() && EL()->options->role->get( 'user_upload_files', 1 ) ) ) { ?>
-							<div class="author_image">
+							<div class="author_image vendor_field">
+								<label class="control-label">
+									<?php esc_html_e( 'Logo de votre organisation', 'eventlist' ); ?>
+									<sup class="symbol-needed">⭐</sup>
+								</label>
 
-								<div class="wrap">
+								<div class="profile_image_help">
+									<p class="help-text">
+										<i class="icon_info_alt"></i>
+										<?php esc_html_e( 'Ajoutez le logo de votre organisation (pas de photo de personne). Cette image sera visible sur votre profil public et sur vos activités.', 'eventlist' ); ?>
+									</p>
+								</div>
+
+								<div class="wrap image-preview-container">
 									<?php if ($author_id_image !== ''){ ?>
-										<img class="image-preview" src="<?php echo esc_url(wp_get_attachment_image_url($author_id_image, 'el_thumbnail')); ?>" alt="<?php esc_html_e( 'author', 'eventlist' ); ?>">
-										<button class=" remove_image"><?php esc_html_e( 'Remove Image', 'eventlist' ); ?></button>
+										<img class="image-preview" src="<?php echo esc_url(wp_get_attachment_image_url($author_id_image, 'el_thumbnail')); ?>" alt="<?php esc_attr_e( 'Logo organisation', 'eventlist' ); ?>">
+										<button type="button" class="button remove_image"><?php esc_html_e( 'Retirer l\'image', 'eventlist' ); ?></button>
 									<?php }else{ ?>
-										<img class="image-preview" src="<?php echo EL_PLUGIN_URI.'assets/img/unknow_user.png'; ?>" alt="<?php esc_html_e( 'author', 'eventlist' ); ?>">
-										<br><br>
+										<div class="no-image-placeholder">
+											<i class="icon_image"></i>
+											<p><?php esc_html_e( 'Aucun logo ajouté', 'eventlist' ); ?></p>
+										</div>
 									<?php } ?>
 								</div>
 
-								<button class="button add_image" data-uploader-title="<?php esc_html_e( "Add image to profile", 'eventlist' ); ?>" data-uploader-button-text="<?php esc_html_e( "Add image", 'eventlist' ); ?>"><?php esc_html_e( "Add image", 'eventlist' ); ?></button>
-								<span><?php esc_html_e( 'Recommended size: 400x400px','eventlist' ); ?></span>
+								<button type="button" class="button add_image"
+									data-uploader-title="<?php esc_attr_e( 'Sélectionner le logo de votre organisation', 'eventlist' ); ?>"
+									data-uploader-button-text="<?php esc_attr_e( 'Utiliser ce logo', 'eventlist' ); ?>">
+									<i class="icon_upload"></i>
+									<?php esc_html_e( 'Ajouter un logo', 'eventlist' ); ?>
+								</button>
+
+								<small class="format-info">
+									<i class="icon_info_alt"></i>
+									<?php esc_html_e( 'Format recommandé : 400x400px (carré) - PNG ou JPG - Max 2 Mo', 'eventlist' ); ?>
+								</small>
+
 								<input type="hidden" id="author_id_image" class="author_id_image" name="author_id_image" value="<?php echo esc_attr( $author_id_image ); ?>">
-								
+
 							</div>
 						<?php } ?>
 
@@ -913,25 +936,49 @@ $user_meta_field = get_option( 'ova_register_form' );
 							<!-- Image -->
 							<div class="vendor_field">
 								<label class="control-label">
-									<?php esc_html_e( 'Image', 'eventlist' ); ?>
+									<?php esc_html_e( 'Image de couverture', 'eventlist' ); ?>
 									<sup class="symbol-visible">👁</sup>
 								</label>
+
+								<div class="cover_image_help">
+									<p class="help-text">
+										<i class="icon_info_alt"></i>
+										<?php esc_html_e( 'Cette image sera affichée en haut de votre profil public. Privilégiez une image représentative de votre activité ou de vos locaux.', 'eventlist' ); ?>
+									</p>
+								</div>
+
 								<?php
 								$org_cover_image = get_user_meta( $user_id, 'org_cover_image', true );
 								?>
-								<div class="image_upload_wrap">
+								<div class="image_upload_wrap cover-image-container">
 									<?php if( $org_cover_image ): ?>
-										<img class="preview_cover_image" src="<?php echo esc_url( wp_get_attachment_image_url($org_cover_image, 'large') ); ?>" style="max-width: 100%; height: auto; margin-bottom: 10px;">
-										<button type="button" class="button remove_cover_image"><?php esc_html_e( 'Retirer l\'image', 'eventlist' ); ?></button>
+										<div class="cover-image-preview">
+											<img class="preview_cover_image" src="<?php echo esc_url( wp_get_attachment_image_url($org_cover_image, 'large') ); ?>" alt="<?php esc_attr_e( 'Image de couverture', 'eventlist' ); ?>">
+										</div>
+										<button type="button" class="button remove_cover_image">
+											<i class="icon_close"></i>
+											<?php esc_html_e( 'Retirer l\'image', 'eventlist' ); ?>
+										</button>
 									<?php else: ?>
-										<!-- TODO: Ajouter image par défaut Le Hiboo -->
+										<div class="no-cover-placeholder">
+											<i class="icon_image"></i>
+											<p><?php esc_html_e( 'Aucune image de couverture', 'eventlist' ); ?></p>
+											<small><?php esc_html_e( 'Ajoutez une image pour personnaliser votre profil', 'eventlist' ); ?></small>
+										</div>
 									<?php endif; ?>
-									<button type="button" class="button add_cover_image" data-uploader-title="<?php esc_attr_e( 'Sélectionner une image', 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( 'Utiliser cette image', 'eventlist' ); ?>">
-										<?php esc_html_e( 'Ajouter une image', 'eventlist' ); ?>
+									<button type="button" class="button add_cover_image"
+										data-uploader-title="<?php esc_attr_e( 'Sélectionner une image de couverture', 'eventlist' ); ?>"
+										data-uploader-button-text="<?php esc_attr_e( 'Utiliser cette image', 'eventlist' ); ?>">
+										<i class="icon_upload"></i>
+										<?php esc_html_e( 'Ajouter une image de couverture', 'eventlist' ); ?>
 									</button>
 									<input type="hidden" name="org_cover_image" class="org_cover_image_id" value="<?php echo esc_attr( $org_cover_image ); ?>">
 								</div>
-								<small><?php esc_html_e( 'Format recommandé : 1200x400px', 'eventlist' ); ?></small>
+
+								<small class="format-info">
+									<i class="icon_info_alt"></i>
+									<?php esc_html_e( 'Format recommandé : 1200x400px (panoramique) - PNG ou JPG - Max 2 Mo', 'eventlist' ); ?>
+								</small>
 							</div>
 
 							<!-- Email de contact -->
