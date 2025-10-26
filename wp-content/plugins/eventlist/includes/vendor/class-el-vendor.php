@@ -164,9 +164,15 @@ class EL_Vendor {
 			break;
 
 			case 'media-manager':
+			// DEBUG
+			error_log('MEDIA MANAGER CASE TRIGGERED');
+			error_log('Is vendor: ' . (el_is_vendor() ? 'YES' : 'NO'));
+
 			if( el_is_vendor() && apply_filters( 'el_manage_vendor_show_media_manager', true ) ){
-				$template = apply_filters( 'el_shortcode_media_manager_template', 'vendor/media-manager.php' );
+				error_log('Loading media-manager-test.php template');
+				$template = apply_filters( 'el_shortcode_media_manager_template', 'vendor/media-manager-test.php' );
 			}else{
+				error_log('Loading profile.php template instead');
 				$template = apply_filters( 'el_shortcode_myaccount_template_profile', 'vendor/profile.php' );
 			}
 			break;
