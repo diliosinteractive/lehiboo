@@ -520,7 +520,9 @@
 
 // Wrapper pour augmenter la spécificité CSS
 .vendor_wrap .contents .vendor_edit_event,
-.vendor_edit_event {
+.vendor_edit_event,
+.vendor_wrap .contents .vendor_profile,
+.vendor_profile {
 	background: #fff;
 
 	.el_req {
