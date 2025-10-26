@@ -1781,7 +1781,27 @@ if( !class_exists( 'El_Ajax' ) ){
 			if ( $event_status === 'protected' ) {
 				$event_status = 'publish';
 			}
-			
+
+			// V1 Le Hiboo - Validation minimum 500 caractères pour publication uniquement
+			if ( $event_status === 'publish' ) {
+				// Compter les caractères de la description (en retirant les balises HTML)
+				$description_text = strip_tags( $content_event );
+				$description_length = mb_strlen( $description_text );
+
+				if ( $description_length < 500 ) {
+					wp_send_json( array(
+						'status' => 'error_description_too_short',
+						'message' => sprintf(
+							__( 'La description doit contenir au minimum 500 caractères pour publier l\'activité. Actuellement : %d caractères.', 'eventlist' ),
+							$description_length
+						),
+						'current_length' => $description_length,
+						'required_length' => 500
+					) );
+					wp_die();
+				}
+			}
+
 			if( isset( $meta_data['venue'] ) && $meta_data['venue'] ){
 				foreach ( $meta_data['venue'] as $value ) {
 

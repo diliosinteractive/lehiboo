@@ -3666,3 +3666,24 @@ body.organizer-popup-open {
     height: 160px;
   }
 }
+/**
+ * Fix: Submit Load More blocking clicks
+ * Le spinner de chargement bloque les clics sur la page
+ */
+.submit-load-more {
+  display: none !important;
+  pointer-events: none !important;
+}
+.loading .submit-load-more {
+  display: block !important;
+}
+
+.ticket-calendar .submit-load-more,
+.fullcalendar .submit-load-more {
+  display: none !important;
+  pointer-events: none !important;
+}
+.ticket-calendar.loading .submit-load-more,
+.fullcalendar.loading .submit-load-more {
+  display: flex !important;
+}

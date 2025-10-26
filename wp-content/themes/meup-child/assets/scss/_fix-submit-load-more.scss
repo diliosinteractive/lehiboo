@@ -1,0 +1,32 @@
+/**
+ * Fix: Submit Load More blocking clicks
+ * Le spinner de chargement bloque les clics sur la page
+ */
+
+.submit-load-more {
+	// Cacher par défaut
+	display: none !important;
+
+	// Empêcher les clics même quand visible
+	pointer-events: none !important;
+
+	// Afficher uniquement pendant le chargement
+	.loading & {
+		display: block !important;
+	}
+}
+
+// Pour le calendrier FullCalendar
+.ticket-calendar,
+.fullcalendar {
+	.submit-load-more {
+		display: none !important;
+		pointer-events: none !important;
+	}
+
+	&.loading {
+		.submit-load-more {
+			display: flex !important;
+		}
+	}
+}
