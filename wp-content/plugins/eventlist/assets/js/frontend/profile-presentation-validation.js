@@ -1,9 +1,10 @@
 /**
  * EventList - Profile Presentation Validation
  * V1 Le Hiboo - Validation minimum 500 caractères pour présentation organisateur
- * @version 1.0.4
+ * @version 1.0.5
  *
  * Changelog:
+ * - v1.0.5: Ajout logs complets pour debugging - identifier pourquoi compteur ne s'affiche pas
  * - v1.0.4: Simplification complète - approche identique au script event-description-validation.js
  * - v1.0.3: Simplification - priorité textarea avec fallback TinyMCE + logs debugging
  * - v1.0.2: Ajout logs de debugging + stratégie multi-tentatives + fix sélecteur bouton
@@ -15,11 +16,16 @@
     'use strict';
 
     $(document).ready(function() {
+        console.log('🔵 Profile Presentation Validation - Script chargé');
+        console.log('🔵 Recherche .vendor_profile_wrapper:', $('.vendor_profile_wrapper').length);
 
         // Vérifier si on est sur la page profil
         if (!$('.vendor_profile_wrapper').length) {
+            console.log('❌ Pas de .vendor_profile_wrapper - sortie');
             return;
         }
+
+        console.log('✅ Page profil détectée');
 
         const MIN_DESCRIPTION_LENGTH = 500;
 
@@ -55,17 +61,25 @@
         function updateCharacterCounter() {
             const currentLength = getDescriptionLength();
             const remaining = MIN_DESCRIPTION_LENGTH - currentLength;
+            console.log('📊 updateCharacterCounter - currentLength:', currentLength, 'remaining:', remaining);
 
             let $counter = $('#presentation-char-counter');
+            console.log('🔍 Compteur existant:', $counter.length);
 
             // Créer le compteur s'il n'existe pas
             if (!$counter.length) {
                 const $descriptionField = $('#description').closest('.vendor_field');
+                console.log('🔍 Champ description parent (.vendor_field):', $descriptionField.length);
+
                 if ($descriptionField.length) {
+                    console.log('➕ Création du compteur');
                     $descriptionField.append(
                         '<div id="presentation-char-counter" class="description-counter"></div>'
                     );
                     $counter = $('#presentation-char-counter');
+                    console.log('✅ Compteur créé:', $counter.length);
+                } else {
+                    console.log('❌ Impossible de trouver .vendor_field parent');
                 }
             }
 
@@ -130,28 +144,40 @@
         }
 
         // Initialiser le compteur de caractères
+        console.log('🚀 Initialisation du compteur...');
+        console.log('🔍 Recherche textarea #description:', $('#description').length);
         updateCharacterCounter();
 
         // Mettre à jour le compteur à chaque modification
         if (typeof tinymce !== 'undefined') {
+            console.log('✅ TinyMCE disponible');
             // Pour TinyMCE
             $(document).on('tinymce-editor-init', function(_event, editor) {
+                console.log('📝 TinyMCE editor init:', editor.id);
                 if (editor.id === 'description') {
+                    console.log('✅ Écoute événements TinyMCE sur description');
                     editor.on('keyup change', function() {
+                        console.log('⌨️ Événement TinyMCE détecté');
                         updateCharacterCounter();
                     });
                 }
             });
+        } else {
+            console.log('⚠️ TinyMCE non disponible');
         }
 
         // Pour textarea (fallback)
+        console.log('➕ Ajout listener sur textarea #description');
         $('#description').on('keyup change', function() {
+            console.log('⌨️ Événement textarea détecté');
             updateCharacterCounter();
         });
 
         // Intercepter les clics sur le bouton de sauvegarde
         // Utiliser capture phase pour être exécuté en premier
+        console.log('🔍 Recherche bouton el_update_presentation:', $('input[name="el_update_presentation"]').length);
         $('input[name="el_update_presentation"]').each(function() {
+            console.log('➕ Ajout listener sur bouton sauvegarde');
             const button = this;
             button.addEventListener('click', function(e) {
                 // Valider avant soumission
