@@ -1,0 +1,289 @@
+/**
+ * Image Editor for Vendor Media Manager
+ * Uses Cropper.js
+ * @package EventList
+ */
+
+(function($) {
+    'use strict';
+
+    window.EL_MediaEditor = {
+
+        currentCropper: null,
+        currentFile: null,
+        currentImage: null,
+
+        /**
+         * Ouvrir l'éditeur d'image
+         */
+        openEditor: function(file, callback) {
+            const self = this;
+            this.currentFile = file;
+            this.callback = callback;
+
+            // Créer le reader pour charger l'image
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                self.showEditorModal(e.target.result);
+            };
+
+            reader.readAsDataURL(file);
+        },
+
+        /**
+         * Afficher le modal d'édition
+         */
+        showEditorModal: function(imageDataUrl) {
+            const self = this;
+
+            // Créer le modal s'il n'existe pas
+            if ($('#media_editor_modal').length === 0) {
+                this.createEditorModal();
+            }
+
+            // Charger l'image
+            const $img = $('#editor_image');
+            $img.attr('src', imageDataUrl);
+
+            // Afficher le modal
+            $('#media_editor_modal').fadeIn(200);
+
+            // Initialiser Cropper après que l'image soit chargée
+            $img.off('load').on('load', function() {
+                self.initCropper();
+            });
+        },
+
+        /**
+         * Créer le modal d'édition
+         */
+        createEditorModal: function() {
+            const modalHtml = `
+                <div id="media_editor_modal" class="media_modal modal_editor" style="display: none;">
+                    <div class="modal_overlay"></div>
+                    <div class="modal_content modal_content_large">
+                        <div class="modal_header">
+                            <h3 class="modal_title">Éditer l'image</h3>
+                            <button type="button" class="modal_close">&times;</button>
+                        </div>
+                        <div class="modal_body">
+                            <div class="editor_container">
+                                <div class="editor_image_wrapper">
+                                    <img id="editor_image" src="" alt="Image à éditer">
+                                </div>
+                                <div class="editor_toolbar">
+                                    <div class="toolbar_group">
+                                        <button type="button" class="editor_btn" data-action="rotate-left" title="Rotation -90°">
+                                            <i class="fa fa-rotate-left"></i>
+                                        </button>
+                                        <button type="button" class="editor_btn" data-action="rotate-right" title="Rotation +90°">
+                                            <i class="fa fa-rotate-right"></i>
+                                        </button>
+                                    </div>
+                                    <div class="toolbar_group">
+                                        <button type="button" class="editor_btn" data-action="flip-h" title="Miroir horizontal">
+                                            <i class="fa fa-arrows-h"></i>
+                                        </button>
+                                        <button type="button" class="editor_btn" data-action="flip-v" title="Miroir vertical">
+                                            <i class="fa fa-arrows-v"></i>
+                                        </button>
+                                    </div>
+                                    <div class="toolbar_group">
+                                        <button type="button" class="editor_btn" data-action="zoom-in" title="Zoom +">
+                                            <i class="fa fa-search-plus"></i>
+                                        </button>
+                                        <button type="button" class="editor_btn" data-action="zoom-out" title="Zoom -">
+                                            <i class="fa fa-search-minus"></i>
+                                        </button>
+                                        <button type="button" class="editor_btn" data-action="reset" title="Réinitialiser">
+                                            <i class="fa fa-refresh"></i>
+                                        </button>
+                                    </div>
+                                    <div class="toolbar_group">
+                                        <label class="toolbar_label">
+                                            <span>Ratio:</span>
+                                            <select class="aspect_ratio_select">
+                                                <option value="free">Libre</option>
+                                                <option value="1">1:1 (Carré)</option>
+                                                <option value="1.3333">4:3</option>
+                                                <option value="1.7778">16:9</option>
+                                                <option value="0.75">3:4 (Portrait)</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal_footer">
+                            <button type="button" class="el_button btn_cancel">Annuler</button>
+                            <button type="button" class="el_button el_button_primary btn_apply_edit">Appliquer</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            $('body').append(modalHtml);
+
+            // Bind events
+            this.bindEditorEvents();
+        },
+
+        /**
+         * Initialiser Cropper.js
+         */
+        initCropper: function() {
+            const self = this;
+            const $img = $('#editor_image')[0];
+
+            // Détruire l'ancien cropper s'il existe
+            if (this.currentCropper) {
+                this.currentCropper.destroy();
+            }
+
+            // Vérifier que Cropper est chargé
+            if (typeof Cropper === 'undefined') {
+                console.error('Cropper.js not loaded');
+                return;
+            }
+
+            // Initialiser Cropper
+            this.currentCropper = new Cropper($img, {
+                viewMode: 1,
+                dragMode: 'move',
+                aspectRatio: NaN, // Libre par défaut
+                autoCropArea: 1,
+                restore: false,
+                guides: true,
+                center: true,
+                highlight: true,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false,
+                responsive: true,
+                checkOrientation: true,
+                background: false,
+            });
+        },
+
+        /**
+         * Bind des événements de l'éditeur
+         */
+        bindEditorEvents: function() {
+            const self = this;
+
+            // Actions toolbar
+            $(document).on('click', '.editor_btn', function() {
+                const action = $(this).data('action');
+                self.executeAction(action);
+            });
+
+            // Changement de ratio
+            $(document).on('change', '.aspect_ratio_select', function() {
+                const ratio = $(this).val();
+                if (self.currentCropper) {
+                    if (ratio === 'free') {
+                        self.currentCropper.setAspectRatio(NaN);
+                    } else {
+                        self.currentCropper.setAspectRatio(parseFloat(ratio));
+                    }
+                }
+            });
+
+            // Appliquer les modifications
+            $(document).on('click', '.btn_apply_edit', function() {
+                self.applyEdit();
+            });
+
+            // Fermer le modal
+            $(document).on('click', '#media_editor_modal .modal_close, #media_editor_modal .btn_cancel', function() {
+                self.closeEditor();
+            });
+        },
+
+        /**
+         * Exécuter une action
+         */
+        executeAction: function(action) {
+            if (!this.currentCropper) return;
+
+            switch (action) {
+                case 'rotate-left':
+                    this.currentCropper.rotate(-90);
+                    break;
+                case 'rotate-right':
+                    this.currentCropper.rotate(90);
+                    break;
+                case 'flip-h':
+                    this.currentCropper.scaleX(-this.currentCropper.getData().scaleX || -1);
+                    break;
+                case 'flip-v':
+                    this.currentCropper.scaleY(-this.currentCropper.getData().scaleY || -1);
+                    break;
+                case 'zoom-in':
+                    this.currentCropper.zoom(0.1);
+                    break;
+                case 'zoom-out':
+                    this.currentCropper.zoom(-0.1);
+                    break;
+                case 'reset':
+                    this.currentCropper.reset();
+                    break;
+            }
+        },
+
+        /**
+         * Appliquer les modifications
+         */
+        applyEdit: function() {
+            if (!this.currentCropper) return;
+
+            const self = this;
+
+            // Obtenir le canvas de l'image éditée
+            const canvas = this.currentCropper.getCroppedCanvas({
+                maxWidth: 4000,
+                maxHeight: 4000,
+                fillColor: '#fff',
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+            });
+
+            // Convertir en Blob
+            canvas.toBlob(function(blob) {
+                // Créer un nouveau File à partir du Blob
+                const fileName = self.currentFile.name;
+                const file = new File([blob], fileName, {
+                    type: self.currentFile.type,
+                    lastModified: Date.now()
+                });
+
+                // Callback avec le fichier édité
+                if (self.callback) {
+                    self.callback(file);
+                }
+
+                self.closeEditor();
+
+            }, self.currentFile.type, 0.92);
+        },
+
+        /**
+         * Fermer l'éditeur
+         */
+        closeEditor: function() {
+            if (this.currentCropper) {
+                this.currentCropper.destroy();
+                this.currentCropper = null;
+            }
+
+            $('#media_editor_modal').fadeOut(200);
+            this.currentFile = null;
+            this.callback = null;
+        }
+    };
+
+    // Export global
+    window.MediaEditor = window.EL_MediaEditor;
+
+})(jQuery);

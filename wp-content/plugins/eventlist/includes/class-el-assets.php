@@ -269,9 +269,17 @@ class EL_Assets{
 			wp_enqueue_script('el_vendor_gallery', EL_PLUGIN_URI.'assets/js/frontend/vendor-gallery.js', array('jquery'),'1.0',true );
 		}
 
-		// Vendor Media Manager - V1 Le Hiboo - Gestionnaire de médias avec dossiers
+		// Vendor Media Manager - V1 Le Hiboo - Gestionnaire de médias avec dossiers + Optimisation
 		if ( isset( $_GET['vendor'] ) && $_GET['vendor'] == 'media-manager' ) {
-			wp_enqueue_script('el_vendor_media_manager', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-manager.js', array('jquery'),'1.0',true );
+			// Librairies externes
+			wp_enqueue_script('browser_image_compression', EL_PLUGIN_URI.'assets/libs/browser-image-compression/browser-image-compression.js', array(), '2.0.2', true);
+			wp_enqueue_script('cropperjs', EL_PLUGIN_URI.'assets/libs/cropperjs/cropper.min.js', array('jquery'), '1.6.1', true);
+			wp_enqueue_style('cropperjs_css', EL_PLUGIN_URI.'assets/libs/cropperjs/cropper.min.css', array(), '1.6.1');
+
+			// Scripts custom
+			wp_enqueue_script('el_vendor_media_compression', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-compression.js', array('jquery', 'browser_image_compression'), '1.0', true);
+			wp_enqueue_script('el_vendor_media_editor', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-editor.js', array('jquery', 'cropperjs'), '1.0', true);
+			wp_enqueue_script('el_vendor_media_manager', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-manager.js', array('jquery', 'el_vendor_media_compression', 'el_vendor_media_editor'), '1.0', true);
 		}
 
 		if ( did_action( 'elementor/loaded' ) ) {

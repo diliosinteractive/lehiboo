@@ -1184,6 +1184,135 @@
                 }
             }
         }
+
+        // Image Editor Modal
+        &.modal_editor {
+            .modal_content {
+                max-width: 1200px;
+                max-height: 95vh;
+            }
+
+            .editor_container {
+                .editor_image_wrapper {
+                    max-height: 60vh;
+                    overflow: hidden;
+                    background: #000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    img {
+                        max-width: 100%;
+                        max-height: 60vh;
+                        display: block;
+                    }
+                }
+
+                .editor_toolbar {
+                    display: flex;
+                    justify-content: center;
+                    gap: 20px;
+                    padding: 20px;
+                    background: #f8f9fa;
+                    border-top: 1px solid #dee2e6;
+                    flex-wrap: wrap;
+
+                    .toolbar_group {
+                        display: flex;
+                        gap: 8px;
+                        align-items: center;
+
+                        .editor_btn {
+                            width: 40px;
+                            height: 40px;
+                            border: 1px solid #dee2e6;
+                            background: #fff;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            transition: all 0.2s;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            &:hover {
+                                background: #FF6B35;
+                                border-color: #FF6B35;
+                                color: #fff;
+                                transform: translateY(-2px);
+                            }
+
+                            i {
+                                font-size: 16px;
+                            }
+                        }
+
+                        .toolbar_label {
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            font-size: 14px;
+                            color: #2c3e50;
+
+                            span {
+                                font-weight: 500;
+                            }
+
+                            select {
+                                padding: 8px 12px;
+                                border: 1px solid #dee2e6;
+                                border-radius: 6px;
+                                font-size: 14px;
+                                background: #fff;
+                                cursor: pointer;
+
+                                &:focus {
+                                    outline: none;
+                                    border-color: #FF6B35;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .modal_footer {
+                padding: 16px 24px;
+                background: #fff;
+                border-top: 1px solid #dee2e6;
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+
+                button {
+                    padding: 10px 24px;
+                    border: 1px solid #dee2e6;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: all 0.2s;
+
+                    &.btn_cancel {
+                        background: #fff;
+                        color: #6c757d;
+
+                        &:hover {
+                            background: #f8f9fa;
+                        }
+                    }
+
+                    &.el_button_primary {
+                        background: #FF6B35;
+                        border-color: #FF6B35;
+                        color: #fff;
+
+                        &:hover {
+                            background: #FF8C42;
+                            transform: translateY(-1px);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

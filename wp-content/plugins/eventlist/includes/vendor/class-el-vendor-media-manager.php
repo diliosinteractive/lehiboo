@@ -150,7 +150,7 @@ class EL_Vendor_Media_Manager {
             return new WP_Error( 'upload_error', self::get_upload_error_message( $file['error'] ) );
         }
 
-        // Vérifier le type MIME
+        // Vérifier le type MIME par extension
         $allowed_mimes = self::get_allowed_mime_types();
         $file_type = wp_check_filetype( $file['name'], $allowed_mimes );
 
@@ -158,7 +158,41 @@ class EL_Vendor_Media_Manager {
             return new WP_Error( 'invalid_file_type', __( 'Type de fichier non autorisé', 'eventlist' ) );
         }
 
-        // Vérifier la taille (10MB par défaut)
+        // SÉCURITÉ RENFORCÉE: Vérifier le vrai type MIME avec finfo
+        if ( function_exists( 'finfo_open' ) ) {
+            $finfo = finfo_open( FILEINFO_MIME_TYPE );
+            $real_mime = finfo_file( $finfo, $file['tmp_name'] );
+            finfo_close( $finfo );
+
+            $allowed_real_mimes = array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' );
+
+            if ( ! in_array( $real_mime, $allowed_real_mimes ) ) {
+                return new WP_Error( 'invalid_file_content', __( 'Le contenu du fichier ne correspond pas à une image valide', 'eventlist' ) );
+            }
+        }
+
+        // SÉCURITÉ: Vérifier les dimensions de l'image
+        $image_info = @getimagesize( $file['tmp_name'] );
+
+        if ( ! $image_info ) {
+            return new WP_Error( 'invalid_image', __( 'Le fichier n\'est pas une image valide', 'eventlist' ) );
+        }
+
+        list( $width, $height ) = $image_info;
+
+        // Limite de dimensions (4000x4000px par défaut)
+        $max_width = apply_filters( 'el_vendor_media_max_width', 4000 );
+        $max_height = apply_filters( 'el_vendor_media_max_height', 4000 );
+
+        if ( $width > $max_width || $height > $max_height ) {
+            return new WP_Error( 'image_too_large', sprintf(
+                __( 'Les dimensions de l\'image sont trop grandes. Maximum: %dx%d pixels', 'eventlist' ),
+                $max_width,
+                $max_height
+            ) );
+        }
+
+        // Vérifier la taille du fichier (10MB par défaut)
         $max_size = apply_filters( 'el_vendor_media_max_size', 10 * 1024 * 1024 ); // 10MB
 
         if ( $file['size'] > $max_size ) {
@@ -167,6 +201,43 @@ class EL_Vendor_Media_Manager {
                 size_format( $max_size )
             ) );
         }
+
+        // SÉCURITÉ: Rate limiting - Vérifier le nombre d'uploads
+        $rate_limit_check = self::check_upload_rate_limit( $file );
+        if ( is_wp_error( $rate_limit_check ) ) {
+            return $rate_limit_check;
+        }
+
+        return true;
+    }
+
+    /**
+     * Rate limiting pour les uploads
+     */
+    private static function check_upload_rate_limit( $file ) {
+        $user_id = get_current_user_id();
+
+        // Limite par jour (50 uploads par défaut)
+        $daily_limit = apply_filters( 'el_vendor_media_daily_limit', 50 );
+
+        // Récupérer les uploads du jour
+        $transient_key = 'el_upload_count_' . $user_id . '_' . date( 'Y-m-d' );
+        $upload_count = get_transient( $transient_key );
+
+        if ( $upload_count === false ) {
+            $upload_count = 0;
+        }
+
+        if ( $upload_count >= $daily_limit ) {
+            return new WP_Error( 'rate_limit_exceeded', sprintf(
+                __( 'Limite d\'uploads atteinte pour aujourd\'hui (%d fichiers maximum)', 'eventlist' ),
+                $daily_limit
+            ) );
+        }
+
+        // Incrémenter le compteur (expire à minuit)
+        $seconds_until_midnight = strtotime( 'tomorrow' ) - time();
+        set_transient( $transient_key, $upload_count + 1, $seconds_until_midnight );
 
         return true;
     }

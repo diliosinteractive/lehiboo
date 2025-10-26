@@ -31,6 +31,13 @@ $folder_path = $current_folder > 0 ? EL_Vendor_Folders::get_folder_path( $curren
 $nonce = wp_create_nonce( 'el_vendor_media_nonce' );
 ?>
 
+<!-- DEBUG: Force CSS reload -->
+<style>
+.vendor_media_manager { background: #ffffff !important; padding: 20px !important; border-radius: 8px !important; }
+.media_manager_content { display: flex !important; gap: 24px !important; min-height: 600px !important; }
+.media_sidebar { width: 280px !important; flex-shrink: 0 !important; background: #f8f9fa !important; padding: 16px !important; border-radius: 8px !important; }
+</style>
+
 <div class="vendor_media_manager" data-nonce="<?php echo esc_attr( $nonce ); ?>">
 
     <!-- Header -->

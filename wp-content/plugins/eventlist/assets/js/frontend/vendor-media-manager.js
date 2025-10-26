@@ -261,7 +261,7 @@
         /**
          * Handle files selection
          */
-        handleFiles: function(files) {
+        handleFiles: async function(files) {
             if (files.length === 0) return;
 
             const self = this;
@@ -271,33 +271,80 @@
             $previewList.empty();
 
             // Convert FileList to Array
-            this.uploadQueue = Array.from(files);
+            let fileArray = Array.from(files);
 
-            // Generate previews
-            this.uploadQueue.forEach(function(file, index) {
-                if (!file.type.match('image.*')) {
-                    self.showError(file.name + ' n\'est pas une image valide');
-                    return;
+            // OPTIMISATION: Compresser les images avant upload
+            if (window.EL_MediaCompression) {
+                try {
+                    console.log('[Upload] Compression de', fileArray.length, 'image(s)...');
+
+                    // Afficher le statut de compression
+                    fileArray.forEach(function(file, index) {
+                        const template = $('#tmpl-upload-preview-item').html();
+                        const html = template
+                            .replace(/\{\{index\}\}/g, index)
+                            .replace(/\{\{preview\}\}/g, '')
+                            .replace(/\{\{name\}\}/g, file.name)
+                            .replace(/\{\{size\}\}/g, self.formatFileSize(file.size));
+
+                        $previewList.append(html);
+                        $('[data-file-index="' + index + '"]').find('.preview_status').text('Compression...');
+                    });
+
+                    // Compresser toutes les images
+                    const compressedFiles = await window.EL_MediaCompression.compressMultiple(fileArray, function(progress) {
+                        const index = progress.current - 1;
+                        $('[data-file-index="' + index + '"]').find('.preview_status').text(
+                            'Compression: ' + progress.percent + '%'
+                        );
+                    });
+
+                    fileArray = compressedFiles;
+
+                    // Mettre à jour les previews avec les images compressées
+                    fileArray.forEach(function(file, index) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            $('[data-file-index="' + index + '"]').find('img').attr('src', e.target.result);
+                            $('[data-file-index="' + index + '"]').find('.preview_size').text(self.formatFileSize(file.size));
+                            $('[data-file-index="' + index + '"]').find('.preview_status').text('Prêt');
+                        };
+                        reader.readAsDataURL(file);
+                    });
+
+                } catch (error) {
+                    console.error('[Upload] Compression error:', error);
+                    // Continuer avec les fichiers originaux en cas d'erreur
                 }
+            } else {
+                // Pas de compression disponible, générer les previews normalement
+                fileArray.forEach(function(file, index) {
+                    if (!file.type.match('image.*')) {
+                        self.showError(file.name + ' n\'est pas une image valide');
+                        return;
+                    }
 
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const template = $('#tmpl-upload-preview-item').html();
-                    const html = template
-                        .replace(/\{\{index\}\}/g, index)
-                        .replace(/\{\{preview\}\}/g, e.target.result)
-                        .replace(/\{\{name\}\}/g, file.name)
-                        .replace(/\{\{size\}\}/g, self.formatFileSize(file.size));
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const template = $('#tmpl-upload-preview-item').html();
+                        const html = template
+                            .replace(/\{\{index\}\}/g, index)
+                            .replace(/\{\{preview\}\}/g, e.target.result)
+                            .replace(/\{\{name\}\}/g, file.name)
+                            .replace(/\{\{size\}\}/g, self.formatFileSize(file.size));
 
-                    $previewList.append(html);
-                };
-                reader.readAsDataURL(file);
-            });
+                        $previewList.append(html);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            this.uploadQueue = fileArray;
 
             // Start upload
             setTimeout(function() {
                 self.uploadFiles();
-            }, 500);
+            }, 1000);
         },
 
         /**
