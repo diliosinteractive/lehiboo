@@ -1,9 +1,10 @@
 /**
  * EventList - Profile Presentation Validation
  * V1 Le Hiboo - Validation minimum 500 caractères pour présentation organisateur
- * @version 1.0.2
+ * @version 1.0.3
  *
  * Changelog:
+ * - v1.0.3: Simplification - priorité textarea avec fallback TinyMCE + logs debugging
  * - v1.0.2: Ajout logs de debugging + stratégie multi-tentatives + fix sélecteur bouton
  * - v1.0.1: Ajout compatibilité TinyMCE (wp_editor) pour le champ Description
  * - v1.0.0: Version initiale (textarea simple uniquement)
@@ -35,26 +36,32 @@
         function getDescriptionLength() {
             let content = '';
 
-            // Vérifier si TinyMCE est initialisé pour ce champ
-            if (typeof tinymce !== 'undefined' && tinymce.get('description')) {
+            // Essayer d'abord avec TinyMCE
+            if (typeof tinymce !== 'undefined') {
                 const editor = tinymce.get('description');
-                content = editor.getContent({format: 'text'}) || '';
-                console.log('Contenu récupéré depuis TinyMCE:', content.length + ' chars');
-            } else {
-                // Fallback sur textarea standard
-                const $textarea = $('#description');
-                if ($textarea.length) {
-                    content = $textarea.val() || '';
-                    console.log('Contenu récupéré depuis textarea:', content.length + ' chars');
-                } else {
-                    console.log('Aucun champ description trouvé');
+                if (editor && !editor.isHidden()) {
+                    content = editor.getContent({format: 'text'}) || '';
+                    console.log('Contenu récupéré depuis TinyMCE:', content.length + ' chars');
+                    // Retirer les balises HTML et compter
+                    const textOnly = content.replace(/<[^>]*>/g, '').trim();
+                    console.log('Longueur finale après nettoyage:', textOnly.length);
+                    return textOnly.length;
                 }
             }
 
-            // Retirer les balises HTML et compter
-            const textOnly = content.replace(/<[^>]*>/g, '').trim();
-            console.log('Longueur finale après nettoyage:', textOnly.length);
-            return textOnly.length;
+            // Sinon, utiliser directement le textarea
+            const $textarea = $('#description');
+            if ($textarea.length) {
+                content = $textarea.val() || '';
+                console.log('Contenu récupéré depuis textarea (#description):', content.length + ' chars');
+                // Retirer les balises HTML et compter
+                const textOnly = content.replace(/<[^>]*>/g, '').trim();
+                console.log('Longueur finale après nettoyage:', textOnly.length);
+                return textOnly.length;
+            }
+
+            console.log('Aucun champ description trouvé');
+            return 0;
         }
 
         /**
@@ -158,52 +165,46 @@
         }
 
         // Initialiser le compteur de caractères
-        // Attendre que TinyMCE soit chargé
         function initCharacterCounter() {
             console.log('initCharacterCounter() appelé');
-            console.log('typeof tinymce:', typeof tinymce);
 
+            // Chercher le textarea
+            const $textarea = $('#description');
+            console.log('Textarea #description trouvé:', $textarea.length);
+
+            if (!$textarea.length) {
+                console.log('Aucun textarea #description trouvé');
+                return false;
+            }
+
+            // Afficher le compteur immédiatement
+            updateCharacterCounter();
+            console.log('Compteur initialisé');
+
+            // Écouter les événements sur le textarea
+            $textarea.on('keyup change input blur', function() {
+                console.log('Événement textarea détecté');
+                updateCharacterCounter();
+            });
+
+            // Si TinyMCE existe, écouter aussi ses événements
             if (typeof tinymce !== 'undefined') {
-                console.log('TinyMCE disponible, recherche éditeur description...');
                 const editor = tinymce.get('description');
-                console.log('Éditeur description:', editor);
-
                 if (editor) {
-                    console.log('TinyMCE initialisé pour description - mise en place listeners');
-
-                    // Mettre à jour immédiatement
-                    updateCharacterCounter();
-
-                    // Écouter les changements dans TinyMCE
-                    editor.on('keyup change input NodeChange', function() {
+                    console.log('TinyMCE détecté, ajout listeners TinyMCE');
+                    editor.on('keyup change input NodeChange blur', function() {
                         console.log('Événement TinyMCE détecté');
                         updateCharacterCounter();
                     });
-                    return true;
                 }
             }
 
-            // Fallback pour textarea standard
-            console.log('Fallback textarea standard');
-            const $textarea = $('#description');
-            console.log('Textarea trouvé:', $textarea.length);
-
-            if ($textarea.length) {
-                updateCharacterCounter();
-                $textarea.on('keyup change input', function() {
-                    console.log('Événement textarea détecté');
-                    updateCharacterCounter();
-                });
-                return true;
-            }
-
-            console.log('Aucun éditeur trouvé');
-            return false;
+            return true;
         }
 
         // Stratégie multi-tentatives pour initialiser
         let initAttempts = 0;
-        const maxAttempts = 10;
+        const maxAttempts = 5;
 
         function tryInit() {
             initAttempts++;
@@ -215,28 +216,16 @@
             }
 
             if (initAttempts < maxAttempts) {
-                console.log('⏳ Nouvelle tentative dans 500ms...');
-                setTimeout(tryInit, 500);
+                console.log('⏳ Nouvelle tentative dans 300ms...');
+                setTimeout(tryInit, 300);
             } else {
                 console.error('❌ Échec initialisation après ' + maxAttempts + ' tentatives');
             }
         }
 
-        // Attendre que TinyMCE soit initialisé
-        if (typeof tinymce !== 'undefined') {
-            console.log('TinyMCE détecté, écoute événement AddEditor');
-            tinymce.on('AddEditor', function(e) {
-                console.log('Événement AddEditor reçu pour:', e.editor.id);
-                if (e.editor.id === 'description') {
-                    console.log('Éditeur description ajouté, initialisation dans 300ms');
-                    setTimeout(tryInit, 300);
-                }
-            });
-        }
-
-        // Démarrer les tentatives d'initialisation
+        // Démarrer les tentatives d'initialisation rapidement
         console.log('Démarrage tentatives d\'initialisation');
-        setTimeout(tryInit, 1000);
+        setTimeout(tryInit, 500);
 
         // Intercepter les clics sur le bouton de sauvegarde
         // Utiliser capture phase pour être exécuté en premier
