@@ -64,7 +64,7 @@ $image_banner = get_post_meta( $post_id, $_prefix.'image_banner', true) ? get_po
 
 
 <!-- Single Banner -->
-<div class="wrap_single_banner vendor_field">
+<div class="wrap_single_banner vendor_field" style="display:none">
 	<label class="label"><?php esc_html_e( 'Display Top Banner of event detailt at frontend:', 'eventlist' ); ?></label>
 	
 	<div class="radio_single_banner">

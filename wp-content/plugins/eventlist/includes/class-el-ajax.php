@@ -1223,6 +1223,20 @@ if( !class_exists( 'El_Ajax' ) ){
 				wp_die();
 			}
 
+			// V1 Le Hiboo - Validation minimum 500 caractères pour la présentation
+			$description_length = mb_strlen( trim( $description ) );
+			if ( $description_length < 500 ) {
+				wp_send_json_error( array(
+					'message' => sprintf(
+						__( 'La présentation doit contenir au minimum 500 caractères. Actuellement : %d caractères.', 'eventlist' ),
+						$description_length
+					),
+					'current_length' => $description_length,
+					'required_length' => 500
+				) );
+				wp_die();
+			}
+
 			$org_cover_image = isset( $post_data['org_cover_image'] ) ? absint( $post_data['org_cover_image'] ) : 0;
 			$org_email_contact = isset( $post_data['org_email_contact'] ) ? sanitize_email( $post_data['org_email_contact'] ) : '';
 			$org_phone_contact = isset( $post_data['org_phone_contact'] ) ? sanitize_text_field( $post_data['org_phone_contact'] ) : '';

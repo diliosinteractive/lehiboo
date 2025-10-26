@@ -1,7 +1,7 @@
 /**
  * EventList - Event Description Validation
  * V1 Le Hiboo - Validation minimum 500 caractères pour publication
- * @version 1.0.0
+ * @version 1.0.1
  */
 
 (function($) {
@@ -15,6 +15,9 @@
         }
 
         const MIN_DESCRIPTION_LENGTH = 500;
+
+        // Flag global pour indiquer si la validation a échoué
+        window.el_description_validation_failed = false;
 
         /**
          * Compter les caractères dans l'éditeur (en retirant les balises HTML)
@@ -85,6 +88,9 @@
          * Valider avant soumission
          */
         function validateBeforeSubmit() {
+            // Reset du flag
+            window.el_description_validation_failed = false;
+
             const eventStatus = $('input[name="event_status"]:checked').val();
 
             // Validation uniquement si statut = publish
@@ -96,6 +102,9 @@
 
             if (currentLength < MIN_DESCRIPTION_LENGTH) {
                 const remaining = MIN_DESCRIPTION_LENGTH - currentLength;
+
+                // Marquer la validation comme échouée
+                window.el_description_validation_failed = true;
 
                 alert(
                     'La description doit contenir au minimum 500 caractères pour publier l\'activité.\n\n' +
@@ -180,12 +189,39 @@
         // Vérifier lors du changement de statut
         checkPublishStatusChange();
 
-        // Intercepter la soumission du formulaire
-        $('.el_edit_event_submit, #trigger_save_event').on('click', function(e) {
-            if (!validateBeforeSubmit()) {
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                return false;
+        // Intercepter les clics sur les boutons AVANT tout autre handler
+        // Utiliser capture phase pour être exécuté en premier
+        $('.el_edit_event_submit, #trigger_save_event').each(function() {
+            const button = this;
+            button.addEventListener('click', function(e) {
+                console.log('Click intercepté sur bouton submit');
+
+                // Valider avant soumission
+                if (!validateBeforeSubmit()) {
+                    console.log('Validation échouée - blocage du submit');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+
+                    // Empêcher tous les événements suivants
+                    return false;
+                }
+
+                console.log('Validation réussie - autorisation du submit');
+            }, true); // true = capture phase (exécuté en premier)
+        });
+
+        // Hook AJAX beforeSend pour bloquer si validation échouée
+        $(document).ajaxSend(function(_event, jqxhr, settings) {
+            // Vérifier si c'est une requête de sauvegarde d'événement
+            if (settings.data && typeof settings.data === 'string' && settings.data.indexOf('el_save_edit_event') !== -1) {
+                if (window.el_description_validation_failed === true) {
+                    // Annuler la requête AJAX
+                    jqxhr.abort();
+                    window.el_description_validation_failed = false;
+                    console.log('Soumission bloquée : description trop courte');
+                    return false;
+                }
             }
         });
 
