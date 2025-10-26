@@ -93,20 +93,6 @@ function el_render_folder_tree( $folders, $current_folder = 0, $level = 0 ) {
                 </a>
             </div>
         </li>
-        <!-- Racine (images sans dossier) -->
-        <li class="folder_item folder_root <?php echo $current_folder === 0 ? 'active' : ''; ?>"
-            data-folder-id="0">
-            <div class="folder_header">
-                <span class="folder_toggle_spacer"></span>
-                <a href="?vendor=media-manager&folder=0" class="folder_link">
-                    <span class="folder_icon">
-                        <i class="fa fa-folder-open"></i>
-                    </span>
-                    <span class="folder_name"><?php esc_html_e( 'Racine', 'eventlist' ); ?></span>
-                    <span class="folder_count" id="root_count">(0)</span>
-                </a>
-            </div>
-        </li>
     </ul>
 
     <!-- Dossiers utilisateur -->
