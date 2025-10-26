@@ -439,7 +439,12 @@ class EL_Vendor_Media_Manager {
         $offset = ( $args['page'] - 1 ) * $args['per_page'];
 
         // Base query
-        $where = $wpdb->prepare( "WHERE i.folder_id = %d AND i.user_id = %d", $folder_id, $args['user_id'] );
+        // Si folder_id est null ou -1, on charge TOUTES les images de l'utilisateur
+        if ( $folder_id === null || $folder_id === -1 ) {
+            $where = $wpdb->prepare( "WHERE i.user_id = %d", $args['user_id'] );
+        } else {
+            $where = $wpdb->prepare( "WHERE i.folder_id = %d AND i.user_id = %d", $folder_id, $args['user_id'] );
+        }
 
         // Search
         if ( ! empty( $args['search'] ) ) {

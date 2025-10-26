@@ -78,10 +78,10 @@ function el_render_folder_tree( $folders, $current_folder = 0, $level = 0 ) {
 
 <div class="folders_tree">
 
-    <!-- Racine -->
+    <!-- Toutes les images -->
     <ul class="folders_list level_0">
-        <li class="folder_item folder_root <?php echo $current_folder === 0 ? 'active' : ''; ?>"
-            data-folder-id="0">
+        <li class="folder_item folder_all <?php echo $current_folder === -1 ? 'active' : ''; ?>"
+            data-folder-id="-1">
             <div class="folder_header">
                 <span class="folder_toggle_spacer"></span>
                 <a href="?vendor=media-manager" class="folder_link">
@@ -89,6 +89,20 @@ function el_render_folder_tree( $folders, $current_folder = 0, $level = 0 ) {
                         <i class="fa fa-home"></i>
                     </span>
                     <span class="folder_name"><?php esc_html_e( 'Toutes les images', 'eventlist' ); ?></span>
+                    <span class="folder_count" id="all_count">(0)</span>
+                </a>
+            </div>
+        </li>
+        <!-- Racine (images sans dossier) -->
+        <li class="folder_item folder_root <?php echo $current_folder === 0 ? 'active' : ''; ?>"
+            data-folder-id="0">
+            <div class="folder_header">
+                <span class="folder_toggle_spacer"></span>
+                <a href="?vendor=media-manager&folder=0" class="folder_link">
+                    <span class="folder_icon">
+                        <i class="fa fa-folder-open"></i>
+                    </span>
+                    <span class="folder_name"><?php esc_html_e( 'Racine', 'eventlist' ); ?></span>
                     <span class="folder_count" id="root_count">(0)</span>
                 </a>
             </div>
