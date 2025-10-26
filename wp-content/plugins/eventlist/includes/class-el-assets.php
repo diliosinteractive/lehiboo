@@ -151,6 +151,9 @@ class EL_Assets{
 			// V1 Le Hiboo - Fix: Ajouter el_custom_tax_slug manquant sur frontend
 			wp_localize_script( 'el_script_admin', 'el_custom_tax_slug', el_get_custom_taxonomy_slug_arr() );
 
+			// V1 Le Hiboo - Fix: Ajouter pagenow manquant sur frontend (simulé pour compatibilité admin.min.js)
+			wp_localize_script( 'el_script_admin', 'pagenow', 'vendor-profile' );
+
 		}
 
 		/* Select2 */
@@ -245,7 +248,7 @@ class EL_Assets{
 			wp_enqueue_script('el_profile_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-validation.js', array('jquery'),'1.0.0',true );
 
 			// Profile Presentation Validation (500 chars minimum) - V1 Le Hiboo
-			wp_enqueue_script('el_profile_presentation_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-presentation-validation.js', array('jquery'),'1.0.1',true );
+			wp_enqueue_script('el_profile_presentation_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-presentation-validation.js', array('jquery'),'1.0.2',true );
 		}
 
 		// Event Form Navigation (Vertical Tabs) - V1 Le Hiboo - Phase 6

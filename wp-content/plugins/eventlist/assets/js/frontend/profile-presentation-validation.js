@@ -1,9 +1,10 @@
 /**
  * EventList - Profile Presentation Validation
  * V1 Le Hiboo - Validation minimum 500 caractères pour présentation organisateur
- * @version 1.0.1
+ * @version 1.0.2
  *
  * Changelog:
+ * - v1.0.2: Ajout logs de debugging + stratégie multi-tentatives + fix sélecteur bouton
  * - v1.0.1: Ajout compatibilité TinyMCE (wp_editor) pour le champ Description
  * - v1.0.0: Version initiale (textarea simple uniquement)
  */
@@ -12,11 +13,15 @@
     'use strict';
 
     $(document).ready(function() {
+        console.log('Profile Presentation Validation - Script chargé');
 
         // Vérifier si on est sur la page profil avec onglet présentation
         if (!$('.vendor_profile_wrapper').length) {
+            console.log('Pas de .vendor_profile_wrapper trouvé - sortie');
             return;
         }
+
+        console.log('Page profil détectée');
 
         const MIN_DESCRIPTION_LENGTH = 500;
 
@@ -34,16 +39,21 @@
             if (typeof tinymce !== 'undefined' && tinymce.get('description')) {
                 const editor = tinymce.get('description');
                 content = editor.getContent({format: 'text'}) || '';
+                console.log('Contenu récupéré depuis TinyMCE:', content.length + ' chars');
             } else {
                 // Fallback sur textarea standard
                 const $textarea = $('#description');
                 if ($textarea.length) {
                     content = $textarea.val() || '';
+                    console.log('Contenu récupéré depuis textarea:', content.length + ' chars');
+                } else {
+                    console.log('Aucun champ description trouvé');
                 }
             }
 
             // Retirer les balises HTML et compter
             const textOnly = content.replace(/<[^>]*>/g, '').trim();
+            console.log('Longueur finale après nettoyage:', textOnly.length);
             return textOnly.length;
         }
 
@@ -150,40 +160,91 @@
         // Initialiser le compteur de caractères
         // Attendre que TinyMCE soit chargé
         function initCharacterCounter() {
-            if (typeof tinymce !== 'undefined' && tinymce.get('description')) {
+            console.log('initCharacterCounter() appelé');
+            console.log('typeof tinymce:', typeof tinymce);
+
+            if (typeof tinymce !== 'undefined') {
+                console.log('TinyMCE disponible, recherche éditeur description...');
                 const editor = tinymce.get('description');
+                console.log('Éditeur description:', editor);
 
-                // Mettre à jour immédiatement
+                if (editor) {
+                    console.log('TinyMCE initialisé pour description - mise en place listeners');
+
+                    // Mettre à jour immédiatement
+                    updateCharacterCounter();
+
+                    // Écouter les changements dans TinyMCE
+                    editor.on('keyup change input NodeChange', function() {
+                        console.log('Événement TinyMCE détecté');
+                        updateCharacterCounter();
+                    });
+                    return true;
+                }
+            }
+
+            // Fallback pour textarea standard
+            console.log('Fallback textarea standard');
+            const $textarea = $('#description');
+            console.log('Textarea trouvé:', $textarea.length);
+
+            if ($textarea.length) {
                 updateCharacterCounter();
-
-                // Écouter les changements dans TinyMCE
-                editor.on('keyup change input NodeChange', function() {
+                $textarea.on('keyup change input', function() {
+                    console.log('Événement textarea détecté');
                     updateCharacterCounter();
                 });
+                return true;
+            }
+
+            console.log('Aucun éditeur trouvé');
+            return false;
+        }
+
+        // Stratégie multi-tentatives pour initialiser
+        let initAttempts = 0;
+        const maxAttempts = 10;
+
+        function tryInit() {
+            initAttempts++;
+            console.log('Tentative d\'initialisation #' + initAttempts);
+
+            if (initCharacterCounter()) {
+                console.log('✅ Initialisation réussie');
+                return;
+            }
+
+            if (initAttempts < maxAttempts) {
+                console.log('⏳ Nouvelle tentative dans 500ms...');
+                setTimeout(tryInit, 500);
             } else {
-                // Fallback pour textarea standard
-                updateCharacterCounter();
-                $('#description').on('keyup change input', function() {
-                    updateCharacterCounter();
-                });
+                console.error('❌ Échec initialisation après ' + maxAttempts + ' tentatives');
             }
         }
 
         // Attendre que TinyMCE soit initialisé
         if (typeof tinymce !== 'undefined') {
+            console.log('TinyMCE détecté, écoute événement AddEditor');
             tinymce.on('AddEditor', function(e) {
+                console.log('Événement AddEditor reçu pour:', e.editor.id);
                 if (e.editor.id === 'description') {
-                    setTimeout(initCharacterCounter, 300);
+                    console.log('Éditeur description ajouté, initialisation dans 300ms');
+                    setTimeout(tryInit, 300);
                 }
             });
         }
 
-        // Fallback si TinyMCE n'est pas là après 2 secondes
-        setTimeout(initCharacterCounter, 2000);
+        // Démarrer les tentatives d'initialisation
+        console.log('Démarrage tentatives d\'initialisation');
+        setTimeout(tryInit, 1000);
 
         // Intercepter les clics sur le bouton de sauvegarde
         // Utiliser capture phase pour être exécuté en premier
-        $('.btn_save_presentation, #save_presentation').each(function() {
+        console.log('Recherche bouton de sauvegarde présentation...');
+        const $saveButton = $('input[name="el_update_presentation"]');
+        console.log('Bouton trouvé:', $saveButton.length);
+
+        $saveButton.each(function() {
             const button = this;
             button.addEventListener('click', function(e) {
                 console.log('Click intercepté sur bouton save presentation');
