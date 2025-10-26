@@ -133,92 +133,90 @@ $nonce = wp_create_nonce( 'el_vendor_media_nonce' );
 
     </div>
 
-</div>
+    <!-- Modal: Créer/Éditer dossier -->
+    <div class="media_modal modal_folder" style="display: none;">
+        <div class="modal_overlay"></div>
+        <div class="modal_content">
+            <div class="modal_header">
+                <h3 class="modal_title"><?php esc_html_e( 'Nouveau dossier', 'eventlist' ); ?></h3>
+                <button type="button" class="modal_close">&times;</button>
+            </div>
+            <div class="modal_body">
+                <form class="folder_form">
+                    <input type="hidden" name="folder_id" value="">
+                    <input type="hidden" name="parent_id" value="<?php echo esc_attr( $current_folder ); ?>">
 
-<!-- Modal: Créer/Éditer dossier -->
-<div class="media_modal modal_folder" style="display: none;">
-    <div class="modal_overlay"></div>
-    <div class="modal_content">
-        <div class="modal_header">
-            <h3 class="modal_title"><?php esc_html_e( 'Nouveau dossier', 'eventlist' ); ?></h3>
-            <button type="button" class="modal_close">&times;</button>
-        </div>
-        <div class="modal_body">
-            <form class="folder_form">
-                <input type="hidden" name="folder_id" value="">
-                <input type="hidden" name="parent_id" value="<?php echo esc_attr( $current_folder ); ?>">
+                    <div class="form_field">
+                        <label><?php esc_html_e( 'Nom du dossier', 'eventlist' ); ?> <span class="required">*</span></label>
+                        <input type="text" name="name" required autocomplete="off">
+                    </div>
 
-                <div class="form_field">
-                    <label><?php esc_html_e( 'Nom du dossier', 'eventlist' ); ?> <span class="required">*</span></label>
-                    <input type="text" name="name" required autocomplete="off">
-                </div>
+                    <div class="form_field">
+                        <label><?php esc_html_e( 'Description', 'eventlist' ); ?></label>
+                        <textarea name="description" rows="3"></textarea>
+                    </div>
 
-                <div class="form_field">
-                    <label><?php esc_html_e( 'Description', 'eventlist' ); ?></label>
-                    <textarea name="description" rows="3"></textarea>
-                </div>
-
-                <div class="form_field">
-                    <label><?php esc_html_e( 'Couleur', 'eventlist' ); ?></label>
-                    <div class="color_picker">
-                        <input type="color" name="color" value="#FF6B35">
-                        <div class="color_presets">
-                            <button type="button" class="color_preset" data-color="#FF6B35" style="background: #FF6B35;"></button>
-                            <button type="button" class="color_preset" data-color="#4A90E2" style="background: #4A90E2;"></button>
-                            <button type="button" class="color_preset" data-color="#7CB342" style="background: #7CB342;"></button>
-                            <button type="button" class="color_preset" data-color="#FFA726" style="background: #FFA726;"></button>
-                            <button type="button" class="color_preset" data-color="#AB47BC" style="background: #AB47BC;"></button>
-                            <button type="button" class="color_preset" data-color="#EC407A" style="background: #EC407A;"></button>
+                    <div class="form_field">
+                        <label><?php esc_html_e( 'Couleur', 'eventlist' ); ?></label>
+                        <div class="color_picker">
+                            <input type="color" name="color" value="#FF6B35">
+                            <div class="color_presets">
+                                <button type="button" class="color_preset" data-color="#FF6B35" style="background: #FF6B35;"></button>
+                                <button type="button" class="color_preset" data-color="#4A90E2" style="background: #4A90E2;"></button>
+                                <button type="button" class="color_preset" data-color="#7CB342" style="background: #7CB342;"></button>
+                                <button type="button" class="color_preset" data-color="#FFA726" style="background: #FFA726;"></button>
+                                <button type="button" class="color_preset" data-color="#AB47BC" style="background: #AB47BC;"></button>
+                                <button type="button" class="color_preset" data-color="#EC407A" style="background: #EC407A;"></button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
+                    <div class="form_actions">
+                        <button type="button" class="el_button btn_cancel"><?php esc_html_e( 'Annuler', 'eventlist' ); ?></button>
+                        <button type="submit" class="el_button el_button_primary"><?php esc_html_e( 'Créer', 'eventlist' ); ?></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Déplacer vers -->
+    <div class="media_modal modal_move" style="display: none;">
+        <div class="modal_overlay"></div>
+        <div class="modal_content">
+            <div class="modal_header">
+                <h3 class="modal_title"><?php esc_html_e( 'Déplacer vers...', 'eventlist' ); ?></h3>
+                <button type="button" class="modal_close">&times;</button>
+            </div>
+            <div class="modal_body">
+                <div class="folder_tree_select">
+                    <!-- Sera généré par JavaScript -->
+                </div>
                 <div class="form_actions">
                     <button type="button" class="el_button btn_cancel"><?php esc_html_e( 'Annuler', 'eventlist' ); ?></button>
-                    <button type="submit" class="el_button el_button_primary"><?php esc_html_e( 'Créer', 'eventlist' ); ?></button>
+                    <button type="button" class="el_button el_button_primary btn_move_confirm"><?php esc_html_e( 'Déplacer', 'eventlist' ); ?></button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Modal: Déplacer vers -->
-<div class="media_modal modal_move" style="display: none;">
-    <div class="modal_overlay"></div>
-    <div class="modal_content">
-        <div class="modal_header">
-            <h3 class="modal_title"><?php esc_html_e( 'Déplacer vers...', 'eventlist' ); ?></h3>
+    <!-- Modal: Viewer d'image -->
+    <div class="media_modal modal_viewer" style="display: none;">
+        <div class="modal_overlay"></div>
+        <div class="modal_content modal_content_large">
             <button type="button" class="modal_close">&times;</button>
-        </div>
-        <div class="modal_body">
-            <div class="folder_tree_select">
-                <!-- Sera généré par JavaScript -->
+            <div class="viewer_content">
+                <img src="" alt="" class="viewer_image">
             </div>
-            <div class="form_actions">
-                <button type="button" class="el_button btn_cancel"><?php esc_html_e( 'Annuler', 'eventlist' ); ?></button>
-                <button type="button" class="el_button el_button_primary btn_move_confirm"><?php esc_html_e( 'Déplacer', 'eventlist' ); ?></button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal: Viewer d'image -->
-<div class="media_modal modal_viewer" style="display: none;">
-    <div class="modal_overlay"></div>
-    <div class="modal_content modal_content_large">
-        <button type="button" class="modal_close">&times;</button>
-        <div class="viewer_content">
-            <img src="" alt="" class="viewer_image">
-        </div>
-        <div class="viewer_info">
-            <h4 class="viewer_title"></h4>
-            <div class="viewer_meta">
-                <span class="meta_size"></span>
-                <span class="meta_date"></span>
+            <div class="viewer_info">
+                <h4 class="viewer_title"></h4>
+                <div class="viewer_meta">
+                    <span class="meta_size"></span>
+                    <span class="meta_date"></span>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 <script>
 // Configuration pour JavaScript
