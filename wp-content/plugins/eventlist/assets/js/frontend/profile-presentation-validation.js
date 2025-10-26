@@ -1,9 +1,10 @@
 /**
  * EventList - Profile Presentation Validation
  * V1 Le Hiboo - Validation minimum 500 caractères pour présentation organisateur
- * @version 1.0.5
+ * @version 1.0.6
  *
  * Changelog:
+ * - v1.0.6: FIX CRITIQUE - Correction sélecteur page (.vendor_profile au lieu de .vendor_profile_wrapper)
  * - v1.0.5: Ajout logs complets pour debugging - identifier pourquoi compteur ne s'affiche pas
  * - v1.0.4: Simplification complète - approche identique au script event-description-validation.js
  * - v1.0.3: Simplification - priorité textarea avec fallback TinyMCE + logs debugging
@@ -17,11 +18,12 @@
 
     $(document).ready(function() {
         console.log('🔵 Profile Presentation Validation - Script chargé');
-        console.log('🔵 Recherche .vendor_profile_wrapper:', $('.vendor_profile_wrapper').length);
+        console.log('🔵 Recherche .vendor_profile:', $('.vendor_profile').length);
+        console.log('🔵 Recherche .vendor_wrap:', $('.vendor_wrap').length);
 
         // Vérifier si on est sur la page profil
-        if (!$('.vendor_profile_wrapper').length) {
-            console.log('❌ Pas de .vendor_profile_wrapper - sortie');
+        if (!$('.vendor_profile').length && !$('.vendor_wrap').length) {
+            console.log('❌ Pas de .vendor_profile ou .vendor_wrap - sortie');
             return;
         }
 
