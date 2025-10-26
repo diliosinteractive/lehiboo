@@ -218,25 +218,7 @@ $nonce = wp_create_nonce( 'el_vendor_media_nonce' );
         </div>
     </div>
 
-<script>
-// Configuration pour JavaScript
-window.EL_MediaManager = {
-    currentFolder: <?php echo absint( $current_folder ); ?>,
-    nonce: '<?php echo esc_js( $nonce ); ?>',
-    ajaxUrl: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
-    i18n: {
-        confirmDelete: '<?php esc_html_e( 'Êtes-vous sûr de vouloir supprimer cette image ?', 'eventlist' ); ?>',
-        confirmDeleteFolder: '<?php esc_html_e( 'Êtes-vous sûr de vouloir supprimer ce dossier ?', 'eventlist' ); ?>',
-        uploadSuccess: '<?php esc_html_e( 'Upload réussi !', 'eventlist' ); ?>',
-        uploadError: '<?php esc_html_e( 'Erreur lors de l\'upload', 'eventlist' ); ?>',
-        loading: '<?php esc_html_e( 'Chargement...', 'eventlist' ); ?>',
-        noImages: '<?php esc_html_e( 'Aucune image dans ce dossier', 'eventlist' ); ?>',
-        dropHere: '<?php esc_html_e( 'Déposez vos fichiers ici', 'eventlist' ); ?>',
-    }
-};
-</script>
-
-        </div><!-- /.vendor_media_manager -->
+</div><!-- /.vendor_media_manager -->
 
     </div><!-- /.contents -->
 

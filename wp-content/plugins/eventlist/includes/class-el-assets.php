@@ -280,6 +280,23 @@ class EL_Assets{
 			wp_enqueue_script('el_vendor_media_compression', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-compression.js', array('jquery', 'browser_image_compression'), '1.0', true);
 			wp_enqueue_script('el_vendor_media_editor', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-editor.js', array('jquery', 'cropperjs'), '1.0', true);
 			wp_enqueue_script('el_vendor_media_manager', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-manager.js', array('jquery', 'el_vendor_media_compression', 'el_vendor_media_editor'), '1.0', true);
+
+			// Configuration JavaScript
+			$current_folder = isset($_GET['folder']) ? absint($_GET['folder']) : 0;
+			wp_localize_script('el_vendor_media_manager', 'EL_MediaManager', array(
+				'currentFolder' => $current_folder,
+				'nonce' => wp_create_nonce('el_vendor_media_nonce'),
+				'ajaxUrl' => admin_url('admin-ajax.php'),
+				'i18n' => array(
+					'confirmDelete' => __('Êtes-vous sûr de vouloir supprimer cette image ?', 'eventlist'),
+					'confirmDeleteFolder' => __('Êtes-vous sûr de vouloir supprimer ce dossier ?', 'eventlist'),
+					'uploadSuccess' => __('Upload réussi !', 'eventlist'),
+					'uploadError' => __('Erreur lors de l\'upload', 'eventlist'),
+					'loading' => __('Chargement...', 'eventlist'),
+					'noImages' => __('Aucune image dans ce dossier', 'eventlist'),
+					'dropHere' => __('Déposez vos fichiers ici', 'eventlist'),
+				)
+			));
 		}
 
 		if ( did_action( 'elementor/loaded' ) ) {

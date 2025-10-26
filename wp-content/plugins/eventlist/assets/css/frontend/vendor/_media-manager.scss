@@ -685,7 +685,7 @@
                 transform: translateY(-2px);
 
                 .media_item_overlay {
-                    opacity: 1;
+                    opacity: 1 !important;
                 }
 
                 .media_item_checkbox {
@@ -752,6 +752,7 @@
                     gap: 12px;
                     opacity: 0;
                     transition: opacity 0.3s;
+                    z-index: 1;
 
                     .overlay_btn {
                         width: 36px;
@@ -1128,6 +1129,104 @@
                             background: #FF8C42;
                             transform: translateY(-1px);
                         }
+                    }
+                }
+            }
+        }
+
+        // Move modal
+        &.modal_move {
+            .folder_tree_select {
+                max-height: 400px;
+                overflow-y: auto;
+                padding: 12px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                margin-bottom: 20px;
+
+                .folders_list {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+
+                    .folder_item {
+                        margin-bottom: 4px;
+                    }
+
+                    .folder_header {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    }
+
+                    .folder_toggle {
+                        background: none;
+                        border: none;
+                        cursor: pointer;
+                        padding: 4px;
+                        width: 20px;
+                        color: #6c757d;
+
+                        &:hover {
+                            color: #2c3e50;
+                        }
+                    }
+
+                    .folder_toggle_spacer {
+                        display: inline-block;
+                        width: 20px;
+                    }
+
+                    .folder_select_item {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 8px 12px;
+                        background: #fff;
+                        border: 2px solid transparent;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                        flex: 1;
+
+                        .folder_icon {
+                            font-size: 16px;
+                        }
+
+                        .folder_name {
+                            flex: 1;
+                            font-size: 14px;
+                            font-weight: 500;
+                        }
+
+                        .folder_count {
+                            font-size: 12px;
+                            color: #6c757d;
+                        }
+
+                        &:hover {
+                            background: #e9ecef;
+                            border-color: #dee2e6;
+                        }
+
+                        &.selected {
+                            background: #fff3e0;
+                            border-color: #FF6B35;
+                            color: #FF6B35;
+
+                            .folder_icon {
+                                color: #FF6B35 !important;
+                            }
+                        }
+                    }
+
+                    .folder_children {
+                        margin-left: 28px;
+                        margin-top: 4px;
+                    }
+
+                    &.level_0 > .folder_item > .folder_children {
+                        margin-left: 28px;
                     }
                 }
             }

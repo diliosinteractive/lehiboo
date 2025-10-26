@@ -681,15 +681,100 @@
          * Show move modal
          */
         showMoveModal: function(imageIds) {
-            // TODO: Implement folder tree for selection
-            $('.modal_move').fadeIn(200);
+            const self = this;
+            const $modal = $('.modal_move');
+            const $treeSelect = $modal.find('.folder_tree_select');
+
+            // Clone l'arborescence des dossiers depuis la sidebar
+            const $foldersTree = $('.folders_tree').clone();
+
+            // Transformer les liens en boutons sélectionnables
+            $foldersTree.find('.folder_link').each(function() {
+                const $link = $(this);
+                const folderId = $link.closest('.folder_item').data('folder-id');
+                const folderName = $link.find('.folder_name').text();
+                const folderIcon = $link.find('.folder_icon').html();
+
+                // Remplacer le lien par un div cliquable
+                const $selectBtn = $('<div class="folder_select_item" data-folder-id="' + folderId + '"></div>');
+                $selectBtn.html($link.html());
+
+                $link.replaceWith($selectBtn);
+            });
+
+            // Supprimer les actions de dossiers (edit, delete, etc.)
+            $foldersTree.find('.folder_actions').remove();
+
+            // Rendre le contenu HTML
+            $treeSelect.html($foldersTree.html());
+
+            // Gérer la sélection
+            $treeSelect.off('click', '.folder_select_item').on('click', '.folder_select_item', function(e) {
+                e.preventDefault();
+                $treeSelect.find('.folder_select_item').removeClass('selected');
+                $(this).addClass('selected');
+                self.targetFolderId = $(this).closest('.folder_item').data('folder-id');
+            });
+
+            // Stocker les IDs des images à déplacer
+            this.imagesToMove = imageIds;
+
+            // Afficher le modal
+            $modal.fadeIn(200);
         },
 
         /**
          * Move images to folder
          */
         moveImagesToFolder: function() {
-            // TODO: Implement
+            const self = this;
+
+            if (!this.targetFolderId && this.targetFolderId !== 0) {
+                this.showError('Veuillez sélectionner un dossier de destination');
+                return;
+            }
+
+            if (!this.imagesToMove || this.imagesToMove.length === 0) {
+                this.showError('Aucune image sélectionnée');
+                return;
+            }
+
+            const $btn = $('.btn_move_confirm');
+            $btn.prop('disabled', true).text('Déplacement...');
+
+            $.ajax({
+                url: window.EL_MediaManager.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'el_vendor_move_images',
+                    nonce: window.EL_MediaManager.nonce,
+                    image_ids: this.imagesToMove,
+                    folder_id: this.targetFolderId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        self.showSuccess('Images déplacées avec succès');
+                        $('.modal_move').fadeOut(200);
+
+                        // Recharger les images
+                        setTimeout(function() {
+                            self.loadImages();
+                            self.selectedImages = [];
+                            self.imagesToMove = [];
+                            self.targetFolderId = null;
+                            self.updateBulkActions();
+                        }, 500);
+                    } else {
+                        self.showError(response.data.message || 'Erreur lors du déplacement');
+                    }
+                },
+                error: function() {
+                    self.showError('Erreur lors du déplacement des images');
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).text('Déplacer');
+                }
+            });
         },
 
         /**
