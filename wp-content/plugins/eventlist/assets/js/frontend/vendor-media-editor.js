@@ -134,7 +134,12 @@
                 </div>
             `;
 
-            $('body').append(modalHtml);
+            // Insérer dans .vendor_media_manager si disponible, sinon dans body
+            if ($('.vendor_media_manager').length) {
+                $('.vendor_media_manager').append(modalHtml);
+            } else {
+                $('body').append(modalHtml);
+            }
 
             // Bind events
             this.bindEditorEvents();

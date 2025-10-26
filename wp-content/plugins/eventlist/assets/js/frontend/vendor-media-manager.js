@@ -19,6 +19,8 @@
         perPage: 24,
         selectedImages: [],
         uploadQueue: [],
+        imagesToMove: [],
+        targetFolderId: null,
 
         /**
          * Initialisation
@@ -717,6 +719,8 @@
             const $modal = $('.modal_move');
             const $treeSelect = $modal.find('.folder_tree_select');
 
+            console.log('showMoveModal called with imageIds:', imageIds);
+
             // Clone l'arborescence des dossiers depuis la sidebar
             const $foldersTree = $('.folders_tree').clone();
 
@@ -760,6 +764,11 @@
          */
         moveImagesToFolder: function() {
             const self = this;
+
+            console.log('moveImagesToFolder called', {
+                imagesToMove: this.imagesToMove,
+                targetFolderId: this.targetFolderId
+            });
 
             if (!this.targetFolderId && this.targetFolderId !== 0) {
                 this.showError('Veuillez sélectionner un dossier de destination');
