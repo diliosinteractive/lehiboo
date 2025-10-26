@@ -59,6 +59,10 @@ function el_plugin_activate() {
 	require_once EL_PLUGIN_INC . 'class-el-analytics.php';
 	EL_Analytics::create_table();
 
+	// Install media folders tables
+	require_once EL_PLUGIN_INC . 'install/class-el-install-media-folders.php';
+	EL_Install_Media_Folders::install();
+
 	// Flush rewrite rules
 	flush_rewrite_rules();
 }

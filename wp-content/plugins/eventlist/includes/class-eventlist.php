@@ -161,6 +161,12 @@ final class EventList{
 		require_once EL_PLUGIN_INC . 'vendor/el-vendor-functions.php';
 		require_once EL_PLUGIN_INC . 'vendor/el-vendor-stats-functions.php';
 
+		// Vendor Media Manager
+		require_once EL_PLUGIN_INC . 'install/class-el-install-media-folders.php';
+		require_once EL_PLUGIN_INC . 'vendor/class-el-vendor-folders.php';
+		require_once EL_PLUGIN_INC . 'vendor/class-el-vendor-media-manager.php';
+		require_once EL_PLUGIN_INC . 'vendor/class-el-vendor-media-ajax.php';
+
 		// Analytics
 		require_once EL_PLUGIN_INC . 'class-el-analytics.php';
 

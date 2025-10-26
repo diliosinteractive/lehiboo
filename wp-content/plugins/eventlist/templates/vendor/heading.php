@@ -55,6 +55,8 @@
 		$title = esc_html__( 'Mes Messages', 'eventlist' );
 	}else if( $vendor == 'galerie' ){
 		$title = esc_html__( 'Ma Galerie', 'eventlist' );
+	}else if( $vendor == 'media-manager' ){
+		$title = esc_html__( 'Gestionnaire de Médias', 'eventlist' );
 	}else{
 		$title = esc_html__( 'My Listings', 'eventlist' );
 	}

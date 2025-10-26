@@ -74,9 +74,9 @@ $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_tic
                 <?php } ?>
                 
                 <?php if( apply_filters( 'el_manage_vendor_show_wishlist', true ) ){ ?>
-                    <li class="menu_vendor_mywishlist <?php if ($vendor == 'galerie') echo esc_attr('active');  ?>">
-                        <a href="<?php echo add_query_arg( array( 'vendor' => 'galerie'), get_myaccount_page() ); ?>">
-                            <i class="icon_images"></i><?php esc_html_e( 'Ma galerie', 'eventlist' ); ?>
+                    <li class="menu_vendor_media_manager <?php if ($vendor == 'media-manager') echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'media-manager'), get_myaccount_page() ); ?>">
+                            <i class="icon_images"></i><?php esc_html_e( 'Gestionnaire de médias', 'eventlist' ); ?>
                         </a>
                     </li>
                 <?php } ?>
