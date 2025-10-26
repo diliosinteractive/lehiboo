@@ -318,12 +318,21 @@
                         }
                         self.closeEditor();
                     } else {
-                        alert('Erreur: ' + (response.data.message || 'Impossible de sauvegarder l\'image'));
+                        var errorMsg = response.data.message || 'Impossible de sauvegarder l\'image';
+                        if (window.ToastNotification) {
+                            window.ToastNotification.error(errorMsg);
+                        } else {
+                            alert('Erreur: ' + errorMsg);
+                        }
                         $('#media_editor_modal .btn_save').prop('disabled', false).text('Sauvegarder');
                     }
                 },
                 error: function() {
-                    alert('Erreur lors de la sauvegarde de l\'image');
+                    if (window.ToastNotification) {
+                        window.ToastNotification.error('Erreur lors de la sauvegarde de l\'image');
+                    } else {
+                        alert('Erreur lors de la sauvegarde de l\'image');
+                    }
                     $('#media_editor_modal .btn_save').prop('disabled', false).text('Sauvegarder');
                 }
             });

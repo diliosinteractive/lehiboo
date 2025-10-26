@@ -693,7 +693,7 @@
             const self = this;
 
             if (!window.EL_MediaEditor) {
-                alert('L\'éditeur d\'image n\'est pas disponible');
+                this.showError('L\'éditeur d\'image n\'est pas disponible');
                 return;
             }
 
@@ -877,16 +877,22 @@
          * Show success message
          */
         showSuccess: function(message) {
-            // TODO: Implement toast notification
-            alert(message);
+            if (window.ToastNotification) {
+                window.ToastNotification.success(message);
+            } else {
+                alert(message);
+            }
         },
 
         /**
          * Show error message
          */
         showError: function(message) {
-            // TODO: Implement toast notification
-            alert(message);
+            if (window.ToastNotification) {
+                window.ToastNotification.error(message);
+            } else {
+                alert(message);
+            }
         },
 
         /**
