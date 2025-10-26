@@ -29,10 +29,6 @@ $folder_path = $current_folder > 0 ? EL_Vendor_Folders::get_folder_path( $curren
 
 // Nonce pour AJAX
 $nonce = wp_create_nonce( 'el_vendor_media_nonce' );
-
-// DEBUG
-echo '<h1 style="color: red; font-size: 50px;">MEDIA MANAGER TEMPLATE LOADED!</h1>';
-var_dump($folders_tree);
 ?>
 
 <div class="vendor_media_manager" data-nonce="<?php echo esc_attr( $nonce ); ?>">
