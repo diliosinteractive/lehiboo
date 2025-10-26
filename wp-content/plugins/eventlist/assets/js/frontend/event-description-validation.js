@@ -1,7 +1,12 @@
 /**
  * EventList - Event Description Validation
  * V1 Le Hiboo - Validation minimum 500 caractères pour publication
- * @version 1.0.1
+ * @version 1.0.2
+ *
+ * Changelog:
+ * - v1.0.2: Suppression styles inline - styles maintenant dans _validation-counter.scss
+ * - v1.0.1: Version avec double blocage (capture phase + AJAX hook)
+ * - v1.0.0: Version initiale
  */
 
 (function($) {
@@ -172,7 +177,7 @@
         // Mettre à jour le compteur à chaque modification
         if (typeof tinymce !== 'undefined') {
             // Pour TinyMCE
-            $(document).on('tinymce-editor-init', function(event, editor) {
+            $(document).on('tinymce-editor-init', function(_event, editor) {
                 if (editor.id === 'content_event') {
                     editor.on('keyup change', function() {
                         updateCharacterCounter();
@@ -225,40 +230,7 @@
             }
         });
 
-        // Styles CSS inline
-        $('<style>' +
-        '.description-counter { ' +
-        '    margin-top: 10px; ' +
-        '    padding: 12px 15px; ' +
-        '    border-radius: 6px; ' +
-        '    font-size: 14px; ' +
-        '    line-height: 1.5; ' +
-        '}' +
-        '.description-counter.counter-invalid { ' +
-        '    background: #fff3cd; ' +
-        '    border-left: 4px solid #ffc107; ' +
-        '    color: #856404; ' +
-        '}' +
-        '.description-counter.counter-valid { ' +
-        '    background: #d4edda; ' +
-        '    border-left: 4px solid #28a745; ' +
-        '    color: #155724; ' +
-        '}' +
-        '.description-counter i { ' +
-        '    margin-right: 8px; ' +
-        '}' +
-        '.publication-warning { ' +
-        '    margin-bottom: 20px; ' +
-        '    padding: 15px; ' +
-        '    background: #fff3cd; ' +
-        '    border-left: 4px solid #ffc107; ' +
-        '    color: #856404; ' +
-        '    border-radius: 6px; ' +
-        '}' +
-        '.publication-warning i { ' +
-        '    margin-right: 8px; ' +
-        '}' +
-        '</style>').appendTo('head');
+        // Note: Les styles CSS sont maintenant dans /assets/css/frontend/vendor/_validation-counter.scss
 
     });
 

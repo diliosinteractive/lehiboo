@@ -1,0 +1,124 @@
+/**
+ * Validation Counter Styles
+ * V1 Le Hiboo - Compteurs de caractères pour validations
+ * Utilisé pour : description événement + présentation profil
+ */
+
+// Compteur de caractères principal
+.description-counter {
+    margin-top: 10px;
+    padding: 12px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.5;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    transition: all 0.3s ease;
+
+    // Reset de styles potentiellement conflictuels
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+
+    // Icônes dans le compteur
+    i {
+        margin-right: 8px;
+        font-size: 16px;
+        vertical-align: middle;
+    }
+
+    // Textes dans le compteur
+    strong {
+        font-weight: 600;
+    }
+
+    // État invalide (< 500 caractères)
+    &.counter-invalid {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-left: 4px solid #ffc107;
+        color: #856404;
+
+        .counter-warning {
+            display: inline-block;
+
+            i {
+                color: #ffc107;
+            }
+
+            strong {
+                color: #856404;
+            }
+        }
+    }
+
+    // État valide (≥ 500 caractères)
+    &.counter-valid {
+        background: #d4edda;
+        border: 1px solid #28a745;
+        border-left: 4px solid #28a745;
+        color: #155724;
+
+        .counter-success {
+            display: inline-block;
+
+            i {
+                color: #28a745;
+            }
+
+            strong {
+                color: #155724;
+            }
+        }
+    }
+}
+
+// Compteur spécifique pour la page événement
+.vendor_edit_event {
+    .description-counter {
+        // Styles spécifiques si nécessaire
+    }
+
+    // Avertissement de publication (quand on sélectionne "Publier" avec description trop courte)
+    .publication-warning {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-left: 4px solid #ffc107;
+        color: #856404;
+        border-radius: 6px;
+        font-size: 14px;
+        line-height: 1.5;
+
+        i {
+            margin-right: 8px;
+            color: #ffc107;
+            font-size: 16px;
+            vertical-align: middle;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #856404;
+        }
+    }
+}
+
+// Compteur spécifique pour la page profil
+.vendor_profile {
+    .description-counter {
+        // Styles spécifiques si nécessaire
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .description-counter {
+        font-size: 13px;
+        padding: 10px 12px;
+
+        i {
+            font-size: 14px;
+        }
+    }
+}

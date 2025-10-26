@@ -1,9 +1,10 @@
 /**
  * EventList - Profile Presentation Validation
  * V1 Le Hiboo - Validation minimum 500 caractères pour présentation organisateur
- * @version 1.0.6
+ * @version 1.0.7
  *
  * Changelog:
+ * - v1.0.7: Suppression styles inline - styles maintenant dans _validation-counter.scss
  * - v1.0.6: FIX CRITIQUE - Correction sélecteur page (.vendor_profile au lieu de .vendor_profile_wrapper)
  * - v1.0.5: Ajout logs complets pour debugging - identifier pourquoi compteur ne s'affiche pas
  * - v1.0.4: Simplification complète - approche identique au script event-description-validation.js
@@ -205,29 +206,7 @@
             }
         });
 
-        // Styles CSS inline
-        $('<style>' +
-        '.description-counter { ' +
-        '    margin-top: 10px; ' +
-        '    padding: 12px 15px; ' +
-        '    border-radius: 6px; ' +
-        '    font-size: 14px; ' +
-        '    line-height: 1.5; ' +
-        '}' +
-        '.description-counter.counter-invalid { ' +
-        '    background: #fff3cd; ' +
-        '    border-left: 4px solid #ffc107; ' +
-        '    color: #856404; ' +
-        '}' +
-        '.description-counter.counter-valid { ' +
-        '    background: #d4edda; ' +
-        '    border-left: 4px solid #28a745; ' +
-        '    color: #155724; ' +
-        '}' +
-        '.description-counter i { ' +
-        '    margin-right: 8px; ' +
-        '}' +
-        '</style>').appendTo('head');
+        // Note: Les styles CSS sont maintenant dans /assets/css/frontend/vendor/_validation-counter.scss
 
     });
 

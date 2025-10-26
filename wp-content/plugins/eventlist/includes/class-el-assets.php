@@ -248,7 +248,7 @@ class EL_Assets{
 			wp_enqueue_script('el_profile_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-validation.js', array('jquery'),'1.0.0',true );
 
 			// Profile Presentation Validation (500 chars minimum) - V1 Le Hiboo
-			wp_enqueue_script('el_profile_presentation_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-presentation-validation.js', array('jquery'),'1.0.6',true );
+			wp_enqueue_script('el_profile_presentation_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-presentation-validation.js', array('jquery'),'1.0.7',true );
 		}
 
 		// Event Form Navigation (Vertical Tabs) - V1 Le Hiboo - Phase 6
@@ -257,7 +257,7 @@ class EL_Assets{
 			// Event Form Progress Navigation (Horizontal Anchors) - V1 Le Hiboo - Phase 6.8
 			wp_enqueue_script('el_event_form_progress', EL_PLUGIN_URI.'assets/js/frontend/event-form-progress.js', array('jquery'),'1.0',true );
 			// Event Description Validation (500 chars minimum) - V1 Le Hiboo
-			wp_enqueue_script('el_event_description_validation', EL_PLUGIN_URI.'assets/js/frontend/event-description-validation.js', array('jquery'),'1.0.0',true );
+			wp_enqueue_script('el_event_description_validation', EL_PLUGIN_URI.'assets/js/frontend/event-description-validation.js', array('jquery'),'1.0.2',true );
 		}
 
 		// Vendor Gallery Management - V1 Le Hiboo
