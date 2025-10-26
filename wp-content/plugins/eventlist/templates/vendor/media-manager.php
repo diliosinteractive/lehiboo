@@ -7,8 +7,8 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $user_id = get_current_user_id();
-// -1 signifie "toutes les images", 0 = racine, >0 = dossier spécifique
-$current_folder = isset( $_GET['folder'] ) ? absint( $_GET['folder'] ) : -1;
+// null signifie "toutes les images", 0 = racine, >0 = dossier spécifique
+$current_folder = isset( $_GET['folder'] ) ? absint( $_GET['folder'] ) : null;
 
 // Récupérer l'arborescence des dossiers
 $folders_tree = EL_Vendor_Folders::get_folder_tree( $user_id );

@@ -282,8 +282,8 @@ class EL_Assets{
 			wp_enqueue_script('el_vendor_media_manager', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-manager.js', array('jquery', 'el_vendor_media_compression', 'el_vendor_media_editor'), '1.0', true);
 
 			// Configuration JavaScript
-			// -1 = toutes les images, 0 = racine, >0 = dossier spécifique
-			$current_folder = isset($_GET['folder']) ? absint($_GET['folder']) : -1;
+			// null = toutes les images, 0 = racine, >0 = dossier spécifique
+			$current_folder = isset($_GET['folder']) ? absint($_GET['folder']) : null;
 			wp_localize_script('el_vendor_media_manager', 'EL_MediaManager', array(
 				'currentFolder' => $current_folder,
 				'nonce' => wp_create_nonce('el_vendor_media_nonce'),

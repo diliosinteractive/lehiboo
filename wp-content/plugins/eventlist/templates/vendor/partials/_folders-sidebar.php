@@ -80,7 +80,7 @@ function el_render_folder_tree( $folders, $current_folder = 0, $level = 0 ) {
 
     <!-- Toutes les images -->
     <ul class="folders_list level_0">
-        <li class="folder_item folder_all <?php echo $current_folder === -1 ? 'active' : ''; ?>"
+        <li class="folder_item folder_all <?php echo $current_folder === null ? 'active' : ''; ?>"
             data-folder-id="-1">
             <div class="folder_header">
                 <span class="folder_toggle_spacer"></span>
