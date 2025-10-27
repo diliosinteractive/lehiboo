@@ -167,11 +167,17 @@
      * Build the HTML structure
      */
     buildHTML() {
-      // Create FAB button
+      // Create backdrop pour effet immersif
+      const backdrop = document.createElement('div');
+      backdrop.className = 'lehiboo-chat-backdrop';
+      backdrop.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(backdrop);
+
+      // Create FAB button avec image Le Hiboo
       const fab = document.createElement('button');
       fab.className = 'lehiboo-chat-fab';
       fab.setAttribute('aria-label', 'Ouvrir l\'assistant Le Hiboo');
-      fab.innerHTML = '💬';
+      fab.innerHTML = '<img src="/wp-content/plugins/eventlist/assets/img/unknow_user.png" alt="Le Hiboo" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover;">';
       document.body.appendChild(fab);
 
       // Create chat container
@@ -183,7 +189,9 @@
       container.innerHTML = `
         <div class="lehiboo-chat-header">
           <div class="lehiboo-chat-header-content">
-            <div class="lehiboo-chat-avatar">🦉</div>
+            <div class="lehiboo-chat-avatar">
+              <img src="/wp-content/plugins/eventlist/assets/img/unknow_user.png" alt="Le Hiboo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            </div>
             <div class="lehiboo-chat-header-text">
               <h2 class="lehiboo-chat-title">Le Hiboo Assistant</h2>
               <p class="lehiboo-chat-subtitle">
@@ -233,6 +241,7 @@
      */
     cacheElements() {
       this.elements = {
+        backdrop: document.querySelector('.lehiboo-chat-backdrop'),
         fab: document.querySelector('.lehiboo-chat-fab'),
         container: document.querySelector('.lehiboo-chat-container'),
         header: document.querySelector('.lehiboo-chat-header'),
@@ -252,6 +261,9 @@
     attachEventListeners() {
       // FAB click
       this.elements.fab.addEventListener('click', () => this.toggleChat());
+
+      // Backdrop click pour fermer
+      this.elements.backdrop.addEventListener('click', () => this.closeChat());
 
       // Close/Minimize buttons
       this.elements.closeButton.addEventListener('click', () => this.closeChat());
@@ -294,6 +306,7 @@
     openChat() {
       this.state.isOpen = true;
       this.elements.container.classList.remove('closed');
+      this.elements.backdrop.classList.add('active');
       this.elements.fab.classList.add('hidden');
       this.elements.textarea.focus();
       this.scrollToBottom();
@@ -308,6 +321,7 @@
     closeChat() {
       this.state.isOpen = false;
       this.elements.container.classList.add('closed');
+      this.elements.backdrop.classList.remove('active');
       this.elements.fab.classList.remove('hidden');
 
       // Analytics
@@ -490,7 +504,11 @@
 
       const avatar = document.createElement('div');
       avatar.className = 'lehiboo-message-avatar';
-      avatar.innerHTML = message.role === 'user' ? '👤' : '🦉';
+      if (message.role === 'user') {
+        avatar.innerHTML = '👤';
+      } else {
+        avatar.innerHTML = '<img src="/wp-content/plugins/eventlist/assets/img/unknow_user.png" alt="Le Hiboo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">';
+      }
       avatar.setAttribute('aria-hidden', 'true');
 
       const content = document.createElement('div');
@@ -622,7 +640,9 @@
       const indicator = document.createElement('div');
       indicator.className = 'lehiboo-typing-indicator';
       indicator.innerHTML = `
-        <div class="lehiboo-message-avatar">🦉</div>
+        <div class="lehiboo-message-avatar">
+          <img src="/wp-content/plugins/eventlist/assets/img/unknow_user.png" alt="Le Hiboo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        </div>
         <div class="lehiboo-typing-bubble">
           <span class="lehiboo-typing-dot"></span>
           <span class="lehiboo-typing-dot"></span>

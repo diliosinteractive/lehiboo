@@ -4,10 +4,10 @@
  */
 
 :root {
-  /* Colors */
-  --lehiboo-primary: #FF6B6B;
-  --lehiboo-primary-dark: #E85555;
-  --lehiboo-secondary: #4ECDC4;
+  /* Colors - Charte Le Hiboo */
+  --lehiboo-primary: #FF385C;
+  --lehiboo-primary-dark: #E0294A;
+  --lehiboo-secondary: #FF7A59;
   --lehiboo-dark: #2C3E50;
   --lehiboo-light: #ECF0F1;
   --lehiboo-white: #FFFFFF;
@@ -78,18 +78,35 @@
   box-sizing: border-box;
 }
 
-/* Container Principal */
+/* Backdrop pour effet immersif */
+.lehiboo-chat-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: calc(var(--z-modal) - 1);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.lehiboo-chat-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Container Principal - Expérience Immersive */
 .lehiboo-chat-container {
   position: fixed;
-  bottom: var(--spacing-lg);
-  right: var(--spacing-lg);
-  width: 400px;
-  max-width: calc(100vw - var(--spacing-lg) * 2);
-  height: 600px;
-  max-height: calc(100vh - var(--spacing-lg) * 2);
+  top: 0;
+  right: 0;
+  width: 50vw; /* Moitié de l'écran */
+  height: 100vh; /* Toute la hauteur */
   background: var(--lehiboo-white);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
+  border-radius: 0; /* Pas de bordures arrondies pour l'immersion */
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -99,7 +116,7 @@
 }
 
 .lehiboo-chat-container.closed {
-  transform: translateY(calc(100% + var(--spacing-lg)));
+  transform: translateX(100%); /* Slide depuis la droite */
   opacity: 0;
   pointer-events: none;
 }
@@ -753,6 +770,14 @@
   pointer-events: none;
 }
 
+.lehiboo-chat-fab img {
+  transition: transform var(--transition-normal);
+}
+
+.lehiboo-chat-fab:hover img {
+  transform: scale(1.1);
+}
+
 /* Notification Badge */
 .lehiboo-notification-badge {
   position: absolute;
@@ -778,18 +803,27 @@
   50% { transform: scale(1.2); }
 }
 
+/* Tablette Responsive */
+@media (max-width: 1024px) {
+  .lehiboo-chat-container {
+    width: 60vw; /* 60% sur tablette */
+  }
+}
+
 /* Mobile Responsive */
 @media (max-width: 640px) {
   .lehiboo-chat-container {
-    bottom: 0;
+    top: 0;
     right: 0;
     left: 0;
-    width: 100%;
-    max-width: 100%;
+    width: 100vw; /* Plein écran sur mobile */
     height: 100vh;
-    max-height: 100vh;
-    border-radius: 0;
   }
+
+  .lehiboo-chat-backdrop {
+    display: none; /* Pas de backdrop sur mobile */
+  }
+}
 
   .lehiboo-chat-fab {
     bottom: var(--spacing-md);
