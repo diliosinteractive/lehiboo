@@ -11,6 +11,7 @@ import config from './config/index.js';
 import logger from './utils/logger.js';
 import chatRoutes from './routes/chat.js';
 import { testOpenRouterConnection } from './services/ai-service.js';
+import weatherService from './services/weather-service.js';
 
 // Créer l'application Express
 const app = express();
@@ -107,6 +108,17 @@ async function startServer() {
       }
     } else {
       logger.info('✅ OpenRouter connection successful');
+    }
+
+    // Tester la connexion Weather API
+    logger.info('Testing Weather API connection...');
+    const weatherOk = await weatherService.testConnection();
+
+    if (!weatherOk) {
+      logger.warn('⚠️  Weather API connection failed - weather features will be limited');
+      logger.warn('Get a free API key at: https://openweathermap.org/api');
+    } else {
+      logger.info('✅ Weather API connection successful');
     }
 
     // Démarrer le serveur HTTP

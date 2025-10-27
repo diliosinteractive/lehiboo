@@ -4,6 +4,7 @@
  */
 
 import wordpressService from '../services/wordpress-service.js';
+import weatherService from '../services/weather-service.js';
 import logger from '../utils/logger.js';
 
 /**
@@ -376,6 +377,78 @@ export const mcpTools = [
           success: false,
           error: error.message,
           itinerary: [],
+        };
+      }
+    },
+  },
+
+  {
+    name: 'get_weather',
+    description:
+      'Get weather forecast for a specific location and date. Use this to check weather conditions and suggest appropriate activities (indoor vs outdoor). Essential when user provides dates.',
+    parameters: {
+      type: 'object',
+      properties: {
+        location: {
+          type: 'string',
+          description: 'City name or location',
+        },
+        date: {
+          type: 'string',
+          description: 'Date in YYYY-MM-DD format (optional, defaults to today)',
+        },
+      },
+      required: ['location'],
+    },
+    async execute(params) {
+      try {
+        logger.info('MCP Tool: get_weather called', params);
+
+        let weather;
+
+        if (params.date) {
+          // Météo pour une date spécifique
+          weather = await weatherService.getWeatherForDate(
+            params.location,
+            params.date
+          );
+        } else {
+          // Météo actuelle
+          weather = await weatherService.getCurrentWeather(params.location);
+        }
+
+        if (!weather) {
+          return {
+            success: false,
+            error: 'Could not fetch weather data',
+            weather: null,
+          };
+        }
+
+        // Analyser la météo et générer alertes
+        const analysis = weatherService.analyzeWeather(weather);
+        const recommendations = weatherService.getActivityRecommendations(weather);
+
+        return {
+          success: true,
+          weather,
+          analysis,
+          recommendations,
+          weatherAlert: analysis
+            ? {
+                icon: analysis.icon,
+                message: analysis.message,
+              }
+            : null,
+        };
+      } catch (error) {
+        logger.error('MCP Tool: get_weather failed', {
+          error: error.message,
+        });
+        return {
+          success: false,
+          error: error.message,
+          weather: null,
         };
       }
     },
