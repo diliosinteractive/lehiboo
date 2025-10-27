@@ -1,1 +1,212 @@
-.vscode
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Le Hiboo AI Assistant - Git Ignore
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# IDE & Editors
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Node.js Backend
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+lehiboo-ai-backend/node_modules/
+lehiboo-ai-backend/.env
+lehiboo-ai-backend/.env.local
+lehiboo-ai-backend/.env.*.local
+lehiboo-ai-backend/logs/*.log
+lehiboo-ai-backend/npm-debug.log*
+lehiboo-ai-backend/yarn-debug.log*
+lehiboo-ai-backend/yarn-error.log*
+lehiboo-ai-backend/dist/
+lehiboo-ai-backend/build/
+lehiboo-ai-backend/.cache/
+lehiboo-ai-backend/coverage/
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# WordPress Core
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+wp-admin/
+wp-includes/
+index.php
+license.txt
+readme.html
+wp-*.php
+xmlrpc.php
+
+# WordPress Configuration
+wp-config.php
+wp-config-sample.php
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# WordPress Content (Sauf nos plugins)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Thèmes (garder seulement le child theme)
+wp-content/themes/*
+!wp-content/themes/meup-child/
+
+# Plugins (garder seulement nos plugins)
+wp-content/plugins/*
+!wp-content/plugins/lehiboo-ai-assistant/
+!wp-content/plugins/eventlist/
+
+# Uploads
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/backups/
+wp-content/blogs.dir/
+wp-content/cache/
+
+# WordPress Cache
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+wp-content/object-cache.php
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Sécurité & Secrets
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*.key
+*.pem
+*.p12
+*.pfx
+.env
+.env.*
+!.env.example
+secrets.json
+credentials.json
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Logs
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*.log
+logs/
+error_log
+debug.log
+wp-content/debug.log
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Temporary Files
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Package Managers
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+node_modules/
+vendor/
+composer.lock
+package-lock.json
+yarn.lock
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Build & Dist
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+dist/
+build/
+*.min.css
+*.min.js
+*.map
+
+# Exceptions: Garder les fichiers compilés du plugin
+!wp-content/plugins/lehiboo-ai-assistant/assets/css/*.min.css
+!wp-content/plugins/lehiboo-ai-assistant/assets/js/*.min.js
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Database
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*.sql
+*.sql.gz
+*.sqlite
+*.db
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Testing
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+coverage/
+.nyc_output/
+phpunit.xml
+.phpunit.result.cache
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Deployment
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.vercel/
+.railway/
+.now/
+.netlify/
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Documentation Build
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+_site/
+.jekyll-cache/
+.jekyll-metadata
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Project Specific
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Development notes (si vous voulez les exclure)
+# NOTES.md
+# TODO_PRIVATE.md
+
+# Local testing files
+test-*.js
+test-*.php
+playground/
+sandbox/
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Keep These Files (Force Include)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Documentation
+!README.md
+!CHANGELOG.md
+!CONTRIBUTING.md
+!LICENSE
+!ARCHITECTURE_OVERVIEW.md
+!IMPLEMENTATION_COMPLETE.md
+!INTEGRATION_TESTING.md
+
+# Config examples
+!.env.example
+!.editorconfig
+!.eslintrc
+!.prettierrc
+
+# Installation
+!install.sh
+
+# Backend
+!lehiboo-ai-backend/src/**
+!lehiboo-ai-backend/package.json
+!lehiboo-ai-backend/README.md
+!lehiboo-ai-backend/QUICK_START.md
+!lehiboo-ai-backend/STATUS.md
+!lehiboo-ai-backend/MCP_TOOLS.md
+!lehiboo-ai-backend/DEPLOYMENT_GUIDE.md
+
+# Plugin
+!wp-content/plugins/lehiboo-ai-assistant/**
+!wp-content/plugins/eventlist/includes/class-eventlist-rest-api.php
+!wp-content/plugins/eventlist/includes/eventlist-rest-api-init.php
+
+# Theme
+!wp-content/themes/meup-child/**
