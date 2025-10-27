@@ -18,9 +18,7 @@ if( $author_id ){
 	if ( $author_id_image ) {
 		$img_path = wp_get_attachment_image_url($author_id_image, 'el_thumbnail') ? wp_get_attachment_image_url($author_id_image, 'el_thumbnail') : wp_get_attachment_image_url($author_id_image, 'full');
 	} else {
-
-		$img_path = get_avatar_url($author_id);
-
+		$img_path = EL_PLUGIN_URI.'assets/img/unknow_user.png';
 	}
 
 	$display_name = get_user_meta( $author_id, 'display_name', true ) ? get_user_meta( $author_id, 'display_name', true ) : get_the_author_meta( 'display_name', $author_id );

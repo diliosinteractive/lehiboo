@@ -24,9 +24,9 @@ $status = isset( $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : ''
 $org_cover_image = get_user_meta( $author_id, 'org_cover_image', true );
 $author_id_image = get_user_meta( $author_id, 'author_id_image', true );
 if ( $author_id_image ) {
-	$avatar_url = wp_get_attachment_image_url($author_id_image, 'medium') ? wp_get_attachment_image_url($author_id_image, 'medium') : get_avatar_url($author_id);
+	$avatar_url = wp_get_attachment_image_url($author_id_image, 'medium') ? wp_get_attachment_image_url($author_id_image, 'medium') : wp_get_attachment_image_url($author_id_image, 'el_thumbnail');
 } else {
-	$avatar_url = get_avatar_url($author_id);
+	$avatar_url = EL_PLUGIN_URI.'assets/img/unknow_user.png';
 }
 
 ?>
