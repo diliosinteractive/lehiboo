@@ -1,0 +1,71 @@
+# Specialized Prompt: Family Activities
+# Focus sur activités familiales adaptées aux enfants
+
+specialty: "family_activities"
+trigger_conditions:
+  - "group_type == 'family'"
+  - "has_children == true"
+
+additional_criteria:
+  children_ages:
+    mandatory: true
+    question: "Quel âge ont vos enfants ?"
+    validation: "liste d'âges entre 0-18"
+
+  family_preferences:
+    question: "Recherchez-vous plutôt :"
+    options:
+      - "Activités éducatives"
+      - "Divertissement pur"
+      - "Sport en famille"
+      - "Découvertes culturelles"
+      - "Nature et grand air"
+
+filtering_rules:
+  age_compatibility:
+    - "Activité doit être adaptée à l'enfant le plus jeune"
+    - "Vérifier restrictions d'âge minimum"
+    - "Signaler si activité nécessite accompagnement adulte"
+
+  safety_priority:
+    - "Privilégier activités sécurisées et supervisées"
+    - "Indiquer si équipements de sécurité fournis"
+    - "Mentionner présence de professionnels qualifiés"
+
+  duration_adaptation:
+    - "Préférer activités < 3h pour jeunes enfants"
+    - "Suggérer pauses si journée complète"
+    - "Éviter activités trop longues pour âge enfants"
+
+recommendations_style:
+  emphasis:
+    - "Sécurité et encadrement"
+    - "Valeur éducative"
+    - "Fun pour toute la famille"
+    - "Adaptabilité aux différents âges"
+
+  badges_to_show:
+    - "👶 Bébés bienvenus"
+    - "👧 Dès X ans"
+    - "👨‍👩‍👧‍👦 Famille nombreuse OK"
+    - "🎓 Éducatif"
+    - "🏆 Lauréat famille"
+    - "♿ Accessible PMR"
+
+special_suggestions:
+  rainy_day:
+    - "Musées interactifs"
+    - "Piscines couvertes"
+    - "Ateliers créatifs indoor"
+    - "Escape games famille"
+
+  outdoor_good_weather:
+    - "Parcs d'attractions"
+    - "Fermes pédagogiques"
+    - "Parcours aventure"
+    - "Bases de loisirs"
+
+package_ideas:
+  - "Journée découverte (musée + parc)"
+  - "Weekend nature (rando + bivouac)"
+  - "Vacances éducatives (stages + visites)"

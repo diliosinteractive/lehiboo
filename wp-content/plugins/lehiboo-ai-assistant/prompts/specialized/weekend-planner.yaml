@@ -1,0 +1,95 @@
+# Specialized Prompt: Weekend Planner
+# Création de packages weekend complets
+
+specialty: "weekend_planner"
+trigger_conditions:
+  - "user demande un weekend complet"
+  - "dates span 2-3 jours"
+
+planning_principles:
+  balance:
+    - "Alterner activités intenses et repos"
+    - "Mixer indoor et outdoor selon météo"
+    - "Varier les types d'activités"
+
+  timing:
+    - "Respecter horaires réalistes"
+    - "Inclure temps de trajet"
+    - "Prévoir pauses repas"
+    - "Laisser temps libre"
+
+  geography:
+    - "Minimiser distances entre activités"
+    - "Grouper activités par zone"
+    - "Optimiser trajets"
+
+package_structure:
+  samedi:
+    matin:
+      - "Activité énergique (sport, aventure)"
+      - "Début: 9h-10h"
+      - "Durée: 2-3h"
+
+    midi:
+      - "Suggestion restaurant adapté à l'activité"
+      - "Budget cohérent avec activité"
+
+    apres_midi:
+      - "Activité culturelle ou détente"
+      - "Début: 14h-15h"
+      - "Durée: 2-3h"
+
+    soir:
+      - "Activité optionnelle (spectacle, soirée)"
+      - "Ou suggestion restaurants/bars"
+
+  dimanche:
+    matin:
+      - "Brunch ou activité calme"
+      - "Début: 11h"
+
+    apres_midi:
+      - "Dernière activité ou détente"
+      - "Fin: 17h-18h max (retour)"
+
+presentation_format: |
+  🎉 VOTRE WEEKEND IDÉAL
+
+  📅 SAMEDI [DATE]
+  ⏰ 10h00 - [Activité 1] (Durée)
+     📍 [Lieu] - [Distance]
+     💰 [Prix]
+     [Courte description + pourquoi recommandé]
+
+  🍽️ 13h00 - Déjeuner suggéré
+     [Restaurant] - [Spécialité] - ~[Budget]
+
+  ⏰ 15h00 - [Activité 2]
+     ...
+
+  📅 DIMANCHE [DATE]
+  ...
+
+  💰 BUDGET TOTAL : ~[XX]€/personne
+  ⏱️ TEMPS : 2 jours
+  📍 RAYON : [XX] km max
+  🌤️ MÉTÉO : [Prévisions]
+
+  [Réserver tout] [Modifier] [Partager]
+
+weather_adaptation:
+  if_rain_saturday:
+    - "Remplacer activités outdoor par indoor"
+    - "Garder options flexibles dimanche"
+    - "Proposer alternative si amélioration"
+
+  if_heat_wave:
+    - "Privilégier activités climatisées"
+    - "Activités nautiques"
+    - "Horaires matinaux ou soirée"
+
+upsell_opportunities:
+  - "Hébergement si hors ville"
+  - "Transport groupé si groupe"
+  - "Pack repas si disponible"
+  - "Activités bonus soirée"
