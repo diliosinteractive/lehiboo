@@ -229,11 +229,19 @@ class Lehiboo_AI_Assistant {
             return;
         }
 
+        // Google Fonts - Montserrat
+        wp_enqueue_style(
+            'lehiboo-ai-montserrat',
+            'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap',
+            array(),
+            null
+        );
+
         // CSS
         wp_enqueue_style(
             'lehiboo-ai-chat',
             LEHIBOO_AI_PLUGIN_URL . 'assets/css/chat-interface.css',
-            array(),
+            array('lehiboo-ai-montserrat'),
             LEHIBOO_AI_VERSION
         );
 

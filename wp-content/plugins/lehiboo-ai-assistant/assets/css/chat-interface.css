@@ -5,9 +5,9 @@
 
 :root {
   /* Colors - Charte Le Hiboo */
-  --lehiboo-primary: #FF385C;
-  --lehiboo-primary-dark: #E0294A;
-  --lehiboo-secondary: #FF7A59;
+  --lehiboo-primary: #FF601F;
+  --lehiboo-primary-dark: #E55519;
+  --lehiboo-secondary: #FF7A3D;
   --lehiboo-dark: #2C3E50;
   --lehiboo-light: #ECF0F1;
   --lehiboo-white: #FFFFFF;
@@ -36,7 +36,7 @@
   --spacing-xxl: 48px;
 
   /* Typography */
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   --font-size-xs: 12px;
   --font-size-sm: 14px;
   --font-size-md: 16px;
