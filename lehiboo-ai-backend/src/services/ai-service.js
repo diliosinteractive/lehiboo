@@ -7,6 +7,7 @@ import { generateText, streamText } from 'ai';
 import config from '../config/index.js';
 import logger from '../utils/logger.js';
 import { loadSystemPrompt } from './prompt-service.js';
+import { getToolsDefinitions, executeTool } from '../mcp/tools.js';
 
 /**
  * Initialiser le client OpenRouter via AI SDK
@@ -33,14 +34,74 @@ export async function generateAIResponse(message, context = {}) {
     // Construire l'historique de conversation
     const messages = buildConversationHistory(message, context);
 
-    // Générer la réponse
-    const { text, usage } = await generateText({
+    // Obtenir les MCP Tools disponibles
+    const tools = getToolsDefinitions();
+
+    // Ajouter les tools au prompt système
+    const enhancedSystemPrompt = systemPrompt + '\n\n' + generateToolsInstructions(tools);
+
+    // Générer la réponse avec tools
+    let { text, usage, toolCalls } = await generateText({
       model: openrouter(config.openrouter.defaultModel),
-      system: systemPrompt,
+      system: enhancedSystemPrompt,
       messages,
       temperature: 0.7,
       maxTokens: 1000,
+      tools: tools.reduce((acc, tool) => {
+        acc[tool.name] = {
+          description: tool.description,
+          parameters: tool.parameters,
+        };
+        return acc;
+      }, {}),
     });
+
+    // Exécuter les tool calls si l'IA en a fait
+    let toolResults = [];
+    if (toolCalls && toolCalls.length > 0) {
+      logger.info('AI requested tool calls', {
+        count: toolCalls.length,
+        tools: toolCalls.map((tc) => tc.toolName),
+      });
+
+      toolResults = await Promise.all(
+        toolCalls.map(async (toolCall) => {
+          const result = await executeTool(toolCall.toolName, toolCall.args);
+          return {
+            toolName: toolCall.toolName,
+            result,
+          };
+        })
+      );
+
+      // Si des tools ont été appelés, régénérer une réponse avec les résultats
+      if (toolResults.length > 0) {
+        const toolResultsText = toolResults
+          .map((tr) => `Tool ${tr.toolName} result: ${JSON.stringify(tr.result)}`)
+          .join('\n');
+
+        messages.push({
+          role: 'assistant',
+          content: `[Tool calls executed]`,
+        });
+
+        messages.push({
+          role: 'user',
+          content: `Here are the tool results:\n${toolResultsText}\n\nNow please provide your response to the user based on these results.`,
+        });
+
+        const secondResponse = await generateText({
+          model: openrouter(config.openrouter.defaultModel),
+          system: enhancedSystemPrompt,
+          messages,
+          temperature: 0.7,
+          maxTokens: 1000,
+        });
+
+        text = secondResponse.text;
+        usage = secondResponse.usage;
+      }
+    }
 
     logger.info('AI response generated', {
       conversationId: context.conversationId,
@@ -179,6 +240,28 @@ function parseAIResponse(text, context) {
     events: metadata.events || [],
     weatherAlert: metadata.weatherAlert || null,
   };
+}
+
+/**
+ * Générer les instructions pour les tools (ajouté au prompt système)
+ */
+function generateToolsInstructions(tools) {
+  let instructions = '\n## Available Tools\n\n';
+  instructions += 'You have access to the following tools to search for real events:\n\n';
+
+  tools.forEach((tool) => {
+    instructions += `### ${tool.name}\n`;
+    instructions += `${tool.description}\n\n`;
+    instructions += 'Parameters:\n';
+    instructions += '```json\n';
+    instructions += JSON.stringify(tool.parameters, null, 2);
+    instructions += '\n```\n\n';
+  });
+
+  instructions += '\n**IMPORTANT**: When you reach the recommendations stage, you MUST use the search_events tool to find real events instead of inventing them.\n';
+  instructions += 'Use the user context (age, group type, dates, preferences) to search appropriately.\n';
+
+  return instructions;
 }
 
 /**
