@@ -140,34 +140,286 @@ class Lehiboo_AI_Chat_Handler {
      * Get demo response (when backend not configured)
      */
     private function get_demo_response($message, $data) {
-        // Demo mode - return canned response
+        // Demo mode - return canned response based on conversation flow
         $stage = isset($data['currentStage']) ? $data['currentStage'] : 'greeting';
+        $user_context = isset($data['userContext']) ? $data['userContext'] : array();
+
+        $message_lower = strtolower($message);
+
+        // Detect user intent from message
+        if (preg_match('/\b(solo|seul|moi)\b/i', $message_lower)) {
+            $user_context['groupType'] = 'solo';
+            $stage = 'age_collection';
+        } elseif (preg_match('/\b(couple|deux|amoureux)\b/i', $message_lower)) {
+            $user_context['groupType'] = 'couple';
+            $stage = 'age_collection';
+        } elseif (preg_match('/\b(famille|enfant|kids)\b/i', $message_lower)) {
+            $user_context['groupType'] = 'famille';
+            $stage = 'age_collection';
+        } elseif (preg_match('/\b(amis|groupe|potes)\b/i', $message_lower)) {
+            $user_context['groupType'] = 'amis';
+            $stage = 'age_collection';
+        }
+
+        // Detect age
+        if (preg_match('/\b(\d{1,2})\s*(ans?|years?)\b/i', $message_lower, $matches)) {
+            $user_context['age'] = intval($matches[1]);
+            $stage = 'dates_weather';
+        } elseif (preg_match('/\b(\d{1,2})\s*-\s*(\d{1,2})\b/', $message_lower, $matches)) {
+            $user_context['ageRange'] = $matches[1] . '-' . $matches[2];
+            $stage = 'dates_weather';
+        }
+
+        // Detect dates
+        if (preg_match('/\b(weekend|samedi|dimanche|week-end)\b/i', $message_lower)) {
+            $user_context['dates'] = 'ce-weekend';
+            $stage = 'preferences';
+        } elseif (preg_match('/\b(prochain|suivant)\b/i', $message_lower)) {
+            $user_context['dates'] = 'weekend-prochain';
+            $stage = 'preferences';
+        }
+
+        // Detect interests
+        if (preg_match('/\b(sport|sportif|actif)\b/i', $message_lower)) {
+            $user_context['interests'] = array('sport');
+            $stage = 'recommendations';
+        } elseif (preg_match('/\b(culture|culturel|musée|art)\b/i', $message_lower)) {
+            $user_context['interests'] = array('culture');
+            $stage = 'recommendations';
+        } elseif (preg_match('/\b(gastronomie|restaurant|manger|cuisine)\b/i', $message_lower)) {
+            $user_context['interests'] = array('gastronomie');
+            $stage = 'recommendations';
+        }
+
+        // Demo banner for all responses
+        $demo_notice = '<div style="background: #FFF3CD; border: 1px solid #FFE69C; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 13px;">' .
+                      '⚠️ <strong>Mode Démo</strong> : Réponses simulées. ' .
+                      '<a href="/wp-admin/admin.php?page=lehiboo-ai-settings" style="color: #FF601F; text-decoration: underline;">Configurez l\'API</a> pour activer l\'IA réelle.' .
+                      '</div>';
 
         switch ($stage) {
             case 'greeting':
                 return array(
                     'success' => true,
-                    'message' => "Bonjour ! Je suis l'assistant Le Hiboo 👋<br><br>" .
+                    'message' => $demo_notice .
+                                "Bonjour ! Je suis l'assistant Le Hiboo 👋<br><br>" .
                                 "Je vais vous aider à trouver l'activité parfaite.<br><br>" .
-                                "<strong>⚠️ Mode démo</strong> : Le backend IA n'est pas encore configuré. " .
-                                "Consultez <a href='/wp-admin/admin.php?page=lehiboo-ai-settings'>les paramètres</a> pour configurer l'API.",
-                    'conversationStage' => 'demo',
+                                "Pour commencer, vous cherchez une activité pour :",
+                    'conversationStage' => 'group_type',
+                    'userContext' => $user_context,
                     'quickChips' => array(
                         array('text' => '🧍 Solo', 'value' => 'solo'),
                         array('text' => '💑 En couple', 'value' => 'couple'),
                         array('text' => '👨‍👩‍👧 En famille', 'value' => 'famille'),
+                        array('text' => '👥 Entre amis', 'value' => 'amis'),
+                    ),
+                );
+
+            case 'age_collection':
+                $group_label = $this->get_group_label($user_context);
+                return array(
+                    'success' => true,
+                    'message' => $demo_notice .
+                                "Super ! Une activité <strong>{$group_label}</strong> 👍<br><br>" .
+                                "Pour vous proposer des activités adaptées, quel âge avez-vous ?",
+                    'conversationStage' => 'age_collection',
+                    'userContext' => $user_context,
+                    'quickChips' => array(
+                        array('text' => '18-25 ans', 'value' => '18-25'),
+                        array('text' => '25-35 ans', 'value' => '25-35'),
+                        array('text' => '35-50 ans', 'value' => '35-50'),
+                        array('text' => '50+ ans', 'value' => '50+'),
+                    ),
+                );
+
+            case 'dates_weather':
+                return array(
+                    'success' => true,
+                    'message' => $demo_notice .
+                                "Parfait ! 😊<br><br>" .
+                                "Quand souhaitez-vous faire cette activité ?",
+                    'conversationStage' => 'dates_weather',
+                    'userContext' => $user_context,
+                    'quickChips' => array(
+                        array('text' => '📅 Ce week-end', 'value' => 'ce-weekend'),
+                        array('text' => '📅 Week-end prochain', 'value' => 'weekend-prochain'),
+                        array('text' => '📅 Dates précises', 'value' => 'dates-precises'),
+                        array('text' => '🤷 Flexible', 'value' => 'flexible'),
+                    ),
+                    'weatherAlert' => array(
+                        'icon' => '🌤️',
+                        'message' => 'Météo prévue : Partiellement nuageux (démo)',
+                    ),
+                );
+
+            case 'preferences':
+                return array(
+                    'success' => true,
+                    'message' => $demo_notice .
+                                "Excellent ! Dernières questions pour affiner mes recommandations :<br><br>" .
+                                "Quel type d'activité vous intéresse ?",
+                    'conversationStage' => 'preferences',
+                    'userContext' => $user_context,
+                    'quickChips' => array(
+                        array('text' => '⚽ Sportif', 'value' => 'sport'),
+                        array('text' => '🎨 Culturel', 'value' => 'culture'),
+                        array('text' => '🍽️ Gastronomie', 'value' => 'gastronomie'),
+                        array('text' => '🌳 Nature', 'value' => 'nature'),
+                        array('text' => '🧘 Détente', 'value' => 'detente'),
+                    ),
+                );
+
+            case 'recommendations':
+                return array(
+                    'success' => true,
+                    'message' => $demo_notice .
+                                "🔍 Parfait ! Voici mes meilleures recommandations pour vous :",
+                    'conversationStage' => 'recommendations',
+                    'userContext' => $user_context,
+                    'events' => $this->get_demo_events($user_context),
+                    'quickChips' => array(
+                        array('text' => '🔄 Modifier critères', 'value' => 'modifier'),
+                        array('text' => '📦 Créer un package', 'value' => 'package'),
                     ),
                 );
 
             default:
                 return array(
                     'success' => true,
-                    'message' => "Merci pour votre message ! <br><br>" .
-                                "<strong>⚠️ Mode démo</strong> : Pour activer l'intelligence artificielle, " .
-                                "veuillez configurer le backend dans les paramètres du plugin.",
-                    'conversationStage' => 'demo',
+                    'message' => $demo_notice .
+                                "Merci pour votre message ! En mode démo, je peux simuler une conversation basique.<br><br>" .
+                                "Essayez de me dire :<br>" .
+                                "• \"Je cherche une activité en couple\"<br>" .
+                                "• \"J'ai 30 ans\"<br>" .
+                                "• \"Ce week-end\"<br>" .
+                                "• \"Quelque chose de sportif\"",
+                    'conversationStage' => $stage,
+                    'userContext' => $user_context,
                 );
         }
+    }
+
+    /**
+     * Get group type label
+     */
+    private function get_group_label($user_context) {
+        if (!isset($user_context['groupType'])) {
+            return 'pour vous';
+        }
+
+        $labels = array(
+            'solo' => 'solo',
+            'couple' => 'en couple',
+            'famille' => 'en famille',
+            'amis' => 'entre amis',
+        );
+
+        return isset($labels[$user_context['groupType']])
+            ? $labels[$user_context['groupType']]
+            : 'pour vous';
+    }
+
+    /**
+     * Get demo events based on user context
+     */
+    private function get_demo_events($user_context) {
+        $interests = isset($user_context['interests']) ? $user_context['interests'] : array();
+        $interest = !empty($interests) ? $interests[0] : 'general';
+
+        // Demo events based on interest
+        $events_by_interest = array(
+            'sport' => array(
+                array(
+                    'id' => 'demo-1',
+                    'title' => 'Escalade Indoor',
+                    'image' => 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=400',
+                    'price' => '35€/pers',
+                    'date' => 'Samedi 10h-13h',
+                    'location' => 'Zone Nord (12 min)',
+                    'duration' => '3h',
+                    'rating' => '4.9',
+                    'reviews' => '234',
+                    'badges' => array(
+                        array('type' => 'indoor', 'icon' => '🏠', 'text' => 'Indoor'),
+                        array('type' => 'sport', 'icon' => '💪', 'text' => 'Actif'),
+                    ),
+                ),
+            ),
+            'culture' => array(
+                array(
+                    'id' => 'demo-2',
+                    'title' => 'Visite Musée d\'Art Moderne',
+                    'image' => 'https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=400',
+                    'price' => '12€/pers',
+                    'date' => 'Dimanche 14h-17h',
+                    'location' => 'Centre-ville (5 min)',
+                    'duration' => '3h',
+                    'rating' => '4.7',
+                    'reviews' => '189',
+                    'badges' => array(
+                        array('type' => 'culture', 'icon' => '🎨', 'text' => 'Culturel'),
+                        array('type' => 'family', 'icon' => '👨‍👩‍👧', 'text' => 'Famille'),
+                    ),
+                ),
+            ),
+            'gastronomie' => array(
+                array(
+                    'id' => 'demo-3',
+                    'title' => 'Atelier Cuisine Italienne',
+                    'image' => 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400',
+                    'price' => '55€/pers',
+                    'date' => 'Samedi 18h-21h',
+                    'location' => 'Centre-ville (8 min)',
+                    'duration' => '3h',
+                    'rating' => '4.8',
+                    'reviews' => '156',
+                    'badges' => array(
+                        array('type' => 'food', 'icon' => '🍝', 'text' => 'Gastronomie'),
+                        array('type' => 'indoor', 'icon' => '🏠', 'text' => 'Indoor'),
+                    ),
+                ),
+            ),
+        );
+
+        // Return events for interest, or default sport event
+        $events = isset($events_by_interest[$interest])
+            ? $events_by_interest[$interest]
+            : $events_by_interest['sport'];
+
+        // Add 2 more generic events
+        $events[] = array(
+            'id' => 'demo-4',
+            'title' => 'Atelier Poterie',
+            'image' => 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400',
+            'price' => '45€/pers',
+            'date' => 'Samedi 14h-16h30',
+            'location' => 'Centre-ville (8 min)',
+            'duration' => '2h30',
+            'rating' => '4.8',
+            'reviews' => '127',
+            'badges' => array(
+                array('type' => 'art', 'icon' => '🎨', 'text' => 'Créatif'),
+                array('type' => 'relax', 'icon' => '😌', 'text' => 'Détente'),
+            ),
+        );
+
+        $events[] = array(
+            'id' => 'demo-5',
+            'title' => 'Dégustation Vins & Fromages',
+            'image' => 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400',
+            'price' => '60€/pers',
+            'date' => 'Dimanche 16h-18h',
+            'location' => 'Périphérie (15 min)',
+            'duration' => '2h',
+            'rating' => '4.7',
+            'reviews' => '89',
+            'badges' => array(
+                array('type' => 'food', 'icon' => '🍷', 'text' => 'Œnologie'),
+                array('type' => 'age', 'icon' => '🔞', 'text' => '18+'),
+            ),
+        );
+
+        return $events;
     }
 
     /**
