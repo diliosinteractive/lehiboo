@@ -141,53 +141,66 @@
      * Sauvegarder dans la DB (utilisateurs connectés)
      */
     async saveToDB(state) {
-      const response = await fetch(`${this.config.apiEndpoint}/conversation/save`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-WP-Nonce': this.config.nonce,
-        },
-        body: JSON.stringify({
-          conversationId: state.conversationId,
-          messages: state.messages,
-          userContext: state.userContext,
-          currentStage: state.currentStage,
-        }),
-      });
+      try {
+        const response = await fetch(`${this.config.apiEndpoint}/conversation/save`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-WP-Nonce': this.config.nonce,
+          },
+          body: JSON.stringify({
+            conversationId: state.conversationId,
+            messages: state.messages,
+            userContext: state.userContext,
+            currentStage: state.currentStage,
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`DB save failed: ${response.status}`);
+        if (!response.ok) {
+          const errorText = await response.text().catch(() => 'Unknown error');
+          console.warn('[Persistence] DB save failed:', response.status, errorText);
+          throw new Error(`DB save failed: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('[Persistence] Saved to DB');
+        return result;
+      } catch (error) {
+        console.error('[Persistence] DB save error:', error);
+        throw error;
       }
-
-      const result = await response.json();
-      console.log('[Persistence] Saved to DB');
-      return result;
     }
 
     /**
      * Charger depuis la DB (utilisateurs connectés)
      */
     async loadFromDB(conversationId) {
-      const response = await fetch(
-        `${this.config.apiEndpoint}/conversation/load?conversationId=${conversationId}`,
-        {
-          headers: {
-            'X-WP-Nonce': this.config.nonce,
-          },
+      try {
+        const response = await fetch(
+          `${this.config.apiEndpoint}/conversation/load?conversationId=${conversationId}`,
+          {
+            headers: {
+              'X-WP-Nonce': this.config.nonce,
+            },
+          }
+        );
+
+        if (response.status === 404) {
+          return null; // Pas de conversation trouvée
         }
-      );
 
-      if (response.status === 404) {
-        return null; // Pas de conversation trouvée
+        if (!response.ok) {
+          console.warn('[Persistence] DB load failed:', response.status, '- Falling back to localStorage');
+          return null; // Fallback vers localStorage
+        }
+
+        const result = await response.json();
+        console.log('[Persistence] Loaded from DB');
+        return result.conversation;
+      } catch (error) {
+        console.warn('[Persistence] DB load error:', error.message, '- Falling back to localStorage');
+        return null;
       }
-
-      if (!response.ok) {
-        throw new Error(`DB load failed: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log('[Persistence] Loaded from DB');
-      return result.conversation;
     }
 
     /**
@@ -207,7 +220,8 @@
         localStorage.removeItem('lehiboo_conversation');
         return true;
       } catch (error) {
-        console.error('[Persistence] Migration failed:', error);
+        console.warn('[Persistence] Migration failed:', error, '- Keeping data in localStorage');
+        // Ne pas supprimer localStorage en cas d'erreur
         return false;
       }
     }
