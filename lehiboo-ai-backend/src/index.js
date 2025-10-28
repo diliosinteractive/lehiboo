@@ -102,10 +102,8 @@ async function startServer() {
     const openrouterOk = await testOpenRouterConnection();
 
     if (!openrouterOk) {
-      logger.warn('OpenRouter connection failed - check your API key');
-      if (config.env === 'production') {
-        process.exit(1);
-      }
+      logger.warn('⚠️  OpenRouter connection failed - check your API key and account credits');
+      logger.warn('The server will start anyway, but AI features may not work properly');
     } else {
       logger.info('✅ OpenRouter connection successful');
     }
