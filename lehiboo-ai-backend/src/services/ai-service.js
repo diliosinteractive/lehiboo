@@ -34,26 +34,18 @@ export async function generateAIResponse(message, context = {}) {
     // Construire l'historique de conversation
     const messages = buildConversationHistory(message, context);
 
-    // Obtenir les MCP Tools disponibles
-    const tools = getToolsDefinitions();
+    // TODO: Réactiver les MCP Tools une fois convertis en schémas Zod
+    // const tools = getToolsDefinitions();
+    // const enhancedSystemPrompt = systemPrompt + '\n\n' + generateToolsInstructions(tools);
 
-    // Ajouter les tools au prompt système
-    const enhancedSystemPrompt = systemPrompt + '\n\n' + generateToolsInstructions(tools);
-
-    // Générer la réponse avec tools
+    // Générer la réponse (sans tools pour l'instant)
     let { text, usage, toolCalls } = await generateText({
       model: openrouter(config.openrouter.defaultModel),
-      system: enhancedSystemPrompt,
+      system: systemPrompt,
       messages,
       temperature: 0.7,
       maxTokens: 1000,
-      tools: tools.reduce((acc, tool) => {
-        acc[tool.name] = {
-          description: tool.description,
-          parameters: tool.parameters,
-        };
-        return acc;
-      }, {}),
+      // tools désactivés temporairement - cause erreur Zod schema
     });
 
     // Exécuter les tool calls si l'IA en a fait
