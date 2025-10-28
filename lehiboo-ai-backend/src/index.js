@@ -10,7 +10,7 @@ import rateLimit from 'express-rate-limit';
 import config from './config/index.js';
 import logger from './utils/logger.js';
 import chatRoutes from './routes/chat.js';
-import { testOpenAIConnection } from './services/ai-service.js';
+import { testOpenAIConnection } from './services/ai-service-v2.js';
 import weatherService from './services/weather-service.js';
 
 // Créer l'application Express
