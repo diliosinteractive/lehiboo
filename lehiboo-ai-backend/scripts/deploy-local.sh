@@ -12,9 +12,35 @@
 #   3. Allez dans le dossier: cd /chemin/vers/lehiboo-ai-backend
 #   4. Lancez: ./scripts/deploy-local.sh
 #
+# Options:
+#   --clean    Nettoie les anciennes images Docker avant le build
+#              (utile si problème d'espace disque)
+#
+# Exemples:
+#   ./scripts/deploy-local.sh           # Déploiement normal (rapide)
+#   ./scripts/deploy-local.sh --clean   # Avec nettoyage (plus lent)
+#
 ###############################################################################
 
 set -e  # Exit on error
+
+# Paramètres
+CLEAN_MODE=false
+
+# Parser les arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --clean)
+            CLEAN_MODE=true
+            shift
+            ;;
+        *)
+            echo "Option inconnue: $1"
+            echo "Usage: $0 [--clean]"
+            exit 1
+            ;;
+    esac
+done
 
 # Couleurs
 RED='\033[0;31m'
@@ -161,7 +187,12 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 # 1. Arrêter l'ancien container (si existe)
-echo "📦 Étape 1/5: Arrêt de l'ancien container..."
+if [ "$CLEAN_MODE" = true ]; then
+    echo "📦 Étape 1/5: Arrêt de l'ancien container..."
+else
+    echo "📦 Étape 1/4: Arrêt de l'ancien container..."
+fi
+
 if docker-compose ps | grep -q "Up"; then
     docker-compose down
     echo -e "${GREEN}✅ Container arrêté${NC}"
@@ -170,14 +201,29 @@ else
 fi
 echo ""
 
-# 2. Nettoyer les anciennes images (optionnel)
-echo "🧹 Étape 2/5: Nettoyage des anciennes images..."
-docker system prune -f > /dev/null 2>&1 || true
-echo -e "${GREEN}✅ Nettoyage terminé${NC}"
-echo ""
+# 2. Nettoyage optionnel (seulement si --clean)
+if [ "$CLEAN_MODE" = true ]; then
+    echo "🧹 Étape 2/5: Nettoyage des anciennes images..."
+    echo "   (Mode --clean activé)"
+
+    BEFORE_SIZE=$(docker system df | grep 'Images' | awk '{print $4}')
+    docker system prune -f > /dev/null 2>&1 || true
+    AFTER_SIZE=$(docker system df | grep 'Images' | awk '{print $4}')
+
+    echo -e "${GREEN}✅ Nettoyage terminé${NC}"
+    echo "   Espace libéré: $BEFORE_SIZE → $AFTER_SIZE"
+    echo ""
+    STEP_BUILD="3/5"
+    STEP_START="4/5"
+    STEP_CHECK="5/5"
+else
+    STEP_BUILD="2/4"
+    STEP_START="3/4"
+    STEP_CHECK="4/4"
+fi
 
 # 3. Build la nouvelle image
-echo "🔨 Étape 3/5: Build de la nouvelle image Docker..."
+echo "🔨 Étape $STEP_BUILD: Build de la nouvelle image Docker..."
 echo "   (Cela peut prendre 1-2 minutes la première fois...)"
 echo ""
 
@@ -194,7 +240,7 @@ fi
 echo ""
 
 # 4. Démarrer le nouveau container
-echo "🚀 Étape 4/5: Démarrage du nouveau container..."
+echo "🚀 Étape $STEP_START: Démarrage du nouveau container..."
 docker-compose up -d
 
 if [ $? -eq 0 ]; then
@@ -206,7 +252,7 @@ fi
 echo ""
 
 # 5. Vérifications
-echo "🔍 Étape 5/5: Vérifications..."
+echo "🔍 Étape $STEP_CHECK: Vérifications..."
 echo ""
 
 # Attendre que le service démarre
