@@ -2,7 +2,7 @@
  * Contrôleur pour les endpoints de chat
  */
 
-import { generateAIResponse } from '../services/ai-service.js';
+import { generateAIResponse, extractUserInfoFromMessage } from '../services/ai-service.js';
 import logger from '../utils/logger.js';
 
 /**
@@ -22,12 +22,22 @@ export async function handleChatRequest(req, res) {
       conversationId,
       stage: currentStage,
       messagePreview: message.substring(0, 50),
+      historyLength: history.length,
+    });
+
+    // Extraire les infos du message utilisateur pour enrichir le contexte
+    const enrichedUserContext = extractUserInfoFromMessage(message, userContext, currentStage);
+
+    logger.debug('User context enriched', {
+      before: Object.keys(userContext),
+      after: Object.keys(enrichedUserContext),
+      newFields: Object.keys(enrichedUserContext).filter(k => !userContext[k]),
     });
 
     // Préparer le contexte
     const context = {
       conversationId,
-      userContext,
+      userContext: enrichedUserContext,
       currentStage,
       history,
     };

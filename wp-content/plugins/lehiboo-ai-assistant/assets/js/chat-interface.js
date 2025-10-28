@@ -457,6 +457,14 @@
      * Send message to API
      */
     async sendToAPI(message) {
+      // Construire l'historique au format attendu par le backend
+      const history = this.state.messages
+        .filter(msg => msg.role) // Garder seulement user/assistant
+        .map(msg => ({
+          role: msg.role,
+          content: msg.content
+        }));
+
       const response = await fetch(this.config.apiEndpoint, {
         method: 'POST',
         headers: {
@@ -467,7 +475,8 @@
           message: message,
           conversationId: this.state.conversationId,
           userContext: this.state.userContext,
-          currentStage: this.state.currentStage
+          currentStage: this.state.currentStage,
+          history: history // ✅ Ajouter l'historique !
         })
       });
 

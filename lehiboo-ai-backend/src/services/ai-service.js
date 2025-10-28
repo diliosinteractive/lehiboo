@@ -309,6 +309,136 @@ function buildConversationHistory(currentMessage, context) {
 }
 
 /**
+ * Extraire les informations utilisateur du message pour mettre à jour le contexte
+ * Exportée pour utilisation dans le controller
+ */
+export function extractUserInfoFromMessage(message, currentContext, currentStage) {
+  const updatedContext = { ...currentContext };
+  const lowerMessage = message.toLowerCase().trim();
+
+  // Détection du type de groupe
+  const groupPatterns = {
+    solo: /\b(solo|seul|moi|individuel)\b/i,
+    couple: /\b(couple|deux|mon copain|ma copine|conjoint|mari|femme)\b/i,
+    famille: /\b(famille|enfants|kids|parent|papa|maman)\b/i,
+    amis: /\b(amis|potes|copains|groupe|entre amis)\b/i,
+  };
+
+  for (const [type, pattern] of Object.entries(groupPatterns)) {
+    if (pattern.test(message) && !updatedContext.groupType) {
+      updatedContext.groupType = type;
+      break;
+    }
+  }
+
+  // Détection de l'âge
+  const agePatterns = [
+    { pattern: /\b(18-25|18 25|18\s*-\s*25)\b/i, value: '18-25' },
+    { pattern: /\b(26-35|25-35|26 35|25 35)\b/i, value: '26-35' },
+    { pattern: /\b(36-50|35-50|36 50|35 50)\b/i, value: '36-50' },
+    { pattern: /\b(50\+|50 plus|plus de 50)\b/i, value: '50+' },
+  ];
+
+  for (const { pattern, value } of agePatterns) {
+    if (pattern.test(message) && !updatedContext.age) {
+      updatedContext.age = value;
+      break;
+    }
+  }
+
+  // Détection des dates
+  const datePatterns = {
+    'ce-weekend': /\b(ce week-?end|ce we|weekend|week end)\b/i,
+    'weekend-prochain': /\b(week-?end prochain|prochain we|next weekend)\b/i,
+    'flexible': /\b(flexible|pas de date|n'importe quand)\b/i,
+  };
+
+  for (const [type, pattern] of Object.entries(datePatterns)) {
+    if (pattern.test(message) && !updatedContext.datePreference) {
+      updatedContext.datePreference = type;
+      break;
+    }
+  }
+
+  // Détection des préférences d'activité
+  const activityPatterns = {
+    sport: /\b(sport|sportif|actif|gym|course|vélo|escalade)\b/i,
+    culture: /\b(culture|culturel|musée|exposition|art|galerie)\b/i,
+    gastronomie: /\b(gastronomie|restaurant|food|manger|cuisine|culinaire)\b/i,
+    nature: /\b(nature|outdoor|plein air|randonnée|balade)\b/i,
+    detente: /\b(détente|relaxation|spa|massage|bien-être|wellness)\b/i,
+  };
+
+  for (const [type, pattern] of Object.entries(activityPatterns)) {
+    if (pattern.test(message)) {
+      if (!updatedContext.activityPreferences) {
+        updatedContext.activityPreferences = [];
+      }
+      if (!updatedContext.activityPreferences.includes(type)) {
+        updatedContext.activityPreferences.push(type);
+      }
+    }
+  }
+
+  // Détection du budget
+  const budgetPatterns = {
+    economique: /\b(économique|pas cher|budget serré|petit budget|moins de 50)\b/i,
+    modere: /\b(modéré|moyen|raisonnable|50-100|entre 50 et 100)\b/i,
+    premium: /\b(premium|luxe|haut de gamme|plus de 100)\b/i,
+  };
+
+  for (const [type, pattern] of Object.entries(budgetPatterns)) {
+    if (pattern.test(message) && !updatedContext.budget) {
+      updatedContext.budget = type;
+      break;
+    }
+  }
+
+  return updatedContext;
+}
+
+/**
+ * Déterminer le prochain stage basé sur les informations collectées
+ */
+function determineNextStage(userContext, currentStage) {
+  // Flow logique des stages
+  const stageFlow = {
+    greeting: 'age_collection',
+    age_collection: 'dates_weather',
+    dates_weather: 'preferences',
+    preferences: 'recommendations',
+    recommendations: 'booking',
+  };
+
+  // Vérifier si on peut sauter des stages si l'info est déjà présente
+  if (!userContext.age && currentStage === 'greeting') {
+    return 'age_collection';
+  }
+
+  if (!userContext.datePreference && userContext.age) {
+    return 'dates_weather';
+  }
+
+  if (!userContext.activityPreferences && userContext.datePreference) {
+    return 'preferences';
+  }
+
+  // Si on a toutes les infos nécessaires, aller aux recommandations
+  if (
+    userContext.groupType &&
+    userContext.age &&
+    userContext.datePreference &&
+    userContext.activityPreferences &&
+    userContext.activityPreferences.length > 0
+  ) {
+    return 'recommendations';
+  }
+
+  // Sinon, suivre le flow normal
+  return stageFlow[currentStage] || currentStage;
+}
+
+/**
  * Parser la réponse de l'IA pour extraire les métadonnées
  * L'IA peut retourner du JSON structuré pour les quick chips, events, etc.
  */
@@ -330,27 +460,24 @@ function parseAIResponse(text, context) {
   // Nettoyer le texte des blocks JSON
   const cleanText = text.replace(jsonBlockRegex, '').trim();
 
-  // Détection automatique du stage si non fourni
-  let detectedStage = context.currentStage;
-  if (metadata.stage) {
-    detectedStage = metadata.stage;
-  } else {
-    // Heuristique basique
-    if (cleanText.toLowerCase().includes('quel âge') || cleanText.toLowerCase().includes('âge avez-vous')) {
-      detectedStage = 'age_collection';
-    } else if (cleanText.toLowerCase().includes('quand souhaitez-vous') || cleanText.toLowerCase().includes('quelle date')) {
-      detectedStage = 'dates_weather';
-    } else if (cleanText.toLowerCase().includes('type d\'activité') || cleanText.toLowerCase().includes('vous intéresse')) {
-      detectedStage = 'preferences';
-    } else if (cleanText.toLowerCase().includes('recommandations') || cleanText.toLowerCase().includes('voici')) {
-      detectedStage = 'recommendations';
-    }
-  }
+  // Extraire les infos du contexte utilisateur depuis les métadonnées IA
+  let updatedUserContext = metadata.userContext || context.userContext || {};
+
+  // Déterminer le stage (priorité: metadata > context actuel)
+  let detectedStage = metadata.stage || determineNextStage(updatedUserContext, context.currentStage);
+
+  // Log pour debugging
+  logger.debug('Parsed AI response', {
+    stage: detectedStage,
+    userContext: updatedUserContext,
+    hasQuickChips: (metadata.quickChips || []).length > 0,
+    hasEvents: (metadata.events || []).length > 0,
+  });
 
   return {
     message: cleanText,
     stage: detectedStage,
-    userContext: metadata.userContext || context.userContext || {},
+    userContext: updatedUserContext,
     quickChips: metadata.quickChips || [],
     events: metadata.events || [],
     weatherAlert: metadata.weatherAlert || null,
