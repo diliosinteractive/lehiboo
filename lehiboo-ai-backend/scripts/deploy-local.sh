@@ -133,8 +133,8 @@ source .env.production
 set +a
 
 # Vérifier les clés API
-if [ -z "$OPENROUTER_API_KEY" ] || [ "$OPENROUTER_API_KEY" = "your-openrouter-api-key-here" ]; then
-    MISSING_VARS+=("OPENROUTER_API_KEY")
+if [ -z "$OPENAI_API_KEY" ] || [ "$OPENAI_API_KEY" = "sk-your-openai-api-key-here" ]; then
+    MISSING_VARS+=("OPENAI_API_KEY")
 fi
 
 if [ -z "$API_KEY" ] || [ "$API_KEY" = "your-api-key-here" ]; then
@@ -166,7 +166,7 @@ echo "📊 Configuration:"
 echo "  - Node Env: ${NODE_ENV:-production}"
 echo "  - Port: ${PORT:-3000}"
 echo "  - WordPress: ${WORDPRESS_URL}"
-echo "  - Model: ${DEFAULT_MODEL:-anthropic/claude-3.5-sonnet}"
+echo "  - Model: ${DEFAULT_MODEL:-gpt-4o}"
 echo ""
 
 # Demander confirmation
