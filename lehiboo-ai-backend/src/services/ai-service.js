@@ -320,8 +320,8 @@ export function extractUserInfoFromMessage(message, currentContext, currentStage
   const groupPatterns = {
     solo: /\b(solo|seul|moi|individuel)\b/i,
     couple: /\b(couple|deux|mon copain|ma copine|conjoint|mari|femme)\b/i,
-    famille: /\b(famille|enfants|kids|parent|papa|maman)\b/i,
-    amis: /\b(amis|potes|copains|groupe|entre amis)\b/i,
+    family: /\b(famille|enfants|kids|parent|papa|maman)\b/i,
+    friends: /\b(amis|potes|copains|groupe|entre amis)\b/i,
   };
 
   for (const [type, pattern] of Object.entries(groupPatterns)) {

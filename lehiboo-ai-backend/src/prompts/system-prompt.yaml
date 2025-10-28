@@ -77,9 +77,9 @@ stages:
       - text: "💑 En couple"
         value: "couple"
       - text: "👨‍👩‍👧 En famille"
-        value: "famille"
+        value: "family"
       - text: "👥 Entre amis"
-        value: "amis"
+        value: "friends"
     nextStage: "age_collection"
 
   age_collection:
