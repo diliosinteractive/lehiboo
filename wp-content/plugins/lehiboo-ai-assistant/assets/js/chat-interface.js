@@ -117,10 +117,17 @@
     constructor(config = {}) {
       this.config = {
         apiEndpoint: config.apiEndpoint || '/wp-json/lehiboo/v1/chat',
+        apiBaseUrl: config.apiBaseUrl || '/wp-json/lehiboo/v1',
         nonce: config.nonce || '',
         userId: config.userId || null,
+        isLoggedIn: config.isLoggedIn || false,
+        userDisplayName: config.userDisplayName || '',
+        loginUrl: config.loginUrl || '/wp-login.php',
+        registerUrl: config.registerUrl || '/wp-login.php?action=register',
         debug: config.debug || false,
         maxRetries: config.maxRetries || 3,
+        persistence: config.persistence || {},
+        onboarding: config.onboarding || {},
         ...config
       };
 
@@ -130,10 +137,27 @@
         messages: [],
         conversationId: this.generateConversationId(),
         userContext: {},
-        currentStage: 'greeting'
+        currentStage: 'greeting',
+        messageCount: 0
       };
 
       this.rateLimiter = new ClientRateLimiter();
+      this.persistence = new ChatPersistenceManager({
+        apiEndpoint: this.config.apiBaseUrl,
+        nonce: this.config.nonce,
+        userId: this.config.userId,
+        autoSaveInterval: this.config.persistence.autoSaveInterval
+      });
+      this.onboarding = new OnboardingManager({
+        isLoggedIn: this.config.isLoggedIn,
+        loginUrl: this.config.loginUrl,
+        registerUrl: this.config.registerUrl,
+      });
+      this.favorites = new FavoritesManager({
+        apiEndpoint: this.config.apiBaseUrl,
+        nonce: this.config.nonce,
+        isLoggedIn: this.config.isLoggedIn,
+      });
       this.elements = {};
 
       this.init();
@@ -142,7 +166,7 @@
     /**
      * Initialize the chat interface
      */
-    init() {
+    async init() {
       this.log('Initializing Le Hiboo Chat Interface...');
 
       // Build HTML structure
@@ -154,11 +178,23 @@
       // Attach event listeners
       this.attachEventListeners();
 
-      // Load conversation history
-      this.loadConversationHistory();
+      // Load conversation history (avec persistance)
+      await this.loadConversationHistory();
 
-      // Send greeting message
-      this.sendGreeting();
+      // Migrer localStorage → DB si utilisateur connecté
+      if (this.config.isLoggedIn) {
+        await this.persistence.migrateLocalStorageToDB();
+      }
+
+      // Démarrer l'auto-save
+      if (this.config.persistence.enabled) {
+        this.persistence.startAutoSave(this);
+      }
+
+      // Send greeting message (si pas de messages chargés)
+      if (this.state.messages.length === 0) {
+        this.sendGreeting();
+      }
 
       this.log('Chat interface initialized successfully');
     }
@@ -193,10 +229,13 @@
               <img src="/wp-content/plugins/eventlist/assets/img/unknow_user.png" alt="Le Hiboo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
             </div>
             <div class="lehiboo-chat-header-text">
-              <h2 class="lehiboo-chat-title">Le Hiboo Assistant</h2>
+              <h2 class="lehiboo-chat-title">
+                Le Hiboo Assistant
+                ${this.config.isLoggedIn ? '<span class="lehiboo-member-badge">Membre</span>' : ''}
+              </h2>
               <p class="lehiboo-chat-subtitle">
                 <span class="lehiboo-status-indicator"></span>
-                En ligne - Prêt à vous aider
+                ${this.config.isLoggedIn ? `Bonjour ${this.config.userDisplayName} 👋` : 'En ligne - Prêt à vous aider'}
               </p>
             </div>
           </div>
@@ -440,8 +479,16 @@
             this.showWeatherAlert(response.weatherAlert);
           }
 
-          // Save conversation
-          this.saveConversation();
+          // Incrémenter le compteur de messages
+          this.state.messageCount++;
+
+          // Save conversation (auto-save gère ça, mais on force ici pour les moments clés)
+          await this.saveConversation();
+
+          // Trigger onboarding si nécessaire
+          if (this.config.onboarding.enabled) {
+            this.onboarding.showAfterMessages(this.state.messageCount, this);
+          }
 
         } else {
           this.showError(response.message || 'Une erreur est survenue');
@@ -556,8 +603,13 @@
     createEventCard(event) {
       const card = document.createElement('div');
       card.className = 'lehiboo-event-card';
+      const isFavorite = this.favorites.isFavorite(event.id);
 
       card.innerHTML = `
+        <button class="lehiboo-event-card-favorite ${isFavorite ? 'active' : ''}"
+                data-event-id="${event.id}"
+                aria-label="${isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}">
+        </button>
         ${event.image ? `<img src="${event.image}" alt="${event.title}" class="lehiboo-event-card-image">` : ''}
         <div class="lehiboo-event-card-content">
           <div class="lehiboo-event-card-header">
@@ -605,7 +657,49 @@
         </div>
       `;
 
+      // Event listener pour le bouton favoris
+      const favoriteBtn = card.querySelector('.lehiboo-event-card-favorite');
+      if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          await this.toggleFavorite(event.id, favoriteBtn);
+        });
+      }
+
       return card;
+    }
+
+    /**
+     * Toggle favorite
+     */
+    async toggleFavorite(eventId, buttonElement) {
+      // Si pas connecté, afficher modal onboarding
+      if (!this.config.isLoggedIn) {
+        this.onboarding.show(this);
+        return;
+      }
+
+      // Toggle
+      const isNowFavorite = await this.favorites.toggleFavorite(eventId, this.state.conversationId);
+
+      // Update UI
+      if (isNowFavorite) {
+        buttonElement.classList.add('active', 'animating');
+        buttonElement.setAttribute('aria-label', 'Retirer des favoris');
+        this.showToast(this.config.i18n.addedToFavorites || 'Ajouté aux favoris ❤️');
+      } else {
+        buttonElement.classList.remove('active');
+        buttonElement.setAttribute('aria-label', 'Ajouter aux favoris');
+        this.showToast(this.config.i18n.removedFromFavorites || 'Retiré des favoris');
+      }
+
+      // Remove animation class after animation
+      setTimeout(() => {
+        buttonElement.classList.remove('animating');
+      }, 600);
+
+      // Track analytics
+      this.trackEvent(isNowFavorite ? 'favorite_added' : 'favorite_removed', { eventId });
     }
 
     /**
@@ -833,50 +927,101 @@
     }
 
     /**
-     * Save conversation to localStorage
+     * Save conversation (utilise le système de persistance hybride)
      */
-    saveConversation() {
+    async saveConversation() {
       try {
-        const data = {
-          conversationId: this.state.conversationId,
-          messages: this.state.messages,
-          userContext: this.state.userContext,
-          currentStage: this.state.currentStage,
-          timestamp: new Date().toISOString()
-        };
-        localStorage.setItem('lehiboo_conversation', JSON.stringify(data));
+        const saved = await this.persistence.saveConversation(this.state);
+        if (saved && this.config.debug) {
+          this.log('Conversation saved successfully');
+        }
       } catch (e) {
         this.log('Failed to save conversation:', e);
       }
     }
 
     /**
-     * Load conversation history
+     * Load conversation history (utilise le système de persistance hybride)
      */
-    loadConversationHistory() {
+    async loadConversationHistory() {
       try {
-        const stored = localStorage.getItem('lehiboo_conversation');
-        if (!stored) return;
+        const data = await this.persistence.loadConversation(this.state.conversationId);
 
-        const data = JSON.parse(stored);
-
-        // Check if conversation is recent (< 24h)
-        const age = Date.now() - new Date(data.timestamp).getTime();
-        if (age > 24 * 60 * 60 * 1000) {
-          // Too old, clear it
-          localStorage.removeItem('lehiboo_conversation');
+        if (!data) {
+          this.log('No conversation history found');
           return;
         }
 
-        // Restore state (but don't show messages yet)
+        // Restore state
         this.state.conversationId = data.conversationId;
         this.state.userContext = data.userContext || {};
         this.state.currentStage = data.currentStage || 'greeting';
+        this.state.messageCount = (data.messages || []).length;
 
-        this.log('Conversation history loaded');
+        // Restore messages to UI
+        if (data.messages && data.messages.length > 0) {
+          data.messages.forEach(msg => {
+            // Ne pas afficher le greeting initial si déjà des messages
+            if (msg.role === 'assistant' && msg.content.includes('Pour commencer')) {
+              return;
+            }
+
+            const messageEl = this.createMessageElement({
+              ...msg,
+              timestamp: new Date(msg.timestamp || Date.now())
+            });
+            this.elements.messages.appendChild(messageEl);
+          });
+
+          this.scrollToBottom();
+        }
+
+        this.log('Conversation history loaded', {
+          messageCount: this.state.messageCount,
+          stage: this.state.currentStage
+        });
       } catch (e) {
         this.log('Failed to load conversation:', e);
       }
+    }
+
+    /**
+     * Show toast notification
+     */
+    showToast(message, duration = 3000) {
+      // Créer ou récupérer le container de toasts
+      let toastContainer = document.querySelector('.lehiboo-toast-container');
+      if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.className = 'lehiboo-toast-container';
+        document.body.appendChild(toastContainer);
+      }
+
+      // Créer le toast
+      const toast = document.createElement('div');
+      toast.className = 'lehiboo-toast';
+      toast.textContent = message;
+      toast.setAttribute('role', 'status');
+      toast.setAttribute('aria-live', 'polite');
+
+      toastContainer.appendChild(toast);
+
+      // Afficher avec animation
+      requestAnimationFrame(() => {
+        toast.classList.add('show');
+      });
+
+      // Masquer et supprimer
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          toast.remove();
+          // Supprimer le container si vide
+          if (toastContainer.children.length === 0) {
+            toastContainer.remove();
+          }
+        }, 300);
+      }, duration);
     }
 
     /**
