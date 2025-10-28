@@ -22,7 +22,8 @@ COPY package*.json ./
 # Installer les dépendances de production uniquement
 # --omit=dev pour exclure devDependencies
 # --legacy-peer-deps pour compatibilité
-RUN npm ci --omit=dev --legacy-peer-deps && \
+# Utilise npm install car pas de package-lock.json
+RUN npm install --omit=dev --legacy-peer-deps && \
     npm cache clean --force
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
