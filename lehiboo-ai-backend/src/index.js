@@ -16,6 +16,10 @@ import weatherService from './services/weather-service.js';
 // Créer l'application Express
 const app = express();
 
+// Trust proxy - nécessaire car derrière Plesk reverse proxy
+// Permet à express-rate-limit de lire correctement X-Forwarded-For
+app.set('trust proxy', 1);
+
 // Middleware de sécurité
 app.use(helmet());
 
