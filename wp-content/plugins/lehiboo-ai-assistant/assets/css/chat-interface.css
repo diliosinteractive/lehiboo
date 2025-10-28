@@ -903,6 +903,160 @@
   gap: var(--spacing-sm);
 }
 
+/* Message Limit Reached (5 messages max for guests) */
+.lehiboo-message-limit-reached {
+  background: linear-gradient(135deg, rgba(255, 96, 31, 0.1) 0%, rgba(255, 130, 71, 0.1) 100%);
+  border: 2px solid rgba(255, 96, 31, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: slideUp 0.4s ease-out;
+}
+
+.lehiboo-limit-icon {
+  font-size: 48px;
+  line-height: 1;
+  animation: bounce 0.6s ease-out;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.lehiboo-limit-content {
+  width: 100%;
+  text-align: center;
+}
+
+.lehiboo-limit-content h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0 0 12px 0;
+}
+
+.lehiboo-limit-content p {
+  font-size: 14px;
+  color: #4a5568;
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.lehiboo-limit-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  text-align: left;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lehiboo-limit-benefits li {
+  font-size: 14px;
+  color: #2d3748;
+  padding: 8px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.4;
+}
+
+.lehiboo-limit-benefits li strong {
+  color: #ff601f;
+}
+
+.lehiboo-limit-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.lehiboo-limit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  min-width: 180px;
+}
+
+.lehiboo-limit-btn-primary {
+  background: linear-gradient(135deg, #ff601f 0%, #ff8247 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 96, 31, 0.3);
+}
+
+.lehiboo-limit-btn-primary:hover {
+  background: linear-gradient(135deg, #e64e0f 0%, #ff6f37 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 96, 31, 0.4);
+}
+
+.lehiboo-limit-btn-secondary {
+  background: white;
+  color: #ff601f;
+  border: 2px solid #ff601f;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.lehiboo-limit-btn-secondary:hover {
+  background: rgba(255, 96, 31, 0.05);
+  border-color: #e64e0f;
+  color: #e64e0f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 96, 31, 0.2);
+}
+
+@media (max-width: 768px) {
+  .lehiboo-message-limit-reached {
+    padding: 20px 16px;
+    margin: 12px;
+  }
+
+  .lehiboo-limit-icon {
+    font-size: 40px;
+  }
+
+  .lehiboo-limit-content h3 {
+    font-size: 18px;
+  }
+
+  .lehiboo-limit-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .lehiboo-limit-btn {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .lehiboo-limit-benefits {
+    font-size: 13px;
+  }
+}
+
 /* Print Styles */
 @media print {
   .lehiboo-chat-container,

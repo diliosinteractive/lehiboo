@@ -418,6 +418,12 @@
     async sendMessage() {
       const message = this.elements.textarea.value.trim();
 
+      // Check message limit for guests (5 messages max)
+      if (!this.config.isLoggedIn && this.state.messageCount >= 5) {
+        this.showMessageLimitReached();
+        return;
+      }
+
       // Validate input
       const validation = InputValidator.validate(message);
       if (!validation.valid) {
@@ -847,6 +853,46 @@
     }
 
     /**
+     * Show message limit reached (5 messages max for guests)
+     */
+    showMessageLimitReached() {
+      // Désactiver l'input
+      this.elements.textarea.disabled = true;
+      this.elements.sendButton.disabled = true;
+      this.elements.textarea.placeholder = "Connectez-vous pour continuer la conversation...";
+
+      // Créer le message de blocage
+      const limitEl = document.createElement('div');
+      limitEl.className = 'lehiboo-message-limit-reached';
+      limitEl.setAttribute('role', 'alert');
+      limitEl.innerHTML = `
+        <div class="lehiboo-limit-icon">🔒</div>
+        <div class="lehiboo-limit-content">
+          <h3>Limite de messages atteinte</h3>
+          <p>Vous avez utilisé vos <strong>5 messages gratuits</strong>.</p>
+          <p>Créez un compte pour continuer votre recherche et profiter de tous les avantages :</p>
+          <ul class="lehiboo-limit-benefits">
+            <li>💬 <strong>Conversations illimitées</strong> avec l'assistant IA</li>
+            <li>💾 <strong>Historique sauvegardé</strong> de toutes vos recherches</li>
+            <li>❤️ <strong>Favoris synchronisés</strong> sur tous vos appareils</li>
+            <li>⚡ <strong>Réservation rapide</strong> en un clic</li>
+          </ul>
+          <div class="lehiboo-limit-actions">
+            <a href="${this.config.registerUrl}" class="lehiboo-limit-btn lehiboo-limit-btn-primary">
+              <span>✨ Créer un compte gratuit</span>
+            </a>
+            <a href="${this.config.loginUrl}" class="lehiboo-limit-btn lehiboo-limit-btn-secondary">
+              <span>🔑 Se connecter</span>
+            </a>
+          </div>
+        </div>
+      `;
+
+      this.elements.messages.appendChild(limitEl);
+      this.scrollToBottom();
+    }
+
+    /**
      * Send greeting message
      */
     sendGreeting() {
@@ -981,6 +1027,11 @@
           messageCount: this.state.messageCount,
           stage: this.state.currentStage
         });
+
+        // Vérifier la limite de messages pour les guests
+        if (!this.config.isLoggedIn && this.state.messageCount >= 5) {
+          this.showMessageLimitReached();
+        }
       } catch (e) {
         this.log('Failed to load conversation:', e);
       }
