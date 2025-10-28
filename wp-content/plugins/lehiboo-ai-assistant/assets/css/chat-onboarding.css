@@ -1,28 +1,26 @@
 /**
- * Le Hiboo Chat - Onboarding Modal Styles
- * Modal d'onboarding marketing premium
- *
- * @version 1.0.0
+ * Le Hiboo Chat - Onboarding Modal (Charte Le Hiboo)
+ * @version 2.0.0
  */
 
 /* ==========================================================================
-   Onboarding Modal
+   Onboarding Modal - Charte Le Hiboo
    ========================================================================== */
 
 .lehiboo-onboarding-modal {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 10000;
+  width: 100%;
+  height: 100%;
+  z-index: 999999;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
-  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .lehiboo-onboarding-modal.active {
@@ -34,257 +32,106 @@
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .lehiboo-onboarding-content {
   position: relative;
-  width: 90%;
-  max-width: 500px;
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
   max-height: 90vh;
-  overflow-y: auto;
-  background: #ffffff;
-  border-radius: 24px;
+  overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  padding: 40px 32px 32px;
-  transform: scale(0.9);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.4s ease;
 }
 
 .lehiboo-onboarding-modal.active .lehiboo-onboarding-content {
-  transform: scale(1);
+  animation: slideUp 0.4s ease;
+}
+
+/* Header - Charte Le Hiboo */
+.lehiboo-onboarding-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, #ff601f 0%, #ff8247 100%);
+  color: #fff;
+  position: relative;
+}
+
+.lehiboo-onboarding-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+  flex: 1;
 }
 
 .lehiboo-onboarding-close {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 32px;
-  height: 32px;
-  background: transparent;
+  top: 24px;
+  right: 28px;
+  background: rgba(255, 255, 255, 0.2);
   border: none;
-  font-size: 28px;
-  line-height: 1;
-  color: #999;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition: all 0.3s ease;
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
   z-index: 1;
 }
 
 .lehiboo-onboarding-close:hover {
-  color: #333;
+  background: rgba(255, 255, 255, 0.3);
   transform: rotate(90deg);
 }
 
-/* Header */
-.lehiboo-onboarding-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.lehiboo-onboarding-icon {
-  margin: 0 auto 20px;
-  width: 64px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.lehiboo-onboarding-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 12px 0;
-  line-height: 1.3;
-}
-
+/* Subtitle */
 .lehiboo-onboarding-subtitle {
-  font-size: 16px;
-  color: #666;
-  margin: 0;
+  margin: 12px 0 0 0;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 400;
   line-height: 1.5;
 }
 
-/* Benefits */
+/* Body */
+.lehiboo-onboarding-body {
+  padding: 32px 28px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Benefits List */
 .lehiboo-onboarding-benefits {
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .lehiboo-onboarding-benefit {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
-  padding: 16px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.lehiboo-onboarding-benefit:hover {
-  background: #f0f2f5;
-  transform: translateX(4px);
-}
-
-.lehiboo-onboarding-benefit-icon {
-  font-size: 32px;
-  flex-shrink: 0;
-  line-height: 1;
-}
-
-.lehiboo-onboarding-benefit-text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.lehiboo-onboarding-benefit-text strong {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1a1a1a;
-}
-
-.lehiboo-onboarding-benefit-text span {
-  font-size: 13px;
-  color: #666;
-  line-height: 1.4;
-}
-
-/* Actions */
-.lehiboo-onboarding-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.lehiboo-onboarding-btn {
-  width: 100%;
-  padding: 16px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
+  gap: 14px;
+  padding: 14px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  margin-bottom: 10px;
   transition: all 0.2s ease;
-  font-family: inherit;
-}
-
-.lehiboo-onboarding-btn-primary {
-  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
-}
-
-.lehiboo-onboarding-btn-primary:hover {
-  background: linear-gradient(135deg, #FF5252 0%, #FF7744 100%);
-  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-  transform: translateY(-2px);
-}
-
-.lehiboo-onboarding-btn-primary:active {
-  transform: translateY(0);
-}
-
-.lehiboo-onboarding-btn-secondary {
-  background: #ffffff;
-  color: #FF6B6B;
-  border: 2px solid #FF6B6B;
-}
-
-.lehiboo-onboarding-btn-secondary:hover {
-  background: #fff5f5;
-  border-color: #FF5252;
-}
-
-/* Footer */
-.lehiboo-onboarding-footer {
-  text-align: center;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
-}
-
-.lehiboo-onboarding-dismiss {
-  background: none;
-  border: none;
-  color: #999;
-  font-size: 14px;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 8px;
-  margin-bottom: 12px;
-  transition: color 0.2s ease;
-  font-family: inherit;
-}
-
-.lehiboo-onboarding-dismiss:hover {
-  color: #666;
-}
-
-.lehiboo-onboarding-disclaimer {
-  font-size: 12px;
-  color: #999;
-  margin: 0;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .lehiboo-onboarding-content {
-    width: 95%;
-    padding: 32px 24px 24px;
-    max-height: 95vh;
-  }
-
-  .lehiboo-onboarding-title {
-    font-size: 20px;
-  }
-
-  .lehiboo-onboarding-subtitle {
-    font-size: 14px;
-  }
-
-  .lehiboo-onboarding-benefit {
-    padding: 12px;
-  }
-
-  .lehiboo-onboarding-benefit-icon {
-    font-size: 28px;
-  }
-
-  .lehiboo-onboarding-benefit-text strong {
-    font-size: 14px;
-  }
-
-  .lehiboo-onboarding-benefit-text span {
-    font-size: 12px;
-  }
-
-  .lehiboo-onboarding-btn {
-    padding: 14px 20px;
-    font-size: 15px;
-  }
-}
-
-/* Animations */
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.lehiboo-onboarding-benefit {
-  animation: slideInUp 0.4s ease backwards;
+  animation: slideInBenefit 0.4s ease backwards;
 }
 
 .lehiboo-onboarding-benefit:nth-child(1) {
@@ -303,28 +150,154 @@
   animation-delay: 0.4s;
 }
 
-/* Badge "Membre connecté" */
+.lehiboo-onboarding-benefit:hover {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transform: translateX(4px);
+}
+
+.lehiboo-onboarding-benefit-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.lehiboo-onboarding-benefit-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lehiboo-onboarding-benefit-text strong {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.lehiboo-onboarding-benefit-text span {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* Actions */
+.lehiboo-onboarding-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.lehiboo-onboarding-btn {
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+}
+
+.lehiboo-onboarding-btn-primary {
+  background: #ff601f;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(255, 96, 31, 0.3);
+}
+
+.lehiboo-onboarding-btn-primary:hover {
+  background: #e64e0f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 96, 31, 0.4);
+}
+
+.lehiboo-onboarding-btn-primary:active {
+  transform: translateY(0);
+}
+
+.lehiboo-onboarding-btn-secondary {
+  background: #fff;
+  color: #ff601f;
+  border: 2px solid #ff601f;
+}
+
+.lehiboo-onboarding-btn-secondary:hover {
+  background: #fff5f1;
+  border-color: #e64e0f;
+  color: #e64e0f;
+}
+
+.lehiboo-onboarding-btn i {
+  font-size: 16px;
+}
+
+/* Footer */
+.lehiboo-onboarding-footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #e5e3f2;
+}
+
+.lehiboo-onboarding-dismiss {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 8px;
+  margin-bottom: 12px;
+  transition: color 0.2s ease;
+  font-family: inherit;
+}
+
+.lehiboo-onboarding-dismiss:hover {
+  color: #333;
+}
+
+.lehiboo-onboarding-disclaimer {
+  font-size: 12px;
+  color: #999;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   Badge "Membre connecté"
+   ========================================================================== */
+
 .lehiboo-member-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-  color: #ffffff;
-  font-size: 12px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 11px;
   font-weight: 600;
-  border-radius: 20px;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 12px;
   margin-left: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .lehiboo-member-badge::before {
   content: '✓';
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
 }
 
-/* Badge favori sur les event cards */
+/* ==========================================================================
+   Badge favori sur les event cards
+   ========================================================================== */
+
 .lehiboo-event-card {
   position: relative;
 }
@@ -354,8 +327,8 @@
 }
 
 .lehiboo-event-card-favorite.active {
-  background: #FF6B6B;
-  color: #ffffff;
+  background: #ff601f;
+  color: #fff;
 }
 
 .lehiboo-event-card-favorite:not(.active) {
@@ -371,6 +344,10 @@
 }
 
 /* Animation pulse sur ajout aux favoris */
+.lehiboo-event-card-favorite.animating {
+  animation: heartBeat 0.6s ease;
+}
+
 @keyframes heartBeat {
   0%, 100% {
     transform: scale(1);
@@ -386,12 +363,8 @@
   }
 }
 
-.lehiboo-event-card-favorite.animating {
-  animation: heartBeat 0.6s ease;
-}
-
 /* ==========================================================================
-   Toast Notifications
+   Toast Notifications - Charte Le Hiboo
    ========================================================================== */
 
 .lehiboo-toast-container {
@@ -399,7 +372,7 @@
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10001;
+  z-index: 1000000;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -408,7 +381,7 @@
 
 .lehiboo-toast {
   background: rgba(0, 0, 0, 0.9);
-  color: #ffffff;
+  color: #fff;
   padding: 12px 24px;
   border-radius: 24px;
   font-size: 14px;
@@ -417,7 +390,7 @@
   opacity: 0;
   transform: translateY(20px);
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: inherit;
   white-space: nowrap;
 }
 
@@ -426,7 +399,92 @@
   transform: translateY(0);
 }
 
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInBenefit {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
 @media (max-width: 600px) {
+  .lehiboo-onboarding-content {
+    max-width: 100%;
+    margin: 0;
+    border-radius: 16px 16px 0 0;
+    max-height: 95vh;
+    align-self: flex-end;
+  }
+
+  .lehiboo-onboarding-header {
+    padding: 20px 24px;
+  }
+
+  .lehiboo-onboarding-title {
+    font-size: 18px;
+  }
+
+  .lehiboo-onboarding-close {
+    top: 20px;
+    right: 24px;
+  }
+
+  .lehiboo-onboarding-body {
+    padding: 24px 20px;
+  }
+
+  .lehiboo-onboarding-benefit {
+    padding: 12px;
+  }
+
+  .lehiboo-onboarding-benefit-icon {
+    font-size: 24px;
+  }
+
+  .lehiboo-onboarding-benefit-text strong {
+    font-size: 14px;
+  }
+
+  .lehiboo-onboarding-benefit-text span {
+    font-size: 12px;
+  }
+
+  .lehiboo-onboarding-btn {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+
   .lehiboo-toast-container {
     bottom: 16px;
     left: 16px;

@@ -301,6 +301,7 @@
 
       this.shown = false;
       this.dismissedKey = 'lehiboo_onboarding_dismissed';
+      this.dismissedThisSessionKey = 'lehiboo_onboarding_dismissed_session';
     }
 
     /**
@@ -312,16 +313,26 @@
         return false;
       }
 
-      // Ne pas afficher si déjà dismissed récemment (< 7 jours)
+      // Ne pas afficher si dismissed dans cette session (évite réapparition après fermeture)
+      if (sessionStorage.getItem(this.dismissedThisSessionKey)) {
+        console.log('[Onboarding] Dismissed in this session, not showing');
+        return false;
+      }
+
+      // Ne pas afficher si déjà dismissed récemment (< 7 jours) dans localStorage
       const dismissed = localStorage.getItem(this.dismissedKey);
       if (dismissed) {
         const age = Date.now() - parseInt(dismissed);
         if (age < 7 * 24 * 60 * 60 * 1000) {
+          console.log('[Onboarding] Dismissed recently, not showing');
           return false;
+        } else {
+          // Expired, clear it
+          localStorage.removeItem(this.dismissedKey);
         }
       }
 
-      // Ne pas afficher si déjà affiché dans cette session
+      // Ne pas afficher si déjà affiché dans cette session de page
       if (this.shown) {
         return false;
       }
@@ -371,22 +382,17 @@
       modal.innerHTML = `
         <div class="lehiboo-onboarding-backdrop"></div>
         <div class="lehiboo-onboarding-content">
-          <button class="lehiboo-onboarding-close" aria-label="Fermer">×</button>
-
           <div class="lehiboo-onboarding-header">
-            <div class="lehiboo-onboarding-icon">
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                <circle cx="24" cy="24" r="20" fill="#FF6B6B" opacity="0.1"/>
-                <path d="M24 16v12M24 32h.01" stroke="#FF6B6B" stroke-width="3" stroke-linecap="round"/>
-              </svg>
+            <div>
+              <h2 class="lehiboo-onboarding-title">Continuez votre recherche en toute sérénité</h2>
+              <p class="lehiboo-onboarding-subtitle">Créez un compte gratuit pour ne jamais perdre vos conversations</p>
             </div>
-            <h2 class="lehiboo-onboarding-title">
-              Continuez votre recherche en toute sérénité
-            </h2>
-            <p class="lehiboo-onboarding-subtitle">
-              Créez un compte gratuit pour ne jamais perdre vos conversations
-            </p>
+            <button class="lehiboo-onboarding-close" aria-label="Fermer">
+              <i class="fas fa-times"></i>
+            </button>
           </div>
+
+          <div class="lehiboo-onboarding-body">
 
           <div class="lehiboo-onboarding-benefits">
             <div class="lehiboo-onboarding-benefit">
@@ -424,9 +430,11 @@
 
           <div class="lehiboo-onboarding-actions">
             <button class="lehiboo-onboarding-btn lehiboo-onboarding-btn-primary" data-action="register">
+              <i class="fas fa-user-plus"></i>
               Créer mon compte gratuit
             </button>
             <button class="lehiboo-onboarding-btn lehiboo-onboarding-btn-secondary" data-action="login">
+              <i class="fas fa-sign-in-alt"></i>
               J'ai déjà un compte
             </button>
           </div>
@@ -450,8 +458,11 @@
       const dismissBtn = modal.querySelector('[data-action="dismiss"]');
 
       const close = () => {
+        // Sauvegarder dans sessionStorage pour ne pas réafficher dans cette session
+        sessionStorage.setItem(this.dismissedThisSessionKey, 'true');
         modal.classList.remove('active');
         setTimeout(() => modal.remove(), 300);
+        console.log('[Onboarding] Modal closed');
       };
 
       backdrop.addEventListener('click', close);
@@ -480,8 +491,12 @@
       });
 
       dismissBtn.addEventListener('click', () => {
+        // Sauvegarder dans localStorage (7 jours)
         localStorage.setItem(this.dismissedKey, Date.now().toString());
+        // Sauvegarder dans sessionStorage (cette session)
+        sessionStorage.setItem(this.dismissedThisSessionKey, 'true');
         chatInstance.trackEvent('onboarding_dismissed');
+        console.log('[Onboarding] Dismissed by user');
         close();
       });
 
