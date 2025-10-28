@@ -27,9 +27,15 @@
     }
 
     /**
-     * Démarrer l'auto-save
+     * Démarrer l'auto-save (uniquement pour utilisateurs connectés)
      */
     startAutoSave(chatInstance) {
+      // Ne pas lancer l'auto-save pour les guests
+      if (!this.config.isLoggedIn || !this.config.userId) {
+        console.log('[Persistence] Auto-save disabled for guests (using localStorage only)');
+        return;
+      }
+
       if (this.autoSaveTimer) {
         clearInterval(this.autoSaveTimer);
       }
@@ -38,7 +44,7 @@
         await this.saveConversation(chatInstance.state);
       }, this.config.autoSaveInterval);
 
-      console.log('[Persistence] Auto-save started');
+      console.log('[Persistence] Auto-save started (every 30s to DB)');
     }
 
     /**
@@ -56,16 +62,16 @@
      */
     async saveConversation(state) {
       try {
-        if (this.config.isLoggedIn) {
+        if (this.config.isLoggedIn && this.config.userId) {
           // Utilisateur connecté → DB
           await this.saveToDB(state);
         } else {
-          // Guest → localStorage
+          // Guest → localStorage uniquement
           this.saveToLocalStorage(state);
         }
         return true;
       } catch (error) {
-        console.error('[Persistence] Save error:', error);
+        console.warn('[Persistence] Save error, falling back to localStorage:', error.message);
         // Fallback vers localStorage en cas d'erreur DB
         this.saveToLocalStorage(state);
         return false;
