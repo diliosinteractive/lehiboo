@@ -13,11 +13,10 @@ const config = {
   port: parseInt(process.env.PORT || '3000', 10),
   host: process.env.HOST || '0.0.0.0',
 
-  // OpenRouter
-  openrouter: {
-    apiKey: process.env.OPENROUTER_API_KEY || '',
-    baseUrl: process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1',
-    defaultModel: process.env.DEFAULT_MODEL || 'anthropic/claude-3.5-sonnet',
+  // OpenAI
+  openai: {
+    apiKey: process.env.OPENAI_API_KEY || '',
+    defaultModel: process.env.DEFAULT_MODEL || 'gpt-4o',
   },
 
   // WordPress
@@ -70,8 +69,8 @@ const config = {
 };
 
 // Validation
-if (!config.openrouter.apiKey && config.env === 'production') {
-  console.error('❌ OPENROUTER_API_KEY is required in production');
+if (!config.openai.apiKey && config.env === 'production') {
+  console.error('❌ OPENAI_API_KEY is required in production');
   process.exit(1);
 }
 

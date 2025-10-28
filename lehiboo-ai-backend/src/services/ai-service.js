@@ -1,21 +1,13 @@
 /**
- * Service IA avec AI SDK et OpenRouter
+ * Service IA avec AI SDK et OpenAI
  */
 
-import { createOpenAI } from '@ai-sdk/openai';
+import { openai } from '@ai-sdk/openai';
 import { generateText, streamText } from 'ai';
 import config from '../config/index.js';
 import logger from '../utils/logger.js';
 import { loadSystemPrompt } from './prompt-service.js';
 import { getToolsDefinitions, executeTool } from '../mcp/tools.js';
-
-/**
- * Initialiser le client OpenRouter via AI SDK
- */
-const openrouter = createOpenAI({
-  apiKey: config.openrouter.apiKey,
-  baseURL: config.openrouter.baseUrl,
-});
 
 /**
  * Générer une réponse IA (non-streaming)
@@ -43,7 +35,7 @@ export async function generateAIResponse(message, context = {}) {
 
     // Générer la réponse (sans tools pour l'instant)
     let { text, usage, toolCalls } = await generateText({
-      model: openrouter(config.openrouter.defaultModel),
+      model: openai(config.openai.defaultModel),
       system: systemPrompt,
       messages,
       temperature: 0.7,
@@ -86,7 +78,7 @@ export async function generateAIResponse(message, context = {}) {
         });
 
         const secondResponse = await generateText({
-          model: openrouter(config.openrouter.defaultModel),
+          model: openai(config.openai.defaultModel),
           system: systemPrompt,
           messages,
           temperature: 0.7,
@@ -119,7 +111,7 @@ export async function generateAIResponse(message, context = {}) {
       events: parsedResponse.events || [],
       weatherAlert: parsedResponse.weatherAlert || null,
       usage: {
-        model: config.openrouter.defaultModel,
+        model: config.openai.defaultModel,
         tokens: usage?.totalTokens || 0,
       },
     };
@@ -159,7 +151,7 @@ export async function streamAIResponse(message, context = {}) {
     const tokenBudget = calculateTokenBudget(systemPrompt, messages);
 
     const { textStream } = await streamText({
-      model: openrouter(config.openrouter.defaultModel),
+      model: openai(config.openai.defaultModel),
       system: systemPrompt,
       messages,
       temperature: 0.7,
@@ -507,20 +499,20 @@ function generateToolsInstructions(tools) {
 }
 
 /**
- * Tester la connexion OpenRouter
+ * Tester la connexion OpenAI
  */
-export async function testOpenRouterConnection() {
+export async function testOpenAIConnection() {
   try {
     const { text } = await generateText({
-      model: openrouter(config.openrouter.defaultModel),
+      model: openai(config.openai.defaultModel),
       messages: [{ role: 'user', content: 'Hello' }],
       maxTokens: 10,
     });
 
-    logger.info('OpenRouter connection test successful', { response: text });
+    logger.info('OpenAI connection test successful', { response: text });
     return true;
   } catch (error) {
-    logger.error('OpenRouter connection test failed', {
+    logger.error('OpenAI connection test failed', {
       error: error.message,
     });
     return false;

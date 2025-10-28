@@ -1,7 +1,7 @@
 {
   "name": "lehiboo-ai-backend",
   "version": "1.0.0",
-  "description": "Backend Node.js pour Le Hiboo AI Assistant avec AI SDK et OpenRouter",
+  "description": "Backend Node.js pour Le Hiboo AI Assistant avec AI SDK et OpenAI",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -14,7 +14,7 @@
   "keywords": [
     "ai",
     "chat",
-    "openrouter",
+    "openai",
     "mcp",
     "ai-sdk"
   ],

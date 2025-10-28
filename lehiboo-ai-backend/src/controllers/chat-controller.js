@@ -109,7 +109,7 @@ export async function handleStatus(req, res) {
   return res.json({
     status: 'ok',
     services: {
-      openrouter: 'connected', // TODO: vérifier réellement
+      openai: 'connected', // TODO: vérifier réellement
       mcp: 'pending', // TODO: implémenter MCP
       weather: 'pending', // TODO: implémenter Weather
     },

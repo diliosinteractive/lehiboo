@@ -1,6 +1,6 @@
 /**
  * Le Hiboo AI Backend
- * Serveur Node.js avec AI SDK et OpenRouter
+ * Serveur Node.js avec AI SDK et OpenAI
  */
 
 import express from 'express';
@@ -10,7 +10,7 @@ import rateLimit from 'express-rate-limit';
 import config from './config/index.js';
 import logger from './utils/logger.js';
 import chatRoutes from './routes/chat.js';
-import { testOpenRouterConnection } from './services/ai-service.js';
+import { testOpenAIConnection } from './services/ai-service.js';
 import weatherService from './services/weather-service.js';
 
 // Créer l'application Express
@@ -101,15 +101,15 @@ app.use((err, req, res, next) => {
 // Démarrer le serveur
 async function startServer() {
   try {
-    // Tester la connexion OpenRouter
-    logger.info('Testing OpenRouter connection...');
-    const openrouterOk = await testOpenRouterConnection();
+    // Tester la connexion OpenAI
+    logger.info('Testing OpenAI connection...');
+    const openaiOk = await testOpenAIConnection();
 
-    if (!openrouterOk) {
-      logger.warn('⚠️  OpenRouter connection failed - check your API key and account credits');
+    if (!openaiOk) {
+      logger.warn('⚠️  OpenAI connection failed - check your API key');
       logger.warn('The server will start anyway, but AI features may not work properly');
     } else {
-      logger.info('✅ OpenRouter connection successful');
+      logger.info('✅ OpenAI connection successful');
     }
 
     // Tester la connexion Weather API
@@ -133,7 +133,7 @@ async function startServer() {
       });
 
       logger.info('Configuration', {
-        model: config.openrouter.defaultModel,
+        model: config.openai.defaultModel,
         rateLimit: `${config.rateLimit.maxRequests} requests per ${config.rateLimit.windowMs}ms`,
         wordpress: config.wordpress.url || 'Not configured',
       });
