@@ -38,13 +38,16 @@ export async function generateAIResponse(message, context = {}) {
     // const tools = getToolsDefinitions();
     // const enhancedSystemPrompt = systemPrompt + '\n\n' + generateToolsInstructions(tools);
 
+    // Calculer le budget de tokens dynamiquement
+    const tokenBudget = calculateTokenBudget(systemPrompt, messages);
+
     // Générer la réponse (sans tools pour l'instant)
     let { text, usage, toolCalls } = await generateText({
       model: openrouter(config.openrouter.defaultModel),
       system: systemPrompt,
       messages,
       temperature: 0.7,
-      maxTokens: 1000,
+      maxTokens: tokenBudget,
       // tools désactivés temporairement - cause erreur Zod schema
     });
 
@@ -84,16 +87,19 @@ export async function generateAIResponse(message, context = {}) {
 
         const secondResponse = await generateText({
           model: openrouter(config.openrouter.defaultModel),
-          system: enhancedSystemPrompt,
+          system: systemPrompt,
           messages,
           temperature: 0.7,
-          maxTokens: 1000,
+          maxTokens: tokenBudget,
         });
 
         text = secondResponse.text;
         usage = secondResponse.usage;
       }
     }
+
+    // Valider et nettoyer la réponse UTF-8
+    text = sanitizeResponse(text);
 
     logger.info('AI response generated', {
       conversationId: context.conversationId,
@@ -122,9 +128,19 @@ export async function generateAIResponse(message, context = {}) {
       error: error.message,
       stack: error.stack,
       conversationId: context.conversationId,
+      errorType: error.name,
     });
 
-    throw new Error('Failed to generate AI response');
+    // Détection d'erreurs spécifiques
+    if (error.message?.includes('token') || error.message?.includes('context')) {
+      throw new Error('La conversation est trop longue. Veuillez recommencer une nouvelle conversation.');
+    }
+
+    if (error.message?.includes('rate limit')) {
+      throw new Error('Trop de requêtes en cours. Veuillez patienter quelques instants.');
+    }
+
+    throw new Error('Erreur lors de la génération de la réponse. Veuillez réessayer.');
   }
 }
 
@@ -140,13 +156,14 @@ export async function streamAIResponse(message, context = {}) {
 
     const systemPrompt = await loadSystemPrompt(context);
     const messages = buildConversationHistory(message, context);
+    const tokenBudget = calculateTokenBudget(systemPrompt, messages);
 
     const { textStream } = await streamText({
       model: openrouter(config.openrouter.defaultModel),
       system: systemPrompt,
       messages,
       temperature: 0.7,
-      maxTokens: 1000,
+      maxTokens: tokenBudget,
     });
 
     return textStream;
@@ -161,19 +178,125 @@ export async function streamAIResponse(message, context = {}) {
 }
 
 /**
+ * Calculer le budget de tokens disponible pour la réponse
+ * Claude 3.5 Sonnet a 200k tokens de contexte, mais on limite pour éviter la troncature
+ */
+function calculateTokenBudget(systemPrompt, messages) {
+  // Estimation grossière: ~4 caractères = 1 token
+  const systemPromptTokens = Math.ceil(systemPrompt.length / 4);
+  const messagesTokens = messages.reduce((acc, msg) => acc + Math.ceil(msg.content.length / 4), 0);
+
+  const totalInputTokens = systemPromptTokens + messagesTokens;
+
+  // Budget total disponible (conservateur pour éviter rate limits)
+  const MAX_CONTEXT = 100000; // 100k tokens au lieu de 200k pour la sécurité
+  const MAX_RESPONSE = 4000; // Augmenté de 1000 à 4000
+
+  // Si l'input dépasse déjà 50% du contexte, réduire la réponse
+  if (totalInputTokens > MAX_CONTEXT * 0.5) {
+    const remaining = MAX_CONTEXT - totalInputTokens;
+    const budget = Math.min(remaining * 0.8, MAX_RESPONSE); // Garder 20% de marge
+    logger.warn('High token usage detected', {
+      systemPromptTokens,
+      messagesTokens,
+      totalInputTokens,
+      calculatedBudget: Math.floor(budget),
+    });
+    return Math.max(500, Math.floor(budget)); // Minimum 500 tokens
+  }
+
+  return MAX_RESPONSE;
+}
+
+/**
+ * Valider que le texte est UTF-8 valide et le nettoyer si nécessaire
+ */
+function sanitizeResponse(text) {
+  if (!text || typeof text !== 'string') {
+    logger.warn('Invalid response text', { type: typeof text });
+    return '';
+  }
+
+  // Vérifier si le texte contient des caractères de contrôle invalides
+  // ou des séquences UTF-8 cassées
+  try {
+    // Encoder puis décoder pour détecter les problèmes UTF-8
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder('utf-8', { fatal: true });
+    const encoded = encoder.encode(text);
+    const decoded = decoder.decode(encoded);
+
+    // Nettoyer les caractères de contrôle sauf les retours de ligne
+    return decoded.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+  } catch (error) {
+    logger.error('UTF-8 validation failed, attempting recovery', { error: error.message });
+
+    // Fallback: supprimer les caractères non-ASCII problématiques
+    return text
+      .split('')
+      .filter(char => {
+        const code = char.charCodeAt(0);
+        // Garder ASCII basique + caractères Unicode valides
+        return (code >= 32 && code < 127) || code >= 128;
+      })
+      .join('');
+  }
+}
+
+/**
  * Construire l'historique de conversation pour le contexte IA
+ * Avec sliding window intelligent pour limiter la taille
  */
 function buildConversationHistory(currentMessage, context) {
   const messages = [];
 
   // Ajouter l'historique existant si disponible
   if (context.history && Array.isArray(context.history)) {
-    context.history.forEach((msg) => {
+    // Sliding window intelligent: garder les N derniers messages
+    // mais toujours inclure le premier message (greeting) pour le contexte
+    const MAX_HISTORY_MESSAGES = 12; // Réduit de 20 à 12
+
+    if (context.history.length > MAX_HISTORY_MESSAGES) {
+      // Garder le premier message (greeting initial)
+      const firstMessage = context.history[0];
+
+      // Prendre les derniers messages
+      const recentMessages = context.history.slice(-(MAX_HISTORY_MESSAGES - 1));
+
+      // Combiner
       messages.push({
-        role: msg.role,
-        content: msg.content,
+        role: firstMessage.role,
+        content: firstMessage.content,
       });
-    });
+
+      // Ajouter un marqueur de contexte tronqué
+      if (context.history.length > MAX_HISTORY_MESSAGES + 1) {
+        messages.push({
+          role: 'assistant',
+          content: '[Historique précédent résumé pour optimiser le contexte]',
+        });
+      }
+
+      recentMessages.forEach((msg) => {
+        messages.push({
+          role: msg.role,
+          content: msg.content,
+        });
+      });
+
+      logger.info('History window applied', {
+        originalLength: context.history.length,
+        keptLength: messages.length,
+      });
+    } else {
+      // Historique assez court, tout garder
+      context.history.forEach((msg) => {
+        messages.push({
+          role: msg.role,
+          content: msg.content,
+        });
+      });
+    }
   }
 
   // Ajouter le message actuel
