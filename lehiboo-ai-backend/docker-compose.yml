@@ -19,10 +19,10 @@ services:
 
     # Port mapping
     # Format: HOST:CONTAINER
-    # Le port 3000 du container sera mappé sur le port 3000 de l'hôte
+    # Le port 3000 du container sera mappé sur le port 3004 de l'hôte
     # Plesk Docker Proxy utilisera ce port pour router le trafic
     ports:
-      - "3000:3000"
+      - "3004:3000"
 
     # Variables d'environnement
     # IMPORTANT: Remplacez ces valeurs par vos vraies clés API !

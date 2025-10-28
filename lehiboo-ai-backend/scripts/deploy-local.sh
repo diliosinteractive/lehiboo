@@ -222,10 +222,25 @@ else
     STEP_CHECK="4/4"
 fi
 
-# 3. Arrêter l'ancien container s'il existe
-echo "🛑 Arrêt de l'ancien container s'il existe..."
+# 3. Arrêter tous les containers sur le port 3004
+echo "🛑 Arrêt des containers utilisant le port 3004..."
+
+# Arrêter via docker-compose
 docker-compose down > /dev/null 2>&1 || true
-echo -e "${GREEN}✅ Ancien container arrêté${NC}"
+
+# Trouver et arrêter tout container utilisant le port 3004
+CONTAINER_ID=$(docker ps -q --filter "publish=3004")
+if [ ! -z "$CONTAINER_ID" ]; then
+    echo "   Container trouvé: $CONTAINER_ID"
+    docker stop $CONTAINER_ID > /dev/null 2>&1 || true
+    docker rm $CONTAINER_ID > /dev/null 2>&1 || true
+fi
+
+# Vérifier aussi par nom de container
+docker stop lehiboo-ai-backend > /dev/null 2>&1 || true
+docker rm lehiboo-ai-backend > /dev/null 2>&1 || true
+
+echo -e "${GREEN}✅ Port 3004 libéré${NC}"
 echo ""
 
 # 4. Build la nouvelle image
