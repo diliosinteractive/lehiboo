@@ -227,16 +227,16 @@
         <div class="lehiboo-chat-header">
           <div class="lehiboo-chat-header-content">
             <div class="lehiboo-chat-avatar">
-              <img src="/wp-content/plugins/eventlist/assets/img/unknow_user.png" alt="Le Hiboo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+              <img src="/wp-content/plugins/eventlist/assets/img/unknow_user.png" alt="Hedwige" title="Hedwige 🦉" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
             </div>
             <div class="lehiboo-chat-header-text">
               <h2 class="lehiboo-chat-title">
-                Le Hiboo Assistant
+                Hedwige 🦉
                 ${this.config.isLoggedIn ? '<span class="lehiboo-member-badge">Membre</span>' : ''}
               </h2>
               <p class="lehiboo-chat-subtitle">
                 <span class="lehiboo-status-indicator"></span>
-                ${this.config.isLoggedIn ? `Bonjour ${this.config.userDisplayName} 👋` : 'En ligne - Prêt à vous aider'}
+                ${this.config.isLoggedIn ? `Bonjour ${this.config.userDisplayName} 👋` : 'Votre assistante Le Hiboo'}
               </p>
             </div>
           </div>
@@ -570,7 +570,7 @@
       if (message.role === 'user') {
         avatar.innerHTML = '👤';
       } else {
-        avatar.innerHTML = '<img src="/wp-content/plugins/eventlist/assets/img/unknow_user.png" alt="Le Hiboo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">';
+        avatar.innerHTML = '<img src="/wp-content/plugins/eventlist/assets/img/unknow_user.png" alt="Hedwige" title="Hedwige 🦉" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">';
       }
       avatar.setAttribute('aria-hidden', 'true');
 
@@ -899,8 +899,8 @@
       setTimeout(() => {
         this.addMessage({
           role: 'assistant',
-          content: `Bonjour ! Je suis l'assistant Le Hiboo 👋<br><br>
-                    Je vais vous aider à trouver l'activité parfaite.<br><br>
+          content: `Bonjour ! Je suis Hedwige 🦉, votre assistante Le Hiboo.<br><br>
+                    Je vais vous aider à trouver l'activité parfaite !<br><br>
                     Pour commencer, vous cherchez une activité pour :`,
           timestamp: new Date(),
           quickChips: [
