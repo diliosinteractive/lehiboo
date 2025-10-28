@@ -1,0 +1,107 @@
+version: '3.8'
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Le Hiboo AI Backend - Docker Compose
+# Configuration pour Plesk Docker Proxy
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+services:
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Backend Node.js
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lehiboo-ai-backend:1.0.0
+    container_name: lehiboo-ai-backend
+    restart: unless-stopped
+
+    # Port mapping
+    # Format: HOST:CONTAINER
+    # Le port 3000 du container sera mappé sur le port 3000 de l'hôte
+    # Plesk Docker Proxy utilisera ce port pour router le trafic
+    ports:
+      - "3000:3000"
+
+    # Variables d'environnement
+    # IMPORTANT: Remplacez ces valeurs par vos vraies clés API !
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      LOG_LEVEL: info
+
+      # API Keys (À CONFIGURER)
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-your-openrouter-api-key}
+      WEATHER_API_KEY: ${WEATHER_API_KEY:-your-weather-api-key}
+      API_KEY: ${API_KEY:-your-api-key}
+
+      # WordPress
+      WORDPRESS_URL: ${WORDPRESS_URL:-https://lehiboo.dilios.me}
+      WORDPRESS_API_URL: ${WORDPRESS_API_URL:-https://lehiboo.dilios.me/wp-json}
+
+      # OpenRouter
+      DEFAULT_MODEL: ${DEFAULT_MODEL:-anthropic/claude-3.5-sonnet}
+
+      # Rate Limiting
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-60000}
+      RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-20}
+
+    # Fichier .env (recommandé pour sécurité)
+    # Créez un fichier .env.production avec vos vraies valeurs
+    env_file:
+      - .env.production
+
+    # Volumes pour persistance des logs
+    volumes:
+      - ./logs:/app/logs
+      - ./src/prompts:/app/src/prompts:ro  # Read-only pour les prompts
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    # Ressources (ajustez selon votre serveur)
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+    # Réseau
+    networks:
+      - lehiboo-network
+
+    # Labels pour Plesk Docker Proxy
+    # Plesk utilise ces labels pour configurer le reverse proxy
+    labels:
+      # Nom du service
+      - "com.docker.compose.service=backend"
+
+      # Configuration Traefik (si Plesk utilise Traefik)
+      - "traefik.enable=true"
+      - "traefik.http.routers.lehiboo-ai.rule=Host(`ai.lehiboo.dilios.me`)"
+      - "traefik.http.routers.lehiboo-ai.entrypoints=websecure"
+      - "traefik.http.routers.lehiboo-ai.tls.certresolver=letsencrypt"
+      - "traefik.http.services.lehiboo-ai.loadbalancer.server.port=3000"
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Réseau
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+networks:
+  lehiboo-network:
+    driver: bridge
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Volumes
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+volumes:
+  logs:
+    driver: local
