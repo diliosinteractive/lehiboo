@@ -146,6 +146,7 @@
         apiEndpoint: this.config.apiBaseUrl,
         nonce: this.config.nonce,
         userId: this.config.userId,
+        isLoggedIn: this.config.isLoggedIn, // Passer explicitement isLoggedIn
         autoSaveInterval: this.config.persistence.autoSaveInterval
       });
       this.onboarding = new OnboardingManager({
