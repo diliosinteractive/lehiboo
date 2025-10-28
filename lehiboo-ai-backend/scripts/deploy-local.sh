@@ -222,7 +222,13 @@ else
     STEP_CHECK="4/4"
 fi
 
-# 3. Build la nouvelle image
+# 3. Arrêter l'ancien container s'il existe
+echo "🛑 Arrêt de l'ancien container s'il existe..."
+docker-compose down > /dev/null 2>&1 || true
+echo -e "${GREEN}✅ Ancien container arrêté${NC}"
+echo ""
+
+# 4. Build la nouvelle image
 echo "🔨 Étape $STEP_BUILD: Build de la nouvelle image Docker..."
 echo "   (Cela peut prendre 1-2 minutes la première fois...)"
 echo ""
@@ -239,7 +245,7 @@ else
 fi
 echo ""
 
-# 4. Démarrer le nouveau container
+# 5. Démarrer le nouveau container
 echo "🚀 Étape $STEP_START: Démarrage du nouveau container..."
 docker-compose up -d
 
@@ -251,7 +257,7 @@ else
 fi
 echo ""
 
-# 5. Vérifications
+# 6. Vérifications
 echo "🔍 Étape $STEP_CHECK: Vérifications..."
 echo ""
 
