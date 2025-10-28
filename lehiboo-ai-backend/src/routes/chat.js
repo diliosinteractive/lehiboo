@@ -17,8 +17,10 @@ const router = express.Router();
 
 /**
  * POST /chat - Endpoint principal de chat
+ * POST /api-planner - Alias pour compatibilité avec frontend
  */
 router.post('/chat', validateApiKey, validateConversationData, handleChatRequest);
+router.post('/api-planner', validateApiKey, validateConversationData, handleChatRequest);
 
 /**
  * GET /health - Health check
