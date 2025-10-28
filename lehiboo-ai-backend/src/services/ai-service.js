@@ -1,5 +1,6 @@
 /**
  * Service IA avec AI SDK et OpenAI
+ * Intègre les tools Hedwige pour une expérience fluide
  */
 
 import { openai } from '@ai-sdk/openai';
@@ -8,6 +9,10 @@ import config from '../config/index.js';
 import logger from '../utils/logger.js';
 import { loadSystemPrompt } from './prompt-service.js';
 import { getToolsDefinitions, executeTool } from '../mcp/tools.js';
+
+// Import des nouveaux tools Hedwige
+import { collectUserProfileTool } from '../tools/collect-user-profile.js';
+import { searchEventsTool } from '../tools/search-events.js';
 
 /**
  * Générer une réponse IA (non-streaming)

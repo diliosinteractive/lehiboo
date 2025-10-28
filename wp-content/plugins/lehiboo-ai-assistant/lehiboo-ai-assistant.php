@@ -82,6 +82,7 @@ class Lehiboo_AI_Assistant {
 
         // API endpoints
         require_once LEHIBOO_AI_PLUGIN_DIR . 'api/chat-endpoint.php';
+        require_once LEHIBOO_AI_PLUGIN_DIR . 'includes/api/class-events-api.php';
 
         // Initialize core components
         $this->security = new Lehiboo_AI_Security();
