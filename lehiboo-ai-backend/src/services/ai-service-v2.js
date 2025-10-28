@@ -124,12 +124,15 @@ export async function generateAIResponse(message, context = {}) {
     // Parser la réponse (chercher JSON blocks pour metadata)
     const parsed = parseAIResponse(result.text);
 
+    // Générer les quick chips automatiquement selon le contexte
+    const autoQuickChips = generateQuickChips(context.userContext || {});
+
     return {
       success: true,
       message: parsed.cleanText,
       conversationStage: parsed.metadata.stage || context.currentStage || 'greeting',
       userContext: parsed.metadata.userContext || context.userContext || {},
-      quickChips: parsed.metadata.quickChips || [],
+      quickChips: parsed.metadata.quickChips || autoQuickChips,
       events: parsed.metadata.events || [],
       weatherAlert: parsed.metadata.weatherAlert || null,
       usage: {
@@ -246,6 +249,58 @@ function parseAIResponse(text) {
     cleanText,
     metadata
   };
+}
+
+/**
+ * Générer les quick chips selon l'état du profil utilisateur
+ */
+function generateQuickChips(userContext = {}) {
+  // Si pas de groupType
+  if (!userContext.groupType) {
+    return [
+      { text: '🧍 Solo', value: 'solo' },
+      { text: '💑 En couple', value: 'couple' },
+      { text: '👨‍👩‍👧 En famille', value: 'famille' },
+      { text: '👥 Entre amis', value: 'amis' }
+    ];
+  }
+
+  // Si pas d'activityType
+  if (!userContext.activityType) {
+    return [
+      { text: '🎭 Culture', value: 'culture' },
+      { text: '⚽ Sport', value: 'sport' },
+      { text: '🍷 Gastronomie', value: 'gastronomie' },
+      { text: '🌳 Nature', value: 'nature' },
+      { text: '💆 Détente', value: 'detente' }
+    ];
+  }
+
+  // Si pas de dates
+  if (!userContext.dates) {
+    return [
+      { text: '📅 Ce weekend', value: 'thisWeekend' },
+      { text: '📅 Prochain weekend', value: 'nextWeekend' },
+      { text: '📅 Dates précises', value: 'specific' },
+      { text: '📅 Flexible', value: 'flexible' }
+    ];
+  }
+
+  // Si pas de budgetMax
+  if (!userContext.budgetMax) {
+    return [
+      { text: '💰 Moins de 20€', value: '20' },
+      { text: '💰 20-50€', value: '50' },
+      { text: '💰 50-100€', value: '100' },
+      { text: '💰 Plus de 100€', value: '100+' }
+    ];
+  }
+
+  // Si profil complet, proposer actions
+  return [
+    { text: '🔍 Afficher les résultats', value: 'show_results' },
+    { text: '🔄 Modifier mes critères', value: 'modify' }
+  ];
 }
 
 /**
