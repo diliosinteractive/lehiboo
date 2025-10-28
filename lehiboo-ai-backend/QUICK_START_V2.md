@@ -38,6 +38,21 @@ WORDPRESS_API_KEY=votre-cle-secrete-ici
 
 ### Étape 3 : Démarrer le Serveur (1 min)
 
+**Option A - Avec Docker (Recommandé) :**
+```bash
+cd /Users/juba/PhpstormProjects/lehiboo_v1/lehiboo-ai-backend
+
+# Créer .env.production depuis .env
+cp .env .env.production
+
+# Build et démarrer avec Docker Compose
+docker-compose up -d --build
+
+# Voir les logs
+docker-compose logs -f
+```
+
+**Option B - Mode développement (sans Docker) :**
 ```bash
 cd /Users/juba/PhpstormProjects/lehiboo_v1/lehiboo-ai-backend
 
@@ -53,7 +68,7 @@ npm run dev
 ✅ OpenAI connection successful
 🚀 Le Hiboo AI Backend started
    Model: gpt-4o
-   Port: 3000
+   Port: 3000 (ou 3004 si Docker)
 ```
 
 ---
@@ -62,6 +77,10 @@ npm run dev
 
 **Test 1 - Health Check :**
 ```bash
+# Si Docker (port 3004)
+curl http://localhost:3004/health
+
+# Ou sans Docker (port 3000)
 curl http://localhost:3000/health
 ```
 
