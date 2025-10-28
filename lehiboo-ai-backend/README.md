@@ -1,6 +1,28 @@
 # 🦉 Le Hiboo AI Backend
 
-Backend Node.js pour l'assistant conversationnel Le Hiboo, propulsé par **AI SDK** et **OpenRouter**.
+Backend Node.js pour l'assistant conversationnel Le Hiboo, propulsé par **AI SDK** et **OpenAI**.
+
+**🎉 Version 2.0** : Hedwige, votre guide touristique experte avec recherche d'événements en temps réel !
+
+---
+
+## 🆕 Nouveautés V2 (Octobre 2025)
+
+- ✅ **Migration OpenRouter → OpenAI** (GPT-4o)
+- ✅ **Hedwige 🦉** : Guide touristique senior (15+ ans d'expérience)
+- ✅ **Tools fonctionnels** : collectUserProfile + searchEvents
+- ✅ **Recherche réelle** via WordPress REST API
+- ✅ **Budget strict** : 100% des résultats respectent le budget max
+- ✅ **Collecte groupée** : 2-3 messages pour avoir des résultats (vs 10-15 avant)
+- ✅ **Conseils expert** : Tips de guide locale, restaurants, timings
+
+**📚 Documentation V2 :**
+- [QUICK_START_V2.md](./QUICK_START_V2.md) - Démarrage rapide (5 min)
+- [STATUS_V2.md](./STATUS_V2.md) - État actuel détaillé
+- [TESTING_V2.md](./TESTING_V2.md) - Guide de test complet
+- [CHANGELOG_V2.md](./CHANGELOG_V2.md) - Tous les changements
+
+---
 
 ## 🚀 Démarrage Rapide
 
@@ -18,16 +40,19 @@ npm install
 cp .env.example .env
 
 # Éditer .env et remplir au minimum :
-# - OPENROUTER_API_KEY (obligatoire)
+# - OPENAI_API_KEY (obligatoire)
 # - API_KEY (pour authentification WordPress)
 # - WORDPRESS_URL (optionnel)
+# - WORDPRESS_API_KEY (pour recherche d'événements)
 ```
 
-**Obtenir une clé OpenRouter :**
-1. Aller sur https://openrouter.ai
-2. S'inscrire (gratuit)
+**Obtenir une clé OpenAI :**
+1. Aller sur https://platform.openai.com/api-keys
+2. S'inscrire / Se connecter
 3. Créer une clé API
 4. Copier la clé dans `.env`
+
+**💡 Voir [QUICK_START_V2.md](./QUICK_START_V2.md) pour un guide complet en 5 minutes.**
 
 ### 3. Lancer le serveur
 
@@ -96,28 +121,32 @@ lehiboo-ai-backend/
 
 | Variable | Description | Obligatoire | Défaut |
 |----------|-------------|-------------|--------|
-| `OPENROUTER_API_KEY` | Clé API OpenRouter | ✅ Oui | - |
-| `DEFAULT_MODEL` | Modèle IA à utiliser | ❌ Non | `anthropic/claude-3.5-sonnet` |
+| `OPENAI_API_KEY` | Clé API OpenAI | ✅ Oui | - |
+| `DEFAULT_MODEL` | Modèle IA à utiliser | ❌ Non | `gpt-4o` |
 | `API_KEY` | Clé pour authentifier WordPress | ✅ Oui | - |
+| `WORDPRESS_API_KEY` | Clé pour WordPress REST API | ✅ Oui | - |
 | `PORT` | Port du serveur | ❌ Non | `3000` |
-| `WORDPRESS_URL` | URL du site WordPress | ❌ Non | - |
+| `WORDPRESS_URL` | URL du site WordPress | ✅ Oui | - |
 | `RATE_LIMIT_MAX_REQUESTS` | Limite de requêtes | ❌ Non | `20` |
 | `LOG_LEVEL` | Niveau de log | ❌ Non | `info` |
 
-### Modèles IA Disponibles (OpenRouter)
+### Modèles IA Disponibles (OpenAI)
 
 | Modèle | Prix | Performance | Use Case |
 |--------|------|-------------|----------|
-| `anthropic/claude-3.5-sonnet` | 💰 Moyen | ⭐⭐⭐⭐⭐ | Production (recommandé) |
-| `openai/gpt-4-turbo` | 💰💰 Cher | ⭐⭐⭐⭐⭐ | Production |
-| `openai/gpt-3.5-turbo` | 💰 Économique | ⭐⭐⭐ | Développement |
-| `meta-llama/llama-3.1-70b-instruct` | 💰 Économique | ⭐⭐⭐⭐ | Open source |
-| `google/gemini-pro` | 💰 Moyen | ⭐⭐⭐⭐ | Alternative |
+| `gpt-4o` | 💰 Moyen | ⭐⭐⭐⭐⭐ | **Production (recommandé)** |
+| `gpt-4-turbo` | 💰💰 Cher | ⭐⭐⭐⭐⭐ | Production |
+| `gpt-3.5-turbo` | 💰 Économique | ⭐⭐⭐ | Développement |
+
+**Coûts GPT-4o (recommandé) :**
+- Input: $2.50 / 1M tokens
+- Output: $10.00 / 1M tokens
+- ~$0.05-0.08 par conversation (3 messages)
 
 **Changer de modèle :**
 ```bash
 # Dans .env
-DEFAULT_MODEL=openai/gpt-3.5-turbo
+DEFAULT_MODEL=gpt-4-turbo
 ```
 
 ---
@@ -162,8 +191,9 @@ DEFAULT_MODEL=openai/gpt-3.5-turbo
   "weatherAlert": null,
   "history": [...],
   "usage": {
-    "model": "anthropic/claude-3.5-sonnet",
-    "tokens": 150
+    "model": "gpt-4o",
+    "tokens": 1850,
+    "toolCalls": 2
   }
 }
 ```
@@ -193,11 +223,11 @@ DEFAULT_MODEL=openai/gpt-3.5-turbo
 {
   "status": "ok",
   "services": {
-    "openrouter": "connected",
-    "mcp": "pending",
+    "openai": "connected",
+    "wordpress": "connected",
     "weather": "pending"
   },
-  "timestamp": "2025-10-27T23:00:00.000Z"
+  "timestamp": "2025-10-29T23:00:00.000Z"
 }
 ```
 
@@ -377,15 +407,26 @@ cat logs/error.log
 cat .env | grep OPENROUTER_API_KEY
 ```
 
-### "OpenRouter connection failed"
+### "OpenAI connection failed"
 
-1. Vérifier que `OPENROUTER_API_KEY` est correcte
+1. Vérifier que `OPENAI_API_KEY` est correcte
 2. Tester manuellement :
 ```bash
-curl https://openrouter.ai/api/v1/chat/completions \
-  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+curl https://api.openai.com/v1/chat/completions \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model":"openai/gpt-3.5-turbo","messages":[{"role":"user","content":"test"}]}'
+  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"test"}]}'
+```
+
+### "No events found"
+
+1. Vérifier que l'endpoint WordPress est accessible
+2. Tester :
+```bash
+curl -X POST https://preprod.lehiboo.com/wp-json/lehiboo/v1/events/search \
+  -H "Authorization: Bearer $WORDPRESS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"city": "Paris", "maxPrice": 100, "limit": 5}'
 ```
 
 ### WordPress ne peut pas se connecter
@@ -402,7 +443,7 @@ curl http://your-backend-url/health
 ## 📚 Ressources
 
 - **AI SDK Docs** : https://sdk.vercel.ai/docs
-- **OpenRouter** : https://openrouter.ai/docs
+- **OpenAI** : https://platform.openai.com/docs
 - **Express** : https://expressjs.com
 - **Winston Logger** : https://github.com/winstonjs/winston
 
@@ -410,12 +451,27 @@ curl http://your-backend-url/health
 
 ## 🎯 Roadmap
 
+### Sprint 1 (✅ Terminé - Octobre 2025)
 - [x] Setup serveur Express
-- [x] Intégration AI SDK + OpenRouter
-- [x] Système prompts YAML
+- [x] Intégration AI SDK + OpenAI
+- [x] System prompt expert (880 lignes)
 - [x] Authentication & rate limiting
-- [ ] MCP Tools pour EventList
-- [ ] API Météo
+- [x] Tool collectUserProfile
+- [x] Tool searchEvents
+- [x] WordPress REST API endpoint
+- [x] Collecte groupée (2-3 messages)
+
+### Sprint 2 (En cours - Novembre 2025)
+- [ ] Persistance conversations (backend API)
+- [ ] State manager frontend (Zustand pattern)
+- [ ] Auth anonyme (fingerprint + session)
+- [ ] Historique multi-sessions
+
+### Sprint 3 (À venir - Décembre 2025)
+- [ ] Tool getWeather (météo temps réel)
+- [ ] Tool createItinerary (packages weekend)
+- [ ] Recommandations restaurants
+- [ ] Export itinéraire PDF
 - [ ] Streaming responses
 - [ ] Redis cache
 - [ ] Monitoring Sentry
@@ -423,3 +479,6 @@ curl http://your-backend-url/health
 ---
 
 **Développé avec ❤️ pour Le Hiboo**
+
+**Version actuelle :** 2.0.0
+**Dernière mise à jour :** Octobre 2025
