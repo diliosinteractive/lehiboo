@@ -21,19 +21,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 /**
- * Charger le system prompt v3 minimal (10x plus court)
+ * Charger le system prompt v4 ULTRA minimal
  */
-async function loadSystemPromptV3() {
+async function loadSystemPromptV4() {
   try {
-    const promptPath = join(__dirname, '../prompts/system-prompt-v3-minimal.md');
+    const promptPath = join(__dirname, '../prompts/system-prompt-v4-ultra-minimal.md');
     const content = await readFile(promptPath, 'utf-8');
-    logger.info('System prompt v3 minimal loaded', {
+    logger.info('System prompt v4 ULTRA minimal loaded', {
       length: content.length,
       lines: content.split('\n').length
     });
     return content;
   } catch (error) {
-    logger.error('Failed to load system prompt v3', { error: error.message });
+    logger.error('Failed to load system prompt v4', { error: error.message });
     throw new Error('System prompt not found');
   }
 }
@@ -118,8 +118,8 @@ export async function generateAIResponse(message, context = {}) {
       logger.warn('⚠️  [DEBUG] NO USERCONTEXT - Starting fresh');
     }
 
-    // Charger le system prompt v3 minimal
-    const systemPrompt = await loadSystemPromptV3();
+    // Charger le system prompt v4 ULTRA minimal
+    const systemPrompt = await loadSystemPromptV4();
 
     // Construire les messages avec userContext
     const messages = buildMessages(message, context.history, context.userContext);
