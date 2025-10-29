@@ -182,6 +182,9 @@
       // Attach event listeners
       this.attachEventListeners();
 
+      // Initialize audio recorder
+      this.initAudioRecorder();
+
       // Load conversation history (avec persistance)
       await this.loadConversationHistory();
 
@@ -275,6 +278,15 @@
               <span class="current">0</span> / ${InputValidator.MAX_LENGTH}
             </div>
           </div>
+          <button type="button" class="lehiboo-mic-button" aria-label="Enregistrer un message vocal" title="Enregistrer un message vocal">
+            <svg class="lehiboo-mic-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+            <span class="lehiboo-recording-indicator">●</span>
+          </button>
           <button class="lehiboo-send-button" aria-label="Envoyer le message" disabled>
             <span aria-hidden="true">➤</span>
           </button>
@@ -297,6 +309,7 @@
         quickChips: document.querySelector('.lehiboo-quick-chips'),
         textarea: document.querySelector('.lehiboo-chat-textarea'),
         charCounter: document.querySelector('.lehiboo-char-counter'),
+        micButton: document.querySelector('.lehiboo-mic-button'),
         sendButton: document.querySelector('.lehiboo-send-button'),
         closeButton: document.querySelector('[data-action="close"]'),
         minimizeButton: document.querySelector('[data-action="minimize"]')
@@ -320,6 +333,11 @@
       // Textarea input
       this.elements.textarea.addEventListener('input', (e) => this.handleTextareaInput(e));
       this.elements.textarea.addEventListener('keydown', (e) => this.handleTextareaKeydown(e));
+
+      // Mic button
+      if (this.elements.micButton) {
+        this.elements.micButton.addEventListener('click', () => this.handleMicClick());
+      }
 
       // Send button
       this.elements.sendButton.addEventListener('click', () => this.sendMessage());
@@ -1183,6 +1201,181 @@
           ...data
         });
       }
+    }
+
+    /**
+     * Initialize audio recorder
+     */
+    initAudioRecorder() {
+      if (!window.AudioRecorder) {
+        console.error('AudioRecorder module not loaded');
+        return;
+      }
+
+      if (!AudioRecorder.isSupported()) {
+        console.warn('Audio recording not supported in this browser');
+        if (this.elements.micButton) {
+          this.elements.micButton.style.display = 'none';
+        }
+        return;
+      }
+
+      this.audioRecorder = new AudioRecorder();
+      this.isRecording = false;
+      this.log('Audio recorder initialized');
+    }
+
+    /**
+     * Handle mic button click
+     */
+    async handleMicClick() {
+      if (!this.audioRecorder) {
+        this.showError('Enregistrement audio non disponible');
+        return;
+      }
+
+      if (this.isRecording) {
+        // Stop recording
+        await this.stopRecording();
+      } else {
+        // Start recording
+        await this.startRecording();
+      }
+    }
+
+    /**
+     * Start audio recording
+     */
+    async startRecording() {
+      try {
+        await this.audioRecorder.startRecording();
+        this.isRecording = true;
+
+        // UI feedback
+        this.elements.micButton.classList.add('recording');
+        this.elements.micButton.setAttribute('aria-label', 'Arrêter l\'enregistrement');
+        this.elements.micButton.title = 'Cliquez pour arrêter';
+
+        this.log('Recording started');
+      } catch (error) {
+        this.log('Error starting recording:', error);
+        this.showError(error.message || 'Impossible de démarrer l\'enregistrement');
+      }
+    }
+
+    /**
+     * Stop recording and transcribe
+     */
+    async stopRecording() {
+      try {
+        this.log('Stopping recording...');
+
+        // UI feedback
+        this.elements.micButton.classList.remove('recording');
+        this.elements.micButton.setAttribute('aria-label', 'Enregistrer un message vocal');
+        this.elements.micButton.title = 'Enregistrer un message vocal';
+        this.elements.micButton.disabled = true;
+
+        // Stop recording
+        const audioBlob = await this.audioRecorder.stopRecording();
+        this.isRecording = false;
+
+        this.log('Audio blob received, size:', audioBlob.size);
+
+        // Show feedback
+        this.showTranscriptionToast('Transcription en cours...', 'info');
+
+        // Transcribe
+        const transcription = await this.transcribeAudio(audioBlob);
+
+        if (transcription.success) {
+          // Insert text into textarea
+          this.elements.textarea.value = transcription.text;
+          this.handleTextareaInput({ target: this.elements.textarea });
+
+          this.showTranscriptionToast('Transcription terminée ✓', 'success');
+
+          // Auto-focus on textarea
+          this.elements.textarea.focus();
+        } else {
+          throw new Error(transcription.error || 'Transcription failed');
+        }
+
+      } catch (error) {
+        this.log('Error stopping recording:', error);
+        this.showError('Erreur lors de la transcription');
+        this.showTranscriptionToast('Erreur de transcription', 'error');
+      } finally {
+        this.elements.micButton.disabled = false;
+      }
+    }
+
+    /**
+     * Transcribe audio blob
+     */
+    async transcribeAudio(audioBlob) {
+      try {
+        // Prepare FormData
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recording.webm');
+        formData.append('language', 'fr'); // French language
+
+        // Send to backend
+        const response = await fetch(`${this.config.apiBaseUrl}/transcribe`, {
+          method: 'POST',
+          headers: {
+            'X-WP-Nonce': this.config.nonce
+          },
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+        this.log('Transcription result:', result);
+
+        return result;
+
+      } catch (error) {
+        this.log('Transcription error:', error);
+        return {
+          success: false,
+          error: error.message
+        };
+      }
+    }
+
+    /**
+     * Show transcription toast
+     */
+    showTranscriptionToast(message, type = 'info') {
+      // Remove existing toast
+      const existing = document.querySelector('.lehiboo-transcription-toast');
+      if (existing) {
+        existing.remove();
+      }
+
+      // Create toast
+      const toast = document.createElement('div');
+      toast.className = 'lehiboo-transcription-toast';
+      toast.textContent = message;
+
+      if (type === 'success') {
+        toast.style.background = '#10b981';
+      } else if (type === 'error') {
+        toast.classList.add('error');
+      } else if (type === 'info') {
+        toast.classList.add('info');
+      }
+
+      document.body.appendChild(toast);
+
+      // Auto-remove after 3s
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
     }
 
     /**

@@ -304,11 +304,20 @@ class Lehiboo_AI_Assistant {
             true
         );
 
-        // JavaScript - Chat Interface (dépend de persistence)
+        // JavaScript - Audio Recorder (pas de dépendances)
+        wp_enqueue_script(
+            'lehiboo-audio-recorder',
+            LEHIBOO_AI_PLUGIN_URL . 'assets/js/audio-recorder.js',
+            array(),
+            LEHIBOO_AI_VERSION,
+            true
+        );
+
+        // JavaScript - Chat Interface (dépend de persistence et audio-recorder)
         wp_enqueue_script(
             'lehiboo-ai-chat',
             LEHIBOO_AI_PLUGIN_URL . 'assets/js/chat-interface.js',
-            array('lehiboo-ai-persistence'),
+            array('lehiboo-ai-persistence', 'lehiboo-audio-recorder'),
             LEHIBOO_AI_VERSION,
             true
         );

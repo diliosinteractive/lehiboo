@@ -1057,6 +1057,134 @@
   }
 }
 
+/* ========================================
+   Microphone Button & Audio Recording
+   ======================================== */
+
+/* Bouton micro */
+.lehiboo-mic-button {
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  color: var(--lehiboo-primary);
+  position: relative;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+}
+
+.lehiboo-mic-button:hover {
+  color: var(--lehiboo-primary-dark);
+  transform: scale(1.1);
+  background-color: rgba(255, 96, 31, 0.1);
+}
+
+.lehiboo-mic-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lehiboo-mic-button:focus {
+  outline: 2px solid var(--lehiboo-primary);
+  outline-offset: 2px;
+}
+
+.lehiboo-mic-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Indicateur d'enregistrement (caché par défaut) */
+.lehiboo-recording-indicator {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ef4444;
+  font-size: 24px;
+  line-height: 1;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.lehiboo-mic-button.recording .lehiboo-mic-icon {
+  display: none;
+}
+
+.lehiboo-mic-button.recording .lehiboo-recording-indicator {
+  display: block;
+}
+
+.lehiboo-mic-button.recording {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+/* Toast pour feedback transcription */
+.lehiboo-transcription-toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #10b981;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 10001;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.3s ease-out;
+  max-width: 90%;
+  text-align: center;
+}
+
+.lehiboo-transcription-toast.error {
+  background: #ef4444;
+}
+
+.lehiboo-transcription-toast.info {
+  background: var(--lehiboo-info);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateX(-50%) translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Ajustement du layout pour inclure le bouton micro */
+.lehiboo-chat-input-container {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: flex-end;
+}
+
+.lehiboo-chat-input-wrapper {
+  flex: 1;
+}
+
 /* Print Styles */
 @media print {
   .lehiboo-chat-container,
