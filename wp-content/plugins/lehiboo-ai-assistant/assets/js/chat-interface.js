@@ -542,6 +542,14 @@
     }
 
     /**
+     * Call backend directly (alias for sendToAPI)
+     * Used by greeting and other direct backend calls
+     */
+    async callBackend(message) {
+      return await this.sendToAPI(message);
+    }
+
+    /**
      * Add message to chat
      */
     addMessage(message) {

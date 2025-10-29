@@ -242,7 +242,7 @@ export async function streamAIResponse(message, context = {}) {
 }
 
 /**
- * Parser la réponse de l'IA pour extraire les métadonnées
+ * Parser la réponse de l'IA pour extraire les métadonnées et quick chips
  */
 function parseAIResponse(text) {
   // Chercher des blocks JSON dans la réponse
@@ -261,8 +261,66 @@ function parseAIResponse(text) {
     }
   }
 
-  // Nettoyer le texte des blocks JSON
-  const cleanText = text.replace(jsonBlockRegex, '').trim();
+  // Parser les Quick Chips si présents dans le texte
+  // Format: [Quick Chips: Option1 | Option2 | Option3]
+  const quickChipsRegex = /\[Quick Chips:\s*([^\]]+)\]/gi;
+  const quickChipsMatch = quickChipsRegex.exec(text);
+
+  if (quickChipsMatch) {
+    const chipsText = quickChipsMatch[1];
+    const chipOptions = chipsText.split('|').map(opt => opt.trim());
+
+    // Convertir en format attendu par le frontend
+    metadata.quickChips = chipOptions.map(option => {
+      // Déterminer le type selon le contexte des options
+      let type = 'action';
+      let value = option.toLowerCase();
+
+      // Mapping des options connues
+      if (['solo', 'couple', 'famille', 'amis'].some(opt => value.includes(opt))) {
+        type = 'groupType';
+        if (value.includes('solo')) value = 'solo';
+        else if (value.includes('couple')) value = 'couple';
+        else if (value.includes('famille')) value = 'family';
+        else if (value.includes('amis')) value = 'friends';
+      } else if (['culture', 'sport', 'gastronomie', 'nature', 'détente', 'detente'].some(opt => value.includes(opt))) {
+        type = 'activityType';
+        if (value.includes('culture')) value = 'culture';
+        else if (value.includes('sport')) value = 'sport';
+        else if (value.includes('gastronomie')) value = 'gastronomie';
+        else if (value.includes('nature')) value = 'nature';
+        else if (value.includes('détente') || value.includes('detente')) value = 'detente';
+      } else if (value.includes('weekend') || value.includes('dates') || value.includes('flexible')) {
+        type = 'dates';
+        if (value.includes('ce weekend')) value = 'thisWeekend';
+        else if (value.includes('prochain weekend')) value = 'nextWeekend';
+        else if (value.includes('précises')) value = 'specific';
+        else if (value.includes('flexible')) value = 'flexible';
+      } else if (value.includes('€') || value.includes('euro') || value.includes('budget')) {
+        type = 'budgetMax';
+        // Extraire le nombre le plus élevé de la fourchette
+        if (value.includes('20') && !value.includes('-')) value = '20';
+        else if (value.includes('50')) value = '50';
+        else if (value.includes('100')) value = '100';
+        else if (value.includes('150') || value.includes('plus')) value = '150';
+      }
+
+      return {
+        text: option,
+        value: value,
+        type: type
+      };
+    });
+
+    logger.info('Parsed Quick Chips from AI response', {
+      count: metadata.quickChips.length,
+      chips: metadata.quickChips
+    });
+  }
+
+  // Nettoyer le texte des blocks JSON ET des Quick Chips
+  let cleanText = text.replace(jsonBlockRegex, '').trim();
+  cleanText = cleanText.replace(quickChipsRegex, '').trim();
 
   return {
     cleanText,
