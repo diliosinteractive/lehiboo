@@ -21,16 +21,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 /**
- * Charger le system prompt v2
+ * Charger le system prompt v3 minimal (10x plus court)
  */
-async function loadSystemPromptV2() {
+async function loadSystemPromptV3() {
   try {
-    const promptPath = join(__dirname, '../prompts/system-prompt-v2.md');
+    const promptPath = join(__dirname, '../prompts/system-prompt-v3-minimal.md');
     const content = await readFile(promptPath, 'utf-8');
-    logger.info('System prompt v2 loaded', { length: content.length });
+    logger.info('System prompt v3 minimal loaded', {
+      length: content.length,
+      lines: content.split('\n').length
+    });
     return content;
   } catch (error) {
-    logger.error('Failed to load system prompt v2', { error: error.message });
+    logger.error('Failed to load system prompt v3', { error: error.message });
     throw new Error('System prompt not found');
   }
 }
@@ -91,8 +94,8 @@ export async function generateAIResponse(message, context = {}) {
       hasHistory: !!context.history
     });
 
-    // Charger le system prompt v2
-    const systemPrompt = await loadSystemPromptV2();
+    // Charger le system prompt v3 minimal
+    const systemPrompt = await loadSystemPromptV3();
 
     // Construire les messages avec userContext
     const messages = buildMessages(message, context.history, context.userContext);
@@ -110,6 +113,16 @@ export async function generateAIResponse(message, context = {}) {
         execute: searchEventsTool.execute
       }
     };
+
+    // Log pour debug : voir ce qui est envoyé à OpenAI
+    logger.info('Calling OpenAI API', {
+      systemPromptLength: systemPrompt.length,
+      messagesCount: messages.length,
+      toolsCount: Object.keys(tools).length,
+      toolNames: Object.keys(tools),
+      lastUserMessage: messages[messages.length - 1]?.content?.substring(0, 200),
+      model: config.openai.defaultModel
+    });
 
     // Appel IA avec tools
     const result = await generateText({
