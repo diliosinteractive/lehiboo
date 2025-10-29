@@ -903,9 +903,56 @@
      * Send greeting message
      */
     sendGreeting() {
-      // Envoyer un message initial au backend pour obtenir le greeting naturel
-      setTimeout(() => {
-        this.sendMessage('Bonjour');
+      // Au premier chargement, envoyer un message "Bonjour" au backend
+      // pour obtenir le greeting naturel ET les quick chips dynamiques
+      setTimeout(async () => {
+        try {
+          // Appeler le backend directement pour le greeting
+          const response = await this.callBackend('Bonjour');
+
+          if (response.success) {
+            this.addMessage({
+              role: 'assistant',
+              content: response.message,
+              timestamp: new Date(),
+              quickChips: response.quickChips || []
+            });
+
+            // Mettre à jour le contexte
+            if (response.userContext) {
+              this.state.userContext = { ...this.state.userContext, ...response.userContext };
+            }
+          } else {
+            // Fallback si erreur
+            this.addMessage({
+              role: 'assistant',
+              content: `Bonjour ! Je suis Hedwige 🦉, votre assistante Le Hiboo.<br><br>
+                        Pour vous trouver l'activité parfaite, c'est pour qui ?`,
+              timestamp: new Date(),
+              quickChips: [
+                { text: '🧍 Solo', value: 'solo', type: 'groupType' },
+                { text: '💑 En couple', value: 'couple', type: 'groupType' },
+                { text: '👨‍👩‍👧 En famille', value: 'family', type: 'groupType' },
+                { text: '👥 Entre amis', value: 'friends', type: 'groupType' }
+              ]
+            });
+          }
+        } catch (error) {
+          this.log('Error sending greeting:', error);
+          // Fallback si erreur
+          this.addMessage({
+            role: 'assistant',
+            content: `Bonjour ! Je suis Hedwige 🦉, votre assistante Le Hiboo.<br><br>
+                      Pour vous trouver l'activité parfaite, c'est pour qui ?`,
+            timestamp: new Date(),
+            quickChips: [
+              { text: '🧍 Solo', value: 'solo', type: 'groupType' },
+              { text: '💑 En couple', value: 'couple', type: 'groupType' },
+              { text: '👨‍👩‍👧 En famille', value: 'family', type: 'groupType' },
+              { text: '👥 Entre amis', value: 'friends', type: 'groupType' }
+            ]
+          });
+        }
       }, 500);
     }
 
