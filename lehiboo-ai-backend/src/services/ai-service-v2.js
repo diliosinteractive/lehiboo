@@ -157,16 +157,15 @@ export async function generateAIResponse(message, context = {}) {
       model: config.openai.defaultModel
     });
 
-    // Appel IA avec tools - FORCER collectUserProfile d'abord
+    // Appel IA avec tools
     const result = await generateText({
       model: openai(config.openai.defaultModel),
       system: systemPrompt,
       messages,
       tools,
-      toolChoice: 'required', // FORCE l'IA à appeler au moins un tool
       temperature: 0.7,
       maxTokens: 4000,
-      maxSteps: 5 // Permet à l'IA d'appeler plusieurs tools si nécessaire
+      maxSteps: 10 // Augmenté pour permettre tool call + texte
     });
 
     logger.info('AI response generated', {
@@ -187,17 +186,42 @@ export async function generateAIResponse(message, context = {}) {
       });
     }
 
+    // Extraire userContext depuis les tool results
+    let extractedUserContext = { ...context.userContext };
+
+    if (result.toolResults && result.toolResults.length > 0) {
+      logger.info('🔵 [DEBUG] Tool results received', {
+        count: result.toolResults.length,
+        results: result.toolResults.map(tr => ({
+          toolName: tr.toolName,
+          result: tr.result
+        }))
+      });
+
+      // Chercher le résultat de collectUserProfile
+      const profileResult = result.toolResults.find(tr => tr.toolName === 'collectUserProfile');
+      if (profileResult && profileResult.result?.success && profileResult.result?.updatedProfile) {
+        extractedUserContext = {
+          ...extractedUserContext,
+          ...profileResult.result.updatedProfile
+        };
+        logger.info('🔵 [DEBUG] UserContext extracted from tool', {
+          extractedUserContext
+        });
+      }
+    }
+
     // Parser la réponse (chercher JSON blocks pour metadata)
     const parsed = parseAIResponse(result.text);
 
     // Générer les quick chips automatiquement selon le contexte
-    const autoQuickChips = generateQuickChips(context.userContext || {});
+    const autoQuickChips = generateQuickChips(extractedUserContext);
 
     return {
       success: true,
       message: parsed.cleanText,
       conversationStage: parsed.metadata.stage || context.currentStage || 'greeting',
-      userContext: parsed.metadata.userContext || context.userContext || {},
+      userContext: extractedUserContext, // Utiliser le contexte extrait des tools
       quickChips: parsed.metadata.quickChips || autoQuickChips,
       events: parsed.metadata.events || [],
       weatherAlert: parsed.metadata.weatherAlert || null,
