@@ -903,20 +903,9 @@
      * Send greeting message
      */
     sendGreeting() {
+      // Envoyer un message initial au backend pour obtenir le greeting naturel
       setTimeout(() => {
-        this.addMessage({
-          role: 'assistant',
-          content: `Bonjour ! Je suis Hedwige 🦉, votre assistante Le Hiboo.<br><br>
-                    Je vais vous aider à trouver l'activité parfaite !<br><br>
-                    Pour commencer, vous cherchez une activité pour :`,
-          timestamp: new Date(),
-          quickChips: [
-            { text: '🧍 Solo', value: 'solo' },
-            { text: '💑 En couple', value: 'couple' },
-            { text: '👨‍👩‍👧 En famille', value: 'famille' },
-            { text: '👥 Entre amis', value: 'amis' }
-          ]
-        });
+        this.sendMessage('Bonjour');
       }, 500);
     }
 
