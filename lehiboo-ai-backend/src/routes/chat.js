@@ -9,6 +9,10 @@ import {
   handleStatus,
 } from '../controllers/chat-controller.js';
 import {
+  uploadAudio,
+  handleTranscription
+} from '../controllers/transcription-controller.js';
+import {
   validateApiKey,
   validateConversationData,
 } from '../middleware/auth.js';
@@ -21,6 +25,11 @@ const router = express.Router();
  */
 router.post('/chat', validateApiKey, validateConversationData, handleChatRequest);
 router.post('/api-planner', validateApiKey, validateConversationData, handleChatRequest);
+
+/**
+ * POST /transcribe - Transcription audio avec Whisper
+ */
+router.post('/transcribe', validateApiKey, uploadAudio, handleTranscription);
 
 /**
  * GET /health - Health check
