@@ -375,6 +375,11 @@
       const value = e.target.value;
       const length = value.length;
 
+      // Hide quick chips if user starts typing (not clicking chips)
+      if (length > 0 && this.elements.quickChips.style.display !== 'none') {
+        this.hideQuickChips();
+      }
+
       // Update character counter
       const currentSpan = this.elements.charCounter.querySelector('.current');
       currentSpan.textContent = length;
