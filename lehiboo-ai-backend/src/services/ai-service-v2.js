@@ -36,9 +36,9 @@ async function loadSystemPromptV2() {
 }
 
 /**
- * Construire l'historique de conversation
+ * Construire l'historique de conversation avec userContext
  */
-function buildMessages(currentMessage, conversationHistory = []) {
+function buildMessages(currentMessage, conversationHistory = [], userContext = {}) {
   const messages = [];
 
   // Ajouter l'historique existant (limité aux 10 derniers messages)
@@ -52,10 +52,29 @@ function buildMessages(currentMessage, conversationHistory = []) {
     });
   });
 
-  // Ajouter le message actuel
+  // Ajouter le message actuel avec le contexte utilisateur
+  let userMessage = currentMessage;
+
+  // Si on a un userContext, l'injecter dans le message pour que l'IA sache ce qui a déjà été collecté
+  if (userContext && Object.keys(userContext).length > 0) {
+    const contextInfo = Object.entries(userContext)
+      .filter(([key, value]) => value !== undefined && value !== null)
+      .map(([key, value]) => {
+        if (typeof value === 'object') {
+          return `${key}: ${JSON.stringify(value)}`;
+        }
+        return `${key}: ${value}`;
+      })
+      .join(', ');
+
+    if (contextInfo) {
+      userMessage = `[CONTEXT: ${contextInfo}]\n\n${currentMessage}`;
+    }
+  }
+
   messages.push({
     role: 'user',
-    content: currentMessage
+    content: userMessage
   });
 
   return messages;
@@ -75,8 +94,8 @@ export async function generateAIResponse(message, context = {}) {
     // Charger le system prompt v2
     const systemPrompt = await loadSystemPromptV2();
 
-    // Construire les messages
-    const messages = buildMessages(message, context.history);
+    // Construire les messages avec userContext
+    const messages = buildMessages(message, context.history, context.userContext);
 
     // Définir les tools disponibles
     const tools = {
@@ -177,7 +196,7 @@ export async function streamAIResponse(message, context = {}) {
     });
 
     const systemPrompt = await loadSystemPromptV2();
-    const messages = buildMessages(message, context.history);
+    const messages = buildMessages(message, context.history, context.userContext);
 
     const tools = {
       collectUserProfile: {
