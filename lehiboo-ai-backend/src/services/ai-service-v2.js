@@ -88,17 +88,50 @@ function buildMessages(currentMessage, conversationHistory = [], userContext = {
  */
 export async function generateAIResponse(message, context = {}) {
   try {
-    logger.info('Generating AI response with tools', {
+    logger.info('🔵 [DEBUG] Generating AI response', {
       conversationId: context.conversationId,
       messageLength: message.length,
-      hasHistory: !!context.history
+      historyLength: context.history?.length || 0,
+      userContextKeys: Object.keys(context.userContext || {}),
+      currentStage: context.currentStage
     });
+
+    // Log l'historique complet pour debug
+    if (context.history && context.history.length > 0) {
+      logger.info('🔵 [DEBUG] History received', {
+        historyCount: context.history.length,
+        history: context.history.map(msg => ({
+          role: msg.role,
+          contentPreview: msg.content?.substring(0, 100)
+        }))
+      });
+    } else {
+      logger.warn('⚠️  [DEBUG] NO HISTORY - First message or history not sent');
+    }
+
+    // Log userContext
+    if (context.userContext && Object.keys(context.userContext).length > 0) {
+      logger.info('🔵 [DEBUG] UserContext received', {
+        userContext: context.userContext
+      });
+    } else {
+      logger.warn('⚠️  [DEBUG] NO USERCONTEXT - Starting fresh');
+    }
 
     // Charger le system prompt v3 minimal
     const systemPrompt = await loadSystemPromptV3();
 
     // Construire les messages avec userContext
     const messages = buildMessages(message, context.history, context.userContext);
+
+    // Log ce qui sera envoyé à OpenAI
+    logger.info('🔵 [DEBUG] Messages to OpenAI', {
+      messagesCount: messages.length,
+      messages: messages.map(msg => ({
+        role: msg.role,
+        contentPreview: msg.content?.substring(0, 150)
+      }))
+    });
 
     // Définir les tools disponibles
     const tools = {

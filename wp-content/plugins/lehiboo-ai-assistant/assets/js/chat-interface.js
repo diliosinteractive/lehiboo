@@ -170,6 +170,9 @@
     async init() {
       this.log('Initializing Le Hiboo Chat Interface...');
 
+      // 🔵 DEBUG: Log conversationId initial
+      console.log('🔵 [DEBUG FRONTEND] Initial conversationId:', this.state.conversationId);
+
       // Build HTML structure
       this.buildHTML();
 
@@ -181,6 +184,11 @@
 
       // Load conversation history (avec persistance)
       await this.loadConversationHistory();
+
+      // 🔵 DEBUG: Log conversationId après load history
+      console.log('🔵 [DEBUG FRONTEND] ConversationId après load:', this.state.conversationId);
+      console.log('🔵 [DEBUG FRONTEND] Messages count:', this.state.messages.length);
+      console.log('🔵 [DEBUG FRONTEND] UserContext:', this.state.userContext);
 
       // Migrer localStorage → DB si utilisateur connecté
       if (this.config.isLoggedIn) {
@@ -467,6 +475,17 @@
         const response = await this.sendToAPI(sanitizedMessage);
         this.hideTypingIndicator();
 
+        // 🔵 DEBUG: Log response from backend
+        console.log('🔵 [DEBUG FRONTEND] Response from backend:', {
+          success: response.success,
+          messageLength: response.message?.length || 0,
+          conversationStage: response.conversationStage,
+          userContextKeys: Object.keys(response.userContext || {}),
+          quickChipsCount: response.quickChips?.length || 0,
+          eventsCount: response.events?.length || 0,
+          historyLength: response.history?.length || 0
+        });
+
         if (response.success) {
           // Add assistant message
           this.addMessage({
@@ -483,7 +502,9 @@
           }
 
           if (response.userContext) {
+            console.log('🔵 [DEBUG FRONTEND] Updating userContext:', response.userContext);
             this.state.userContext = { ...this.state.userContext, ...response.userContext };
+            console.log('🔵 [DEBUG FRONTEND] New userContext:', this.state.userContext);
           }
 
           // Show weather alert if provided
@@ -524,19 +545,35 @@
           content: msg.content
         }));
 
+      // 🔵 DEBUG: Log ce qui est envoyé au backend
+      console.log('🔵 [DEBUG FRONTEND] Sending to backend:', {
+        conversationId: this.state.conversationId,
+        messageLength: message.length,
+        historyLength: history.length,
+        userContext: this.state.userContext,
+        currentStage: this.state.currentStage,
+        apiEndpoint: this.config.apiEndpoint
+      });
+
+      console.log('🔵 [DEBUG FRONTEND] Full history:', history);
+
+      const payload = {
+        message: message,
+        conversationId: this.state.conversationId,
+        userContext: this.state.userContext,
+        currentStage: this.state.currentStage,
+        history: history
+      };
+
+      console.log('🔵 [DEBUG FRONTEND] Payload JSON:', JSON.stringify(payload, null, 2));
+
       const response = await fetch(this.config.apiEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-WP-Nonce': this.config.nonce
         },
-        body: JSON.stringify({
-          message: message,
-          conversationId: this.state.conversationId,
-          userContext: this.state.userContext,
-          currentStage: this.state.currentStage,
-          history: history // ✅ Ajouter l'historique !
-        })
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
