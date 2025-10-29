@@ -157,12 +157,13 @@ export async function generateAIResponse(message, context = {}) {
       model: config.openai.defaultModel
     });
 
-    // Appel IA avec tools
+    // Appel IA avec tools - FORCER collectUserProfile d'abord
     const result = await generateText({
       model: openai(config.openai.defaultModel),
       system: systemPrompt,
       messages,
       tools,
+      toolChoice: 'required', // FORCE l'IA à appeler au moins un tool
       temperature: 0.7,
       maxTokens: 4000,
       maxSteps: 5 // Permet à l'IA d'appeler plusieurs tools si nécessaire
