@@ -258,48 +258,48 @@ function generateQuickChips(userContext = {}) {
   // Si pas de groupType
   if (!userContext.groupType) {
     return [
-      { text: '🧍 Solo', value: 'solo' },
-      { text: '💑 En couple', value: 'couple' },
-      { text: '👨‍👩‍👧 En famille', value: 'famille' },
-      { text: '👥 Entre amis', value: 'amis' }
+      { text: '🧍 Solo', value: 'solo', type: 'groupType' },
+      { text: '💑 En couple', value: 'couple', type: 'groupType' },
+      { text: '👨‍👩‍👧 En famille', value: 'family', type: 'groupType' },
+      { text: '👥 Entre amis', value: 'friends', type: 'groupType' }
     ];
   }
 
   // Si pas d'activityType
   if (!userContext.activityType) {
     return [
-      { text: '🎭 Culture', value: 'culture' },
-      { text: '⚽ Sport', value: 'sport' },
-      { text: '🍷 Gastronomie', value: 'gastronomie' },
-      { text: '🌳 Nature', value: 'nature' },
-      { text: '💆 Détente', value: 'detente' }
+      { text: '🎭 Culture', value: 'culture', type: 'activityType' },
+      { text: '⚽ Sport', value: 'sport', type: 'activityType' },
+      { text: '🍷 Gastronomie', value: 'gastronomie', type: 'activityType' },
+      { text: '🌳 Nature', value: 'nature', type: 'activityType' },
+      { text: '💆 Détente', value: 'detente', type: 'activityType' }
     ];
   }
 
   // Si pas de dates
   if (!userContext.dates) {
     return [
-      { text: '📅 Ce weekend', value: 'thisWeekend' },
-      { text: '📅 Prochain weekend', value: 'nextWeekend' },
-      { text: '📅 Dates précises', value: 'specific' },
-      { text: '📅 Flexible', value: 'flexible' }
+      { text: '📅 Ce weekend', value: 'thisWeekend', type: 'dates' },
+      { text: '📅 Prochain weekend', value: 'nextWeekend', type: 'dates' },
+      { text: '📅 Dates précises', value: 'specific', type: 'dates' },
+      { text: '📅 Flexible', value: 'flexible', type: 'dates' }
     ];
   }
 
   // Si pas de budgetMax
   if (!userContext.budgetMax) {
     return [
-      { text: '💰 Moins de 20€', value: '20' },
-      { text: '💰 20-50€', value: '50' },
-      { text: '💰 50-100€', value: '100' },
-      { text: '💰 Plus de 100€', value: '100+' }
+      { text: '💰 Moins de 20€', value: '20', type: 'budgetMax' },
+      { text: '💰 20-50€', value: '50', type: 'budgetMax' },
+      { text: '💰 50-100€', value: '100', type: 'budgetMax' },
+      { text: '💰 Plus de 100€', value: '150', type: 'budgetMax' }
     ];
   }
 
   // Si profil complet, proposer actions
   return [
-    { text: '🔍 Afficher les résultats', value: 'show_results' },
-    { text: '🔄 Modifier mes critères', value: 'modify' }
+    { text: '🔍 Afficher les résultats', value: 'show_results', type: 'action' },
+    { text: '🔄 Modifier mes critères', value: 'modify', type: 'action' }
   ];
 }
 

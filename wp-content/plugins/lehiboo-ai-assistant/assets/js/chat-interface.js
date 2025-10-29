@@ -723,6 +723,13 @@
 
         button.addEventListener('click', () => {
           this.elements.textarea.value = chip.value || chip.text;
+
+          // Mettre à jour le userContext si le chip a un type
+          if (chip.type && chip.value) {
+            this.state.userContext[chip.type] = chip.value;
+            this.log(`Updated userContext.${chip.type} = ${chip.value}`);
+          }
+
           this.handleTextareaInput({ target: this.elements.textarea });
           this.sendMessage();
           this.hideQuickChips();
