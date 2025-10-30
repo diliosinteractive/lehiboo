@@ -283,6 +283,19 @@ class Lehiboo_AI_Security {
             $sanitized['currentStage'] = sanitize_text_field($data['currentStage']);
         }
 
+        // ✅ CRITICAL: Sanitize history array (conversation messages)
+        if (isset($data['history']) && is_array($data['history'])) {
+            $sanitized['history'] = array();
+            foreach ($data['history'] as $message) {
+                if (is_array($message) && isset($message['role']) && isset($message['content'])) {
+                    $sanitized['history'][] = array(
+                        'role' => sanitize_text_field($message['role']),
+                        'content' => sanitize_textarea_field($message['content']),
+                    );
+                }
+            }
+        }
+
         return $sanitized;
     }
 

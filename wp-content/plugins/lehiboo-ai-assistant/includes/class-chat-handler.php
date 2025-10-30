@@ -29,6 +29,7 @@ class Lehiboo_AI_Chat_Handler {
         $conversation_id = $request->get_param('conversationId');
         $user_context = $request->get_param('userContext');
         $current_stage = $request->get_param('currentStage');
+        $history = $request->get_param('history'); // ✅ CRITICAL: Forward history to backend
 
         // Validate message
         if (empty($message)) {
@@ -53,6 +54,7 @@ class Lehiboo_AI_Chat_Handler {
             'conversationId' => $conversation_id,
             'userContext' => $user_context,
             'currentStage' => $current_stage,
+            'history' => !empty($history) ? $history : array(), // ✅ Include history
         );
         $sanitized_data = $security->sanitize_conversation_data($data);
 
@@ -97,6 +99,7 @@ class Lehiboo_AI_Chat_Handler {
             'conversationId' => $data['conversationId'],
             'userContext' => $data['userContext'],
             'currentStage' => $data['currentStage'],
+            'history' => !empty($data['history']) ? $data['history'] : array(), // ✅ CRITICAL: Send history to backend
         );
 
         // Call backend
