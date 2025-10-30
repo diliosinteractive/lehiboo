@@ -790,14 +790,53 @@
         button.setAttribute('aria-label', `Réponse rapide : ${chip.text}`);
 
         button.addEventListener('click', () => {
-          this.elements.textarea.value = chip.value || chip.text;
+          // Cas spéciaux : "Autre ville", "Age personnalisé", etc.
+          if (chip.value === 'custom') {
+            // L'utilisateur doit taper sa réponse
+            this.elements.textarea.value = '';
 
-          // Mettre à jour le userContext si le chip a un type
-          if (chip.type && chip.value) {
-            this.state.userContext[chip.type] = chip.value;
-            this.log(`Updated userContext.${chip.type} = ${chip.value}`);
+            if (chip.type === 'location') {
+              this.elements.textarea.placeholder = 'Tapez le nom de votre ville...';
+            } else if (chip.type === 'age') {
+              this.elements.textarea.placeholder = 'Tapez votre âge...';
+            } else {
+              this.elements.textarea.placeholder = 'Tapez votre réponse...';
+            }
+
+            this.elements.textarea.focus();
+            this.hideQuickChips();
+            return;
           }
 
+          // Cas standard : envoi direct de la valeur
+          // On affiche le TEXTE du chip dans le textarea pour feedback visuel
+          this.elements.textarea.value = chip.text;
+
+          // Mettre à jour le userContext localement
+          if (chip.type && chip.value) {
+            // Cas spécial pour location : structure object
+            if (chip.type === 'location') {
+              this.state.userContext[chip.type] = { city: chip.value, radius: 20 };
+              this.log(`Updated userContext.location = { city: '${chip.value}', radius: 20 }`);
+            }
+            // Cas spécial pour dates : structure object
+            else if (chip.type === 'dates') {
+              this.state.userContext[chip.type] = { type: chip.value };
+              this.log(`Updated userContext.dates = { type: '${chip.value}' }`);
+            }
+            // Cas spécial pour age et budgetMax : convertir en number
+            else if (chip.type === 'age' || chip.type === 'budgetMax') {
+              this.state.userContext[chip.type] = parseInt(chip.value, 10);
+              this.log(`Updated userContext.${chip.type} = ${chip.value} (number)`);
+            }
+            // Cas standard : valeur simple
+            else {
+              this.state.userContext[chip.type] = chip.value;
+              this.log(`Updated userContext.${chip.type} = ${chip.value}`);
+            }
+          }
+
+          // Envoyer immédiatement le message
           this.handleTextareaInput({ target: this.elements.textarea });
           this.sendMessage();
           this.hideQuickChips();

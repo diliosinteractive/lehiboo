@@ -2,7 +2,12 @@
  * Service IA v2 avec AI SDK et OpenAI
  * Intègre les tools Hedwige pour une expérience fluide
  *
- * Architecture: System Prompt v2 + Tools (collectUserProfile, searchEvents)
+ * Architecture: System Prompt v5 "Guided Conversation" + Tools (collectUserProfile, searchEvents)
+ *
+ * v5 Changes:
+ * - ✅ Fix: Le tool collectUserProfile reçoit maintenant le contexte existant (merge automatique)
+ * - ✅ Nouveau prompt v5: Guide l'IA à poser UNE question à la fois
+ * - ✅ Chips intelligentes: Détection automatique du type de question pour chips adaptées
  */
 
 import { openai } from '@ai-sdk/openai';
@@ -21,19 +26,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 /**
- * Charger le system prompt v4 ULTRA minimal
+ * Charger le system prompt v5 Guided Conversation
  */
-async function loadSystemPromptV4() {
+async function loadSystemPromptV5() {
   try {
-    const promptPath = join(__dirname, '../prompts/system-prompt-v4-ultra-minimal.md');
+    const promptPath = join(__dirname, '../prompts/system-prompt-v5-guided-conversation.md');
     const content = await readFile(promptPath, 'utf-8');
-    logger.info('System prompt v4 ULTRA minimal loaded', {
+    logger.info('System prompt v5 Guided Conversation loaded', {
       length: content.length,
       lines: content.split('\n').length
     });
     return content;
   } catch (error) {
-    logger.error('Failed to load system prompt v4', { error: error.message });
+    logger.error('Failed to load system prompt v5', { error: error.message });
     throw new Error('System prompt not found');
   }
 }
@@ -118,8 +123,8 @@ export async function generateAIResponse(message, context = {}) {
       logger.warn('⚠️  [DEBUG] NO USERCONTEXT - Starting fresh');
     }
 
-    // Charger le system prompt v4 ULTRA minimal
-    const systemPrompt = await loadSystemPromptV4();
+    // Charger le system prompt v5 Guided Conversation
+    const systemPrompt = await loadSystemPromptV5();
 
     // Construire les messages avec userContext
     const messages = buildMessages(message, context.history, context.userContext);
@@ -138,7 +143,10 @@ export async function generateAIResponse(message, context = {}) {
       collectUserProfile: {
         description: collectUserProfileTool.description,
         parameters: collectUserProfileTool.parameters,
-        execute: collectUserProfileTool.execute
+        execute: async (input) => {
+          // ✅ Passer le contexte existant au tool pour garder la mémoire
+          return collectUserProfileTool.execute(input, context.userContext || {});
+        }
       },
       searchEvents: {
         description: searchEventsTool.description,
@@ -214,15 +222,15 @@ export async function generateAIResponse(message, context = {}) {
     // Parser la réponse (chercher JSON blocks pour metadata)
     const parsed = parseAIResponse(result.text);
 
-    // Générer les quick chips automatiquement selon le contexte
-    const autoQuickChips = generateQuickChips(extractedUserContext);
+    // Générer les quick chips intelligemment selon le message de l'IA et le contexte
+    const smartChips = generateQuickChips(parsed.cleanText, extractedUserContext);
 
     return {
       success: true,
       message: parsed.cleanText,
       conversationStage: parsed.metadata.stage || context.currentStage || 'greeting',
       userContext: extractedUserContext, // Utiliser le contexte extrait des tools
-      quickChips: parsed.metadata.quickChips || autoQuickChips,
+      quickChips: parsed.metadata.quickChips || smartChips,
       events: parsed.metadata.events || [],
       weatherAlert: parsed.metadata.weatherAlert || null,
       usage: {
@@ -266,7 +274,7 @@ export async function streamAIResponse(message, context = {}) {
       conversationId: context.conversationId
     });
 
-    const systemPrompt = await loadSystemPromptV2();
+    const systemPrompt = await loadSystemPromptV5();
     const messages = buildMessages(message, context.history, context.userContext);
 
     const tools = {
@@ -400,55 +408,158 @@ function parseAIResponse(text) {
 }
 
 /**
- * Générer les quick chips selon l'état du profil utilisateur
+ * Détecte le type de question posée par l'IA pour générer les chips appropriées
+ * Analyse le message de l'IA et le contexte existant
  */
-function generateQuickChips(userContext = {}) {
-  // Si pas de groupType
+function detectQuestionType(aiMessage, userContext) {
+  const lowerMsg = aiMessage.toLowerCase();
+
+  // Calcul de complétude pour savoir si on est à la fin
+  const completeness = calculateProfileCompleteness(userContext);
+
+  // Si profil complet (100%), proposer des actions
+  if (completeness === 100) {
+    return 'action';
+  }
+
+  // Détection par mots-clés et contexte manquant
+
+  // 1. GroupType (pour qui ?)
   if (!userContext.groupType) {
-    return [
+    if (/pour qui|c'est pour|solo|couple|famille|amis|vous êtes/i.test(lowerMsg)) {
+      return 'groupType';
+    }
+    // Si rien détecté mais c'est le champ manquant prioritaire, on le retourne
+    return 'groupType';
+  }
+
+  // 2. ActivityType (quel type ?)
+  if (!userContext.activityType) {
+    if (/type|activité|genre|culture|sport|gastronomie|nature|détente|vous tente/i.test(lowerMsg)) {
+      return 'activityType';
+    }
+    return 'activityType';
+  }
+
+  // 3. Location (où ?)
+  if (!userContext.location || !userContext.location.city) {
+    if (/ville|où|localisation|quartier|cherchez|secteur/i.test(lowerMsg)) {
+      return 'location';
+    }
+    return 'location';
+  }
+
+  // 4. Dates (quand ?)
+  if (!userContext.dates) {
+    if (/quand|date|weekend|jour|moment|période/i.test(lowerMsg)) {
+      return 'dates';
+    }
+    return 'dates';
+  }
+
+  // 5. Age (quel âge ?)
+  if (!userContext.age) {
+    if (/âge|ans|vieux|jeune|année|restriction/i.test(lowerMsg)) {
+      return 'age';
+    }
+    return 'age';
+  }
+
+  // 6. Budget (combien ?)
+  if (!userContext.budgetMax && userContext.budgetMax !== 0) {
+    if (/budget|prix|coût|combien|dépenser|€|euro|tarif/i.test(lowerMsg)) {
+      return 'budgetMax';
+    }
+    return 'budgetMax';
+  }
+
+  // Par défaut, si tout est rempli
+  return 'action';
+}
+
+/**
+ * Calcule la complétude du profil (0-100%)
+ */
+function calculateProfileCompleteness(userContext) {
+  const requiredFields = ['groupType', 'activityType', 'location', 'dates', 'age', 'budgetMax'];
+
+  const filledFields = requiredFields.filter(field => {
+    const value = userContext[field];
+    if (value === undefined || value === null) return false;
+    if (typeof value === 'object' && Object.keys(value).length === 0) return false;
+    return true;
+  });
+
+  return Math.round((filledFields.length / requiredFields.length) * 100);
+}
+
+/**
+ * Génère les quick chips selon le type de question détecté
+ */
+function generateSmartChips(questionType) {
+  const chipsMap = {
+    groupType: [
       { text: '🧍 Solo', value: 'solo', type: 'groupType' },
       { text: '💑 En couple', value: 'couple', type: 'groupType' },
       { text: '👨‍👩‍👧 En famille', value: 'family', type: 'groupType' },
       { text: '👥 Entre amis', value: 'friends', type: 'groupType' }
-    ];
-  }
-
-  // Si pas d'activityType
-  if (!userContext.activityType) {
-    return [
+    ],
+    activityType: [
       { text: '🎭 Culture', value: 'culture', type: 'activityType' },
       { text: '⚽ Sport', value: 'sport', type: 'activityType' },
       { text: '🍷 Gastronomie', value: 'gastronomie', type: 'activityType' },
       { text: '🌳 Nature', value: 'nature', type: 'activityType' },
       { text: '💆 Détente', value: 'detente', type: 'activityType' }
-    ];
-  }
-
-  // Si pas de dates
-  if (!userContext.dates) {
-    return [
+    ],
+    location: [
+      { text: '📍 Valenciennes', value: 'Valenciennes', type: 'location' },
+      { text: '📍 Lille', value: 'Lille', type: 'location' },
+      { text: '📍 Douai', value: 'Douai', type: 'location' },
+      { text: '📍 Autre ville', value: 'custom', type: 'location' }
+    ],
+    dates: [
       { text: '📅 Ce weekend', value: 'thisWeekend', type: 'dates' },
       { text: '📅 Prochain weekend', value: 'nextWeekend', type: 'dates' },
       { text: '📅 Dates précises', value: 'specific', type: 'dates' },
       { text: '📅 Flexible', value: 'flexible', type: 'dates' }
-    ];
-  }
-
-  // Si pas de budgetMax
-  if (!userContext.budgetMax) {
-    return [
+    ],
+    age: [
+      { text: '👶 Moins de 18 ans', value: '15', type: 'age' },
+      { text: '👤 18-30 ans', value: '25', type: 'age' },
+      { text: '👔 31-50 ans', value: '40', type: 'age' },
+      { text: '👴 Plus de 50 ans', value: '60', type: 'age' }
+    ],
+    budgetMax: [
       { text: '💰 Moins de 20€', value: '20', type: 'budgetMax' },
       { text: '💰 20-50€', value: '50', type: 'budgetMax' },
       { text: '💰 50-100€', value: '100', type: 'budgetMax' },
       { text: '💰 Plus de 100€', value: '150', type: 'budgetMax' }
-    ];
-  }
+    ],
+    action: [
+      { text: '🔍 Voir les résultats', value: 'show_results', type: 'action' },
+      { text: '🔄 Modifier mes critères', value: 'modify', type: 'action' }
+    ]
+  };
 
-  // Si profil complet, proposer actions
-  return [
-    { text: '🔍 Afficher les résultats', value: 'show_results', type: 'action' },
-    { text: '🔄 Modifier mes critères', value: 'modify', type: 'action' }
-  ];
+  return chipsMap[questionType] || [];
+}
+
+/**
+ * Génère les quick chips intelligemment selon le message de l'IA
+ * (fonction principale appelée par generateAIResponse)
+ */
+function generateQuickChips(aiMessage, userContext = {}) {
+  // Détecter le type de question posée
+  const questionType = detectQuestionType(aiMessage, userContext);
+
+  logger.info('Smart chips generated', {
+    questionType,
+    userContextKeys: Object.keys(userContext),
+    completeness: calculateProfileCompleteness(userContext)
+  });
+
+  // Générer les chips appropriées
+  return generateSmartChips(questionType);
 }
 
 /**

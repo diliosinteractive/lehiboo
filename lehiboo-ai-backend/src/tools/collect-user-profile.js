@@ -175,17 +175,18 @@ function generateMessage(profile, completeness, missingFields) {
  * Tool principal: collectUserProfile
  *
  * @param {Object} input - Les données du profil (partielles ou complètes)
+ * @param {Object} existingProfile - Le profil utilisateur existant (pour merge)
  * @returns {Object} Résultat avec succès, complétude, profil mis à jour
  */
-export async function collectUserProfile(input) {
+export async function collectUserProfile(input, existingProfile = {}) {
   try {
     // Valider l'input avec Zod
     const validatedInput = collectUserProfileSchema.parse(input);
 
-    // Simuler un état de profil existant (en prod, récupérer depuis contexte conversation)
-    // Pour l'instant, on prend juste l'input comme nouveau profil
+    // ✅ MERGE avec le profil existant pour garder la mémoire
     const updatedProfile = {
-      ...validatedInput
+      ...existingProfile,  // Garde l'ancien contexte
+      ...validatedInput    // Ajoute/écrase avec les nouvelles données
     };
 
     // Calculer complétude
