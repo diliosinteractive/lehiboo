@@ -1293,8 +1293,11 @@
           this.elements.textarea.value = transcription.text;
           this.handleTextareaInput({ target: this.elements.textarea });
 
-          // Show countdown toast and auto-send after 3s if not cancelled
-          await this.showTranscriptionCountdown(transcription.text);
+          // Show toast with send button (Option B)
+          this.showTranscriptionToastWithSend(transcription.text);
+
+          // Auto-focus on textarea
+          this.elements.textarea.focus();
         } else {
           throw new Error(transcription.error || 'Transcription failed');
         }
