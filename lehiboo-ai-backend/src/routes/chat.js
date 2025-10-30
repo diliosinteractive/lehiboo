@@ -28,8 +28,10 @@ router.post('/api-planner', validateApiKey, validateConversationData, handleChat
 
 /**
  * POST /transcribe - Transcription audio avec Whisper
+ * POST /api-planner/transcribe - Alias pour compatibilité avec WordPress proxy
  */
 router.post('/transcribe', validateApiKey, uploadAudio, handleTranscription);
+router.post('/api-planner/transcribe', validateApiKey, uploadAudio, handleTranscription);
 
 /**
  * GET /health - Health check
