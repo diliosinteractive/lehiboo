@@ -58,7 +58,13 @@ function meup_child_scripts() {
             wp_enqueue_style( 'vendor-messages', get_stylesheet_directory_uri() . '/vendor-messages.css', array('meup-parent-style'), '3.4.0' );
 
             // V1 Le Hiboo - Améliorations UX Billetterie (page d'édition événement vendor)
-            wp_enqueue_script( 'vendor-ticket-ux-improvements', get_stylesheet_directory_uri() . '/assets/js/vendor-ticket-ux-improvements.js', array('jquery'), '1.0.0', true );
+            // Cache buster: version = timestamp du fichier
+            $js_file = get_stylesheet_directory() . '/assets/js/vendor-ticket-ux-improvements.js';
+            $version = file_exists($js_file) ? filemtime($js_file) : '1.0.0';
+            wp_enqueue_script( 'vendor-ticket-ux-improvements', get_stylesheet_directory_uri() . '/assets/js/vendor-ticket-ux-improvements.js', array('jquery'), $version, true );
+
+            // Debug: signaler que le script est chargé
+            wp_add_inline_script( 'vendor-ticket-ux-improvements', 'console.log("LeHiboo: vendor-ticket-ux-improvements.js chargé - version ' . $version . '");', 'before' );
         }
     }
 
@@ -191,6 +197,13 @@ if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-otp.php' 
 // ========================================
 if( file_exists( get_stylesheet_directory() . '/includes/event-metabox-extensions.php' ) ) {
 	require_once get_stylesheet_directory() . '/includes/event-metabox-extensions.php';
+}
+
+// ========================================
+// DEBUG V1 - AIDE AU DIAGNOSTIC (à retirer en production)
+// ========================================
+if( file_exists( get_stylesheet_directory() . '/includes/event-v1-debug.php' ) ) {
+	require_once get_stylesheet_directory() . '/includes/event-v1-debug.php';
 }
 
 // ========================================
