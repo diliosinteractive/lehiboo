@@ -13,20 +13,21 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
  * ===========================================
- * BILLETTERIE - Désactivation fonctionnalités V2
+ * BILLETTERIE - Configuration V1
  * ===========================================
  */
 
-// Désactiver "Type: No Seat" - reporté en V2
-add_filter( 'el_show_ticket_type_no_seat', '__return_false' );
+// ✅ ACTIVER "Type: No Seat" - Mode liste d'inscription (V1)
+// Ce mode permet de créer des billets/inscriptions sans numérotation de sièges
+add_filter( 'el_show_ticket_type_no_seat', '__return_true' );
 
-// Désactiver "Type: Simple Seat" - reporté en V2
+// ❌ DÉSACTIVER "Type: Simple Seat" - Sièges numérotés (reporté en V2)
 add_filter( 'el_show_ticket_type_simple', '__return_false' );
 
-// Désactiver "Type: Map" (carte interactive sièges) - reporté en V2
+// ❌ DÉSACTIVER "Type: Map" - Plan de salle interactif (reporté en V2)
 add_filter( 'el_show_ticket_type_map', '__return_false' );
 
-// Désactiver "Créer une billetterie payante" - feature prochainement disponible
+// ❌ DÉSACTIVER "Créer une billetterie payante" - Fonctionnalité prochainement disponible
 add_filter( 'el_show_ticket_paid_ticketing', '__return_false' );
 
 /**
