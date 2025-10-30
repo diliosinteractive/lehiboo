@@ -373,6 +373,13 @@ class Lehiboo_AI_Assistant {
             'permission_callback' => array($this->security, 'check_chat_permission'),
         ));
 
+        // Transcription endpoint
+        register_rest_route('lehiboo/v1', '/transcribe', array(
+            'methods' => 'POST',
+            'callback' => array($this->chat_handler, 'handle_transcription_request'),
+            'permission_callback' => array($this->security, 'check_chat_permission'),
+        ));
+
         // Save conversation (authenticated users only)
         register_rest_route('lehiboo/v1', '/conversation/save', array(
             'methods' => 'POST',

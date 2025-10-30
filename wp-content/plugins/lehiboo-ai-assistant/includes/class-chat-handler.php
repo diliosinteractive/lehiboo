@@ -498,4 +498,141 @@ class Lehiboo_AI_Chat_Handler {
             );
         }
     }
+
+    /**
+     * Handle transcription request from REST API
+     * Proxies audio file to backend Node.js server
+     */
+    public function handle_transcription_request($request) {
+        // Get security and rate limiter instances
+        $security = new Lehiboo_AI_Security();
+        $rate_limiter = new Lehiboo_AI_Rate_Limiter();
+
+        // Check rate limit
+        $rate_check = $rate_limiter->enforce_limit();
+        if (is_wp_error($rate_check)) {
+            return $rate_check;
+        }
+
+        // Get uploaded files
+        $files = $request->get_file_params();
+
+        if (empty($files['audio'])) {
+            return new WP_Error(
+                'no_audio_file',
+                __('Aucun fichier audio fourni.', 'lehiboo-ai-assistant'),
+                array('status' => 400)
+            );
+        }
+
+        $audio_file = $files['audio'];
+
+        // Validate file
+        $allowed_types = array('audio/webm', 'audio/ogg', 'audio/mpeg', 'audio/mp3', 'audio/mp4', 'audio/wav');
+        if (!in_array($audio_file['type'], $allowed_types)) {
+            return new WP_Error(
+                'invalid_audio_type',
+                __('Type de fichier audio non supporté.', 'lehiboo-ai-assistant'),
+                array('status' => 400)
+            );
+        }
+
+        // Check file size (max 25MB)
+        $max_size = 25 * 1024 * 1024; // 25MB
+        if ($audio_file['size'] > $max_size) {
+            return new WP_Error(
+                'file_too_large',
+                __('Fichier trop volumineux (max 25MB).', 'lehiboo-ai-assistant'),
+                array('status' => 400)
+            );
+        }
+
+        // Get language parameter (optional)
+        $language = $request->get_param('language') ?: 'fr';
+
+        // Call backend transcription API
+        $response = $this->call_transcription_api($audio_file, $language);
+
+        if (is_wp_error($response)) {
+            return $response;
+        }
+
+        // Return response
+        return rest_ensure_response($response);
+    }
+
+    /**
+     * Call backend transcription API (Node.js server)
+     */
+    private function call_transcription_api($audio_file, $language = 'fr') {
+        // Get backend URL from settings
+        $backend_url = get_option('lehiboo_ai_backend_url');
+
+        if (empty($backend_url)) {
+            return new WP_Error(
+                'backend_not_configured',
+                __('Backend non configuré.', 'lehiboo-ai-assistant'),
+                array('status' => 503)
+            );
+        }
+
+        // Append /transcribe to backend URL
+        $transcription_url = rtrim($backend_url, '/') . '/transcribe';
+
+        // Get API key
+        $api_key = get_option('lehiboo_ai_api_key');
+
+        // Prepare multipart form data
+        $boundary = wp_generate_password(24, false);
+        $body = '';
+
+        // Add audio file
+        $body .= "--{$boundary}\r\n";
+        $body .= 'Content-Disposition: form-data; name="audio"; filename="' . basename($audio_file['name']) . '"' . "\r\n";
+        $body .= 'Content-Type: ' . $audio_file['type'] . "\r\n\r\n";
+        $body .= file_get_contents($audio_file['tmp_name']) . "\r\n";
+
+        // Add language parameter
+        $body .= "--{$boundary}\r\n";
+        $body .= 'Content-Disposition: form-data; name="language"' . "\r\n\r\n";
+        $body .= $language . "\r\n";
+
+        $body .= "--{$boundary}--\r\n";
+
+        // Call backend
+        $response = wp_remote_post($transcription_url, array(
+            'headers' => array(
+                'Content-Type' => 'multipart/form-data; boundary=' . $boundary,
+                'Authorization' => !empty($api_key) ? 'Bearer ' . $api_key : '',
+            ),
+            'body' => $body,
+            'timeout' => 60, // Longer timeout for transcription
+        ));
+
+        // Check for errors
+        if (is_wp_error($response)) {
+            error_log('[Lehiboo AI] Transcription API error: ' . $response->get_error_message());
+            return new WP_Error(
+                'transcription_error',
+                __('Erreur lors de la transcription. Veuillez réessayer.', 'lehiboo-ai-assistant'),
+                array('status' => 503)
+            );
+        }
+
+        // Parse response
+        $response_code = wp_remote_retrieve_response_code($response);
+        $response_body = wp_remote_retrieve_body($response);
+        $parsed = json_decode($response_body, true);
+
+        if ($response_code !== 200 || empty($parsed)) {
+            error_log('[Lehiboo AI] Transcription API returned error: ' . $response_code . ' - ' . $response_body);
+            return new WP_Error(
+                'transcription_error',
+                __('Erreur lors de la transcription.', 'lehiboo-ai-assistant'),
+                array('status' => 503)
+            );
+        }
+
+        return $parsed;
+    }
 }
