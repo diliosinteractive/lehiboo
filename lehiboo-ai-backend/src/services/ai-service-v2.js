@@ -165,6 +165,11 @@ export async function generateAIResponse(message, context = {}) {
       model: config.openai.defaultModel
     });
 
+    // Déterminer si on force l'appel du tool collectUserProfile
+    // On le force SAUF pour le premier message (greeting initial)
+    const isFirstMessage = !context.history || context.history.length === 0;
+    const shouldForceToolCall = !isFirstMessage;
+
     // Appel IA avec tools
     const result = await generateText({
       model: openai(config.openai.defaultModel),
@@ -173,7 +178,15 @@ export async function generateAIResponse(message, context = {}) {
       tools,
       temperature: 0.7,
       maxTokens: 4000,
-      maxSteps: 10 // Augmenté pour permettre tool call + texte
+      maxSteps: 10, // Augmenté pour permettre tool call + texte
+      // ✅ FORCE tool call pour tous les messages sauf le greeting initial
+      toolChoice: shouldForceToolCall ? 'required' : 'auto',
+    });
+
+    logger.info('🔧 Tool choice', {
+      isFirstMessage,
+      shouldForceToolCall,
+      toolChoice: shouldForceToolCall ? 'required' : 'auto'
     });
 
     logger.info('AI response generated', {
