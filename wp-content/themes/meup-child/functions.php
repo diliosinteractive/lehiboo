@@ -56,6 +56,9 @@ function meup_child_scripts() {
         global $post;
         if( $post && has_shortcode( $post->post_content, 'el_member_account' ) ) {
             wp_enqueue_style( 'vendor-messages', get_stylesheet_directory_uri() . '/vendor-messages.css', array('meup-parent-style'), '3.4.0' );
+
+            // V1 Le Hiboo - Améliorations UX Billetterie (page d'édition événement vendor)
+            wp_enqueue_script( 'vendor-ticket-ux-improvements', get_stylesheet_directory_uri() . '/assets/js/vendor-ticket-ux-improvements.js', array('jquery'), '1.0.0', true );
         }
     }
 
@@ -188,6 +191,13 @@ if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-otp.php' 
 // ========================================
 if( file_exists( get_stylesheet_directory() . '/includes/event-metabox-extensions.php' ) ) {
 	require_once get_stylesheet_directory() . '/includes/event-metabox-extensions.php';
+}
+
+// ========================================
+// CONFIGURATION V1 - FONCTIONNALITÉS ACTIVES/DÉSACTIVÉES
+// ========================================
+if( file_exists( get_stylesheet_directory() . '/includes/event-v1-config.php' ) ) {
+	require_once get_stylesheet_directory() . '/includes/event-v1-config.php';
 }
 
 // ========================================

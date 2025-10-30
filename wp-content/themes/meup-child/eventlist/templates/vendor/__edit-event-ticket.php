@@ -298,7 +298,7 @@ $seating_map = get_post_meta( $post_id, $_prefix.'seating_map', true );
 												name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][name_ticket]' ); ?>"
 												class="name_ticket"
 												value="<?php echo esc_attr( $value['name_ticket'] ); ?>"
-												placeholder="<?php esc_attr_e( 'Click to edit ticket name', 'eventlist' ); ?>"
+												placeholder="<?php esc_attr_e( 'Nom du tarif (ex: Tarif Étudiant, Tarif Adulte +18 ans)', 'eventlist' ); ?>"
 												required
 												autocomplete="off" autocorrect="off" autocapitalize="none"
 											/>
@@ -777,7 +777,12 @@ $seating_map = get_post_meta( $post_id, $_prefix.'seating_map', true );
 											</div>
 										<?php endif; ?>
 										<!-- Save Ticket -->
-										<a href="#" class="save_ticket"><?php esc_html_e('Done', 'eventlist') ?></a>
+										<a href="#" class="save_ticket">
+											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:5px;">
+												<polyline points="20 6 9 17 4 12"></polyline>
+											</svg>
+											<?php esc_html_e('Valider ce billet', 'eventlist') ?>
+										</a>
 									</div>
 								</div>
 							<?php endif;
@@ -1361,8 +1366,34 @@ $seating_map = get_post_meta( $post_id, $_prefix.'seating_map', true );
 				</div>
 			<?php endif; ?>
 		</div>
+
+		<!-- Compteur de billets -->
+		<?php
+		$ticket_count = 0;
+		if ( $ticket && is_array( $ticket ) ) {
+			foreach ( $ticket as $t ) {
+				if ( isset( $t['name_ticket'] ) && ! empty( $t['name_ticket'] ) ) {
+					$ticket_count++;
+				}
+			}
+		}
+		?>
+		<div class="ticket-counter" style="margin: 15px 0; padding: 10px; background: #f0f9ff; border-left: 3px solid #3b82f6; border-radius: 4px;">
+			<span style="font-weight: 600; color: #1e40af;">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:5px;">
+					<path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"></path>
+				</svg>
+				<span class="ticket-count-number"><?php echo esc_html( $ticket_count ); ?></span>
+				<?php echo $ticket_count > 1 ? esc_html__( 'billets configurés', 'eventlist' ) : esc_html__( 'billet configuré', 'eventlist' ); ?>
+			</span>
+		</div>
+
 		<button class="button add_ticket" data-event_id="<?php echo esc_attr( $post_id ); ?>" data-seat_option="<?php echo esc_attr( $seat_option ); ?>" style="<?php echo esc_attr( $seat_option !== 'map' ? 'display: block;' : 'display: none;' ); ?>">
-			<?php esc_html_e( 'Add new ticket', 'eventlist' ); ?>
+			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:5px;">
+				<line x1="12" y1="5" x2="12" y2="19"></line>
+				<line x1="5" y1="12" x2="19" y2="12"></line>
+			</svg>
+			<?php esc_html_e( 'Ajouter un billet', 'eventlist' ); ?>
 			<div class="submit-load-more sendmail">
 				<div class="load-more">
 					<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>

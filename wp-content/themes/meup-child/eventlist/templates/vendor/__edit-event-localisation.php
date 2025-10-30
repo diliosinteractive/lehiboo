@@ -146,13 +146,34 @@ if ( $location_selected ) {
 				<?php esc_html_e( 'Nom du lieu', 'eventlist' ); ?>
 				<?php if ( apply_filters( 'el_venue_req', false, $args ) == true ): ?>
 					<span class="el_req">*</span>
-				<?php endif; ?>:
+				<?php endif; ?>
+				<span class="help-text" style="display: block; font-weight: normal; font-size: 13px; color: #6b7280; margin-top: 5px;">
+					<?php esc_html_e( 'Exemple : Maison des Associations, Salle Polyvalente, etc.', 'eventlist' ); ?>
+				</span>
 			</label>
 
-			<input type="text" name="<?php echo esc_attr( $_prefix.'add_venue' ); ?>" id="add_venue" value='' autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="<?php esc_attr_e( 'Palais des Congrès', 'eventlist' ); ?>"></input>
-			<button class="button check_venue el_btn_add">
-				<?php esc_html_e( 'Ajouter', 'eventlist' ); ?>
-			</button>
+			<div style="display: flex; gap: 10px; align-items: flex-start;">
+				<input
+					type="text"
+					name="<?php echo esc_attr( $_prefix.'add_venue' ); ?>"
+					id="add_venue"
+					value=''
+					autocomplete="off"
+					autocorrect="off"
+					autocapitalize="none"
+					placeholder="<?php esc_attr_e( 'Nom du lieu', 'eventlist' ); ?>"
+					style="flex: 1;" />
+				<button class="button check_venue el_btn_add" style="white-space: nowrap;">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:5px;">
+						<line x1="12" y1="5" x2="12" y2="19"></line>
+						<line x1="5" y1="12" x2="19" y2="12"></line>
+					</svg>
+					<?php esc_html_e( 'Enregistrer le lieu', 'eventlist' ); ?>
+				</button>
+			</div>
+			<p class="help-text" style="margin-top: 8px; font-size: 12px; color: #6b7280; font-style: italic;">
+				<?php esc_html_e( 'Ce lieu sera enregistré pour être réutilisé dans vos prochains événements', 'eventlist' ); ?>
+			</p>
 
 		</div>
 

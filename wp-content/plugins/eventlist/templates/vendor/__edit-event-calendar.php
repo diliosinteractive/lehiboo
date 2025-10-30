@@ -38,30 +38,30 @@ $ts_end 	= get_post_meta( $post_id, $_prefix.'ts_end', true) ? get_post_meta( $p
 ?>
 
 <div class="calendar">
-	<p><?php esc_html_e( 'Create the time of the event', 'eventlist' ); ?></p>
+	<p><?php esc_html_e( 'Paramétrez un créneau ou une période pour l\'événement.', 'eventlist' ); ?></p>
 	<div class="option_calendar vendor_field">
-		<label><?php esc_html_e( 'Calendar Option:', 'eventlist' ); ?></label>
+		<label><?php esc_html_e( 'Sélectionnez si l\'événement est * :', 'eventlist' ); ?></label>
 
 		<label for="option_calendar_manual" class="el_input_radio" style="min-width:auto;">
-			<?php esc_html_e( 'Manual', 'eventlist' ); ?>
-			<input 
-				type="radio" 
+			<?php esc_html_e( 'Ponctuel ou annuel', 'eventlist' ); ?>
+			<input
+				type="radio"
 				class="option_calendar"
 				id="option_calendar_manual"
-				name="<?php echo esc_attr( $_prefix.'option_calendar' ); ?>" 
+				name="<?php echo esc_attr( $_prefix.'option_calendar' ); ?>"
 				value="manual" <?php checked( $option_calendar, 'manual' ); ?>>
 			<span class="checkmark"></span>
 		</label>
 
 		<label for="option_calendar_auto" class="el_input_radio el_ml_10px" style="min-width:auto;">
-			<?php esc_html_e( 'Recurring', 'eventlist' ); ?>
-			<input 
-				type="radio" 
+			<?php esc_html_e( 'Récurrent', 'eventlist' ); ?>
+			<input
+				type="radio"
 				class="option_calendar"
 				id="option_calendar_auto"
-				name="<?php echo esc_attr( $_prefix.'option_calendar' ); ?>" 
+				name="<?php echo esc_attr( $_prefix.'option_calendar' ); ?>"
 				value="auto" <?php checked( $option_calendar, 'auto' ); ?> />
-				
+
 			<span class="checkmark"></span>
 		</label>
 	</div>
@@ -154,7 +154,7 @@ $ts_end 	= get_post_meta( $post_id, $_prefix.'ts_end', true) ? get_post_meta( $p
 			<?php endif; ?>
 		</div>
 		<button class="button add_calendar">
-			<?php esc_html_e( 'Add Calendar', 'eventlist' ); ?>
+			<?php esc_html_e( 'Ajouter un créneau', 'eventlist' ); ?>
 			<div class="submit-load-more sendmail">
 				<div class="load-more">
 					<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
@@ -199,13 +199,15 @@ $ts_end 	= get_post_meta( $post_id, $_prefix.'ts_end', true) ? get_post_meta( $p
 		</div>
 		<div class="event-form-when-wrap vendor_field">
 			<label>
-				<?php esc_html_e ( 'This event repeats', 'eventlist' ); ?> 
+				<?php esc_html_e ( 'Cet événement se répète :', 'eventlist' ); ?>
 			</label>
 			<select id="recurrence-frequency" name="<?php echo esc_attr( $_prefix.'recurrence_frequency' ); ?>">
-				<option value="daily" <?php selected( $recurrence_frequency, 'daily' ); ?> ><?php esc_html_e( 'Daily', 'eventlist' ); ?></option>
-				<option value="weekly" <?php selected( $recurrence_frequency, 'weekly' ); ?> ><?php esc_html_e( 'Weekly', 'eventlist' ); ?></option>
-				<option value="monthly" <?php selected( $recurrence_frequency, 'monthly' ); ?> ><?php esc_html_e( 'Monthly', 'eventlist' ); ?></option>
-				<option value="yearly" <?php selected( $recurrence_frequency, 'yearly' ); ?> ><?php esc_html_e( 'Yearly', 'eventlist' ); ?></option>
+				<option value="daily" <?php selected( $recurrence_frequency, 'daily' ); ?> ><?php esc_html_e( 'chaque jour', 'eventlist' ); ?></option>
+				<option value="weekly" <?php selected( $recurrence_frequency, 'weekly' ); ?> ><?php esc_html_e( 'chaque semaine', 'eventlist' ); ?></option>
+				<option value="monthly" <?php selected( $recurrence_frequency, 'monthly' ); ?> ><?php esc_html_e( 'chaque mois', 'eventlist' ); ?></option>
+				<?php if ( apply_filters( 'el_show_yearly_recurrence', false ) ): ?>
+				<option value="yearly" <?php selected( $recurrence_frequency, 'yearly' ); ?> ><?php esc_html_e( 'chaque année', 'eventlist' ); ?></option>
+				<?php endif; ?>
 			</select>
 			<?php esc_html_e ( 'every', 'eventlist' )?>
 			<input 
