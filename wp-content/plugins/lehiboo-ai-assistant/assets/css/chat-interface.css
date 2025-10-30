@@ -1242,6 +1242,64 @@
   color: var(--lehiboo-error);
 }
 
+/* Toast avec countdown */
+.lehiboo-transcription-toast.countdown {
+  padding: 20px;
+  background: var(--lehiboo-white);
+  color: var(--lehiboo-dark);
+  border: 2px solid var(--lehiboo-primary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  width: 90%;
+}
+
+.lehiboo-transcription-toast.countdown .toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.lehiboo-transcription-toast.countdown .toast-preview {
+  font-size: 15px;
+  color: var(--lehiboo-dark);
+  line-height: 1.5;
+  font-style: italic;
+  text-align: center;
+  padding: 8px;
+  background: var(--lehiboo-gray-100);
+  border-radius: 6px;
+}
+
+.lehiboo-transcription-toast.countdown .toast-countdown {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--lehiboo-primary);
+  text-align: center;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.lehiboo-transcription-toast.countdown .toast-cancel-btn {
+  background: var(--lehiboo-gray-200);
+  color: var(--lehiboo-gray-700);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-family);
+  width: auto;
+  height: auto;
+}
+
+.lehiboo-transcription-toast.countdown .toast-cancel-btn:hover {
+  background: var(--lehiboo-error);
+  color: white;
+  transform: scale(1.05);
+}
+
 /* Ajustement du layout pour inclure le bouton micro */
 .lehiboo-chat-input-container {
   display: flex;

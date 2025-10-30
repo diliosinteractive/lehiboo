@@ -1293,11 +1293,8 @@
           this.elements.textarea.value = transcription.text;
           this.handleTextareaInput({ target: this.elements.textarea });
 
-          // Show toast
-          this.showTranscriptionToast(`"${transcription.text.substring(0, 40)}..." envoyé`, 'success');
-
-          // Auto-send message
-          await this.sendMessage();
+          // Show countdown toast and auto-send after 3s if not cancelled
+          await this.showTranscriptionCountdown(transcription.text);
         } else {
           throw new Error(transcription.error || 'Transcription failed');
         }
@@ -1377,6 +1374,79 @@
       setTimeout(() => {
         toast.remove();
       }, 3000);
+    }
+
+    /**
+     * Show transcription countdown before auto-send
+     */
+    async showTranscriptionCountdown(transcribedText) {
+      return new Promise((resolve) => {
+        // Remove existing toast
+        const existing = document.querySelector('.lehiboo-transcription-toast');
+        if (existing) {
+          existing.remove();
+        }
+
+        let cancelled = false;
+        let countdown = 3;
+
+        // Create toast
+        const toast = document.createElement('div');
+        toast.className = 'lehiboo-transcription-toast countdown';
+
+        // Create content wrapper
+        const content = document.createElement('div');
+        content.className = 'toast-content';
+
+        // Preview text (truncated)
+        const preview = document.createElement('div');
+        preview.className = 'toast-preview';
+        const maxLength = 60;
+        preview.textContent = transcribedText.length > maxLength
+          ? '"' + transcribedText.substring(0, maxLength) + '..."'
+          : '"' + transcribedText + '"';
+
+        // Countdown display
+        const countdownDisplay = document.createElement('div');
+        countdownDisplay.className = 'toast-countdown';
+        countdownDisplay.textContent = `Envoi dans ${countdown}s`;
+
+        // Cancel button
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'toast-cancel-btn';
+        cancelBtn.innerHTML = 'Annuler';
+        cancelBtn.onclick = () => {
+          cancelled = true;
+          clearInterval(interval);
+          toast.remove();
+          this.showTranscriptionToast('Envoi annulé', 'info');
+          resolve(false); // Not sent
+        };
+
+        content.appendChild(preview);
+        content.appendChild(countdownDisplay);
+        content.appendChild(cancelBtn);
+        toast.appendChild(content);
+
+        document.body.appendChild(toast);
+
+        // Countdown interval
+        const interval = setInterval(() => {
+          countdown--;
+          if (countdown > 0) {
+            countdownDisplay.textContent = `Envoi dans ${countdown}s`;
+          } else {
+            clearInterval(interval);
+            if (!cancelled) {
+              toast.remove();
+              this.sendMessage().then(() => {
+                this.showTranscriptionToast('Message envoyé ✓', 'success');
+                resolve(true); // Sent
+              });
+            }
+          }
+        }, 1000);
+      });
     }
 
     /**

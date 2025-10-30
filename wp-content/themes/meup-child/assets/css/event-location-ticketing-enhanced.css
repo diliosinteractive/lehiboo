@@ -1,0 +1,375 @@
+/**
+ * Event Location & Ticketing Enhanced Styles
+ * Styles pour les améliorations de localisation et billetterie
+ */
+
+/* ========================================
+   SECTION LOCALISATION
+   ======================================== */
+
+/* Sections de type d'événement */
+.event_type_section .event_type {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.home_location_section,
+.physical_location_section {
+    margin-top: 20px;
+}
+
+.field_description {
+    color: #666;
+    font-size: 14px;
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+/* Sélection d'adresse */
+.address_source_choice {
+    margin: 20px 0;
+}
+
+.address_source_options {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+/* Informations complémentaires du lieu */
+.venue_additional_info {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid #eee;
+}
+
+.venue_additional_info .vendor_field {
+    margin-bottom: 25px;
+}
+
+.venue_additional_info .label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.venue_additional_info .label .optional {
+    color: #999;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.venue_additional_info textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.venue_additional_info select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+/* Upload d'images pour parking et accès */
+.parking_image_upload,
+.access_image_upload {
+    margin-top: 15px;
+}
+
+.image-wrap-parking,
+.image-wrap-access {
+    position: relative;
+    display: inline-block;
+    margin: 10px 0;
+}
+
+.image-wrap-parking .item img,
+.image-wrap-access .item img {
+    max-width: 200px;
+    height: auto;
+    border: 2px solid #eee;
+    border-radius: 4px;
+}
+
+.el_remove_parking_image,
+.el_remove_access_image {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: #ff4444;
+    color: #fff;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.el_remove_parking_image:hover,
+.el_remove_access_image:hover {
+    background-color: #cc0000;
+}
+
+/* Checkboxes pour PMR, Restaurant, Drinks */
+.pmr_checkbox,
+.restaurant_checkbox,
+.drinks_checkbox {
+    margin: 10px 0;
+}
+
+/* ========================================
+   SECTION BILLETTERIE
+   ======================================== */
+
+.edit_ticket_info {
+    margin-bottom: 30px;
+}
+
+.edit_ticket_info .heading_section {
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.edit_ticket_info .ticket_description {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Boutons de choix de billetterie */
+.ticket_link {
+    margin: 30px 0;
+}
+
+.el_btn_ticket_choice {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 100% !important;
+}
+
+.el_btn_ticket_choice:hover {
+    border-color: #FF5722;
+    background-color: #fff5f2;
+}
+
+.el_btn_ticket_choice.active {
+    border-color: #FF5722;
+    background-color: #fff5f2;
+}
+
+.el_btn_ticket_choice .choice_icon {
+    font-size: 24px;
+}
+
+.el_btn_ticket_choice .choice_label {
+    flex: 1;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.el_btn_ticket_choice .choice_badge {
+    color: #999;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.el_btn_ticket_choice input[type="radio"]:disabled ~ .choice_label {
+    color: #ccc;
+}
+
+.el_btn_ticket_choice input[type="radio"]:disabled {
+    cursor: not-allowed;
+}
+
+/* Configuration lien externe */
+.ticket_external_link {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.section_subtitle {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.field_hint {
+    color: #999;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+/* Liste des prix externes */
+.external_prices_list {
+    margin: 15px 0;
+}
+
+.external_price_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.external_price_item .price_name_input {
+    flex: 2;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.external_price_item .price_amount_input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: right;
+}
+
+.external_price_item .currency_symbol {
+    font-weight: bold;
+    color: #666;
+}
+
+.external_price_item .remove_external_price {
+    background-color: #ff4444;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.external_price_item .remove_external_price:hover {
+    background-color: #cc0000;
+}
+
+/* Indicateur de devise pour les billets internes */
+.price_input_wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.price_input_wrapper .price_ticket {
+    padding-right: 30px;
+}
+
+.price_input_wrapper .price_currency_indicator {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: bold;
+    color: #666;
+    pointer-events: none;
+}
+
+/* Messages de succès/erreur */
+.el-success-message {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    animation: slideDown 0.3s ease-out;
+}
+
+.el-error-message {
+    background-color: #f44336;
+    color: white;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .address_source_options {
+        flex-direction: column;
+    }
+
+    .external_price_item {
+        flex-wrap: wrap;
+    }
+
+    .external_price_item .price_name_input,
+    .external_price_item .price_amount_input {
+        flex: 1 1 100%;
+    }
+
+    .el_btn_ticket_choice {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .el_btn_ticket_choice .choice_icon {
+        font-size: 20px;
+    }
+}
+
+/* ========================================
+   DARK MODE SUPPORT (optionnel)
+   ======================================== */
+
+@media (prefers-color-scheme: dark) {
+    .ticket_external_link {
+        background-color: #2a2a2a;
+    }
+
+    .external_price_item {
+        background-color: #333;
+        border-color: #555;
+    }
+
+    .external_price_item .price_name_input,
+    .external_price_item .price_amount_input {
+        background-color: #444;
+        border-color: #666;
+        color: #fff;
+    }
+
+    .field_description,
+    .ticket_description {
+        color: #ccc;
+    }
+}
