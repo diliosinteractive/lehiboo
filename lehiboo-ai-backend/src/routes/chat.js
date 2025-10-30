@@ -29,9 +29,10 @@ router.post('/api-planner', validateApiKey, validateConversationData, handleChat
 /**
  * POST /transcribe - Transcription audio avec Whisper
  * POST /api-planner/transcribe - Alias pour compatibilité avec WordPress proxy
+ * Note: uploadAudio (multer) doit être AVANT validateApiKey pour parser multipart/form-data
  */
-router.post('/transcribe', validateApiKey, uploadAudio, handleTranscription);
-router.post('/api-planner/transcribe', validateApiKey, uploadAudio, handleTranscription);
+router.post('/transcribe', uploadAudio, validateApiKey, handleTranscription);
+router.post('/api-planner/transcribe', uploadAudio, validateApiKey, handleTranscription);
 
 /**
  * GET /health - Health check
