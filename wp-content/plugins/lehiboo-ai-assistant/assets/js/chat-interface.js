@@ -1293,11 +1293,11 @@
           this.elements.textarea.value = transcription.text;
           this.handleTextareaInput({ target: this.elements.textarea });
 
-          // Show toast with send button
-          this.showTranscriptionToastWithSend(transcription.text);
+          // Show toast
+          this.showTranscriptionToast(`"${transcription.text.substring(0, 40)}..." envoyé`, 'success');
 
-          // Auto-focus on textarea
-          this.elements.textarea.focus();
+          // Auto-send message
+          await this.sendMessage();
         } else {
           throw new Error(transcription.error || 'Transcription failed');
         }
