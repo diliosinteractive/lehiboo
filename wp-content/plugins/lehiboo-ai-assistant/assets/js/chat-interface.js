@@ -1293,7 +1293,8 @@
           this.elements.textarea.value = transcription.text;
           this.handleTextareaInput({ target: this.elements.textarea });
 
-          this.showTranscriptionToast('Transcription terminée ✓', 'success');
+          // Show toast with send button
+          this.showTranscriptionToastWithSend(transcription.text);
 
           // Auto-focus on textarea
           this.elements.textarea.focus();
@@ -1376,6 +1377,64 @@
       setTimeout(() => {
         toast.remove();
       }, 3000);
+    }
+
+    /**
+     * Show transcription toast with send button
+     */
+    showTranscriptionToastWithSend(transcribedText) {
+      // Remove existing toast
+      const existing = document.querySelector('.lehiboo-transcription-toast');
+      if (existing) {
+        existing.remove();
+      }
+
+      // Create toast
+      const toast = document.createElement('div');
+      toast.className = 'lehiboo-transcription-toast with-button';
+
+      // Create content wrapper
+      const content = document.createElement('div');
+      content.className = 'toast-content';
+
+      // Preview text (truncated)
+      const preview = document.createElement('span');
+      preview.className = 'toast-preview';
+      const maxLength = 50;
+      preview.textContent = transcribedText.length > maxLength
+        ? transcribedText.substring(0, maxLength) + '...'
+        : transcribedText;
+
+      // Send button
+      const sendBtn = document.createElement('button');
+      sendBtn.className = 'toast-send-btn';
+      sendBtn.innerHTML = '➤ Envoyer';
+      sendBtn.onclick = async () => {
+        toast.remove();
+        await this.sendMessage();
+      };
+
+      // Cancel button (X)
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'toast-cancel-btn';
+      cancelBtn.innerHTML = '×';
+      cancelBtn.onclick = () => {
+        toast.remove();
+      };
+
+      content.appendChild(preview);
+      content.appendChild(sendBtn);
+      content.appendChild(cancelBtn);
+      toast.appendChild(content);
+
+      document.body.appendChild(toast);
+
+      // Auto-remove after 10s (plus long pour laisser le temps de lire)
+      setTimeout(() => {
+        if (document.body.contains(toast)) {
+          toast.remove();
+        }
+      }, 10000);
     }
 
     /**

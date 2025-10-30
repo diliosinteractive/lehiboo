@@ -1174,6 +1174,74 @@
   }
 }
 
+/* Toast avec bouton "Envoyer" */
+.lehiboo-transcription-toast.with-button {
+  padding: 16px;
+  background: var(--lehiboo-white);
+  color: var(--lehiboo-dark);
+  border: 2px solid var(--lehiboo-primary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  width: 90%;
+}
+
+.lehiboo-transcription-toast .toast-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lehiboo-transcription-toast .toast-preview {
+  flex: 1;
+  text-align: left;
+  font-size: 14px;
+  color: var(--lehiboo-gray-700);
+  line-height: 1.4;
+}
+
+.lehiboo-transcription-toast .toast-send-btn {
+  background: var(--lehiboo-primary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-family: var(--font-family);
+}
+
+.lehiboo-transcription-toast .toast-send-btn:hover {
+  background: var(--lehiboo-primary-dark);
+  transform: scale(1.05);
+}
+
+.lehiboo-transcription-toast .toast-send-btn:active {
+  transform: scale(0.98);
+}
+
+.lehiboo-transcription-toast .toast-cancel-btn {
+  background: transparent;
+  border: none;
+  color: var(--lehiboo-gray-500);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.lehiboo-transcription-toast .toast-cancel-btn:hover {
+  color: var(--lehiboo-error);
+}
+
 /* Ajustement du layout pour inclure le bouton micro */
 .lehiboo-chat-input-container {
   display: flex;

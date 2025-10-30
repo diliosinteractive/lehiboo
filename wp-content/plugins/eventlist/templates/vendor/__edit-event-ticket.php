@@ -49,16 +49,38 @@ $seating_map = get_post_meta( $post_id, $_prefix.'seating_map', true );
 
 ?>
 <div class="edit_ticket_info">
-	<p><?php esc_html_e( 'if you don\'t want to sell ticket, you don\'t need to make ticket. Also you have to make Calendar tab to sell ticket.', 'eventlist' ); ?></p>
+	<h4 class="heading_section"><?php esc_html_e( 'Billetterie', 'eventlist' ); ?></h4>
+	<p class="ticket_description">
+		<?php esc_html_e( 'Gérez la billetterie (prochainement) ou les inscriptions directement sur LeHiboo, ou redirigez vos utilisateurs vers une plateforme externe si vous utilisez un outil tiers pour la billetterie.', 'eventlist' ); ?>
+		<br><br>
+		<?php esc_html_e( 'Si vous n\'avez pas besoin de billetterie ni de liste de participation, passez simplement cette étape.', 'eventlist' ); ?>
+	</p>
 </div>
+
 <?php if ( apply_filters( 'el_show_ticket_link_opt', true ) ): ?>
 	<div class="ticket_link">
-		<label><strong><?php esc_html_e( 'Buy ticket at', 'eventlist' ); ?>:</strong></label>
+		<label><strong><?php esc_html_e( 'Choisissez votre mode de billetterie :', 'eventlist' ); ?></strong></label>
+
+		<?php if ( apply_filters( 'el_show_ticket_paid_ticketing', false ) ): ?>
+			<label for="ticket_paid_ticketing" class="el_input_radio el_btn_ticket_choice" style="min-width: auto;">
+				<span class="choice_icon">🎫</span>
+				<span class="choice_label"><?php esc_html_e( 'Créer une billetterie', 'eventlist' ); ?></span>
+				<span class="choice_badge"><?php esc_html_e( '(prochainement)', 'eventlist' ); ?></span>
+				<input
+					type="radio"
+					value="ticket_paid_ticketing"
+					name="<?php echo esc_attr( $_prefix.'ticket_link' ); ?>"
+					id="ticket_paid_ticketing"
+					disabled
+				/>
+				<span class="checkmark"></span>
+			</label>
+		<?php endif; ?>
 
 		<?php if ( apply_filters( 'el_show_ticket_internal_link_field', true ) ): ?>
-	
-			<label for="ticket_internal_link" class="el_input_radio" style="min-width: auto;">
-				<?php esc_html_e( 'Internal link', 'eventlist' ); ?>
+			<label for="ticket_internal_link" class="el_input_radio el_btn_ticket_choice" style="min-width: auto;">
+				<span class="choice_icon">📝</span>
+				<span class="choice_label"><?php esc_html_e( 'Créer une liste d\'inscription', 'eventlist' ); ?></span>
 				<input
 					type="radio"
 					value="ticket_internal_link"
@@ -68,11 +90,12 @@ $seating_map = get_post_meta( $post_id, $_prefix.'seating_map', true );
 				/>
 				<span class="checkmark"></span>
 			</label>
-				
 		<?php endif; ?>
+
 		<?php if ( apply_filters( 'el_show_ticket_external_link_field', true ) ): ?>
-			<label for="ticket_external_link" class="el_input_radio" style="min-width: auto;">
-				<?php esc_html_e( 'External Link', 'eventlist' ); ?>
+			<label for="ticket_external_link" class="el_input_radio el_btn_ticket_choice" style="min-width: auto;">
+				<span class="choice_icon">🔗</span>
+				<span class="choice_label"><?php esc_html_e( 'Utiliser un lien externe', 'eventlist' ); ?></span>
 				<input
 					type="radio"
 					value="ticket_external_link"
@@ -87,22 +110,66 @@ $seating_map = get_post_meta( $post_id, $_prefix.'seating_map', true );
 <?php endif; ?>
 <?php if ( apply_filters( 'el_show_ticket_external_link_field', true ) ): ?>
 	<div class="ticket_external_link">
-		<label><?php esc_html_e( 'Insert external link', 'eventlist' ); ?></label>
-		<input
-			type="text"
-			name="<?php echo esc_attr( $_prefix.'ticket_external_link' ); ?>"
-			value="<?php echo esc_url( $ticket_external_link ); ?>"
-			placeholder="<?php esc_attr_e( 'https://', 'eventlist' ); ?>"
-		/>
-	</div>
-	<div class="ticket_external_link_price">
-		<label><?php esc_html_e( 'Price', 'eventlist' ); ?></label>
-		<input
-			type="text"
-			name="<?php echo esc_attr( $_prefix.'ticket_external_link_price' ); ?>"
-			value="<?php echo esc_attr( $ticket_external_link_price ); ?>"
-			placeholder="<?php esc_attr_e( 'From $30', 'eventlist' ); ?>"
-		/>
+		<h5 class="section_subtitle"><?php esc_html_e( 'Configuration du lien externe', 'eventlist' ); ?></h5>
+
+		<div class="vendor_field">
+			<label class="label">
+				<strong><?php esc_html_e( 'Lien URL', 'eventlist' ); ?></strong>
+			</label>
+			<input
+				type="url"
+				name="<?php echo esc_attr( $_prefix.'ticket_external_link' ); ?>"
+				value="<?php echo esc_url( $ticket_external_link ); ?>"
+				placeholder="<?php esc_attr_e( 'https://', 'eventlist' ); ?>"
+			/>
+			<p class="field_hint"><?php esc_html_e( 'Insérez le lien vers votre billetterie externe', 'eventlist' ); ?></p>
+		</div>
+
+		<div class="vendor_field">
+			<label class="label">
+				<strong><?php esc_html_e( 'Tarifs', 'eventlist' ); ?></strong>
+			</label>
+			<p class="field_description"><?php esc_html_e( 'Ajoutez un ou plusieurs tarifs pour informer vos visiteurs', 'eventlist' ); ?></p>
+
+			<?php
+			$external_prices = get_post_meta( $post_id, $_prefix.'ticket_external_prices', true);
+			if ( !is_array($external_prices) ) {
+				$external_prices = array();
+			}
+			?>
+
+			<div class="external_prices_list" data-prefix="<?php echo esc_attr($_prefix); ?>">
+				<?php if ( !empty($external_prices) ): ?>
+					<?php foreach ($external_prices as $key => $price_item): ?>
+						<div class="external_price_item">
+							<input
+								type="text"
+								name="<?php echo esc_attr( $_prefix.'ticket_external_prices['.$key.'][name]' ); ?>"
+								value="<?php echo esc_attr($price_item['name']); ?>"
+								placeholder="<?php esc_attr_e( 'Nom du tarif (ex: Tarif Adulte)', 'eventlist' ); ?>"
+								class="price_name_input"
+							/>
+							<input
+								type="text"
+								name="<?php echo esc_attr( $_prefix.'ticket_external_prices['.$key.'][price]' ); ?>"
+								value="<?php echo esc_attr($price_item['price']); ?>"
+								placeholder="<?php esc_attr_e( 'Prix (en euros)', 'eventlist' ); ?>"
+								class="price_amount_input"
+							/>
+							<span class="currency_symbol">€</span>
+							<button type="button" class="button remove_external_price">
+								<span class="dashicons dashicons-no"></span>
+							</button>
+						</div>
+					<?php endforeach; ?>
+				<?php endif; ?>
+			</div>
+
+			<button type="button" class="button button-secondary add_external_price">
+				<span class="dashicons dashicons-plus"></span>
+				<?php esc_html_e( 'Ajouter un tarif', 'eventlist' ); ?>
+			</button>
+		</div>
 	</div>
 <?php endif; ?>
 
@@ -261,13 +328,13 @@ $seating_map = get_post_meta( $post_id, $_prefix.'seating_map', true );
 												<div class="top">
 													<span>
 														<strong>
-															<?php esc_html_e( 'Price', 'eventlist' ); ?>
+															<?php esc_html_e( 'Prix', 'eventlist' ); ?>
 														</strong>
 													</span>
 													<div class="radio_type_price" data-type-price="<?php echo esc_attr( $value['type_price'] ); ?>">
 
 														<label for="type_price_paid<?php echo $key; ?>" class="el_input_radio">
-															<?php esc_html_e( 'Paid', 'eventlist' ); ?>
+															<?php esc_html_e( 'Payant', 'eventlist' ); ?>
 															<input
 																type="radio"
 																name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][type_price]' ); ?>"
@@ -281,11 +348,11 @@ $seating_map = get_post_meta( $post_id, $_prefix.'seating_map', true );
 
 
 														<label for="type_price_free<?php echo $key; ?>" class="el_input_radio el_ml_10px">
-															<?php esc_html_e( 'Free', 'eventlist' ); ?>
+															<?php esc_html_e( 'Gratuit', 'eventlist' ); ?>
 															<input
 																type="radio"
 																name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][type_price]' ); ?>"
-						
+
 																class="type_price"
 																id="type_price_free<?php echo $key; ?>"
 																value="<?php echo esc_attr('free'); ?>"
@@ -301,17 +368,20 @@ $seating_map = get_post_meta( $post_id, $_prefix.'seating_map', true );
 													$price_ticket = !empty($value['price_ticket']) ? $value['price_ticket'] : 0;
 													$price_ticket = str_replace(".", $decimal_separator, $price_ticket);
 													?>
-													<input
-														type="text" 
-														name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][price_ticket]' ); ?>"
-														class="price_ticket"
-														value="<?php echo esc_attr( $price_ticket ); ?>"
-														<?php if ( $value['type_price'] == 'free' ) echo esc_attr('disabled'); ?>
-														placeholder="<?php esc_attr_e( '0', 'eventlist' ); ?>"
-														autocomplete="off" autocorrect="off" autocapitalize="none"
-													/>
+													<div class="price_input_wrapper">
+														<input
+															type="text"
+															name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][price_ticket]' ); ?>"
+															class="price_ticket"
+															value="<?php echo esc_attr( $price_ticket ); ?>"
+															<?php if ( $value['type_price'] == 'free' ) echo esc_attr('disabled'); ?>
+															placeholder="<?php esc_attr_e( '0', 'eventlist' ); ?>"
+															autocomplete="off" autocorrect="off" autocapitalize="none"
+														/>
+														<span class="price_currency_indicator">€</span>
+													</div>
 													<span class="ova_price_ticket_err">
-														<?php printf( esc_html__( 'Please enter a value with one monetary decimal point ( %s ) without thousand separators and currency symbols.', 'eventlist' ), $decimal_separator ); ?>
+														<?php printf( esc_html__( 'Veuillez entrer une valeur numérique avec un séparateur décimal ( %s ) sans séparateur de milliers ni symbole monétaire.', 'eventlist' ), $decimal_separator ); ?>
 													</span>
 												</div>
 											</div>

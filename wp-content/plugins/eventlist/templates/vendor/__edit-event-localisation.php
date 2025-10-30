@@ -44,14 +44,14 @@ if ( $location_selected ) {
 <!-- Event Type -->
 <div class="event_basic_block event_type_section">
 	<h4 class="heading_section">
-		<?php esc_html_e( 'Type d\'événement', 'eventlist' ); ?>
+		<?php esc_html_e( 'L\'événement se déroule', 'eventlist' ); ?>
 	</h4>
 	<div class="event_type">
 
 		<?php if( apply_filters( 'el_show_event_type_physical', true ) ): ?>
 			<label class="el_input_radio" for="classsic_event_type">
-				<?php esc_html_e( 'Lieu physique', 'eventlist' ); ?>
-				<input type="radio" value="classic" name="<?php echo $_prefix.'event_type'; ?>" <?php echo $event_type == 'classic' ? 'checked' : ''; ?> class="classsic_event_type" id="classsic_event_type" />
+				<?php esc_html_e( 'Dans un lieu physique', 'eventlist' ); ?>
+				<input type="radio" value="classic" name="<?php echo $_prefix.'event_type'; ?>" <?php echo $event_type == 'classic' ? 'checked' : ''; ?> class="classsic_event_type event_type_radio" id="classsic_event_type" />
 				<span class="checkmark"></span>
 			</label>
 		<?php endif; ?>
@@ -59,7 +59,15 @@ if ( $location_selected ) {
 		<?php if( apply_filters( 'el_show_event_type_online', true ) ): ?>
 			<label class="el_input_radio el_ml_10px" for="online_event_type">
 				<?php esc_html_e( 'En ligne', 'eventlist' ); ?>
-				<input type="radio" value="online" name="<?php echo $_prefix.'event_type'; ?>" <?php echo $event_type == 'online' ? 'checked' : ''; ?> class="online_event_type" id="online_event_type" />
+				<input type="radio" value="online" name="<?php echo $_prefix.'event_type'; ?>" <?php echo $event_type == 'online' ? 'checked' : ''; ?> class="online_event_type event_type_radio" id="online_event_type" />
+				<span class="checkmark"></span>
+			</label>
+		<?php endif; ?>
+
+		<?php if( apply_filters( 'el_show_event_type_home', true ) ): ?>
+			<label class="el_input_radio el_ml_10px" for="home_event_type">
+				<?php esc_html_e( 'À la maison', 'eventlist' ); ?>
+				<input type="radio" value="home" name="<?php echo $_prefix.'event_type'; ?>" <?php echo $event_type == 'home' ? 'checked' : ''; ?> class="home_event_type event_type_radio" id="home_event_type" />
 				<span class="checkmark"></span>
 			</label>
 			<br>
@@ -69,8 +77,58 @@ if ( $location_selected ) {
 
 </div>
 
+<!-- Section pour "À la maison" -->
+<div class="home_location_section" style="<?php echo $event_type == 'home' ? 'display: block;' : 'display: none;'; ?>">
+	<div class="event_basic_block">
+		<h4 class="heading_section">
+			<?php esc_html_e( 'Sélection des villes', 'eventlist' ); ?>
+		</h4>
+		<p class="field_description">
+			<?php esc_html_e( 'L\'activité peut se faire à la maison, sélectionnez dans quelles villes l\'événement doit être publié', 'eventlist' ); ?>
+		</p>
+
+		<div class="home_cities_selection vendor_field">
+			<label class="el_input_checkbox" for="show_all_cities">
+				<?php esc_html_e( 'Afficher dans toutes les villes', 'eventlist' ); ?>
+				<input type="checkbox" id="show_all_cities" name="<?php echo $_prefix.'show_all_cities'; ?>" value="1" <?php echo get_post_meta( $post_id, $_prefix.'show_all_cities', true) == '1' ? 'checked' : ''; ?> />
+				<span class="checkmark"></span>
+			</label>
+
+			<div class="city_selector" style="<?php echo get_post_meta( $post_id, $_prefix.'show_all_cities', true) == '1' ? 'display: none;' : 'display: block;'; ?>">
+				<div class="get_city vendor_field">
+					<?php el_get_city( $el_city ); ?>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <!-- Location -->
-<div class="location event_basic_block">
+<div class="location event_basic_block physical_location_section" style="<?php echo $event_type == 'classic' ? 'display: block;' : 'display: none;'; ?>">
+
+	<h4 class="heading_section">
+		<?php esc_html_e( 'Sélectionnez le lieu où se déroule l\'activité', 'eventlist' ); ?>
+	</h4>
+
+	<!-- Choix de la source d'adresse -->
+	<div class="address_source_choice vendor_field">
+		<label class="label">
+			<strong><?php esc_html_e( 'Veuillez choisir la source de l\'adresse pour cette localisation :', 'eventlist' ); ?></strong>
+		</label>
+		<div class="address_source_options">
+			<label class="el_input_radio" for="address_source_entity">
+				<?php esc_html_e( 'Mon adresse d\'entité', 'eventlist' ); ?>
+				<input type="radio" value="entity" name="<?php echo $_prefix.'address_source'; ?>" id="address_source_entity" class="address_source_radio" <?php echo get_post_meta( $post_id, $_prefix.'address_source', true) == 'entity' || get_post_meta( $post_id, $_prefix.'address_source', true) == '' ? 'checked' : ''; ?> />
+				<span class="checkmark"></span>
+			</label>
+
+			<label class="el_input_radio el_ml_10px" for="address_source_new">
+				<?php esc_html_e( 'Nouvelle adresse', 'eventlist' ); ?>
+				<input type="radio" value="new" name="<?php echo $_prefix.'address_source'; ?>" id="address_source_new" class="address_source_radio" <?php echo get_post_meta( $post_id, $_prefix.'address_source', true) == 'new' ? 'checked' : ''; ?> />
+				<span class="checkmark"></span>
+			</label>
+		</div>
+	</div>
 
 	<div class="country_city ">
 		<div class="get_country vendor_field">
@@ -165,6 +223,138 @@ if ( $location_selected ) {
 
 			<input type="text" id="address" class="address <?php echo esc_attr($edit_full_address != 'checked' ? 'readonly' : ''); ?>" name="<?php echo esc_attr( $_prefix.'address' ); ?>" value="<?php echo esc_attr( $address ); ?>" autocomplete="off" autocorrect="off" autocapitalize="none" <?php echo esc_attr($edit_full_address != 'checked' ? 'readonly' : ''); ?> >
 		</span>
+	</div>
+
+	<!-- Informations complémentaires du lieu -->
+	<div class="venue_additional_info">
+
+		<!-- Type d'événement (Intérieur/Extérieur) -->
+		<div class="venue_event_type vendor_field">
+			<label class="label">
+				<strong><?php esc_html_e( 'Type d\'événements organisés', 'eventlist' ); ?></strong>
+				<span class="optional"><?php esc_html_e( '(facultatif)', 'eventlist' ); ?></span>
+			</label>
+			<select name="<?php echo $_prefix.'venue_event_type'; ?>" id="venue_event_type">
+				<option value=""><?php esc_html_e( 'Sélectionnez...', 'eventlist' ); ?></option>
+				<option value="indoor" <?php selected( get_post_meta( $post_id, $_prefix.'venue_event_type', true), 'indoor' ); ?>><?php esc_html_e( 'Intérieur', 'eventlist' ); ?></option>
+				<option value="outdoor" <?php selected( get_post_meta( $post_id, $_prefix.'venue_event_type', true), 'outdoor' ); ?>><?php esc_html_e( 'Extérieur', 'eventlist' ); ?></option>
+				<option value="both" <?php selected( get_post_meta( $post_id, $_prefix.'venue_event_type', true), 'both' ); ?>><?php esc_html_e( 'Intérieur & Extérieur', 'eventlist' ); ?></option>
+			</select>
+		</div>
+
+		<!-- Stationnement -->
+		<div class="venue_parking vendor_field">
+			<label class="label">
+				<strong><?php esc_html_e( 'Stationnement', 'eventlist' ); ?></strong>
+				<span class="optional"><?php esc_html_e( '(facultatif)', 'eventlist' ); ?></span>
+			</label>
+			<textarea name="<?php echo $_prefix.'venue_parking'; ?>" id="venue_parking" rows="3" placeholder="<?php esc_attr_e( 'Informations pour stationner...', 'eventlist' ); ?>"><?php echo esc_textarea( get_post_meta( $post_id, $_prefix.'venue_parking', true) ); ?></textarea>
+
+			<div class="parking_image_upload">
+				<label><?php esc_html_e( 'Plan de stationnement', 'eventlist' ); ?></label>
+				<?php
+				$parking_image = get_post_meta( $post_id, $_prefix.'venue_parking_image', true);
+				?>
+				<div class="image-wrap-parking">
+					<?php if ( $parking_image ): ?>
+						<div class="item">
+							<img src="<?php echo esc_url( wp_get_attachment_url( $parking_image ) ); ?>" class="image" />
+							<input type="hidden" name="<?php echo $_prefix.'venue_parking_image'; ?>" value="<?php echo esc_attr( $parking_image ); ?>"/>
+						</div>
+						<a href="#" class="el_remove_parking_image">
+							<span class="dashicons dashicons-no"></span>
+						</a>
+					<?php endif; ?>
+				</div>
+				<a href="#" class="button button-secondary el_add_parking_image"><?php esc_html_e( 'Choisir une image', 'eventlist' ); ?></a>
+			</div>
+		</div>
+
+		<!-- Accès & Transports -->
+		<div class="venue_access vendor_field">
+			<label class="label">
+				<strong><?php esc_html_e( 'Accès & Transports', 'eventlist' ); ?></strong>
+				<span class="optional"><?php esc_html_e( '(facultatif)', 'eventlist' ); ?></span>
+			</label>
+			<textarea name="<?php echo $_prefix.'venue_access'; ?>" id="venue_access" rows="3" placeholder="<?php esc_attr_e( 'Informations sur l\'accès et les transports...', 'eventlist' ); ?>"><?php echo esc_textarea( get_post_meta( $post_id, $_prefix.'venue_access', true) ); ?></textarea>
+
+			<div class="access_image_upload">
+				<label><?php esc_html_e( 'Plan d\'accès', 'eventlist' ); ?></label>
+				<?php
+				$access_image = get_post_meta( $post_id, $_prefix.'venue_access_image', true);
+				?>
+				<div class="image-wrap-access">
+					<?php if ( $access_image ): ?>
+						<div class="item">
+							<img src="<?php echo esc_url( wp_get_attachment_url( $access_image ) ); ?>" class="image" />
+							<input type="hidden" name="<?php echo $_prefix.'venue_access_image'; ?>" value="<?php echo esc_attr( $access_image ); ?>"/>
+						</div>
+						<a href="#" class="el_remove_access_image">
+							<span class="dashicons dashicons-no"></span>
+						</a>
+					<?php endif; ?>
+				</div>
+				<a href="#" class="button button-secondary el_add_access_image"><?php esc_html_e( 'Choisir une image', 'eventlist' ); ?></a>
+			</div>
+		</div>
+
+		<!-- Accessibilité PMR -->
+		<div class="venue_pmr vendor_field">
+			<label class="label">
+				<strong><?php esc_html_e( 'Accessibilité PMR', 'eventlist' ); ?></strong>
+				<span class="optional"><?php esc_html_e( '(facultatif)', 'eventlist' ); ?></span>
+			</label>
+			<div class="pmr_checkbox">
+				<label class="el_input_checkbox" for="venue_pmr_accessible">
+					<?php esc_html_e( 'Oui', 'eventlist' ); ?>
+					<input type="checkbox" id="venue_pmr_accessible" name="<?php echo $_prefix.'venue_pmr_accessible'; ?>" value="1" <?php checked( get_post_meta( $post_id, $_prefix.'venue_pmr_accessible', true), '1' ); ?> />
+					<span class="checkmark"></span>
+				</label>
+			</div>
+			<textarea name="<?php echo $_prefix.'venue_pmr_info'; ?>" id="venue_pmr_info" rows="2" placeholder="<?php esc_attr_e( 'Informations sur l\'accessibilité...', 'eventlist' ); ?>"><?php echo esc_textarea( get_post_meta( $post_id, $_prefix.'venue_pmr_info', true) ); ?></textarea>
+		</div>
+
+		<!-- Restauration sur place -->
+		<div class="venue_restaurant vendor_field">
+			<label class="label">
+				<strong><?php esc_html_e( 'Restauration sur place', 'eventlist' ); ?></strong>
+				<span class="optional"><?php esc_html_e( '(facultatif)', 'eventlist' ); ?></span>
+			</label>
+			<div class="restaurant_checkbox">
+				<label class="el_input_checkbox" for="venue_restaurant_available">
+					<?php esc_html_e( 'Oui', 'eventlist' ); ?>
+					<input type="checkbox" id="venue_restaurant_available" name="<?php echo $_prefix.'venue_restaurant_available'; ?>" value="1" <?php checked( get_post_meta( $post_id, $_prefix.'venue_restaurant_available', true), '1' ); ?> />
+					<span class="checkmark"></span>
+				</label>
+			</div>
+			<textarea name="<?php echo $_prefix.'venue_restaurant_info'; ?>" id="venue_restaurant_info" rows="2" placeholder="<?php esc_attr_e( 'Informations sur la restauration...', 'eventlist' ); ?>"><?php echo esc_textarea( get_post_meta( $post_id, $_prefix.'venue_restaurant_info', true) ); ?></textarea>
+		</div>
+
+		<!-- Boisson sur place -->
+		<div class="venue_drinks vendor_field">
+			<label class="label">
+				<strong><?php esc_html_e( 'Boisson sur place', 'eventlist' ); ?></strong>
+				<span class="optional"><?php esc_html_e( '(facultatif)', 'eventlist' ); ?></span>
+			</label>
+			<div class="drinks_checkbox">
+				<label class="el_input_checkbox" for="venue_drinks_available">
+					<?php esc_html_e( 'Oui', 'eventlist' ); ?>
+					<input type="checkbox" id="venue_drinks_available" name="<?php echo $_prefix.'venue_drinks_available'; ?>" value="1" <?php checked( get_post_meta( $post_id, $_prefix.'venue_drinks_available', true), '1' ); ?> />
+					<span class="checkmark"></span>
+				</label>
+			</div>
+			<?php
+			$venue_drinks_info = get_post_meta( $post_id, $_prefix.'venue_drinks_info', true);
+			wp_editor( $venue_drinks_info, 'venue_drinks_info', array(
+				'textarea_name' => $_prefix.'venue_drinks_info',
+				'textarea_rows' => 5,
+				'media_buttons' => false,
+				'teeny' => true,
+				'quicktags' => true
+			) );
+			?>
+		</div>
+
 	</div>
 
 </div>
