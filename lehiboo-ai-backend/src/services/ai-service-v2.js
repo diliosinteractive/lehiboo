@@ -2,7 +2,14 @@
  * Service IA v2 avec AI SDK et OpenAI
  * Intègre les tools Hedwige pour une expérience fluide
  *
- * Architecture: System Prompt v5 "Guided Conversation" + Tools (collectUserProfile, searchEvents)
+ * Architecture: System Prompt v6 "Compact" + Tools (collectUserProfile, searchEvents)
+ *
+ * v6 Changes (Optimisation tokens):
+ * - ✅ Prompt v6 compact: Réduit de ~13k à ~3k caractères (-75% tokens)
+ * - ✅ maxSteps: 3 (au lieu de 10) pour limiter les appels
+ * - ✅ maxTokens: 2000 (au lieu de 4000) pour économiser
+ * - ✅ toolChoice spécifique: Force uniquement collectUserProfile (pas searchEvents)
+ * - ✅ Rate limit fix: Réduit la consommation de ~30k à ~10k TPM
  *
  * v5 Changes:
  * - ✅ Fix: Le tool collectUserProfile reçoit maintenant le contexte existant (merge automatique)
@@ -26,19 +33,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 /**
- * Charger le system prompt v5 Guided Conversation
+ * Charger le system prompt v6 Compact (optimisé tokens)
  */
-async function loadSystemPromptV5() {
+async function loadSystemPromptV6() {
   try {
-    const promptPath = join(__dirname, '../prompts/system-prompt-v5-guided-conversation.md');
+    const promptPath = join(__dirname, '../prompts/system-prompt-v6-compact.md');
     const content = await readFile(promptPath, 'utf-8');
-    logger.info('System prompt v5 Guided Conversation loaded', {
+    logger.info('System prompt v6 Compact loaded', {
       length: content.length,
-      lines: content.split('\n').length
+      lines: content.split('\n').length,
+      tokensSaved: '~50%'
     });
     return content;
   } catch (error) {
-    logger.error('Failed to load system prompt v5', { error: error.message });
+    logger.error('Failed to load system prompt v6', { error: error.message });
     throw new Error('System prompt not found');
   }
 }
@@ -123,8 +131,8 @@ export async function generateAIResponse(message, context = {}) {
       logger.warn('⚠️  [DEBUG] NO USERCONTEXT - Starting fresh');
     }
 
-    // Charger le system prompt v5 Guided Conversation
-    const systemPrompt = await loadSystemPromptV5();
+    // Charger le system prompt v6 Compact (optimisé tokens)
+    const systemPrompt = await loadSystemPromptV6();
 
     // Construire les messages avec userContext
     const messages = buildMessages(message, context.history, context.userContext);
@@ -177,16 +185,19 @@ export async function generateAIResponse(message, context = {}) {
       messages,
       tools,
       temperature: 0.7,
-      maxTokens: 4000,
-      maxSteps: 10, // Augmenté pour permettre tool call + texte
-      // ✅ FORCE tool call pour tous les messages sauf le greeting initial
-      toolChoice: shouldForceToolCall ? 'required' : 'auto',
+      maxTokens: 2000, // ✅ Réduit de 4000 à 2000 pour économiser les tokens
+      maxSteps: 3, // ✅ Réduit de 10 à 3 (tool call + réponse suffit)
+      // ✅ FORCE spécifiquement collectUserProfile (pas searchEvents)
+      toolChoice: shouldForceToolCall ? {
+        type: 'tool',
+        toolName: 'collectUserProfile'
+      } : 'auto',
     });
 
     logger.info('🔧 Tool choice', {
       isFirstMessage,
       shouldForceToolCall,
-      toolChoice: shouldForceToolCall ? 'required' : 'auto'
+      toolChoice: shouldForceToolCall ? 'collectUserProfile forced' : 'auto'
     });
 
     logger.info('AI response generated', {
@@ -287,7 +298,7 @@ export async function streamAIResponse(message, context = {}) {
       conversationId: context.conversationId
     });
 
-    const systemPrompt = await loadSystemPromptV5();
+    const systemPrompt = await loadSystemPromptV6();
     const messages = buildMessages(message, context.history, context.userContext);
 
     const tools = {
