@@ -173,10 +173,10 @@ export async function generateAIResponse(message, context = {}) {
       model: config.openai.defaultModel
     });
 
-    // Déterminer si on force l'appel du tool collectUserProfile
+    // Déterminer si on force l'appel d'un tool
     // On le force SAUF pour le premier message (greeting initial)
     const isFirstMessage = !context.history || context.history.length === 0;
-    const shouldForceToolCall = !isFirstMessage;
+    const shouldRequireToolCall = !isFirstMessage;
 
     // Appel IA avec tools
     const result = await generateText({
@@ -187,17 +187,16 @@ export async function generateAIResponse(message, context = {}) {
       temperature: 0.7,
       maxTokens: 2000, // ✅ Réduit de 4000 à 2000 pour économiser les tokens
       maxSteps: 3, // ✅ Réduit de 10 à 3 (tool call + réponse suffit)
-      // ✅ FORCE spécifiquement collectUserProfile (pas searchEvents)
-      toolChoice: shouldForceToolCall ? {
-        type: 'tool',
-        toolName: 'collectUserProfile'
-      } : 'auto',
+      // ✅ REQUIRE un tool call (l'IA choisira collectUserProfile selon le prompt)
+      // IMPORTANT: 'required' force un tool MAIS génère aussi du texte
+      // Forcer un tool spécifique avec {type:'tool', toolName:'...'} ne génère PAS de texte
+      toolChoice: shouldRequireToolCall ? 'required' : 'auto',
     });
 
     logger.info('🔧 Tool choice', {
       isFirstMessage,
-      shouldForceToolCall,
-      toolChoice: shouldForceToolCall ? 'collectUserProfile forced' : 'auto'
+      shouldRequireToolCall,
+      toolChoice: shouldRequireToolCall ? 'required (must call a tool)' : 'auto'
     });
 
     // Calculer les metrics de cache
