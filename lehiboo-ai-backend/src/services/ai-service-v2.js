@@ -174,8 +174,10 @@ export async function generateAIResponse(message, context = {}) {
     });
 
     // Appel IA avec tools
-    // On laisse l'IA décider avec 'auto' car forcer les tools empêche la génération de texte
-    // Le prompt v6 guide l'IA pour appeler collectUserProfile à chaque message
+    // Forcer un tool call SAUF pour le premier message
+    const isFirstMessage = !context.history || context.history.length === 0;
+    const shouldRequireTool = !isFirstMessage;
+
     const result = await generateText({
       model: openai(config.openai.defaultModel),
       system: systemPrompt,
@@ -184,12 +186,14 @@ export async function generateAIResponse(message, context = {}) {
       temperature: 0.7,
       maxTokens: 2000, // ✅ Réduit de 4000 à 2000 pour économiser les tokens
       maxSteps: 3, // ✅ Réduit de 10 à 3 (tool call + réponse suffit)
-      toolChoice: 'auto', // ✅ L'IA décide, guidée par le prompt
+      // ✅ FORCE un tool après le 1er message (sinon l'IA ne collecte rien)
+      toolChoice: shouldRequireTool ? 'required' : 'auto',
     });
 
     logger.info('🔧 Tool choice', {
-      toolChoice: 'auto',
-      note: 'AI decides based on prompt guidance'
+      isFirstMessage,
+      toolChoice: shouldRequireTool ? 'required' : 'auto',
+      note: shouldRequireTool ? 'Tool required to collect data' : 'First message, AI decides'
     });
 
     // Calculer les metrics de cache
