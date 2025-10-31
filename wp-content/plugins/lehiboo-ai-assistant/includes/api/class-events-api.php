@@ -136,31 +136,46 @@ class Lehiboo_Events_API {
     public function check_api_key($request) {
         $auth_header = $request->get_header('authorization');
 
+        // DEBUG: Log tous les headers reçus
+        error_log('[Lehiboo Events API] Authorization header: ' . var_export($auth_header, true));
+        error_log('[Lehiboo Events API] All headers: ' . json_encode($request->get_headers()));
+
         if (empty($auth_header)) {
+            error_log('[Lehiboo Events API] ERROR: Authorization header missing');
             return new WP_Error('no_auth', 'Authorization header missing', array('status' => 401));
         }
 
         // Format attendu: "Bearer sk-xxxxx"
         $parts = explode(' ', $auth_header);
         if (count($parts) !== 2 || $parts[0] !== 'Bearer') {
+            error_log('[Lehiboo Events API] ERROR: Invalid authorization format. Parts: ' . json_encode($parts));
             return new WP_Error('invalid_auth', 'Invalid authorization format', array('status' => 401));
         }
 
         $provided_key = $parts[1];
         $stored_key = get_option('lehiboo_ai_api_key');
 
+        // DEBUG: Compare les clés (masquer pour sécurité en prod)
+        error_log('[Lehiboo Events API] Provided key (first 20 chars): ' . substr($provided_key, 0, 20) . '...');
+        error_log('[Lehiboo Events API] Stored key (first 20 chars): ' . substr($stored_key, 0, 20) . '...');
+        error_log('[Lehiboo Events API] Keys match: ' . ($provided_key === $stored_key ? 'YES' : 'NO'));
+
         if (empty($stored_key)) {
             // Pas de clé configurée = accès autorisé en dev
             if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('[Lehiboo Events API] No stored key but WP_DEBUG=true, allowing access');
                 return true;
             }
+            error_log('[Lehiboo Events API] ERROR: No key configured');
             return new WP_Error('no_key_configured', 'API key not configured', array('status' => 500));
         }
 
         if ($provided_key !== $stored_key) {
+            error_log('[Lehiboo Events API] ERROR: Invalid API key - keys do not match');
             return new WP_Error('invalid_key', 'Invalid API key', array('status' => 403));
         }
 
+        error_log('[Lehiboo Events API] ✅ API key validation successful');
         return true;
     }
 
