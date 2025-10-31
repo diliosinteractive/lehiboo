@@ -240,6 +240,50 @@ class Lehiboo_AI_Security {
                     $errors[] = 'Invalid group type';
                 }
             }
+
+            // Validate activity type (v6 schema)
+            if (isset($data['userContext']['activityType'])) {
+                $allowed = array('sport', 'culture', 'gastronomie', 'nature', 'detente', 'multi');
+                if (!in_array($data['userContext']['activityType'], $allowed)) {
+                    $errors[] = 'Invalid activity type';
+                }
+            }
+
+            // Validate budget max (v6 schema)
+            if (isset($data['userContext']['budgetMax'])) {
+                $budget = intval($data['userContext']['budgetMax']);
+                if ($budget < 0) {
+                    $errors[] = 'Invalid budget max';
+                }
+            }
+
+            // Validate location (nested object)
+            if (isset($data['userContext']['location'])) {
+                if (!is_array($data['userContext']['location'])) {
+                    $errors[] = 'Location must be an object';
+                } else {
+                    if (isset($data['userContext']['location']['radius'])) {
+                        $radius = intval($data['userContext']['location']['radius']);
+                        if ($radius < 1 || $radius > 100) {
+                            $errors[] = 'Invalid location radius';
+                        }
+                    }
+                }
+            }
+
+            // Validate dates (nested object)
+            if (isset($data['userContext']['dates'])) {
+                if (!is_array($data['userContext']['dates'])) {
+                    $errors[] = 'Dates must be an object';
+                } else {
+                    if (isset($data['userContext']['dates']['type'])) {
+                        $allowed = array('thisWeekend', 'nextWeekend', 'specific', 'flexible');
+                        if (!in_array($data['userContext']['dates']['type'], $allowed)) {
+                            $errors[] = 'Invalid dates type';
+                        }
+                    }
+                }
+            }
         }
 
         if (!empty($errors)) {
@@ -262,18 +306,72 @@ class Lehiboo_AI_Security {
         if (isset($data['userContext']) && is_array($data['userContext'])) {
             $sanitized['userContext'] = array();
 
+            // Age
             if (isset($data['userContext']['age'])) {
                 $sanitized['userContext']['age'] = absint($data['userContext']['age']);
             }
 
+            // Group Type
             if (isset($data['userContext']['groupType'])) {
                 $sanitized['userContext']['groupType'] = sanitize_text_field($data['userContext']['groupType']);
             }
 
+            // Activity Type (v6 schema)
+            if (isset($data['userContext']['activityType'])) {
+                $sanitized['userContext']['activityType'] = sanitize_text_field($data['userContext']['activityType']);
+            }
+
+            // Budget Max (v6 schema - remplace l'ancien 'budget')
+            if (isset($data['userContext']['budgetMax'])) {
+                $sanitized['userContext']['budgetMax'] = absint($data['userContext']['budgetMax']);
+            }
+
+            // Location (nested object)
+            if (isset($data['userContext']['location']) && is_array($data['userContext']['location'])) {
+                $sanitized['userContext']['location'] = array();
+
+                if (isset($data['userContext']['location']['city'])) {
+                    $sanitized['userContext']['location']['city'] = sanitize_text_field($data['userContext']['location']['city']);
+                }
+
+                if (isset($data['userContext']['location']['radius'])) {
+                    $sanitized['userContext']['location']['radius'] = absint($data['userContext']['location']['radius']);
+                }
+
+                if (isset($data['userContext']['location']['coordinates']) && is_array($data['userContext']['location']['coordinates'])) {
+                    $sanitized['userContext']['location']['coordinates'] = array_map('floatval', $data['userContext']['location']['coordinates']);
+                }
+            }
+
+            // Dates (nested object)
+            if (isset($data['userContext']['dates']) && is_array($data['userContext']['dates'])) {
+                $sanitized['userContext']['dates'] = array();
+
+                if (isset($data['userContext']['dates']['type'])) {
+                    $sanitized['userContext']['dates']['type'] = sanitize_text_field($data['userContext']['dates']['type']);
+                }
+
+                if (isset($data['userContext']['dates']['specificDates']) && is_array($data['userContext']['dates']['specificDates'])) {
+                    $sanitized['userContext']['dates']['specificDates'] = array_map('sanitize_text_field', $data['userContext']['dates']['specificDates']);
+                }
+            }
+
+            // Children Ages (si famille)
+            if (isset($data['userContext']['childrenAges']) && is_array($data['userContext']['childrenAges'])) {
+                $sanitized['userContext']['childrenAges'] = array_map('absint', $data['userContext']['childrenAges']);
+            }
+
+            // Preferences (optionnel)
+            if (isset($data['userContext']['preferences']) && is_array($data['userContext']['preferences'])) {
+                $sanitized['userContext']['preferences'] = array_map('sanitize_text_field', $data['userContext']['preferences']);
+            }
+
+            // Legacy: Old 'budget' field (for backward compatibility)
             if (isset($data['userContext']['budget'])) {
                 $sanitized['userContext']['budget'] = sanitize_text_field($data['userContext']['budget']);
             }
 
+            // Legacy: Old 'interests' field (for backward compatibility)
             if (isset($data['userContext']['interests']) && is_array($data['userContext']['interests'])) {
                 $sanitized['userContext']['interests'] = array_map('sanitize_text_field', $data['userContext']['interests']);
             }
