@@ -173,12 +173,9 @@ export async function generateAIResponse(message, context = {}) {
       model: config.openai.defaultModel
     });
 
-    // Déterminer si on force l'appel d'un tool
-    // On le force SAUF pour le premier message (greeting initial)
-    const isFirstMessage = !context.history || context.history.length === 0;
-    const shouldRequireToolCall = !isFirstMessage;
-
     // Appel IA avec tools
+    // On laisse l'IA décider avec 'auto' car forcer les tools empêche la génération de texte
+    // Le prompt v6 guide l'IA pour appeler collectUserProfile à chaque message
     const result = await generateText({
       model: openai(config.openai.defaultModel),
       system: systemPrompt,
@@ -187,16 +184,12 @@ export async function generateAIResponse(message, context = {}) {
       temperature: 0.7,
       maxTokens: 2000, // ✅ Réduit de 4000 à 2000 pour économiser les tokens
       maxSteps: 3, // ✅ Réduit de 10 à 3 (tool call + réponse suffit)
-      // ✅ REQUIRE un tool call (l'IA choisira collectUserProfile selon le prompt)
-      // IMPORTANT: 'required' force un tool MAIS génère aussi du texte
-      // Forcer un tool spécifique avec {type:'tool', toolName:'...'} ne génère PAS de texte
-      toolChoice: shouldRequireToolCall ? 'required' : 'auto',
+      toolChoice: 'auto', // ✅ L'IA décide, guidée par le prompt
     });
 
     logger.info('🔧 Tool choice', {
-      isFirstMessage,
-      shouldRequireToolCall,
-      toolChoice: shouldRequireToolCall ? 'required (must call a tool)' : 'auto'
+      toolChoice: 'auto',
+      note: 'AI decides based on prompt guidance'
     });
 
     // Calculer les metrics de cache
@@ -255,7 +248,19 @@ export async function generateAIResponse(message, context = {}) {
     }
 
     // Parser la réponse (chercher JSON blocks pour metadata)
-    const parsed = parseAIResponse(result.text);
+    let parsed = parseAIResponse(result.text);
+
+    // 🔧 FIX: Si l'IA n'a pas généré de texte (juste un tool call), générer une réponse intelligente
+    if (!parsed.cleanText || parsed.cleanText.trim().length === 0) {
+      logger.warn('⚠️ AI returned empty text after tool call, generating fallback response', {
+        toolCallsCount: result.toolCalls?.length || 0,
+        userContextKeys: Object.keys(extractedUserContext)
+      });
+
+      // Générer une réponse basée sur ce qui manque dans le profil
+      const fallbackMessage = generateFallbackMessage(extractedUserContext);
+      parsed = { cleanText: fallbackMessage, metadata: {} };
+    }
 
     // Générer les quick chips intelligemment selon le message de l'IA et le contexte
     const smartChips = generateQuickChips(parsed.cleanText, extractedUserContext);
@@ -440,6 +445,47 @@ function parseAIResponse(text) {
     cleanText,
     metadata
   };
+}
+
+/**
+ * Génère un message fallback intelligent quand l'IA ne retourne pas de texte
+ * Basé sur le contexte utilisateur et ce qui manque dans le profil
+ */
+function generateFallbackMessage(userContext) {
+  const completeness = calculateProfileCompleteness(userContext);
+
+  // Si profil complet, proposer recherche
+  if (completeness === 100) {
+    return "Parfait ! Je lance la recherche d'activités pour vous...";
+  }
+
+  // Déterminer la prochaine question selon les champs manquants
+  if (!userContext.groupType) {
+    return "C'est pour qui ?";
+  }
+
+  if (!userContext.activityType) {
+    return "Quel type d'activité vous intéresse ?";
+  }
+
+  if (!userContext.location || !userContext.location.city) {
+    return "Dans quelle ville cherchez-vous ?";
+  }
+
+  if (!userContext.dates) {
+    return "C'est pour quand ?";
+  }
+
+  if (!userContext.age) {
+    return "Quel âge avez-vous ?";
+  }
+
+  if (!userContext.budgetMax) {
+    return "Quel est votre budget maximum ?";
+  }
+
+  // Fallback générique
+  return "Continuons ! De quoi avez-vous besoin ?";
 }
 
 /**
