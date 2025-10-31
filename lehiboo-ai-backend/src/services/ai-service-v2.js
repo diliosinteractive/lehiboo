@@ -200,10 +200,22 @@ export async function generateAIResponse(message, context = {}) {
       toolChoice: shouldForceToolCall ? 'collectUserProfile forced' : 'auto'
     });
 
+    // Calculer les metrics de cache
+    const cachedTokens = result.usage?.prompt_tokens_details?.cached_tokens || 0;
+    const totalPromptTokens = result.usage?.promptTokens || 0;
+    const cacheHitRate = totalPromptTokens > 0
+      ? ((cachedTokens / totalPromptTokens) * 100).toFixed(1)
+      : '0';
+
     logger.info('AI response generated', {
       conversationId: context.conversationId,
       responseLength: result.text.length,
       tokensUsed: result.usage?.totalTokens || 0,
+      promptTokens: totalPromptTokens,
+      completionTokens: result.usage?.completionTokens || 0,
+      cachedTokens: cachedTokens,
+      cacheHitRate: `${cacheHitRate}%`,
+      costSaving: cachedTokens > 0 ? `~${(cachedTokens * 0.5 * 0.0025 / 1000).toFixed(4)}$` : '0$',
       toolCallsCount: result.toolCalls?.length || 0,
       steps: result.steps?.length || 1
     });
