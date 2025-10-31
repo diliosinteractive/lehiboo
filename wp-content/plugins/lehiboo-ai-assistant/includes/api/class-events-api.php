@@ -194,19 +194,19 @@ class Lehiboo_Events_API {
             'tax_query' => array('relation' => 'AND')
         );
 
-        // Filtre par ville
+        // Filtre par ville (OvaTheme utilise ova_mb_event_map_address)
         if (!empty($params['city'])) {
             $args['meta_query'][] = array(
-                'key' => 'event_city',
+                'key' => 'ova_mb_event_map_address',
                 'value' => $params['city'],
                 'compare' => 'LIKE'
             );
         }
 
-        // Filtre par prix MAX (STRICT!)
+        // Filtre par prix MAX (STRICT!) - OvaTheme utilise ova_mb_event_min_price
         if (isset($params['maxPrice'])) {
             $args['meta_query'][] = array(
-                'key' => 'event_price',
+                'key' => 'ova_mb_event_min_price',
                 'value' => floatval($params['maxPrice']),
                 'type' => 'NUMERIC',
                 'compare' => '<='
@@ -216,28 +216,32 @@ class Lehiboo_Events_API {
         // Filtre par prix MIN
         if (isset($params['minPrice'])) {
             $args['meta_query'][] = array(
-                'key' => 'event_price',
+                'key' => 'ova_mb_event_min_price',
                 'value' => floatval($params['minPrice']),
                 'type' => 'NUMERIC',
                 'compare' => '>='
             );
         }
 
-        // Filtre par dates (événements disponibles entre startDate et endDate)
+        // Filtre par dates (OvaTheme utilise timestamps: ova_mb_event_start_date_str / ova_mb_event_end_date_str)
         if (!empty($params['startDate'])) {
+            // Convertir la date en timestamp pour comparaison
+            $start_timestamp = strtotime($params['startDate']);
             $args['meta_query'][] = array(
-                'key' => 'event_end_date',
-                'value' => $params['startDate'],
-                'type' => 'DATE',
+                'key' => 'ova_mb_event_end_date_str',
+                'value' => $start_timestamp,
+                'type' => 'NUMERIC',
                 'compare' => '>='
             );
         }
 
         if (!empty($params['endDate'])) {
+            // Convertir la date en timestamp pour comparaison
+            $end_timestamp = strtotime($params['endDate'] . ' 23:59:59');
             $args['meta_query'][] = array(
-                'key' => 'event_start_date',
-                'value' => $params['endDate'],
-                'type' => 'DATE',
+                'key' => 'ova_mb_event_start_date_str',
+                'value' => $end_timestamp,
+                'type' => 'NUMERIC',
                 'compare' => '<='
             );
         }
@@ -277,18 +281,23 @@ class Lehiboo_Events_API {
             );
         }
 
-        // Tri
+        // Tri (OvaTheme meta fields)
         if (isset($params['sortBy'])) {
             switch ($params['sortBy']) {
                 case 'price':
-                    $args['meta_key'] = 'event_price';
+                    $args['meta_key'] = 'ova_mb_event_min_price';
                     $args['orderby'] = 'meta_value_num';
                     $args['order'] = 'ASC';
                     break;
                 case 'rating':
-                    $args['meta_key'] = 'event_rating';
-                    $args['orderby'] = 'meta_value_num';
+                    // Rating peut ne pas exister avec OvaTheme, on garde le tri par défaut
+                    $args['orderby'] = 'date';
                     $args['order'] = 'DESC';
+                    break;
+                case 'date':
+                    $args['meta_key'] = 'ova_mb_event_start_date_str';
+                    $args['orderby'] = 'meta_value_num';
+                    $args['order'] = 'ASC';
                     break;
                 // 'relevance' et 'distance' gérés côté backend
             }
@@ -338,17 +347,41 @@ class Lehiboo_Events_API {
 
     /**
      * Formate un événement pour l'API
+     * Compatible avec OvaTheme Events (préfixe ova_mb_event_*)
      */
     private function format_event($post) {
         $event_id = $post->ID;
 
-        // Récupérer meta fields
-        $price = floatval(get_post_meta($event_id, 'event_price', true));
-        $city = get_post_meta($event_id, 'event_city', true);
-        $address = get_post_meta($event_id, 'event_address', true);
-        $start_date = get_post_meta($event_id, 'event_start_date', true);
-        $end_date = get_post_meta($event_id, 'event_end_date', true);
-        $duration = get_post_meta($event_id, 'event_duration', true);
+        // Récupérer meta fields OvaTheme
+        $price = floatval(get_post_meta($event_id, 'ova_mb_event_min_price', true));
+        $map_address = get_post_meta($event_id, 'ova_mb_event_map_address', true); // "Paris, France"
+        $address = get_post_meta($event_id, 'ova_mb_event_address', true);
+        $start_timestamp = intval(get_post_meta($event_id, 'ova_mb_event_start_date_str', true));
+        $end_timestamp = intval(get_post_meta($event_id, 'ova_mb_event_end_date_str', true));
+
+        // Extraire la ville du map_address (ex: "Paris, France" → "Paris")
+        $city = '';
+        if (!empty($map_address)) {
+            $parts = explode(',', $map_address);
+            $city = trim($parts[0]);
+        }
+
+        // Convertir timestamps en dates ISO
+        $start_date = $start_timestamp ? date('Y-m-d', $start_timestamp) : '';
+        $end_date = $end_timestamp ? date('Y-m-d', $end_timestamp) : '';
+
+        // Calculer durée si possible
+        $duration = '';
+        if ($start_timestamp && $end_timestamp) {
+            $hours = round(($end_timestamp - $start_timestamp) / 3600, 1);
+            $duration = $hours . 'h';
+        }
+
+        // Coordonnées GPS
+        $lat = floatval(get_post_meta($event_id, 'ova_mb_event_map_lat', true));
+        $lng = floatval(get_post_meta($event_id, 'ova_mb_event_map_lng', true));
+
+        // Champs optionnels (peuvent ne pas exister avec OvaTheme)
         $rating = floatval(get_post_meta($event_id, 'event_rating', true));
         $reviews = intval(get_post_meta($event_id, 'event_reviews_count', true));
         $min_age = intval(get_post_meta($event_id, 'event_min_age', true));
@@ -376,7 +409,8 @@ class Lehiboo_Events_API {
             'currency' => 'EUR',
             'location' => array(
                 'city' => $city,
-                'address' => $address,
+                'address' => $address ?: $map_address,
+                'coordinates' => ($lat && $lng) ? array($lat, $lng) : null,
                 'distance' => null // Calculé côté backend si coordonnées fournies
             ),
             'dates' => array_filter(array($start_date, $end_date)),
