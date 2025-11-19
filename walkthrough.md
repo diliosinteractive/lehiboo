@@ -1,15 +1,17 @@
-# Verification Walkthrough: Refactored Event Form (Corrected Profile Style)
+# Verification Walkthrough: Refactored Event Form (Airbnb Style)
 
-This guide outlines the steps to verify the new "One Page" event creation/editing form, which now strictly follows the "Mon Profil" page structure.
+This guide outlines the steps to verify the new "One Page" event creation/editing form, which now strictly follows the "Mon Profil" page structure and the Airbnb-style design.
 
 ## 1. Access & Layout Verification
 *   **Step**: Login as a Partner and navigate to **"Créer une activité"** (or edit an existing one).
 *   **Expected Result**:
-    *   **Global Layout**: The page should look exactly like the dashboard, with the main dark sidebar on the left, and the content area on the right.
-    *   **Inner Layout**: Inside the content area, you should see a **two-column layout**:
-        *   **Left Column (Sidebar)**: Event image, title, navigation tabs, and completion widget.
-        *   **Right Column (Content)**: Sticky action bar at the top, followed by white cards for each section.
-    *   **No Stacking**: The sidebar and content should be side-by-side, not stacked vertically (unless on mobile).
+    *   **Global Layout**: Side-by-side layout (Sidebar + Content).
+    *   **Sticky Header**:
+        *   **Left**: Title "Créer une activité".
+        *   **Right**:
+            *   **Status**: "Hors ligne" (grey pill) or "En ligne".
+            *   **Preview**: "Prévisualiser" button (White with Orange border).
+            *   **Save**: "Enregistré" button (Green background).
 
 ## 2. Navigation Test
 *   **Step**: Click on the **"Localisation"** link in the inner sidebar.
@@ -21,12 +23,13 @@ This guide outlines the steps to verify the new "One Page" event creation/editin
 ## 3. Section Logic Verification
 *   **Step**: Test the dynamic toggles (Online/Physical, Recurring/Manual, Ticket Link/Internal).
     *   **Verify**: Fields appear/disappear correctly within their respective cards without breaking the layout.
+    *   **Verify**: Inputs have the new Airbnb style (uppercase labels, black focus border).
 
 ## 4. Completion Gauge Test
 *   **Step**: Check the sidebar widget.
     *   **Verify**: The progress bar updates as you fill fields.
-    *   **Verify**: The "Mettre en ligne" button in the sticky header becomes enabled when progress is sufficient.
+    *   **Verify**: The "Mettre en ligne" functionality is now handled via the status toggle in the Publication section (or the save button logic if adapted).
 
 ## 5. Submission
-*   **Step**: Click **"Enregistrer"** in the sticky header.
+*   **Step**: Click **"Enregistré"** in the sticky header.
     *   **Verify**: The form submits and saves data correctly.
