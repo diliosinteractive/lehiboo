@@ -5,10 +5,10 @@ jQuery(document).ready(function ($) {
        ========================================================================== */
 
     // Smooth scrolling for anchor links
-    $('.el-anchor-nav a').on('click', function (e) {
+    $('.profile_tabs_nav a').on('click', function (e) {
         e.preventDefault();
         var target = $(this).attr('href');
-        var offset = 120; // Adjust based on sticky header height
+        var offset = 140; // Adjust based on sticky header height
 
         if ($(target).length) {
             $('html, body').animate({
@@ -16,23 +16,23 @@ jQuery(document).ready(function ($) {
             }, 500);
 
             // Update active state manually
-            $('.el-anchor-nav a').removeClass('active');
-            $(this).addClass('active');
+            $('.profile_tabs_nav li').removeClass('active');
+            $(this).parent('li').addClass('active');
         }
     });
 
     // ScrollSpy behavior
     $(window).on('scroll', function () {
         var scrollPos = $(document).scrollTop();
-        var offset = 150; // Trigger point
+        var offset = 160; // Trigger point
 
-        $('.el-anchor-nav a').each(function () {
+        $('.profile_tabs_nav a').each(function () {
             var currLink = $(this);
             var refElement = $(currLink.attr('href'));
 
             if (refElement.length && refElement.position().top - offset <= scrollPos && refElement.position().top + refElement.height() > scrollPos) {
-                $('.el-anchor-nav a').removeClass('active');
-                currLink.addClass('active');
+                $('.profile_tabs_nav li').removeClass('active');
+                currLink.parent('li').addClass('active');
             }
         });
     });
@@ -59,10 +59,7 @@ jQuery(document).ready(function ($) {
     $('input[name*="address_source"]').on('change', function () {
         var source = $(this).val();
         if (source === 'entity') {
-            // Logic to populate address from entity would go here (AJAX or data attributes)
-            // For now, we might just disable the map inputs or show a message
             $('.el_map_wrapper input').prop('disabled', true).addClass('disabled-input');
-            // In a real implementation, we would fetch the user's entity address
         } else {
             $('.el_map_wrapper input').prop('disabled', false).removeClass('disabled-input');
         }
@@ -103,7 +100,7 @@ jQuery(document).ready(function ($) {
         e.preventDefault();
         var container = $('.external_prices_list');
         var index = container.find('.external_price_item').length;
-        var prefix = 'event_'; // Default prefix, should be dynamic if possible
+        var prefix = 'event_';
 
         var html = `
             <div class="external_price_item">
@@ -203,7 +200,6 @@ jQuery(document).ready(function ($) {
                     if (mode === 'auto') {
                         return hasValue('.calendar_auto_start_date');
                     } else {
-                        // Check if at least one date row exists and has a date
                         return $('.item_calendar').length > 0 && hasValue('.item_calendar:first .calendar_date');
                     }
                 }
@@ -218,10 +214,9 @@ jQuery(document).ready(function ($) {
                     if (link === 'ticket_external_link') {
                         return hasValue('input[name*="ticket_external_link"]');
                     } else if (link === 'ticket_internal_link') {
-                        // Check if at least one ticket exists
                         return $('.ticket_item').length > 0;
                     }
-                    return true; // If no ticket required or other mode
+                    return true;
                 }
             },
 
@@ -248,12 +243,12 @@ jQuery(document).ready(function ($) {
         var percent = Math.round((filledWeight / totalWeight) * 100);
         if (percent > 100) percent = 100;
 
-        // Update UI
-        $('#el-completion-fill').css('width', percent + '%');
-        $('#el-completion-percent').text(percent + '%');
+        // Update UI (Sidebar Widget)
+        $('#el-completion-fill-sidebar').css('width', percent + '%');
+        $('#el-completion-percent-sidebar').text(percent + '%');
 
         // Enable/Disable Go Live
-        if (percent >= 80) { // Allow go live at 80%? Or strict 100%? Let's say 80 for now as "Ready"
+        if (percent >= 80) {
             $('#el-btn-go-live').prop('disabled', false).removeClass('disabled');
         } else {
             $('#el-btn-go-live').prop('disabled', true).addClass('disabled');
@@ -266,6 +261,6 @@ jQuery(document).ready(function ($) {
     });
 
     // Initial check
-    setTimeout(updateCompletionGauge, 1000); // Delay slightly to allow other scripts to init
+    setTimeout(updateCompletionGauge, 1000);
 
 });
