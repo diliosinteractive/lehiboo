@@ -1,0 +1,172 @@
+/* Vendor Event Form Layout */
+.el-vendor-event-form-wrapper {
+    position: relative;
+    padding-bottom: 80px; /* Space for sticky footer */
+}
+
+.el-vendor-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* Sidebar */
+.el-vendor-sidebar {
+    width: 250px;
+    position: sticky;
+    top: 100px; /* Adjust based on header height */
+    flex-shrink: 0;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 20px;
+}
+
+.el-anchor-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.el-anchor-nav li {
+    margin-bottom: 10px;
+}
+
+.el-anchor-nav a {
+    display: block;
+    padding: 10px 15px;
+    color: #555;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.el-anchor-nav a:hover,
+.el-anchor-nav a.active {
+    background-color: #f0f7ff;
+    color: #007bff;
+    font-weight: 600;
+}
+
+/* Main Content */
+.el-vendor-content {
+    flex-grow: 1;
+    min-width: 0; /* Prevent overflow */
+}
+
+.el-form-section {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 30px;
+    margin-bottom: 30px;
+    scroll-margin-top: 120px; /* Offset for sticky header/sidebar */
+}
+
+/* Sticky Footer */
+.el-vendor-sticky-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border-top: 1px solid #eee;
+    box-shadow: 0 -2px 20px rgba(0,0,0,0.1);
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 999;
+}
+
+.el-completion-gauge-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 40%;
+}
+
+.el-gauge-label {
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+}
+
+.el-gauge-bar {
+    flex-grow: 1;
+    height: 10px;
+    background: #eee;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.el-gauge-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%); /* Example gradient */
+    background-color: #28a745; /* Fallback */
+    transition: width 0.5s ease;
+}
+
+.el-gauge-percent {
+    font-weight: 700;
+    color: #28a745;
+    min-width: 40px;
+    text-align: right;
+}
+
+.el-form-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.el-btn-preview {
+    background: #fff;
+    border: 1px solid #ccc;
+    color: #333;
+}
+
+.el-btn-save {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+.el-btn-publish {
+    background: #007bff;
+    color: #fff;
+    border: none;
+}
+
+.el-btn-publish:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .el-vendor-layout {
+        flex-direction: column;
+    }
+    
+    .el-vendor-sidebar {
+        width: 100%;
+        position: static;
+        margin-bottom: 20px;
+    }
+    
+    .el-vendor-sticky-footer {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px 20px;
+    }
+    
+    .el-completion-gauge-wrapper {
+        width: 100%;
+    }
+    
+    .el-form-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
