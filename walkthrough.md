@@ -1,60 +1,32 @@
-# Verification Walkthrough: Refactored Event Form (Profile Style)
+# Verification Walkthrough: Refactored Event Form (Corrected Profile Style)
 
-This guide outlines the steps to verify the new "One Page" event creation/editing form, which now matches the "Mon Profil" design.
+This guide outlines the steps to verify the new "One Page" event creation/editing form, which now strictly follows the "Mon Profil" page structure.
 
 ## 1. Access & Layout Verification
 *   **Step**: Login as a Partner and navigate to **"Créer une activité"** (or edit an existing one).
 *   **Expected Result**:
-    *   The page loads with a **clean, card-based layout** similar to the Profile page.
-    *   **Left Sidebar**: 
-        *   Shows the event thumbnail and title at the top.
-        *   Navigation links with icons (Document, Image, Pin, Calendar, Ticket, Globe).
-        *   **Completion Widget**: A progress bar is now located in the sidebar (not the footer).
-    *   **Sticky Header**: A bar at the top of the form content with "Prévisualiser", "Enregistrer", and "Mettre en ligne".
+    *   **Global Layout**: The page should look exactly like the dashboard, with the main dark sidebar on the left, and the content area on the right.
+    *   **Inner Layout**: Inside the content area, you should see a **two-column layout**:
+        *   **Left Column (Sidebar)**: Event image, title, navigation tabs, and completion widget.
+        *   **Right Column (Content)**: Sticky action bar at the top, followed by white cards for each section.
+    *   **No Stacking**: The sidebar and content should be side-by-side, not stacked vertically (unless on mobile).
 
 ## 2. Navigation Test
-*   **Step**: Click on the **"Localisation"** link in the left sidebar.
+*   **Step**: Click on the **"Localisation"** link in the inner sidebar.
     *   **Verify**: The page **smooth scrolls** to the Location section card.
-    *   **Verify**: The "Localisation" link becomes **active** (highlighted).
-*   **Step**: Scroll manually up and down the page.
-    *   **Verify**: The sidebar links automatically update their active state (**ScrollSpy**).
+    *   **Verify**: The "Localisation" link becomes **active**.
+*   **Step**: Scroll manually.
+    *   **Verify**: The sidebar links update their active state (**ScrollSpy**).
 
 ## 3. Section Logic Verification
-
-### A. Location Section
-*   **Step**: In "Où se déroule l'événement ?", select **"En ligne"**.
-    *   **Verify**: The physical address fields (Map, Address, Venue) **disappear**.
-    *   **Verify**: The **"Lien de l'événement (URL)"** field **appears**.
-*   **Step**: Select **"Dans un lieu physique"**.
-    *   **Verify**: The address fields reappear.
-
-### B. Calendar Section
-*   **Step**: Select **"Récurrent"**.
-    *   **Verify**: The recurrence settings (Frequency, Interval, Days of week) **appear**.
-    *   **Verify**: The manual date list **disappears**.
-*   **Step**: Select **"Date unique / Ponctuel"**.
-    *   **Verify**: The manual date picker list **appears**.
-
-### C. Ticketing Section
-*   **Step**: Select **"Utiliser un lien externe"**.
-    *   **Verify**: The **"Lien URL de la billetterie"** field appears.
-*   **Step**: Select **"Créer une liste d'inscription"**.
-    *   **Verify**: The internal ticket builder (Name, Price, Quantity) appears.
-
-### D. Publication Section
-*   **Step**: In "Visibilité", select **"Protégé par mot de passe"**.
-    *   **Verify**: The **"Définir un mot de passe"** field slides down.
-*   **Step**: Select **"Public"**.
-    *   **Verify**: The password field slides up/hides.
+*   **Step**: Test the dynamic toggles (Online/Physical, Recurring/Manual, Ticket Link/Internal).
+    *   **Verify**: Fields appear/disappear correctly within their respective cards without breaking the layout.
 
 ## 4. Completion Gauge Test
-*   **Step**: Start with an empty form.
-    *   **Verify**: The gauge in the **sidebar** shows a low percentage.
-    *   **Verify**: The **"Mettre en ligne"** button in the sticky header is **disabled**.
-*   **Step**: Fill in required fields.
-*   **Verify**: The gauge percentage **increases**.
-*   **Verify**: Once sufficient fields are filled, the **"Mettre en ligne"** button becomes **enabled** (orange).
+*   **Step**: Check the sidebar widget.
+    *   **Verify**: The progress bar updates as you fill fields.
+    *   **Verify**: The "Mettre en ligne" button in the sticky header becomes enabled when progress is sufficient.
 
 ## 5. Submission
 *   **Step**: Click **"Enregistrer"** in the sticky header.
-    *   **Verify**: The page reloads (or AJAX saves) and the data is persisted.
+    *   **Verify**: The form submits and saves data correctly.
