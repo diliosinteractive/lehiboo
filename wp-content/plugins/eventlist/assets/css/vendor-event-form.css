@@ -623,7 +623,112 @@
 }
 
 /* ==========================================================================
-   8. Helper Classes & Utilities
+   8. Location & Maps
+   ========================================================================== */
+
+/* Card Radio (Physical vs Online) */
+.el_card_radio {
+    display: block;
+    cursor: pointer;
+    border: 1px solid #EBEBEB;
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s;
+    height: 100%;
+    position: relative;
+}
+
+.el_card_radio:hover {
+    border-color: #222222;
+}
+
+.el_card_radio.active {
+    border-color: #222222;
+    background-color: #F7F7F7;
+    border-width: 2px;
+}
+
+.el_card_radio input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.radio_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+}
+
+.radio_content i {
+    font-size: 24px;
+    color: #222222;
+    margin-bottom: 4px;
+}
+
+.radio_title {
+    font-weight: 600;
+    font-size: 16px;
+    color: #222222;
+}
+
+.radio_desc {
+    font-size: 13px;
+    color: #717171;
+}
+
+/* Input Icon Wrapper */
+.el_input_icon_wrapper {
+    position: relative;
+}
+
+.el_input_icon_wrapper i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #222222;
+    font-size: 18px;
+    pointer-events: none;
+}
+
+.el_input_icon_wrapper input {
+    padding-left: 48px !important;
+}
+
+/* Checkbox Wrapper */
+.el_checkbox_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 12px;
+    border: 1px solid #EBEBEB;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.el_checkbox_wrapper:hover {
+    border-color: #222222;
+}
+
+.el_checkbox_wrapper input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #222222;
+}
+
+.el_checkbox_label {
+    font-weight: 600;
+    color: #484848;
+    font-size: 14px;
+}
+
+/* ==========================================================================
+   9. Helper Classes & Utilities
    ========================================================================== */
 
 .disabled-input {

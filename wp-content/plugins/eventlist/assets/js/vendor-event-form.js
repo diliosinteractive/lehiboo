@@ -46,6 +46,11 @@ jQuery(document).ready(function ($) {
     // Toggle Physical vs Online
     $('input[name*="event_type"]').on('change', function () {
         var type = $(this).val();
+
+        // Update Active State for Cards
+        $('.el_card_radio').removeClass('active');
+        $(this).closest('.el_card_radio').addClass('active');
+
         if (type === 'online') {
             $('.physical_location_section').slideUp();
             $('.online_location_section').slideDown();
@@ -70,6 +75,11 @@ jQuery(document).ready(function ($) {
     // Toggle Manual vs Recurring
     $('input.option_calendar').on('change', function () {
         var mode = $(this).val();
+
+        // Update Active State for Cards
+        $('.option_calendar').closest('.el_card_radio').removeClass('active');
+        $(this).closest('.el_card_radio').addClass('active');
+
         if (mode === 'auto') {
             $('.calendar .manual').slideUp();
             $('.calendar .auto').slideDown();
@@ -84,6 +94,10 @@ jQuery(document).ready(function ($) {
     // Toggle Ticket Mode
     $('input[name*="ticket_link"]').on('change', function () {
         var mode = $(this).val();
+
+        // Update Active State for Cards
+        $('input[name*="ticket_link"]').closest('.el_card_radio').removeClass('active');
+        $(this).closest('.el_card_radio').addClass('active');
 
         $('.ticket_external_link_section').hide();
         $('.ticket_internal_link_section').hide();
@@ -133,6 +147,11 @@ jQuery(document).ready(function ($) {
     // Toggle Password Field
     $('input[name="event_status"]').on('change', function () {
         var status = $(this).val();
+
+        // Update Active State for Cards
+        $('input[name="event_status"]').closest('.el_card_radio').removeClass('active');
+        $(this).closest('.el_card_radio').addClass('active');
+
         if (status === 'protected' || status === 'private') {
             $('.wrap_event_password').slideDown().addClass('is-active');
         } else {

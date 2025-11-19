@@ -111,6 +111,7 @@ wp-content/debug.log
 node_modules/
 vendor/
 !wp-content/plugins/eventlist/templates/vendor/
+!wp-content/plugins/eventlist/includes/vendor/
 composer.lock
 package-lock.json
 yarn.lock
