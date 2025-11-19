@@ -45,12 +45,12 @@ $list_taxonomy = EL_Post_Types::register_taxonomies_customize();
 	<div class="event_basic_block_alert"></div>
 
 	<div class="wrap_name_event vendor_field">
-		<label for="name_event" ><?php esc_html_e( 'Nom de l\'événement', 'eventlist' ); ?> <span class="el_req">*</span></label>
+		<label for="name_event" ><?php esc_html_e( 'Nom de l\'événement', 'eventlist' ); ?></label>
 		<input type="text" id="name_event" name="name_event" value="<?php echo esc_attr( $post_title ); ?>" placeholder="<?php esc_html_e( 'Saisir le titre', 'eventlist' ); ?>" autocomplete="one-time-code" required>
 	</div>
 
 	<div class="wrap_cat vendor_field">
-		<label for="event_cat"><?php esc_html_e( 'Catégorie', 'eventlist' ); ?> <span class="el_req">*</span></label>
+		<label for="event_cat"><?php esc_html_e( 'Catégorie', 'eventlist' ); ?></label>
 
 		<?php
 		$selected_opt = ! empty( $cats_selected ) ? $cats_selected[0] : '';
