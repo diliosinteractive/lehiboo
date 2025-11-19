@@ -26,20 +26,23 @@ $event_img_url = $event_img_id ? wp_get_attachment_image_url($event_img_id, 'thu
         <div class="profile_sticky_bar">
             <div class="sticky_bar_inner">
                 <div class="sticky_bar_left">
-                    <h3><?php esc_html_e('Éditer l\'activité', 'eventlist'); ?></h3>
+                    <h3><?php esc_html_e('Créer une activité', 'eventlist'); ?></h3>
                 </div>
                 <div class="sticky_bar_right">
+                    <!-- Status Indicator -->
+                    <div class="event_status_indicator">
+                        <i class="icon_off"></i>
+                        <span><?php echo (get_post_status($post_id) == 'publish') ? __('En ligne', 'eventlist') : __('Hors ligne', 'eventlist'); ?></span>
+                    </div>
+
+                    <!-- Preview Button -->
                     <a href="<?php echo get_permalink($post_id); ?>" target="_blank" class="btn_preview_profile">
-                        <i class="icon_search"></i>
                         <span><?php esc_html_e('Prévisualiser', 'eventlist'); ?></span>
                     </a>
+
+                    <!-- Save Button -->
                     <button type="button" class="btn_save_profile" id="el-btn-save">
-                        <i class="icon_check"></i>
-                        <span><?php esc_html_e('Enregistrer', 'eventlist'); ?></span>
-                    </button>
-                    <button type="button" class="btn_save_profile btn_publish" id="el-btn-go-live" disabled>
-                        <i class="icon_cloud-upload_alt"></i>
-                        <span><?php esc_html_e('Mettre en ligne', 'eventlist'); ?></span>
+                        <span><?php esc_html_e('Enregistré', 'eventlist'); ?></span>
                     </button>
                 </div>
             </div>
