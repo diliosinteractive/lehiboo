@@ -1,14 +1,16 @@
-/* Wrapper adjustments */
+/* 
+   Vendor Event Form CSS
+   Adapts the Profile Page style for the Event Edit Form
+*/
+
+/* Ensure the wrapper doesn't break theme layout */
 .vendor_wrap.el-vendor-event-form-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 30px;
-    position: relative;
+    /* No custom flex properties here, let theme handle .vendor_wrap */
 }
 
-/* Sidebar Overrides */
+/* Sidebar Navigation (Inner) */
 .profile_navigation_sidebar {
-    /* Inherits theme styles, but ensure sticky behavior */
+    /* Inherits theme styles */
     position: sticky;
     top: 100px;
     height: fit-content;
@@ -33,20 +35,16 @@
 
 .profile_tabs_nav li.completed a i.status-icon {
     color: #4CAF50;
-    /* Green for completed */
 }
 
 /* Main Content Area */
 .profile_content_area {
-    flex: 1;
-    min-width: 0;
-    /* Prevent flex overflow */
+    /* Inherits theme styles */
 }
 
 /* Override Tab Behavior for One Page Scroll */
 .profile_content_area .tab-contents.active-section {
     display: block !important;
-    /* Force display */
     margin-bottom: 30px;
     opacity: 1;
     visibility: visible;
@@ -61,7 +59,6 @@
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
     margin-bottom: 30px;
     scroll-margin-top: 140px;
-    /* Offset for sticky header */
 }
 
 /* Sticky Header Bar */
@@ -93,7 +90,6 @@
 
 .btn_save_profile.btn_publish {
     background-color: #ff6600;
-    /* Le Hiboo Orange */
     color: #fff;
 }
 
@@ -140,7 +136,7 @@
     text-align: right;
 }
 
-/* Form Fields Tweaks to match Profile */
+/* Form Fields Tweaks */
 .vendor_field {
     margin-bottom: 20px;
 }
@@ -173,9 +169,4 @@
 .vendor_field textarea:focus {
     border-color: #ff6600;
     outline: none;
-}
-
-/* Hide old footer if present */
-.el-vendor-sticky-footer {
-    display: none;
 }
