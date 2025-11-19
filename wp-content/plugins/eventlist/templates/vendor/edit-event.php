@@ -1,7 +1,7 @@
 <?php if ( !defined( 'ABSPATH' ) ) exit();
 
 $post_id = isset( $_REQUEST['id'] ) ? sanitize_text_field( $_REQUEST['id'] ) : '';
-$event_req_field = el_event_req_field();
+
 
 ?>
 
