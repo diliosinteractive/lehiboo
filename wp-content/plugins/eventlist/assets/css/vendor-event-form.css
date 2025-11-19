@@ -1,16 +1,19 @@
 /* 
-   Vendor Event Form CSS
-   Adapts the Profile Page style for the Event Edit Form
+   Vendor Event Form CSS - Premium Design Overhaul
+   Focus: Modern, Clean, "Airbnb-like" aesthetic
 */
+
+/* ==========================================================================
+   1. Global & Layout
+   ========================================================================== */
 
 /* Ensure the wrapper doesn't break theme layout */
 .vendor_wrap.el-vendor-event-form-wrapper {
-    /* No custom flex properties here, let theme handle .vendor_wrap */
+    /* Theme handles layout */
 }
 
 /* Sidebar Navigation (Inner) */
 .profile_navigation_sidebar {
-    /* Inherits theme styles */
     position: sticky;
     top: 100px;
     height: fit-content;
@@ -21,152 +24,425 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.profile_tabs_nav li a:hover {
+    background-color: #fff5eb;
+    /* Light orange tint */
+    color: #ff6600;
+}
+
+.profile_tabs_nav li.active a {
+    background-color: #ff6600;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.2);
 }
 
 .profile_tabs_nav li a span {
     flex-grow: 1;
-    margin-left: 10px;
+    margin-left: 12px;
+}
+
+.profile_tabs_nav li a i {
+    font-size: 18px;
 }
 
 .profile_tabs_nav li a i.status-icon {
     font-size: 14px;
-    color: #ccc;
+    color: inherit;
+    opacity: 0.6;
 }
 
-.profile_tabs_nav li.completed a i.status-icon {
-    color: #4CAF50;
-}
+/* ==========================================================================
+   2. Cards & Sections
+   ========================================================================== */
 
-/* Main Content Area */
-.profile_content_area {
-    /* Inherits theme styles */
-}
-
-/* Override Tab Behavior for One Page Scroll */
-.profile_content_area .tab-contents.active-section {
-    display: block !important;
-    margin-bottom: 30px;
-    opacity: 1;
-    visibility: visible;
-    height: auto;
-}
-
-/* Section Styling (Cards) */
 .event_section {
-    background: #fff;
-    border-radius: 10px;
-    padding: 30px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    background: #ffffff;
+    border-radius: 16px;
+    /* Softer corners */
+    padding: 40px;
+    /* More whitespace */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    /* Very subtle, floaty shadow */
+    border: 1px solid #f0f0f0;
     margin-bottom: 30px;
     scroll-margin-top: 140px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Sticky Header Bar */
-.profile_sticky_bar {
-    position: sticky;
-    top: 0;
-    z-index: 99;
-    background: #fff;
-    padding: 15px 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-    margin-bottom: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.event_section:hover {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06);
+    /* transform: translateY(-2px);  Optional: subtle lift */
 }
 
-.sticky_bar_inner {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.sticky_bar_right {
-    display: flex;
-    gap: 10px;
-}
-
-.btn_save_profile.btn_publish {
-    background-color: #ff6600;
-    color: #fff;
-}
-
-.btn_save_profile.btn_publish:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-/* Sidebar Completion Widget */
-.sidebar-completion-widget {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    margin-top: 20px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-}
-
-.sidebar-completion-widget h4 {
-    font-size: 14px;
+.event_section h4.heading_section {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a202c;
     margin-bottom: 10px;
-    font-weight: 600;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f7fafc;
+    display: flex;
+    align-items: center;
 }
 
-.el-completion-bar {
-    height: 8px;
-    background: #f0f0f0;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 5px;
+.event_section p.field_description {
+    color: #718096;
+    font-size: 14px;
+    margin-bottom: 25px;
+    line-height: 1.6;
 }
 
-.el-completion-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #ff9966, #ff5e62);
-    width: 0%;
-    transition: width 0.5s ease;
-}
+/* ==========================================================================
+   3. Form Fields & Inputs
+   ========================================================================== */
 
-.el-completion-percent {
-    font-size: 12px;
-    font-weight: bold;
-    color: #666;
-    display: block;
-    text-align: right;
-}
-
-/* Form Fields Tweaks */
 .vendor_field {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    position: relative;
 }
 
 .vendor_field label {
     font-weight: 600;
-    margin-bottom: 8px;
+    font-size: 14px;
+    color: #2d3748;
+    margin-bottom: 10px;
     display: block;
-    color: #333;
+    letter-spacing: 0.02em;
 }
 
+.vendor_field label sup.symbol-required {
+    color: #e53e3e;
+    margin-left: 3px;
+}
+
+/* Input Styling */
 .vendor_field input[type="text"],
 .vendor_field input[type="email"],
 .vendor_field input[type="number"],
 .vendor_field input[type="url"],
 .vendor_field input[type="date"],
 .vendor_field input[type="time"],
+.vendor_field input[type="password"],
 .vendor_field select,
 .vendor_field textarea {
     width: 100%;
-    padding: 12px 15px;
+    padding: 14px 18px;
+    /* Larger touch target */
+    background-color: #f8fafc;
+    /* Very light grey background */
     border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: border-color 0.3s;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #2d3748;
+    transition: all 0.25s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.01);
 }
 
 .vendor_field input:focus,
 .vendor_field select:focus,
 .vendor_field textarea:focus {
+    background-color: #ffffff;
     border-color: #ff6600;
+    box-shadow: 0 0 0 4px rgba(255, 102, 0, 0.1);
+    /* Orange glow ring */
     outline: none;
+}
+
+.vendor_field input::placeholder,
+.vendor_field textarea::placeholder {
+    color: #a0aec0;
+}
+
+/* Select Dropdown Customization */
+.vendor_field select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px;
+}
+
+/* Textarea */
+.vendor_field textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   4. Radio Buttons & Checkboxes (Custom)
+   ========================================================================== */
+
+.input_radio_group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.el_input_radio {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.el_input_radio:hover {
+    border-color: #cbd5e0;
+    background: #f7fafc;
+}
+
+/* Hide default radio */
+.el_input_radio input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Custom Checkmark/Radio */
+.el_input_radio .checkmark {
+    height: 20px;
+    width: 20px;
+    background-color: #fff;
+    border: 2px solid #cbd5e0;
+    border-radius: 50%;
+    margin-left: auto;
+    /* Push to right */
+    position: relative;
+    transition: all 0.2s;
+}
+
+.el_input_radio input:checked~.checkmark {
+    border-color: #ff6600;
+    background-color: #ff6600;
+}
+
+.el_input_radio input:checked~.checkmark:after {
+    content: "";
+    position: absolute;
+    display: block;
+    top: 5px;
+    left: 5px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+}
+
+/* Active State for Radio Label */
+.el_input_radio:has(input:checked) {
+    border-color: #ff6600;
+    background-color: #fff5eb;
+    box-shadow: 0 2px 8px rgba(255, 102, 0, 0.1);
+}
+
+/* Services Grid (Checkboxes) */
+.services_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.service_item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.service_item:hover {
+    border-color: #cbd5e0;
+    transform: translateY(-1px);
+}
+
+.service_item input[type="checkbox"] {
+    margin-left: auto;
+    width: 18px;
+    height: 18px;
+    accent-color: #ff6600;
+}
+
+.service_icon {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.service_label {
+    font-weight: 500;
+    color: #4a5568;
+}
+
+/* ==========================================================================
+   5. Sticky Header & Buttons
+   ========================================================================== */
+
+.profile_sticky_bar {
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    background: rgba(255, 255, 255, 0.95);
+    /* Slight transparency */
+    backdrop-filter: blur(10px);
+    /* Glassmorphism */
+    padding: 15px 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.sticky_bar_left h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a202c;
+}
+
+.btn_save_profile {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn_preview_profile {
+    padding: 10px 20px;
+    border-radius: 8px;
+    background: #edf2f7;
+    color: #4a5568;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn_preview_profile:hover {
+    background: #e2e8f0;
+    color: #2d3748;
+}
+
+#el-btn-save {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+}
+
+#el-btn-save:hover {
+    border-color: #cbd5e0;
+    background: #f7fafc;
+}
+
+.btn_save_profile.btn_publish {
+    background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+}
+
+.btn_save_profile.btn_publish:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(255, 102, 0, 0.4);
+}
+
+.btn_save_profile.btn_publish:disabled {
+    background: #cbd5e0;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ==========================================================================
+   6. Sidebar Widget
+   ========================================================================== */
+
+.sidebar-completion-widget {
+    background: #fff;
+    padding: 25px;
+    border-radius: 16px;
+    margin-top: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    text-align: center;
+}
+
+.sidebar-completion-widget h4 {
+    font-size: 15px;
+    margin-bottom: 15px;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+.el-completion-bar {
+    height: 10px;
+    background: #edf2f7;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.el-completion-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6600, #ff9966);
+    width: 0%;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.el-completion-percent {
+    font-size: 24px;
+    font-weight: 800;
+    color: #ff6600;
+    display: block;
+    margin-top: 5px;
+}
+
+/* ==========================================================================
+   7. Helper Classes & Utilities
+   ========================================================================== */
+
+.disabled-input {
+    background-color: #edf2f7 !important;
+    color: #a0aec0 !important;
+    cursor: not-allowed;
+}
+
+.form-text.text-muted {
+    font-size: 12px;
+    color: #718096;
+    margin-top: 6px;
+    display: block;
+}
+
+/* Override Tab Content Visibility for One Page */
+.profile_content_area .tab-contents.active-section {
+    display: block !important;
+    margin-bottom: 30px;
+    opacity: 1;
+    visibility: visible;
+    height: auto;
 }
