@@ -230,14 +230,21 @@ if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-re
 // ========================================
 // TAXONOMIES PERSONNALISÉES
 // ========================================
-// Pour ajouter une nouvelle taxonomie, ajoutez simplement une ligne add_filter ci-dessous
-// Le nombre sera automatiquement détecté et synchronisé
+// V1 Le Hiboo : Les anciennes taxonomies personnalisées (Job, Time, Public) ont été remplacées
+// par des taxonomies natives déclarées directement dans le plugin EventList :
+// - event_thematique (Thématiques)
+// - event_tag (Émotions/Tags)
+// - event_special (Événements Spéciaux)
+// - event_saison (Saisons)
+// Ces taxonomies sont désormais visibles dans le menu admin "Événements"
 
-add_filter( 'register_taxonomy_el_1', function ($params){ return array( 'slug' => 'eljob', 'name' => esc_html__( 'Job', 'meup-child' ) ); } );
-add_filter( 'register_taxonomy_el_2', function ($params){ return array( 'slug' => 'eltime', 'name' => esc_html__( 'Time', 'meup-child' ) ); } );
-add_filter( 'register_taxonomy_el_3', function ($params){ return array( 'slug' => 'elpublic', 'name' => esc_html__( 'Public', 'meup-child' ) ); } );
-// Ajoutez ici d'autres taxonomies si nécessaire :
-// add_filter( 'register_taxonomy_el_4', function ($params){ return array( 'slug' => 'elniveau', 'name' => esc_html__( 'Niveau', 'meup-child' ) ); } );
+// Anciennes taxonomies personnalisées - DÉSACTIVÉES
+// add_filter( 'register_taxonomy_el_1', function ($params){ return array( 'slug' => 'eljob', 'name' => esc_html__( 'Job', 'meup-child' ) ); } );
+// add_filter( 'register_taxonomy_el_2', function ($params){ return array( 'slug' => 'eltime', 'name' => esc_html__( 'Time', 'meup-child' ) ); } );
+// add_filter( 'register_taxonomy_el_3', function ($params){ return array( 'slug' => 'elpublic', 'name' => esc_html__( 'Public', 'meup-child' ) ); } );
+
+// Si vous avez besoin d'ajouter de nouvelles taxonomies personnalisées supplémentaires :
+// add_filter( 'register_taxonomy_el_1', function ($params){ return array( 'slug' => 'my_custom_tax', 'name' => esc_html__( 'My Tax', 'meup-child' ) ); } );
 
 // Synchronisation automatique du nombre de taxonomies
 add_action( 'admin_init', 'meup_child_sync_taxonomy_count' );
