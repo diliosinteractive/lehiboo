@@ -307,56 +307,79 @@ jQuery(document).ready(function ($) {
         // Disable button during save
         $saveBtn.prop('disabled', true).addClass('loading');
 
-        // Serialize form data
-        var formData = $form.serializeArray();
+        // Helper function to convert form array to nested object
+        function serializeObject($form) {
+            var obj = {};
+            var arr = $form.serializeArray();
 
-        // Prepare data objects
-        var postData = {};
-        var metaData = {};
+            $.each(arr, function (i, field) {
+                var name = field.name;
+                var value = field.value;
 
-        // Process each field
-        formData.forEach(function (field) {
-            var name = field.name;
-            var value = field.value;
+                // Handle array notation field[index][subfield]
+                if (name.indexOf('[') !== -1) {
+                    var keys = name.split(/\[|\]\[|\]/).filter(function (k) { return k; });
+                    var current = obj;
 
-            // Post-level fields
-            if (name === 'post_id' || name === 'event_id' || name === 'el_edit_event_nonce' ||
-                name === 'event_status' || name === 'event_password') {
-                postData[name] = value;
-            }
-            // Special post data fields without prefix
-            else if (name === 'post_title' || name === 'name_event') {
-                postData['name_event'] = value;
-            }
-            else if (name === 'content_event' || name === 'el_content_event') {
-                postData['content_event'] = value;
-            }
-            else if (name === 'event_cat') {
-                postData['event_cat'] = value;
-            }
-            else if (name === '_thumbnail_id' || name === 'img_thumbnail') {
-                postData['img_thumbnail'] = value;
-            }
-            // All other fields go to meta_data
-            else {
-                // Remove 'event_' or 'ova_mb_event_' prefix if present
-                var cleanName = name.replace(/^event_/, '').replace(/^ova_mb_event_/, '');
+                    for (var j = 0; j < keys.length - 1; j++) {
+                        var key = keys[j];
+                        if (!current[key]) {
+                            // Check if next key is a number
+                            current[key] = /^\d+$/.test(keys[j + 1]) ? [] : {};
+                        }
+                        current = current[key];
+                    }
 
-                // Handle array fields (those with [])
-                if (name.includes('[')) {
-                    // Keep the full structure for arrays
-                    if (!metaData[name]) {
-                        metaData[name] = value;
+                    var lastKey = keys[keys.length - 1];
+                    if (Array.isArray(current)) {
+                        current.push(value);
+                    } else {
+                        current[lastKey] = value;
                     }
                 } else {
-                    metaData[cleanName] = value;
+                    obj[name] = value;
+                }
+            });
+
+            return obj;
+        }
+
+        // Get all form data as object
+        var allData = serializeObject($form);
+
+        // Prepare data objects
+        var postData = {
+            post_id: allData.post_id || allData.event_id,
+            el_edit_event_nonce: allData.el_edit_event_nonce,
+            name_event: allData.name_event || allData.post_title,
+            content_event: allData.el_content_event || allData.content_event || '',
+            event_cat: allData.event_cat || '',
+            event_status: allData.event_status || 'publish',
+            event_password: allData.event_password || '',
+            img_thumbnail: allData.img_thumbnail || allData._thumbnail_id || ''
+        };
+
+        // All other fields go to meta_data
+        var metaData = {};
+        for (var key in allData) {
+            if (allData.hasOwnProperty(key)) {
+                // Skip post-level fields
+                if (key !== 'post_id' && key !== 'event_id' && key !== 'el_edit_event_nonce' &&
+                    key !== 'name_event' && key !== 'post_title' && key !== 'content_event' &&
+                    key !== 'el_content_event' && key !== 'event_cat' && key !== 'event_status' &&
+                    key !== 'event_password' && key !== 'img_thumbnail' && key !== '_thumbnail_id') {
+
+                    // Remove 'event_' prefix if present for meta keys
+                    var cleanKey = key.replace(/^event_/, '');
+                    metaData[cleanKey] = allData[key];
                 }
             }
-        });
+        }
 
         // Debug: log what we're sending
         console.log('POST DATA:', postData);
         console.log('META DATA:', metaData);
+        console.log('Full Form Object:', allData);
 
         // Send AJAX request
         $.ajax({
