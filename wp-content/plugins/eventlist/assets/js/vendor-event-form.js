@@ -310,61 +310,98 @@ jQuery(document).ready(function ($) {
         // Serialize form data
         var formData = $form.serializeArray();
 
-        // Prepare data object
+        // Prepare data objects
         var postData = {};
         var metaData = {};
 
+        // Process each field
         formData.forEach(function (field) {
             var name = field.name;
             var value = field.value;
 
-            // Post data fields
+            // Post-level fields
             if (name === 'post_id' || name === 'event_id' || name === 'el_edit_event_nonce' ||
-                name === 'event_status' || name === 'name_event' || name === 'content_event' ||
-                name === 'event_cat' || name === 'event_password' || name === 'img_thumbnail') {
+                name === 'event_status' || name === 'event_password') {
                 postData[name] = value;
-            } else {
-                // Clean the field name (remove prefixes like 'event_')
-                var cleanName = name.replace(/^(event_|ova_mb_event_)/, '');
+            }
+            // Special post data fields without prefix
+            else if (name === 'post_title' || name === 'name_event') {
+                postData['name_event'] = value;
+            }
+            else if (name === 'content_event') {
+                postData['content_event'] = value;
+            }
+            else if (name === 'event_cat') {
+                postData['event_cat'] = value;
+            }
+            else if (name === '_thumbnail_id' || name === 'img_thumbnail') {
+                postData['img_thumbnail'] = value;
+            }
+            // All other fields go to meta_data
+            else {
+                // Remove 'event_' or 'ova_mb_event_' prefix if present
+                var cleanName = name.replace(/^event_/, '').replace(/^ova_mb_event_/, '');
 
-                // Handle array fields
+                // Handle array fields (those with [])
                 if (name.includes('[')) {
-                    // Complex field handling would go here
-                    if (!metaData[cleanName]) {
-                        metaData[cleanName] = [];
+                    // Keep the full structure for arrays
+                    if (!metaData[name]) {
+                        metaData[name] = value;
                     }
-                    metaData[cleanName].push(value);
                 } else {
                     metaData[cleanName] = value;
                 }
             }
         });
 
+        // Debug: log what we're sending
+        console.log('POST DATA:', postData);
+        console.log('META DATA:', metaData);
+
         // Send AJAX request
         $.ajax({
             url: ajax_object.ajax_url,
             type: 'POST',
+            dataType: 'json',
             data: {
                 action: 'el_save_edit_event',
                 data: postData,
                 meta_data: metaData
             },
             success: function (response) {
+                console.log('AJAX Response:', response);
                 $saveBtn.prop('disabled', false).removeClass('loading');
 
                 if (response.url) {
-                    // Redirect after save
-                    window.location.href = response.url;
+                    // Show success toast then redirect
+                    if (typeof ToastNotification !== 'undefined') {
+                        ToastNotification.success('Événement sauvegardé avec succès !');
+                    }
+                    setTimeout(function () {
+                        window.location.href = response.url;
+                    }, 1000);
                 } else if (response.status === 'error') {
-                    alert(response.message || 'Une erreur est survenue lors de la sauvegarde.');
+                    if (typeof ToastNotification !== 'undefined') {
+                        ToastNotification.error(response.message || 'Une erreur est survenue lors de la sauvegarde.');
+                    } else {
+                        alert(response.message || 'Une erreur est survenue lors de la sauvegarde.');
+                    }
                 } else {
-                    alert('Événement sauvegardé avec succès!');
+                    if (typeof ToastNotification !== 'undefined') {
+                        ToastNotification.success('Événement sauvegardé avec succès !');
+                    } else {
+                        alert('Événement sauvegardé avec succès!');
+                    }
                 }
             },
             error: function (xhr, status, error) {
                 $saveBtn.prop('disabled', false).removeClass('loading');
                 console.error('Save error:', error);
-                alert('Erreur lors de la sauvegarde. Veuillez réessayer.');
+                if (typeof ToastNotification !== 'undefined') {
+                    ToastNotification.error('Erreur lors de la sauvegarde. Veuillez réessayer.');
+                } else {
+                    alert('Erreur lors de la sauvegarde. Veuillez réessayer.');
+                }
             }
         });
     }
