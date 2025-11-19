@@ -395,26 +395,42 @@ jQuery(document).ready(function ($) {
                 console.log('AJAX Response:', response);
                 $saveBtn.prop('disabled', false).removeClass('loading');
 
-                if (response.url) {
-                    // Show success toast then redirect
+                // Handle successful save
+                if (response.status === 'updated' || response.url) {
                     if (typeof ToastNotification !== 'undefined') {
                         ToastNotification.success('Événement sauvegardé avec succès !');
                     }
-                    setTimeout(function () {
-                        window.location.href = response.url;
-                    }, 1000);
-                } else if (response.status === 'error') {
+
+                    // If we have a URL, redirect to it
+                    if (response.url) {
+                        setTimeout(function () {
+                            window.location.href = response.url;
+                        }, 1000);
+                    } else {
+                        // Otherwise just reload the page
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                    }
+                }
+                // Handle errors
+                else if (response.status === 'error' || response.status === 'error_description_too_short') {
                     if (typeof ToastNotification !== 'undefined') {
                         ToastNotification.error(response.message || 'Une erreur est survenue lors de la sauvegarde.');
                     } else {
                         alert(response.message || 'Une erreur est survenue lors de la sauvegarde.');
                     }
-                } else {
+                }
+                // Fallback for any other success case
+                else {
                     if (typeof ToastNotification !== 'undefined') {
                         ToastNotification.success('Événement sauvegardé avec succès !');
                     } else {
                         alert('Événement sauvegardé avec succès!');
                     }
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
                 }
             },
             error: function (xhr, status, error) {
