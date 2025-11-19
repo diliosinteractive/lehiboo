@@ -1,20 +1,23 @@
-# Verification Walkthrough: Refactored Event Form
+# Verification Walkthrough: Refactored Event Form (Profile Style)
 
-This guide outlines the steps to verify the new "One Page" event creation/editing form in the Partner Backoffice.
+This guide outlines the steps to verify the new "One Page" event creation/editing form, which now matches the "Mon Profil" design.
 
 ## 1. Access & Layout Verification
 *   **Step**: Login as a Partner and navigate to **"Créer une activité"** (or edit an existing one).
 *   **Expected Result**:
-    *   The page loads with the **new multi-block layout**.
-    *   **Left Sidebar**: Displays navigation links (Informations générales, Présentation, Localisation, etc.).
-    *   **Sticky Footer**: A fixed bar at the bottom with "Aperçu", "Enregistrer", "Mettre en ligne" and a completion gauge.
+    *   The page loads with a **clean, card-based layout** similar to the Profile page.
+    *   **Left Sidebar**: 
+        *   Shows the event thumbnail and title at the top.
+        *   Navigation links with icons (Document, Image, Pin, Calendar, Ticket, Globe).
+        *   **Completion Widget**: A progress bar is now located in the sidebar (not the footer).
+    *   **Sticky Header**: A bar at the top of the form content with "Prévisualiser", "Enregistrer", and "Mettre en ligne".
 
 ## 2. Navigation Test
 *   **Step**: Click on the **"Localisation"** link in the left sidebar.
-    *   **Verify**: The page **smooth scrolls** to the Location section.
+    *   **Verify**: The page **smooth scrolls** to the Location section card.
     *   **Verify**: The "Localisation" link becomes **active** (highlighted).
 *   **Step**: Scroll manually up and down the page.
-    *   **Verify**: The sidebar links automatically update their active state (**ScrollSpy**) corresponding to the visible section.
+    *   **Verify**: The sidebar links automatically update their active state (**ScrollSpy**).
 
 ## 3. Section Logic Verification
 
@@ -45,18 +48,13 @@ This guide outlines the steps to verify the new "One Page" event creation/editin
     *   **Verify**: The password field slides up/hides.
 
 ## 4. Completion Gauge Test
-*   **Step**: Start with an empty form (or clear required fields like Title).
-    *   **Verify**: The gauge in the footer shows a low percentage (e.g., 0% or 10%).
-    *   **Verify**: The **"Mettre en ligne"** button is **disabled** (greyed out).
-*   **Step**: Fill in required fields:
-    *   Title ("Nom de l'événement")
-    *   Category
-    *   Description
-    *   Featured Image
-    *   Location/Online Link
-*   **Verify**: The gauge percentage **increases** as you fill fields.
-*   **Verify**: Once sufficient fields are filled (approx > 80%), the **"Mettre en ligne"** button becomes **enabled**.
+*   **Step**: Start with an empty form.
+    *   **Verify**: The gauge in the **sidebar** shows a low percentage.
+    *   **Verify**: The **"Mettre en ligne"** button in the sticky header is **disabled**.
+*   **Step**: Fill in required fields.
+*   **Verify**: The gauge percentage **increases**.
+*   **Verify**: Once sufficient fields are filled, the **"Mettre en ligne"** button becomes **enabled** (orange).
 
 ## 5. Submission
-*   **Step**: Click **"Enregistrer"**.
+*   **Step**: Click **"Enregistrer"** in the sticky header.
     *   **Verify**: The page reloads (or AJAX saves) and the data is persisted.

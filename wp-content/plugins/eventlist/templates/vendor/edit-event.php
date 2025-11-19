@@ -2,6 +2,11 @@
 
 $post_id = isset( $_REQUEST['id'] ) ? sanitize_text_field( $_REQUEST['id'] ) : '';
 
+// Get Event Data for Sidebar Header
+$event_title = get_the_title($post_id);
+if(empty($event_title)) $event_title = __('Nouvel événement', 'eventlist');
+$event_img_id = get_post_thumbnail_id($post_id);
+$event_img_url = $event_img_id ? wp_get_attachment_image_url($event_img_id, 'thumbnail') : EL_PLUGIN_URI . 'assets/img/placeholder.png';
 
 ?>
 
@@ -9,101 +14,150 @@ $post_id = isset( $_REQUEST['id'] ) ? sanitize_text_field( $_REQUEST['id'] ) : '
 <link rel="stylesheet" href="<?php echo EL_PLUGIN_URI . 'assets/css/vendor-event-form.css'; ?>">
 <script src="<?php echo EL_PLUGIN_URI . 'assets/js/vendor-event-form.js'; ?>" defer></script>
 
-<div class="el-vendor-event-form-wrapper">
+<div class="vendor_wrap el-vendor-event-form-wrapper">
     
-    <form action="" method="post" id="el-vendor-event-form" enctype="multipart/form-data">
+    <!-- Sidebar Navigation (Styled like Profile) -->
+    <div class="profile_navigation_sidebar">
+        
+        <!-- Event Header in Sidebar -->
+        <div class="profile_user_header">
+            <div class="profile_avatar">
+                <img src="<?php echo esc_url($event_img_url); ?>" alt="<?php echo esc_attr($event_title); ?>">
+            </div>
+            <div class="profile_user_info">
+                <h3><?php echo esc_html($event_title); ?></h3>
+                <span class="event-status-badge"><?php echo get_post_status($post_id); ?></span>
+            </div>
+        </div>
 
-        <div class="el-vendor-layout">
+        <nav class="profile_tabs_nav el-anchor-nav">
+            <ul>
+                <li class="profile_tab_item active">
+                    <a href="#section_general">
+                        <i class="icon_document_alt"></i>
+                        <span><?php esc_html_e('Informations générales', 'eventlist'); ?></span>
+                        <i class="icon_check_alt2 status-icon"></i>
+                    </a>
+                </li>
+                <li class="profile_tab_item">
+                    <a href="#section_presentation">
+                        <i class="icon_image"></i>
+                        <span><?php esc_html_e('Présentation', 'eventlist'); ?></span>
+                        <i class="icon_check_alt2 status-icon"></i>
+                    </a>
+                </li>
+                <li class="profile_tab_item">
+                    <a href="#section_localisation">
+                        <i class="icon_pin_alt"></i>
+                        <span><?php esc_html_e('Localisation', 'eventlist'); ?></span>
+                        <i class="icon_check_alt2 status-icon"></i>
+                    </a>
+                </li>
+                <li class="profile_tab_item">
+                    <a href="#section_calendar">
+                        <i class="icon_calendar"></i>
+                        <span><?php esc_html_e('Créneaux', 'eventlist'); ?></span>
+                        <i class="icon_check_alt2 status-icon"></i>
+                    </a>
+                </li>
+                <li class="profile_tab_item">
+                    <a href="#section_ticket">
+                        <i class="icon_ticket"></i>
+                        <span><?php esc_html_e('Billetterie', 'eventlist'); ?></span>
+                        <i class="icon_check_alt2 status-icon"></i>
+                    </a>
+                </li>
+                <li class="profile_tab_item">
+                    <a href="#section_publication">
+                        <i class="icon_globe"></i>
+                        <span><?php esc_html_e('Publication', 'eventlist'); ?></span>
+                        <i class="icon_check_alt2 status-icon"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Sidebar Completion Widget -->
+        <div class="sidebar-completion-widget">
+            <h4><?php esc_html_e('Complétion de la fiche', 'eventlist'); ?></h4>
+            <div class="el-completion-bar">
+                <div class="el-completion-fill" id="el-completion-fill-sidebar" style="width: 0%;"></div>
+            </div>
+            <span class="el-completion-percent" id="el-completion-percent-sidebar">0%</span>
+        </div>
+
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="profile_content_area">
+        
+        <form action="" method="post" id="el-vendor-event-form" enctype="multipart/form-data">
             
-            <!-- Sidebar Navigation -->
-            <aside class="el-vendor-sidebar">
-                <nav class="el-anchor-nav">
-                    <ul>
-                        <li><a href="#section-general" class="active"><?php esc_html_e( 'Informations générales', 'eventlist' ); ?></a></li>
-                        <li><a href="#section-presentation"><?php esc_html_e( 'Présentation', 'eventlist' ); ?></a></li>
-                        <li><a href="#section-localisation"><?php esc_html_e( 'Localisation', 'eventlist' ); ?></a></li>
-                        <li><a href="#section-calendar"><?php esc_html_e( 'Créneaux', 'eventlist' ); ?></a></li>
-                        <li><a href="#section-ticket"><?php esc_html_e( 'Billetterie', 'eventlist' ); ?></a></li>
-                        <li><a href="#section-publication"><?php esc_html_e( 'Publication', 'eventlist' ); ?></a></li>
-                        <!-- Future: Co-organizers -->
-                    </ul>
-                </nav>
-            </aside>
-
-            <!-- Main Content -->
-            <main class="el-vendor-content">
-                
-                <!-- Section: General Info -->
-                <section id="section-general" class="el-form-section">
-                    <?php echo el_get_template( 'vendor/__edit-event-general.php', array( 'post_id' => $post_id, 'event_req_field' => $event_req_field ) ); ?>
-                </section>
-
-                <!-- Section: Presentation -->
-                <section id="section-presentation" class="el-form-section">
-                    <?php echo el_get_template( 'vendor/__edit-event-presentation.php', array( 'post_id' => $post_id, 'event_req_field' => $event_req_field ) ); ?>
-                </section>
-
-                <!-- Section: Localisation -->
-                <section id="section-localisation" class="el-form-section">
-                    <?php echo el_get_template( 'vendor/__edit-event-localisation.php', array( 'post_id' => $post_id, 'event_req_field' => $event_req_field ) ); ?>
-                </section>
-
-                <!-- Section: Calendar -->
-                <section id="section-calendar" class="el-form-section">
-                    <?php echo el_get_template( 'vendor/__edit-event-calendar.php', array( 'post_id' => $post_id, 'event_req_field' => $event_req_field ) ); ?>
-                </section>
-
-                <!-- Section: Ticket -->
-                <section id="section-ticket" class="el-form-section">
-                    <?php echo el_get_template( 'vendor/__edit-event-ticket.php', array( 'post_id' => $post_id, 'event_req_field' => $event_req_field ) ); ?>
-                </section>
-
-                <!-- Section: Publication -->
-                <section id="section-publication" class="el-form-section">
-                    <?php echo el_get_template( 'vendor/__edit-event-publication.php', array( 'post_id' => $post_id, 'event_req_field' => $event_req_field ) ); ?>
-                </section>
-
-                <?php wp_nonce_field( 'el_event_action', 'el_event_nonce' ); ?>
-                <input type="hidden" name="el_event_action" value="edit_event" />
-                <input type="hidden" name="post_id" value="<?php echo esc_attr( $post_id ); ?>" />
-
-            </main>
-
-        </div>
-
-        <!-- Sticky Footer Actions -->
-        <div class="el-vendor-sticky-footer">
-            <div class="el-completion-gauge-wrapper">
-                <div class="el-gauge-label"><?php esc_html_e( 'Complétion de la fiche', 'eventlist' ); ?></div>
-                <div class="el-gauge-bar">
-                    <div class="el-gauge-fill" style="width: 0%;" id="el-completion-fill"></div>
+            <!-- Sticky Header/Bar (Like Profile) -->
+            <div class="profile_sticky_bar">
+                <div class="sticky_bar_inner">
+                    <div class="sticky_bar_left">
+                        <h3><?php esc_html_e('Éditer l\'activité', 'eventlist'); ?></h3>
+                    </div>
+                    <div class="sticky_bar_right">
+                        <a href="<?php echo get_permalink($post_id); ?>" target="_blank" class="btn_preview_profile">
+                            <i class="icon_search"></i>
+                            <span><?php esc_html_e('Prévisualiser', 'eventlist'); ?></span>
+                        </a>
+                        <button type="submit" name="update_event" class="btn_save_profile" id="el-btn-save">
+                            <i class="icon_check"></i>
+                            <span><?php esc_html_e('Enregistrer', 'eventlist'); ?></span>
+                        </button>
+                        <button type="button" class="btn_save_profile btn_publish" id="el-btn-go-live" disabled>
+                            <i class="icon_cloud-upload_alt"></i>
+                            <span><?php esc_html_e('Mettre en ligne', 'eventlist'); ?></span>
+                        </button>
+                    </div>
                 </div>
-                <div class="el-gauge-percent" id="el-completion-percent">0%</div>
             </div>
 
-            <div class="el-form-actions">
-                <a href="<?php echo esc_url( get_permalink( $post_id ) ); ?>" target="_blank" class="button el-btn-preview">
-                    <?php esc_html_e( 'Prévisualiser', 'eventlist' ); ?>
-                </a>
+            <!-- Sections (Wrapped in tab-contents style divs) -->
+            <div class="event-form-sections-wrapper">
                 
-                <button type="submit" name="save_draft" class="button el-btn-save">
-                    <?php esc_html_e( 'Enregistrer', 'eventlist' ); ?>
-                </button>
+                <div id="section_general" class="event_section tab-contents active-section">
+                    <?php echo el_get_template( 'vendor/__edit-event-general.php' ); ?>
+                </div>
 
-                <button type="button" id="el-btn-go-live" class="button el-btn-publish" disabled>
-                    <?php esc_html_e( 'Mettre en ligne', 'eventlist' ); ?>
-                </button>
-                <input type="hidden" name="publish_event" id="publish_event_input" value="0">
+                <div id="section_presentation" class="event_section tab-contents active-section">
+                    <?php echo el_get_template( 'vendor/__edit-event-presentation.php' ); ?>
+                </div>
+
+                <div id="section_localisation" class="event_section tab-contents active-section">
+                    <?php echo el_get_template( 'vendor/__edit-event-localisation.php' ); ?>
+                </div>
+
+                <div id="section_calendar" class="event_section tab-contents active-section">
+                    <?php echo el_get_template( 'vendor/__edit-event-calendar.php' ); ?>
+                </div>
+
+                <div id="section_ticket" class="event_section tab-contents active-section">
+                    <?php echo el_get_template( 'vendor/__edit-event-ticket.php' ); ?>
+                </div>
+
+                <div id="section_publication" class="event_section tab-contents active-section">
+                    <?php echo el_get_template( 'vendor/__edit-event-publication.php' ); ?>
+                </div>
+
             </div>
-        </div>
 
-    </form>
+            <input type="hidden" name="event_id" value="<?php echo esc_attr($post_id); ?>">
+            <input type="hidden" name="el_update_event_nonce" value="<?php echo wp_create_nonce('el_update_event_nonce'); ?>">
+            <input type="hidden" name="post_status" id="publish_event_input" value="<?php echo get_post_status($post_id); ?>">
+
+        </form>
+    </div>
+
 </div>
 
 <script type="text/javascript">
-    // Simple inline script to handle Go Live button click for now
+    // Handle Go Live
     document.getElementById('el-btn-go-live').addEventListener('click', function() {
-        document.getElementById('publish_event_input').value = '1';
+        document.getElementById('publish_event_input').value = 'publish';
         document.getElementById('el-vendor-event-form').submit();
     });
 </script>
