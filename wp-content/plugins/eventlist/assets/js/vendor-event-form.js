@@ -316,8 +316,17 @@ jQuery(document).ready(function ($) {
                 var name = field.name;
                 var value = field.value;
 
+                // Handle fields with [] notation (arrays like select multiple)
+                if (name.endsWith('[]')) {
+                    // Remove the [] and store as array
+                    var cleanName = name.replace(/\[\]$/, '');
+                    if (!obj[cleanName]) {
+                        obj[cleanName] = [];
+                    }
+                    obj[cleanName].push(value);
+                }
                 // Handle array notation field[index][subfield]
-                if (name.indexOf('[') !== -1) {
+                else if (name.indexOf('[') !== -1) {
                     var keys = name.split(/\[|\]\[|\]/).filter(function (k) { return k; });
                     var current = obj;
 
