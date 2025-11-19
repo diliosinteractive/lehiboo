@@ -2,132 +2,201 @@
 
 /**
  * Template: Informations générales de l'événement
- * Contient: Nom, Catégorie, Taxonomies personnalisées, Tags
+ * Contient: Nom, Catégorie, Type, Public, Thématiques, Tags, Saisons, Émotions, Activités associées
  */
 
 $post_id = isset( $_REQUEST['id'] ) ? sanitize_text_field( $_REQUEST['id'] ) : '';
 $_prefix = OVA_METABOX_EVENT;
 
-// Get selected cat
-$get_cat_selected = get_the_terms( $post_id, 'event_cat' ) ? get_the_terms( $post_id, 'event_cat' ) : '';
-$cats_selected = array();
-if ($get_cat_selected != '') {
-	foreach ($get_cat_selected as $key => $value) {
-		$cats_selected[] = $value->term_id;
-	}
-}
-
-// Get selected tags
-$get_tag_selected = get_the_terms( $post_id, 'event_tag' ) ? get_the_terms( $post_id, 'event_tag' ) : '';
-$tags_name_selected = array();
-if ($get_tag_selected != '') {
-	$i = 0;
-	foreach ($get_tag_selected as $key => $value) {
-		$tags_name_selected[] = $value->name;
-		if ($i++ == 5) break;
-	}
-}
-
 $the_post = get_post( $post_id );
 $post_title = empty( $post_id ) ? '' : $the_post->post_title;
 
-$list_taxonomy = EL_Post_Types::register_taxonomies_customize();
+// Helper function to get terms safely
+function el_get_terms_safe($post_id, $taxonomy) {
+    $terms = get_the_terms($post_id, $taxonomy);
+    if ($terms && !is_wp_error($terms)) {
+        return wp_list_pluck($terms, 'term_id');
+    }
+    return array();
+}
+
+$selected_cats = el_get_terms_safe($post_id, 'event_cat');
+$selected_types = el_get_terms_safe($post_id, 'event_type');
+$selected_public = el_get_terms_safe($post_id, 'event_public');
+$selected_thematiques = el_get_terms_safe($post_id, 'event_thematique');
+$selected_tags = el_get_terms_safe($post_id, 'event_tag');
+$selected_saisons = el_get_terms_safe($post_id, 'event_saison');
+$selected_emotions = el_get_terms_safe($post_id, 'event_emotion');
+
+// Related events (Meta)
+$related_events = get_post_meta($post_id, $_prefix . 'related_events', true);
 
 ?>
 
-<input type="hidden" value="<?php echo esc_attr( $post_id ); ?>" id="post_id" name="post_id"/>
-<input type="hidden" class="prefix" value="<?php echo esc_attr(OVA_METABOX_EVENT); ?>">
+<div class="event_basic_block">
+    <h4 class="heading_section"><?php esc_html_e( 'Informations générales', 'eventlist' ); ?></h4>
+    
+    <!-- Nom de l'activité -->
+    <div class="vendor_field">
+        <label for="name_event">
+            <?php esc_html_e( 'Nom de l\'activité', 'eventlist' ); ?>
+            <span class="el_req">*</span>
+        </label>
+        <input type="text" id="name_event" name="name_event" value="<?php echo esc_attr( $post_title ); ?>" placeholder="<?php esc_html_e( 'Saisir le titre', 'eventlist' ); ?>" required>
+    </div>
 
-<!-- Basic -->
-<div class="basic_info event_basic_block">
-	<h4 class="heading_section"><?php esc_html_e( 'Informations de base', 'eventlist' ); ?></h4>
-	<!-- alert -->
-	<div class="event_basic_block_alert"></div>
+    <!-- Catégorie -->
+    <div class="vendor_field">
+        <label for="event_cat">
+            <?php esc_html_e( 'Catégorie', 'eventlist' ); ?>
+            <span class="el_req">*</span>
+        </label>
+        <?php
+        $selected_cat = !empty($selected_cats) ? $selected_cats[0] : '';
+        el_get_taxonomy3('event_cat', 'event_cat', $selected_cat, true); 
+        ?>
+    </div>
 
-	<div class="wrap_name_event vendor_field">
-		<label for="name_event" ><?php esc_html_e( 'Nom de l\'événement', 'eventlist' ); ?></label>
-		<input type="text" id="name_event" name="name_event" value="<?php echo esc_attr( $post_title ); ?>" placeholder="<?php esc_html_e( 'Saisir le titre', 'eventlist' ); ?>" autocomplete="one-time-code" required>
-	</div>
+    <!-- Type d'événement -->
+    <div class="vendor_field">
+        <label for="event_type">
+            <?php esc_html_e( 'Type d\'événement', 'eventlist' ); ?>
+            <span class="el_req">*</span>
+        </label>
+        <select name="event_type" id="event_type" class="selectpicker" required>
+            <option value=""><?php esc_html_e( '--- Sélectionner ---', 'eventlist' ); ?></option>
+            <?php
+            $types = get_terms(array('taxonomy' => 'event_type', 'hide_empty' => false));
+            if (!is_wp_error($types)) {
+                foreach ($types as $term) {
+                    $selected = in_array($term->term_id, $selected_types) ? 'selected' : '';
+                    echo '<option value="' . esc_attr($term->term_id) . '" ' . $selected . '>' . esc_html($term->name) . '</option>';
+                }
+            }
+            ?>
+        </select>
+    </div>
 
-	<div class="wrap_cat vendor_field">
-		<label for="event_cat"><?php esc_html_e( 'Catégorie', 'eventlist' ); ?></label>
+    <!-- Public visé -->
+    <div class="vendor_field">
+        <label for="event_public">
+            <?php esc_html_e( 'Public visé', 'eventlist' ); ?>
+            <span class="el_req">*</span>
+        </label>
+        <select name="event_public[]" id="event_public" class="selectpicker" multiple required>
+            <?php
+            $publics = get_terms(array('taxonomy' => 'event_public', 'hide_empty' => false, 'parent' => 0));
+            if (!is_wp_error($publics)) {
+                foreach ($publics as $parent) {
+                    echo '<optgroup label="' . esc_attr($parent->name) . '">';
+                    // Check children
+                    $children = get_terms(array('taxonomy' => 'event_public', 'hide_empty' => false, 'parent' => $parent->term_id));
+                    if (!empty($children) && !is_wp_error($children)) {
+                        foreach ($children as $child) {
+                            $selected = in_array($child->term_id, $selected_public) ? 'selected' : '';
+                            echo '<option value="' . esc_attr($child->term_id) . '" ' . $selected . '>' . esc_html($child->name) . '</option>';
+                        }
+                    } else {
+                         // If no children, display parent as option (or maybe logic differs)
+                         $selected = in_array($parent->term_id, $selected_public) ? 'selected' : '';
+                         echo '<option value="' . esc_attr($parent->term_id) . '" ' . $selected . '>' . esc_html($parent->name) . '</option>';
+                    }
+                    echo '</optgroup>';
+                }
+            }
+            ?>
+        </select>
+    </div>
 
-		<?php
-		$selected_opt = ! empty( $cats_selected ) ? $cats_selected[0] : '';
-		$required = true;
-		el_get_taxonomy3('event_cat', 'event_cat', $selected_opt, $required ); ?>
-	</div>
+    <!-- Thématiques -->
+    <div class="vendor_field">
+        <label for="event_thematique"><?php esc_html_e( 'Thématiques', 'eventlist' ); ?></label>
+        <select name="event_thematique[]" id="event_thematique" class="selectpicker" multiple>
+            <?php
+            $terms = get_terms(array('taxonomy' => 'event_thematique', 'hide_empty' => false));
+            if (!is_wp_error($terms)) {
+                foreach ($terms as $term) {
+                    $selected = in_array($term->term_id, $selected_thematiques) ? 'selected' : '';
+                    echo '<option value="' . esc_attr($term->term_id) . '" ' . $selected . '>' . esc_html($term->name) . '</option>';
+                }
+            }
+            ?>
+        </select>
+    </div>
 
-	<?php
-	$arr_list_slug_taxonomy = [];
-	$el_custom_taxonomy_required = apply_filters( 'el_custom_taxonomy_required', array() );
-	if( $list_taxonomy ) {
-		foreach( $list_taxonomy as $taxonomy ) {
+    <!-- Événements (Tags) -->
+    <div class="vendor_field">
+        <label for="event_tag"><?php esc_html_e( 'Événements', 'eventlist' ); ?></label>
+        <select name="event_tag[]" id="event_tag" class="selectpicker" multiple>
+            <?php
+            $terms = get_terms(array('taxonomy' => 'event_tag', 'hide_empty' => false));
+            if (!is_wp_error($terms)) {
+                foreach ($terms as $term) {
+                    $selected = in_array($term->term_id, $selected_tags) ? 'selected' : '';
+                    echo '<option value="' . esc_attr($term->term_id) . '" ' . $selected . '>' . esc_html($term->name) . '</option>';
+                }
+            }
+            ?>
+        </select>
+    </div>
 
-			$exclude_tax = apply_filters( 'el_exclude_custom_taxonomy', array() );
+    <!-- Saisons -->
+    <div class="vendor_field">
+        <label for="event_saison"><?php esc_html_e( 'Saisons', 'eventlist' ); ?></label>
+        <select name="event_saison[]" id="event_saison" class="selectpicker" multiple>
+            <?php
+            $terms = get_terms(array('taxonomy' => 'event_saison', 'hide_empty' => false));
+            if (!is_wp_error($terms)) {
+                foreach ($terms as $term) {
+                    $selected = in_array($term->term_id, $selected_saisons) ? 'selected' : '';
+                    echo '<option value="' . esc_attr($term->term_id) . '" ' . $selected . '>' . esc_html($term->name) . '</option>';
+                }
+            }
+            ?>
+        </select>
+    </div>
 
-			if ( ! current_user_can('administrator') && in_array( $taxonomy['slug'], $exclude_tax ) ) {
-				continue;
-			}
+    <!-- Émotions -->
+    <div class="vendor_field">
+        <label for="event_emotion"><?php esc_html_e( 'Émotions', 'eventlist' ); ?></label>
+        <select name="event_emotion[]" id="event_emotion" class="selectpicker" multiple>
+            <?php
+            $terms = get_terms(array('taxonomy' => 'event_emotion', 'hide_empty' => false));
+            if (!is_wp_error($terms)) {
+                foreach ($terms as $term) {
+                    $selected = in_array($term->term_id, $selected_emotions) ? 'selected' : '';
+                    echo '<option value="' . esc_attr($term->term_id) . '" ' . $selected . '>' . esc_html($term->name) . '</option>';
+                }
+            }
+            ?>
+        </select>
+    </div>
 
-			$arr_list_slug_taxonomy[] = $taxonomy['slug'];
-			$taxonomys = el_get_taxonomy( $taxonomy['slug'] );
+    <!-- Activités associées -->
+    <div class="vendor_field">
+        <label for="related_events"><?php esc_html_e( 'Activités à associer', 'eventlist' ); ?></label>
+        <input type="text" id="related_events_search" placeholder="<?php esc_html_e( 'Rechercher une activité...', 'eventlist' ); ?>">
+        <div id="related_events_container">
+            <!-- Selected related events will appear here -->
+            <?php
+            if (!empty($related_events)) {
+                $related_ids = explode(',', $related_events);
+                foreach ($related_ids as $rid) {
+                    if ($rid) {
+                        echo '<div class="related-event-item" data-id="' . esc_attr($rid) . '">' . get_the_title($rid) . ' <span class="remove-related">x</span></div>';
+                    }
+                }
+            }
+            ?>
+        </div>
+        <input type="hidden" name="<?php echo esc_attr($_prefix . 'related_events'); ?>" id="related_events" value="<?php echo esc_attr($related_events); ?>">
+    </div>
 
-			$get_taxonomy_select = get_the_terms( $post_id, $taxonomy['slug'] ) ? get_the_terms( $post_id, $taxonomy['slug'] ) : '';
-
-			$tax_selected = [];
-			if ( $get_taxonomy_select != '' ) {
-				foreach ($get_taxonomy_select as $key => $value) {
-					$tax_selected[] = $value->term_id;
-				}
-			}
-			?>
-			<div class="wrap_<?php echo esc_attr( $taxonomy['slug'] ); ?> el_custom_taxonomy vendor_field ">
-				<label for="<?php echo esc_attr( $taxonomy['slug'] ); ?>"><?php echo esc_attr( $taxonomy['name'] ); ?>
-					<?php if ( in_array( $taxonomy['slug'], $el_custom_taxonomy_required ) ): ?>
-						<span class="el_req">*</span>
-					<?php endif; ?>
-				</label>
-				<?php
-				// V1 Le Hiboo - Sélection unique pour thématique et saison, multiple pour événements spéciaux
-				$single_select_taxonomies = array( 'event_thematique', 'event_saison' );
-				$is_single = in_array( $taxonomy['slug'], $single_select_taxonomies );
-				$multiple_attr = $is_single ? '' : 'multiple="multiple"';
-				?>
-				<select name="<?php echo esc_attr( $taxonomy['slug'] ) ?>" id="<?php echo esc_attr( $taxonomy['slug'] ); ?>" class="selectpicker" <?php echo $multiple_attr; ?> >
-					<option value="" ><?php esc_html_e( '--- Sélectionner ---', 'eventlist' ); ?></option>
-				<?php foreach ( $taxonomys as $tax ) {
-
-					if ( $get_taxonomy_select != '' ) { ?>
-						<option value="<?php echo esc_attr( $tax->term_id ); ?>" <?php echo in_array($tax->term_id, $tax_selected) ? esc_attr( 'selected' ) : ''; ?> ><?php echo esc_html( $tax->name ); ?></option>
-					<?php } else { ?>
-						<option value="<?php echo esc_attr( $tax->term_id ); ?>" ><?php echo esc_html( $tax->name ); ?></option>
-					<?php }
-
-				} ?>
-				</select>
-			</div>
-			<?php
-		}
-	} ?>
-	<input type="hidden" id="el_list_slug_taxonomy" value="<?php echo esc_attr( json_encode( $arr_list_slug_taxonomy ) ); ?>">
-	<input type="hidden" id="el_custom_taxonomy_required" value="<?php echo esc_attr( json_encode( $el_custom_taxonomy_required ) ); ?>">
-	<input type="hidden" id="el_list_taxonomy" value="<?php echo esc_attr( json_encode( $list_taxonomy ) ); ?>" data-mess="<?php esc_attr_e( '[taxonomy_name] est requis.', 'eventlist' ); ?>">
-
-	<div class="wrap_tag vendor_field">
-		<label for="event_tag">
-			<?php esc_html_e( 'Tags', 'eventlist' ); ?>
-			<?php if ( apply_filters( 'el_event_tag_req', false, $args ) == true ): ?>
-				<span class="el_req">*</span>
-			<?php endif; ?>
-		</label>
-		<?php if ( $post_id != '' ) { ?>
-			<input type="text" class="event_tag" id="event_tag" value="<?php echo esc_attr( implode(", ", $tags_name_selected) ); ?>" placeholder="<?php esc_html_e( 'Musique, Festival, Culture', 'eventlist' ); ?>" autocomplete="off" autocorrect="off" autocapitalize="none">
-			<span><?php esc_html_e( '(max: 6 tags)', 'eventlist' ); ?></span>
-		<?php } else { ?>
-			<input type="text" class="event_tag" id="event_tag" value="" placeholder="<?php esc_html_e( 'Musique, Festival, Culture', 'eventlist' ); ?>" autocomplete="off" autocorrect="off" autocapitalize="none">
-			<span><?php esc_html_e( '(max: 6 tags)', 'eventlist' ); ?></span>
-		<?php } ?>
-	</div>
+    <!-- Co-organisateurs CTA -->
+    <div class="vendor_field">
+        <p>
+            <a href="#organiser_tab" class="button button-secondary"><?php esc_html_e( 'Gérer les co-organisateurs', 'eventlist' ); ?></a>
+        </p>
+    </div>
 
 </div>
