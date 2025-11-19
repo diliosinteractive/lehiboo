@@ -328,7 +328,7 @@ jQuery(document).ready(function ($) {
             else if (name === 'post_title' || name === 'name_event') {
                 postData['name_event'] = value;
             }
-            else if (name === 'content_event') {
+            else if (name === 'content_event' || name === 'el_content_event') {
                 postData['content_event'] = value;
             }
             else if (name === 'event_cat') {
