@@ -282,4 +282,91 @@ jQuery(document).ready(function ($) {
     // Initial check
     setTimeout(updateCompletionGauge, 1000);
 
+
+    /* ==========================================================================
+       4. AJAX Save Logic
+       ========================================================================== */
+
+    // Handle Save Button Click
+    $('#el-btn-save').on('click', function (e) {
+        e.preventDefault();
+        saveEvent();
+    });
+
+    // Handle Go Live Button Click  
+    $('#el-btn-go-live').on('click', function (e) {
+        e.preventDefault();
+        $('#publish_event_input').val('publish');
+        saveEvent();
+    });
+
+    function saveEvent() {
+        var $form = $('#el-vendor-event-form');
+        var $saveBtn = $('#el-btn-save');
+
+        // Disable button during save
+        $saveBtn.prop('disabled', true).addClass('loading');
+
+        // Serialize form data
+        var formData = $form.serializeArray();
+
+        // Prepare data object
+        var postData = {};
+        var metaData = {};
+
+        formData.forEach(function (field) {
+            var name = field.name;
+            var value = field.value;
+
+            // Post data fields
+            if (name === 'post_id' || name === 'event_id' || name === 'el_edit_event_nonce' ||
+                name === 'event_status' || name === 'name_event' || name === 'content_event' ||
+                name === 'event_cat' || name === 'event_password' || name === 'img_thumbnail') {
+                postData[name] = value;
+            } else {
+                // Clean the field name (remove prefixes like 'event_')
+                var cleanName = name.replace(/^(event_|ova_mb_event_)/, '');
+
+                // Handle array fields
+                if (name.includes('[')) {
+                    // Complex field handling would go here
+                    if (!metaData[cleanName]) {
+                        metaData[cleanName] = [];
+                    }
+                    metaData[cleanName].push(value);
+                } else {
+                    metaData[cleanName] = value;
+                }
+            }
+        });
+
+        // Send AJAX request
+        $.ajax({
+            url: ajax_object.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'el_save_edit_event',
+                data: postData,
+                meta_data: metaData
+            },
+            success: function (response) {
+                $saveBtn.prop('disabled', false).removeClass('loading');
+
+                if (response.url) {
+                    // Redirect after save
+                    window.location.href = response.url;
+                } else if (response.status === 'error') {
+                    alert(response.message || 'Une erreur est survenue lors de la sauvegarde.');
+                } else {
+                    alert('Événement sauvegardé avec succès!');
+                }
+            },
+            error: function (xhr, status, error) {
+                $saveBtn.prop('disabled', false).removeClass('loading');
+                console.error('Save error:', error);
+                alert('Erreur lors de la sauvegarde. Veuillez réessayer.');
+            }
+        });
+    }
+
 });

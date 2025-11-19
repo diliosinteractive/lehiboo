@@ -158,8 +158,9 @@ $event_img_url = $event_img_id ? wp_get_attachment_image_url($event_img_id, 'thu
                     </div>
 
                     <input type="hidden" name="event_id" value="<?php echo esc_attr($post_id); ?>">
-                    <input type="hidden" name="el_update_event_nonce" value="<?php echo wp_create_nonce('el_update_event_nonce'); ?>">
-                    <input type="hidden" name="post_status" id="publish_event_input" value="<?php echo get_post_status($post_id); ?>">
+                    <input type="hidden" name="post_id" value="<?php echo esc_attr($post_id); ?>">
+                    <input type="hidden" name="el_edit_event_nonce" value="<?php echo wp_create_nonce('el_edit_event_nonce'); ?>">
+                    <input type="hidden" name="event_status" id="publish_event_input" value="<?php echo get_post_status($post_id); ?>">
 
                 </form>
             </div>
@@ -168,15 +169,3 @@ $event_img_url = $event_img_id ? wp_get_attachment_image_url($event_img_id, 'thu
     </div> <!-- End .contents -->
 
 </div> <!-- End .vendor_wrap -->
-
-<script type="text/javascript">
-    // Handle Go Live
-    document.getElementById('el-btn-go-live').addEventListener('click', function() {
-        document.getElementById('publish_event_input').value = 'publish';
-        document.getElementById('el-vendor-event-form').submit();
-    });
-    // Handle Save
-    document.getElementById('el-btn-save').addEventListener('click', function() {
-        document.getElementById('el-vendor-event-form').submit();
-    });
-</script>
