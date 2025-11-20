@@ -2508,6 +2508,12 @@ if( !class_exists( 'El_Ajax' ) ){
 				/* Custom Taxonomy */
 				if( ! empty( $data_taxonomy ) ){
 					foreach( $data_taxonomy as $slug_taxonomy => $val_taxonomy ) {
+						// Convert term IDs to integers to prevent WP from treating them as slugs
+						if (is_array($val_taxonomy)) {
+							$val_taxonomy = array_map('intval', $val_taxonomy);
+						} else {
+							$val_taxonomy = intval($val_taxonomy);
+						}
 						wp_set_post_terms( $post_id, $val_taxonomy , $slug_taxonomy );
 					}
 				}
@@ -2515,6 +2521,10 @@ if( !class_exists( 'El_Ajax' ) ){
 
 				/* Tags */
 				if( ! empty( $event_tag ) ){
+					// Convert term IDs to integers
+					if (is_array($event_tag)) {
+						$event_tag = array_map('intval', $event_tag);
+					}
 					wp_set_post_terms( $post_id, $event_tag , 'event_tag' );
 				}
 

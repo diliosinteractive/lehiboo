@@ -611,17 +611,17 @@ class EL_Post_Types{
 
 		// Add new taxonomy, make it hierarchical (like tags)
 		$labels = array(
-			'name'              => _x( 'Tags', 'taxonomy general name', 'eventlist' ),
-			'singular_name'     => _x( 'Tag', 'taxonomy singular name', 'eventlist' ),
-			'search_items'      => __( 'Search Tag', 'eventlist' ),
-			'all_items'         => __( 'All Tags', 'eventlist' ),
-			'parent_item'       => __( 'Parent Tag', 'eventlist' ),
-			'parent_item_colon' => __( 'Parent Tag:', 'eventlist' ),
-			'edit_item'         => __( 'Edit Tag', 'eventlist' ),
-			'update_item'       => __( 'Update Tag', 'eventlist' ),
-			'add_new_item'      => __( 'Add New Tag', 'eventlist' ),
-			'new_item_name'     => __( 'New Tag', 'eventlist' ),
-			'menu_name'         => __( 'Tags', 'eventlist' )
+			'name'              => _x( 'Types d\'événement', 'taxonomy general name', 'eventlist' ),
+			'singular_name'     => _x( 'Type d\'événement', 'taxonomy singular name', 'eventlist' ),
+			'search_items'      => __( 'Rechercher un type d\'événement', 'eventlist' ),
+			'all_items'         => __( 'Tous les types d\'événement', 'eventlist' ),
+			'parent_item'       => __( 'Type d\'événement parent', 'eventlist' ),
+			'parent_item_colon' => __( 'Type d\'événement parent:', 'eventlist' ),
+			'edit_item'         => __( 'Modifier le type d\'événement', 'eventlist' ),
+			'update_item'       => __( 'Mettre à jour le type d\'événement', 'eventlist' ),
+			'add_new_item'      => __( 'Ajouter un type d\'événement', 'eventlist' ),
+			'new_item_name'     => __( 'Nouveau type d\'événement', 'eventlist' ),
+			'menu_name'         => __( 'Types d\'événement', 'eventlist' )
 		);
 
 		$args = array(
@@ -751,6 +751,76 @@ class EL_Post_Types{
 
 		$args = apply_filters( 'el_register_tax_event_saison', $args );
 		register_taxonomy( 'event_saison', array( 'event' ), $args );
+
+
+		// Taxonomy : Public visé
+		$labels = array(
+			'name'              => _x( 'Public visé', 'taxonomy general name', 'eventlist' ),
+			'singular_name'     => _x( 'Public', 'taxonomy singular name', 'eventlist' ),
+			'search_items'      => __( 'Rechercher un public', 'eventlist' ),
+			'all_items'         => __( 'Tous les publics', 'eventlist' ),
+			'parent_item'       => __( 'Public parent', 'eventlist' ),
+			'parent_item_colon' => __( 'Public parent:', 'eventlist' ),
+			'edit_item'         => __( 'Modifier le public', 'eventlist' ),
+			'update_item'       => __( 'Mettre à jour le public', 'eventlist' ),
+			'add_new_item'      => __( 'Ajouter un public', 'eventlist' ),
+			'new_item_name'     => __( 'Nouveau public', 'eventlist' ),
+			'menu_name'         => __( 'Public visé', 'eventlist' )
+		);
+
+		$args = array(
+			'hierarchical'      => true,
+			'public'            => true,
+			'labels'            => $labels,
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'query_var'         => true,
+			'capabilities'      => array ( 'post' ),
+			'show_in_rest'      => true,
+			'rewrite'           => array(
+				'slug'       => 'public-vise',
+				'with_front' => false,
+				'feeds'      => true,
+			),
+		);
+
+		$args = apply_filters( 'el_register_tax_event_public', $args );
+		register_taxonomy( 'event_public', array( 'event' ), $args );
+
+
+		// Taxonomy : Émotions
+		$labels = array(
+			'name'              => _x( 'Émotions', 'taxonomy general name', 'eventlist' ),
+			'singular_name'     => _x( 'Émotion', 'taxonomy singular name', 'eventlist' ),
+			'search_items'      => __( 'Rechercher une émotion', 'eventlist' ),
+			'all_items'         => __( 'Toutes les émotions', 'eventlist' ),
+			'parent_item'       => null,
+			'parent_item_colon' => null,
+			'edit_item'         => __( 'Modifier l\'émotion', 'eventlist' ),
+			'update_item'       => __( 'Mettre à jour l\'émotion', 'eventlist' ),
+			'add_new_item'      => __( 'Ajouter une émotion', 'eventlist' ),
+			'new_item_name'     => __( 'Nouvelle émotion', 'eventlist' ),
+			'menu_name'         => __( 'Émotions', 'eventlist' )
+		);
+
+		$args = array(
+			'hierarchical'      => false,
+			'public'            => true,
+			'labels'            => $labels,
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'query_var'         => true,
+			'capabilities'      => array ( 'post' ),
+			'show_in_rest'      => true,
+			'rewrite'           => array(
+				'slug'       => 'emotion',
+				'with_front' => false,
+				'feeds'      => true,
+			),
+		);
+
+		$args = apply_filters( 'el_register_tax_event_emotion', $args );
+		register_taxonomy( 'event_emotion', array( 'event' ), $args );
 
 		// Fin V1 Le Hiboo - Nouvelles taxonomies
 
