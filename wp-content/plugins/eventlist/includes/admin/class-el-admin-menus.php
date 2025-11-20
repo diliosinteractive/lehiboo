@@ -63,7 +63,7 @@ class El_Admin_Menus{
 
 		add_submenu_page( 'eventlist', esc_html__( 'Categories', 'eventlist' ), esc_html__( 'Categories', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_cat&post_type=event' );
 
-		add_submenu_page( 'eventlist', esc_html__( 'Tags', 'eventlist' ), esc_html__( 'Tags', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_tag&post_type=event' );
+		add_submenu_page( 'eventlist', esc_html__( 'Types d\'événement', 'eventlist' ), esc_html__( 'Types d\'événement', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_tag&post_type=event' );
 
 		// V1 Le Hiboo - Nouvelles taxonomies
 		add_submenu_page( 'eventlist', esc_html__( 'Thématiques', 'eventlist' ), esc_html__( 'Thématiques', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_thematique&post_type=event' );
@@ -71,6 +71,10 @@ class El_Admin_Menus{
 		add_submenu_page( 'eventlist', esc_html__( 'Événements Spéciaux', 'eventlist' ), esc_html__( 'Événements Spéciaux', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_special&post_type=event' );
 
 		add_submenu_page( 'eventlist', esc_html__( 'Saisons', 'eventlist' ), esc_html__( 'Saisons', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_saison&post_type=event' );
+
+		add_submenu_page( 'eventlist', esc_html__( 'Public visé', 'eventlist' ), esc_html__( 'Public visé', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_public&post_type=event' );
+
+		add_submenu_page( 'eventlist', esc_html__( 'Émotions', 'eventlist' ), esc_html__( 'Émotions', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_emotion&post_type=event' );
 
 		add_submenu_page( 'eventlist', esc_html__( 'Locations', 'eventlist' ), esc_html__( 'Locations', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_loc&post_type=event' );
 
