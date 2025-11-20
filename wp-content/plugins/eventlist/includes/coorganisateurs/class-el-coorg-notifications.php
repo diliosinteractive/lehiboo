@@ -34,16 +34,13 @@ class EL_Coorg_Notifications {
         $subject = sprintf( __( 'Invitation à devenir partenaire de %s', 'eventlist' ), $inviter_org_name );
 
         $message = sprintf(
-            __( 'Bonjour,%s%s%s%s souhaite vous ajouter comme organisation partenaire sur Le Hiboo.%s%sVous pouvez accepter ou refuser cette invitation dans votre espace partenaire :%s%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
+            __( 'Bonjour,%s%s souhaite vous ajouter comme organisation partenaire sur Le Hiboo.%sVous pouvez accepter ou refuser cette invitation dans votre espace partenaire :%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
             "\n\n",
             $inviter_org_name,
             "\n\n",
             "\n",
+            home_url( '/member-account/?vendor=partenariats' ),
             "\n\n",
-            "\n",
-            home_url( '/vendor/partenariats/' ),
-            "\n\n",
-            "\n",
             "\n"
         );
 
@@ -71,15 +68,12 @@ class EL_Coorg_Notifications {
         $subject = sprintf( __( 'Invitation à rejoindre Le Hiboo en tant que partenaire de %s', 'eventlist' ), $inviter_org_name );
 
         $message = sprintf(
-            __( 'Bonjour,%s%s%s%s souhaite collaborer avec vous sur Le Hiboo, la plateforme de gestion d\'événements.%s%sPour accepter cette invitation, veuillez créer un compte organisation sur Le Hiboo :%s%s%sUne fois votre compte créé, vous pourrez accepter ou refuser le partenariat.%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
+            __( 'Bonjour,%s%s souhaite collaborer avec vous sur Le Hiboo, la plateforme de gestion d\'événements.%sPour accepter cette invitation, veuillez créer un compte organisation sur Le Hiboo :%s%sUne fois votre compte créé, vous pourrez accepter ou refuser le partenariat.%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
             "\n\n",
             $inviter_org_name,
             "\n\n",
             "\n",
-            "\n\n",
-            "\n",
             home_url( '/inscription-partenaire/' ),
-            "\n\n",
             "\n\n",
             "\n",
             "\n"
@@ -111,17 +105,14 @@ class EL_Coorg_Notifications {
         $subject = sprintf( __( '%s a accepté votre invitation de partenariat', 'eventlist' ), $invitee_org_name );
 
         $message = sprintf(
-            __( 'Bonjour,%s%sBonne nouvelle ! %s a accepté votre invitation de partenariat.%s%sVous pouvez maintenant ajouter cette organisation comme co-organisateur sur vos événements.%s%sVoir mes partenariats :%s%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
+            __( 'Bonjour,%sBonne nouvelle ! %s a accepté votre invitation de partenariat.%sVous pouvez maintenant ajouter cette organisation comme co-organisateur sur vos événements.%sVoir mes partenariats :%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
             "\n\n",
-            "\n",
             $invitee_org_name,
             "\n\n",
-            "\n",
             "\n\n",
             "\n",
-            home_url( '/vendor/partenariats/' ),
+            home_url( '/member-account/?vendor=partenariats' ),
             "\n\n",
-            "\n",
             "\n"
         );
 
@@ -151,15 +142,13 @@ class EL_Coorg_Notifications {
         $subject = sprintf( __( '%s a refusé votre invitation de partenariat', 'eventlist' ), $invitee_org_name );
 
         $message = sprintf(
-            __( 'Bonjour,%s%s%s a refusé votre invitation de partenariat.%s%sVous pouvez consulter vos partenariats dans votre espace :%s%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
+            __( 'Bonjour,%s%s a refusé votre invitation de partenariat.%sVous pouvez consulter vos partenariats dans votre espace :%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
             "\n\n",
-            "\n",
             $invitee_org_name,
             "\n\n",
             "\n",
-            home_url( '/vendor/partenariats/' ),
+            home_url( '/member-account/?vendor=partenariats' ),
             "\n\n",
-            "\n",
             "\n"
         );
 
@@ -190,19 +179,16 @@ class EL_Coorg_Notifications {
         $subject = sprintf( __( 'Invitation à co-organiser "%s"', 'eventlist' ), $event->post_title );
 
         $message = sprintf(
-            __( 'Bonjour,%s%s%s vous invite à co-organiser l\'événement "%s".%s%sRôle : %s%s%sVous pouvez accepter ou refuser cette invitation dans votre espace :%s%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
+            __( 'Bonjour,%s%s vous invite à co-organiser l\'événement "%s".%sRôle : %s%sVous pouvez accepter ou refuser cette invitation dans votre espace :%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
             "\n\n",
-            "\n",
             $inviter_org_name,
             $event->post_title,
             "\n\n",
-            "\n",
             $coorg->role,
             "\n\n",
             "\n",
-            home_url( '/vendor/coorganisations/' ),
+            home_url( '/member-account/?vendor=coorganisations' ),
             "\n\n",
-            "\n",
             "\n"
         );
 
@@ -233,16 +219,14 @@ class EL_Coorg_Notifications {
         $subject = sprintf( __( '%s a accepté de co-organiser "%s"', 'eventlist' ), $invitee_org_name, $event->post_title );
 
         $message = sprintf(
-            __( 'Bonjour,%s%sBonne nouvelle ! %s a accepté votre invitation à co-organiser l\'événement "%s".%s%sVoir l\'événement :%s%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
+            __( 'Bonjour,%sBonne nouvelle ! %s a accepté votre invitation à co-organiser l\'événement "%s".%sVoir l\'événement :%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
             "\n\n",
-            "\n",
             $invitee_org_name,
             $event->post_title,
             "\n\n",
             "\n",
             get_permalink( $event->ID ),
             "\n\n",
-            "\n",
             "\n"
         );
 
@@ -273,16 +257,14 @@ class EL_Coorg_Notifications {
         $subject = sprintf( __( '%s a refusé de co-organiser "%s"', 'eventlist' ), $invitee_org_name, $event->post_title );
 
         $message = sprintf(
-            __( 'Bonjour,%s%s%s a refusé votre invitation à co-organiser l\'événement "%s".%s%sVoir l\'événement :%s%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
+            __( 'Bonjour,%s%s a refusé votre invitation à co-organiser l\'événement "%s".%sVoir l\'événement :%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
             "\n\n",
-            "\n",
             $invitee_org_name,
             $event->post_title,
             "\n\n",
             "\n",
             get_permalink( $event->ID ),
             "\n\n",
-            "\n",
             "\n"
         );
 
