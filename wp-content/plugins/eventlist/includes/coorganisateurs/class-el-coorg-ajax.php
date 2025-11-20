@@ -98,6 +98,15 @@ class EL_Coorg_Ajax {
             wp_send_json_error( array( 'message' => __( 'Veuillez sélectionner une organisation ou saisir un email', 'eventlist' ) ) );
         }
 
+        // Si aucun org_id n'est fourni mais qu'on a un email, vérifier si cet email existe déjà comme vendor
+        if ( empty( $org_id ) && ! empty( $email ) ) {
+            $user = get_user_by( 'email', $email );
+            if ( $user && user_can( $user, 'el_event_vendor' ) ) {
+                // L'utilisateur existe et est un vendor, utiliser son ID
+                $org_id = $user->ID;
+            }
+        }
+
         // Créer l'invitation
         $partnership_id = EL_Partnership::create_invitation(
             $current_user_id,
@@ -110,10 +119,12 @@ class EL_Coorg_Ajax {
             wp_send_json_error( array( 'message' => __( 'Impossible de créer l\'invitation. Un partenariat existe peut-être déjà.', 'eventlist' ) ) );
         }
 
-        // Envoyer la notification
+        // Envoyer la notification appropriée
         if ( $org_id > 0 ) {
+            // Utilisateur existant = email standard
             EL_Coorg_Notifications::send_partnership_invitation( $partnership_id );
         } else {
+            // Nouvel utilisateur = email "créer compte"
             EL_Coorg_Notifications::send_partnership_invitation_new_user( $partnership_id, $email );
         }
 
