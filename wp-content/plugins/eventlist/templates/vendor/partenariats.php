@@ -46,25 +46,15 @@ $partnerships_retirees = array_filter( $all_partnerships, function( $p ) { retur
                     <h3><?php esc_html_e( 'Inviter un partenaire', 'eventlist' ); ?></h3>
 
                     <div class="el_coorg_form_group">
-                        <label><?php esc_html_e( 'Rechercher une organisation', 'eventlist' ); ?></label>
-                        <input
-                            type="text"
-                            id="el_coorg_search_org"
-                            placeholder="<?php esc_attr_e( 'Tapez le nom ou l\'email...', 'eventlist' ); ?>"
-                            autocomplete="off"
-                        />
-                        <div id="el_coorg_search_results" class="el_coorg_search_results"></div>
-                    </div>
-
-                    <div class="el_coorg_form_group">
-                        <label><?php esc_html_e( 'Ou inviter par email', 'eventlist' ); ?></label>
+                        <label><?php esc_html_e( 'Email de l\'organisation', 'eventlist' ); ?></label>
                         <input
                             type="email"
                             id="el_coorg_invite_email"
                             placeholder="<?php esc_attr_e( 'email@organisation.fr', 'eventlist' ); ?>"
+                            required
                         />
                         <p class="el_coorg_help_text">
-                            <?php esc_html_e( 'Si l\'organisation n\'existe pas encore sur Le Hiboo, un email d\'invitation sera envoyé.', 'eventlist' ); ?>
+                            <?php esc_html_e( 'Un email d\'invitation sera envoyé à cette adresse. Si l\'organisation n\'a pas encore de compte, elle sera invitée à s\'inscrire.', 'eventlist' ); ?>
                         </p>
                     </div>
 
@@ -297,9 +287,7 @@ jQuery(document).ready(function($) {
     // Fermer le modal
     $('.el_coorg_modal_close').on('click', function() {
         $('#el_coorg_invite_modal').fadeOut();
-        $('#el_coorg_search_org').val('');
         $('#el_coorg_invite_email').val('');
-        $('#el_coorg_search_results').empty();
     });
 
     // Toggle historique
@@ -310,60 +298,19 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // Recherche d'organisations (autocomplete)
-    let searchTimeout;
-    $('#el_coorg_search_org').on('input', function() {
-        clearTimeout(searchTimeout);
-        const query = $(this).val();
+    // Envoyer l'invitation par email
+    $('#el_coorg_send_invite_btn').on('click', function() {
+        const email = $('#el_coorg_invite_email').val().trim();
 
-        if (query.length < 2) {
-            $('#el_coorg_search_results').empty();
+        if (!email) {
+            alert('<?php esc_html_e( 'Veuillez saisir une adresse email', 'eventlist' ); ?>');
             return;
         }
 
-        searchTimeout = setTimeout(function() {
-            $.ajax({
-                url: el_coorg_vars.ajax_url,
-                type: 'POST',
-                data: {
-                    action: 'el_search_organisations',
-                    nonce: el_coorg_vars.nonce,
-                    search: query
-                },
-                success: function(response) {
-                    if (response.success && response.data.organisations.length > 0) {
-                        let html = '<ul class="el_coorg_autocomplete">';
-                        response.data.organisations.forEach(function(org) {
-                            html += '<li data-org-id="' + org.id + '" data-org-name="' + org.name + '">';
-                            html += '<strong>' + org.name + '</strong><br>';
-                            html += '<small>' + org.email + '</small>';
-                            html += '</li>';
-                        });
-                        html += '</ul>';
-                        $('#el_coorg_search_results').html(html);
-                    } else {
-                        $('#el_coorg_search_results').html('<p class="el_coorg_no_results">' + el_coorg_vars.i18n.no_results + '</p>');
-                    }
-                }
-            });
-        }, 300);
-    });
-
-    // Sélection d'une organisation dans l'autocomplete
-    $(document).on('click', '.el_coorg_autocomplete li', function() {
-        const orgId = $(this).data('org-id');
-        const orgName = $(this).data('org-name');
-        $('#el_coorg_search_org').val(orgName).data('org-id', orgId);
-        $('#el_coorg_search_results').empty();
-    });
-
-    // Envoyer l'invitation
-    $('#el_coorg_send_invite_btn').on('click', function() {
-        const orgId = $('#el_coorg_search_org').data('org-id') || 0;
-        const email = $('#el_coorg_invite_email').val();
-
-        if (!orgId && !email) {
-            alert('Veuillez sélectionner une organisation ou saisir un email');
+        // Validation simple de l'email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('<?php esc_html_e( 'Veuillez saisir une adresse email valide', 'eventlist' ); ?>');
             return;
         }
 
@@ -375,7 +322,7 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'el_invite_partner',
                 nonce: el_coorg_vars.nonce,
-                org_id: orgId,
+                org_id: 0,
                 email: email
             },
             success: function(response) {
@@ -386,6 +333,10 @@ jQuery(document).ready(function($) {
                     alert(response.data.message);
                     $('#el_coorg_send_invite_btn').prop('disabled', false).text('<?php esc_html_e( 'Envoyer l\'invitation', 'eventlist' ); ?>');
                 }
+            },
+            error: function() {
+                alert('<?php esc_html_e( 'Une erreur s\'est produite', 'eventlist' ); ?>');
+                $('#el_coorg_send_invite_btn').prop('disabled', false).text('<?php esc_html_e( 'Envoyer l\'invitation', 'eventlist' ); ?>');
             }
         });
     });
