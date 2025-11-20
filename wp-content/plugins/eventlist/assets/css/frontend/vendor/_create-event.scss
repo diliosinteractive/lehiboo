@@ -598,13 +598,14 @@
 		color: #2d3748;
 		margin-bottom: 8px;
 		line-height: 1.4;
-
+/*
 		&.required::after,
 		&:has(+ input:required)::after {
 			content: ' *';
 			color: #ff6a3d;
 			font-weight: 600;
 		}
+		*/
 	}
 
 	// Groupes de champs pour meilleur espacement
