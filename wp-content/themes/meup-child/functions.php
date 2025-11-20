@@ -265,15 +265,13 @@ function meup_child_sync_taxonomy_count() {
         }
     }
 
-    // Mettre à jour l'option en base de données si nécessaire
-    if ( $max_taxonomy > 0 ) {
-        $options = get_option( 'ova_eventlist_general', array() );
+    // Mettre à jour l'option en base de données (même si c'est 0)
+    $options = get_option( 'ova_eventlist_general', array() );
 
-        // Mettre à jour uniquement si la valeur a changé
-        if ( ! isset( $options['el_total_taxonomy'] ) || $options['el_total_taxonomy'] != $max_taxonomy ) {
-            $options['el_total_taxonomy'] = $max_taxonomy;
-            update_option( 'ova_eventlist_general', $options );
-        }
+    // Mettre à jour si la valeur a changé (y compris passage à 0)
+    if ( ! isset( $options['el_total_taxonomy'] ) || $options['el_total_taxonomy'] != $max_taxonomy ) {
+        $options['el_total_taxonomy'] = $max_taxonomy;
+        update_option( 'ova_eventlist_general', $options );
     }
 }
 // ========================================
