@@ -100,18 +100,21 @@ if (!is_array($co_organizers)) $co_organizers = array();
                     $publics = get_terms(array('taxonomy' => 'event_public', 'hide_empty' => false, 'parent' => 0));
                     if (!is_wp_error($publics)) {
                         foreach ($publics as $parent) {
-                            echo '<optgroup label="' . esc_attr($parent->name) . '">';
                             $children = get_terms(array('taxonomy' => 'event_public', 'hide_empty' => false, 'parent' => $parent->term_id));
+                            
                             if (!empty($children) && !is_wp_error($children)) {
+                                // If parent has children, create optgroup
+                                echo '<optgroup label="' . esc_attr($parent->name) . '">';
                                 foreach ($children as $child) {
                                     $selected = in_array($child->term_id, $selected_public) ? 'selected' : '';
                                     echo '<option value="' . esc_attr($child->term_id) . '" ' . $selected . '>' . esc_html($child->name) . '</option>';
                                 }
+                                echo '</optgroup>';
                             } else {
+                                // If no children, show parent as direct option (no optgroup)
                                 $selected = in_array($parent->term_id, $selected_public) ? 'selected' : '';
                                 echo '<option value="' . esc_attr($parent->term_id) . '" ' . $selected . '>' . esc_html($parent->name) . '</option>';
                             }
-                            echo '</optgroup>';
                         }
                     }
                     ?>
@@ -136,11 +139,11 @@ if (!is_array($co_organizers)) $co_organizers = array();
         </div>
     </div>
 
-    <!-- Row 4: Events & Emotions -->
+    <!-- Row 4: Type d'événement & Émotions -->
     <div class="el_row">
         <div class="el_col_6">
             <div class="vendor_field">
-                <label for="event_tag"><?php esc_html_e( 'Événements', 'eventlist' ); ?></label>
+                <label for="event_tag"><?php esc_html_e( 'Type d\'événement', 'eventlist' ); ?></label>
                 <select name="event_tag[]" id="event_tag" class="selectpicker" multiple>
                     <?php
                     $terms = get_terms(array('taxonomy' => 'event_tag', 'hide_empty' => false));
