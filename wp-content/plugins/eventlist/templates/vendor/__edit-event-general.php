@@ -271,7 +271,7 @@ if (!is_array($co_organizers)) $co_organizers = array();
                 <?php
                 printf(
                     esc_html__( 'Vous n\'avez pas encore de partenaires. %sInvitez des partenaires%s pour pouvoir les ajouter comme co-organisateurs.', 'eventlist' ),
-                    '<a href="' . home_url( '/vendor/partenariats/' ) . '">',
+                    '<a href="' . add_query_arg( array( 'vendor' => 'partenariats' ), get_myaccount_page() ) . '">',
                     '</a>'
                 );
                 ?>

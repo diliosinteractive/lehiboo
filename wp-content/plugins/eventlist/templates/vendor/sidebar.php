@@ -81,6 +81,22 @@ $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_tic
                     </li>
                 <?php } ?>
 
+                <li class="nav-section-title"><?php esc_html_e( 'Partenariats', 'eventlist' ); ?></li>
+
+                <li class="menu_vendor_partenariats <?php if ($vendor == 'partenariats') echo esc_attr('active');  ?>">
+                    <a href="<?php echo add_query_arg( array( 'vendor' => 'partenariats'), get_myaccount_page() ); ?>">
+                        <i class="icon_group"></i>
+                        <?php esc_html_e( 'Mes Partenariats', 'eventlist' ); ?>
+                    </a>
+                </li>
+
+                <li class="menu_vendor_coorganisations <?php if ($vendor == 'coorganisations') echo esc_attr('active');  ?>">
+                    <a href="<?php echo add_query_arg( array( 'vendor' => 'coorganisations'), get_myaccount_page() ); ?>">
+                        <i class="icon_calendar"></i>
+                        <?php esc_html_e( 'Événements co-organisés', 'eventlist' ); ?>
+                    </a>
+                </li>
+
                 <li class="nav-section-title"><?php esc_html_e( 'Communication', 'eventlist' ); ?></li>
 
                 <?php if( apply_filters( 'el_manage_vendor_show_messages', true ) ){
