@@ -377,6 +377,9 @@ jQuery(document).ready(function ($) {
         if (allData.event_tag && allData.event_tag.length > 0) {
             dataTaxonomy.event_tag = allData.event_tag;
         }
+        if (allData.event_special && allData.event_special.length > 0) {
+            dataTaxonomy.event_special = allData.event_special;
+        }
         if (allData.event_public && allData.event_public.length > 0) {
             dataTaxonomy.event_public = allData.event_public;
         }
@@ -398,7 +401,7 @@ jQuery(document).ready(function ($) {
                     key !== 'name_event' && key !== 'post_title' && key !== 'content_event' &&
                     key !== 'el_content_event' && key !== 'event_cat' && key !== 'event_status' &&
                     key !== 'event_password' && key !== 'img_thumbnail' && key !== '_thumbnail_id' &&
-                    key !== 'event_thematique' && key !== 'event_tag' && key !== 'event_type' &&
+                    key !== 'event_thematique' && key !== 'event_tag' && key !== 'event_special' &&
                     key !== 'event_public' && key !== 'event_emotion') {
 
                     // Remove 'event_' prefix only for meta keys, or use clean name if already prefixed with ova_mb_event_
