@@ -368,18 +368,41 @@ jQuery(document).ready(function ($) {
             img_thumbnail: allData.img_thumbnail || allData._thumbnail_id || ''
         };
 
-        // All other fields go to meta_data
+        // Taxonomies - doivent être dans data_taxonomy avec leur nom complet
+        var dataTaxonomy = {};
+        if (allData.event_thematique && allData.event_thematique.length > 0) {
+            dataTaxonomy.event_thematique = allData.event_thematique;
+        }
+        if (allData.event_tag && allData.event_tag.length > 0) {
+            dataTaxonomy.event_tag = allData.event_tag;
+        }
+        if (allData.event_type && allData.event_type.length > 0) {
+            dataTaxonomy.event_type = allData.event_type;
+        }
+
+        // Ajouter data_taxonomy à postData
+        if (Object.keys(dataTaxonomy).length > 0) {
+            postData.data_taxonomy = dataTaxonomy;
+        }
+
+        // All other fields go to meta_data (sans le préfixe event_)
         var metaData = {};
         for (var key in allData) {
             if (allData.hasOwnProperty(key)) {
-                // Skip post-level fields
+                // Skip post-level fields and taxonomies
                 if (key !== 'post_id' && key !== 'event_id' && key !== 'el_edit_event_nonce' &&
                     key !== 'name_event' && key !== 'post_title' && key !== 'content_event' &&
                     key !== 'el_content_event' && key !== 'event_cat' && key !== 'event_status' &&
-                    key !== 'event_password' && key !== 'img_thumbnail' && key !== '_thumbnail_id') {
+                    key !== 'event_password' && key !== 'img_thumbnail' && key !== '_thumbnail_id' &&
+                    key !== 'event_thematique' && key !== 'event_tag' && key !== 'event_type') {
 
-                    // Remove 'event_' prefix if present for meta keys
-                    var cleanKey = key.replace(/^event_/, '');
+                    // Remove 'event_' prefix only for meta keys, or use clean name if already prefixed with ova_mb_event_
+                    var cleanKey = key;
+                    if (key.startsWith('event_') && !key.startsWith('ova_mb_event_')) {
+                        cleanKey = key.replace(/^event_/, '');
+                    } else if (key.startsWith('ova_mb_event_')) {
+                        cleanKey = key.replace(/^ova_mb_event_/, '');
+                    }
                     metaData[cleanKey] = allData[key];
                 }
             }
