@@ -47,7 +47,6 @@ if (!is_array($co_organizers)) $co_organizers = array();
     <div class="vendor_field">
         <label for="name_event">
             <?php esc_html_e( 'Nom de l\'activité', 'eventlist' ); ?>
-            <span class="el_req">*</span>
         </label>
         <input type="text" id="name_event" name="name_event" value="<?php echo esc_attr( $post_title ); ?>" placeholder="<?php esc_html_e( 'Saisir le titre', 'eventlist' ); ?>" required>
     </div>
