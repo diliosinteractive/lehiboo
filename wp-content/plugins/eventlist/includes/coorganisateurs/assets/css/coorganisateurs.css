@@ -1,0 +1,702 @@
+/**
+ * Styles pour le module Co-organisateurs
+ * Le Hiboo V1
+ */
+
+/* ==========================================================================
+   1. PAGES DASHBOARD (Partenariats & Co-organisations)
+   ========================================================================== */
+
+.el_coorg_partenariats_page,
+.el_coorg_coorganisations_page {
+    padding: 20px;
+}
+
+.el_coorg_header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.el_coorg_header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 10px 0;
+}
+
+.el_coorg_subtitle {
+    font-size: 16px;
+    color: #6b7280;
+    margin: 0 0 20px 0;
+}
+
+.el_coorg_btn_primary {
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.el_coorg_btn_primary:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.el_coorg_btn_secondary {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.el_coorg_btn_secondary:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.el_coorg_btn_accept {
+    background: #10b981;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.el_coorg_btn_accept:hover {
+    background: #059669;
+}
+
+.el_coorg_btn_refuse {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.el_coorg_btn_refuse:hover {
+    background: #dc2626;
+}
+
+.el_coorg_btn_retire {
+    background: #f59e0b;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.el_coorg_btn_retire:hover {
+    background: #d97706;
+}
+
+.el_coorg_btn_view {
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.el_coorg_btn_view:hover {
+    background: #4f46e5;
+}
+
+/* ==========================================================================
+   2. SECTIONS & CARTES
+   ========================================================================== */
+
+.el_coorg_section {
+    margin-bottom: 40px;
+}
+
+.el_coorg_section h3 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 20px 0;
+}
+
+.el_coorg_cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.el_coorg_card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.el_coorg_card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+}
+
+.el_coorg_card_pending {
+    border-left: 4px solid #f59e0b;
+}
+
+.el_coorg_card_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.el_coorg_card_header h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.el_coorg_card_body p {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 8px 0;
+}
+
+.el_coorg_card_body p strong {
+    color: #374151;
+    font-weight: 600;
+}
+
+.el_coorg_card_actions {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   3. BADGES DE STATUT
+   ========================================================================== */
+
+.el_coorg_badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.el_coorg_badge_pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.el_coorg_badge_accepted {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.el_coorg_badge_refused {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.el_coorg_badge_retired {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.el_coorg_badge_draft {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* ==========================================================================
+   4. TABLEAUX
+   ========================================================================== */
+
+.el_coorg_table_wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.el_coorg_table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.el_coorg_table thead {
+    background: #f9fafb;
+}
+
+.el_coorg_table thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.el_coorg_table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background 0.2s ease;
+}
+
+.el_coorg_table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.el_coorg_table tbody td {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #4b5563;
+}
+
+.el_coorg_table tbody td strong {
+    color: #111827;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   5. MODAL D'INVITATION
+   ========================================================================== */
+
+.el_coorg_modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.el_coorg_modal_content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.el_coorg_modal_close {
+    color: #9ca3af;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.el_coorg_modal_close:hover,
+.el_coorg_modal_close:focus {
+    color: #374151;
+}
+
+.el_coorg_modal_content h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 20px 0;
+}
+
+.el_coorg_form_group {
+    margin-bottom: 20px;
+}
+
+.el_coorg_form_group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.el_coorg_form_group input[type="text"],
+.el_coorg_form_group input[type="email"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.el_coorg_form_group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.el_coorg_help_text {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 8px 0 0 0;
+}
+
+.el_coorg_search_results {
+    margin-top: 8px;
+}
+
+.el_coorg_autocomplete {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #fff;
+}
+
+.el_coorg_autocomplete li {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #e5e7eb;
+    transition: background 0.2s ease;
+}
+
+.el_coorg_autocomplete li:last-child {
+    border-bottom: none;
+}
+
+.el_coorg_autocomplete li:hover {
+    background: #f3f4f6;
+}
+
+.el_coorg_autocomplete li strong {
+    display: block;
+    color: #111827;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.el_coorg_autocomplete li small {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.el_coorg_no_results {
+    padding: 12px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.el_coorg_modal_actions {
+    margin-top: 24px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* ==========================================================================
+   6. SECTION HISTORIQUE (COLLAPSIBLE)
+   ========================================================================== */
+
+.el_coorg_section_collapsed h3.el_coorg_toggle_section {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+.el_coorg_section_collapsed h3.el_coorg_toggle_section:hover {
+    background: #f3f4f6;
+}
+
+.el_coorg_toggle_icon {
+    font-size: 16px;
+    color: #6b7280;
+}
+
+.el_coorg_section_content {
+    margin-top: 15px;
+}
+
+/* ==========================================================================
+   7. ÉTAT VIDE
+   ========================================================================== */
+
+.el_coorg_empty_state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 2px dashed #d1d5db;
+}
+
+.el_coorg_empty_state p {
+    color: #6b7280;
+    font-size: 16px;
+    margin: 8px 0;
+}
+
+/* ==========================================================================
+   8. FORMULAIRE D'ÉVÉNEMENT (Section co-organisateurs)
+   ========================================================================== */
+
+.co_organizers_section {
+    margin-top: 20px;
+}
+
+.field_help_text {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 5px 0 15px 0;
+}
+
+#current_coorganisers_list {
+    margin-bottom: 20px;
+}
+
+.el_coorg_item {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.el_coorg_remove_btn {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.el_coorg_remove_btn:hover {
+    background: #dc2626;
+}
+
+.el_coorg_add_section {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.el_coorg_add_section select {
+    flex: 1;
+    min-width: 200px;
+}
+
+.el_coorg_no_partners {
+    padding: 20px;
+    background: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: 6px;
+    color: #92400e;
+}
+
+.el_coorg_no_partners a {
+    color: #b45309;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   9. AFFICHAGE PUBLIC (Front-end)
+   ========================================================================== */
+
+.el_event_coorganisers_section {
+    margin: 30px 0;
+    padding: 20px;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.el_event_coorganisers_title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 20px 0;
+}
+
+.el_event_coorganisers_list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.el_event_coorganiser_item {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.2s ease;
+}
+
+.el_event_coorganiser_item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.el_coorganiser_content {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.el_coorganiser_logo {
+    flex-shrink: 0;
+}
+
+.el_coorganiser_logo img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.el_coorganiser_info {
+    flex: 1;
+}
+
+.el_coorganiser_name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 5px 0;
+}
+
+.el_coorganiser_name a {
+    color: #111827;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.el_coorganiser_name a:hover {
+    color: #3b82f6;
+}
+
+.el_coorganiser_role {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #e0e7ff;
+    color: #3730a3;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.el_coorganiser_location {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: #6b7280;
+    margin: 8px 0 0 0;
+}
+
+.el_coorganiser_actions {
+    margin-top: 10px;
+}
+
+.el_coorganiser_link {
+    display: inline-block;
+    padding: 6px 12px;
+    background: #3b82f6;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.el_coorganiser_link:hover {
+    background: #2563eb;
+}
+
+/* ==========================================================================
+   10. RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .el_coorg_cards {
+        grid-template-columns: 1fr;
+    }
+
+    .el_event_coorganisers_list {
+        grid-template-columns: 1fr;
+    }
+
+    .el_coorg_add_section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .el_coorg_add_section select {
+        width: 100%;
+    }
+
+    .el_coorg_modal_content {
+        width: 95%;
+        margin: 10% auto;
+        padding: 20px;
+    }
+
+    .el_coorg_card_actions {
+        flex-direction: column;
+    }
+
+    .el_coorg_card_actions button,
+    .el_coorg_card_actions a {
+        width: 100%;
+        text-align: center;
+    }
+}

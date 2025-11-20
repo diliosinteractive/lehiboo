@@ -63,6 +63,10 @@ function el_plugin_activate() {
 	require_once EL_PLUGIN_INC . 'install/class-el-install-media-folders.php';
 	EL_Install_Media_Folders::install();
 
+	// Install co-organisateurs tables
+	require_once EL_PLUGIN_INC . 'coorganisateurs/class-el-coorg-database.php';
+	EL_Coorg_Database::create_tables();
+
 	// Flush rewrite rules
 	flush_rewrite_rules();
 }

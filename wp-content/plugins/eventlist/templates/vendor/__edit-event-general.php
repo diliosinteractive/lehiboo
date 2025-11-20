@@ -175,38 +175,108 @@ if (!is_array($co_organizers)) $co_organizers = array();
         </select>
     </div>
 
-    <!-- Row 6: Co-organizers -->
+    <!-- Row 6: Co-organizers (Nouveau système) -->
     <div class="vendor_field co_organizers_section">
         <label class="co_organizer_label"><?php esc_html_e( 'Ajouter des co-organisateurs', 'eventlist' ); ?></label>
-        
-        <div id="co_organizers_list">
-            <?php if (!empty($co_organizers)) : ?>
-                <?php foreach ($co_organizers as $index => $co) : ?>
-                    <div class="co_organizer_item el_row">
-                        <div class="el_col_5">
-                            <input type="text" name="co_organizers[<?php echo $index; ?>][name]" value="<?php echo esc_attr($co['name']); ?>" placeholder="Nom de l'organisation">
-                        </div>
-                        <div class="el_col_2 text_center">
-                            <span class="role_label"><?php esc_html_e('Son rôle', 'eventlist'); ?></span>
-                        </div>
-                        <div class="el_col_4">
-                            <select name="co_organizers[<?php echo $index; ?>][role]">
-                                <option value="co-organisateur" <?php selected($co['role'], 'co-organisateur'); ?>>Co-organisateur</option>
-                                <option value="partenaire" <?php selected($co['role'], 'partenaire'); ?>>Partenaire</option>
-                                <option value="sponsor" <?php selected($co['role'], 'sponsor'); ?>>Sponsor</option>
-                            </select>
-                        </div>
-                        <div class="el_col_1">
-                            <button type="button" class="remove_co_organizer">x</button>
+        <p class="field_help_text">
+            <?php esc_html_e( 'Sélectionnez vos partenaires pour les inviter à co-organiser cet événement', 'eventlist' ); ?>
+        </p>
+
+        <?php
+        // Récupérer les co-organisateurs existants pour cet événement
+        $current_coorganisers = array();
+        if ( ! empty( $post_id ) ) {
+            $current_coorganisers = EL_Event_Coorganisation::get_for_event( $post_id );
+        }
+
+        // Récupérer les partenaires acceptés
+        $current_user_id = get_current_user_id();
+        $accepted_partners = EL_Partnership::get_accepted_partners( $current_user_id );
+        ?>
+
+        <!-- Liste des co-organisateurs actuels -->
+        <div id="current_coorganisers_list">
+            <?php if ( ! empty( $current_coorganisers ) ) : ?>
+                <?php foreach ( $current_coorganisers as $coorg ) :
+                    $coorg_name = EL_Coorg_Helpers::get_organisation_name( $coorg->organisation_coorganisatrice_id );
+                ?>
+                    <div class="el_coorg_item" data-coorg-id="<?php echo esc_attr( $coorg->id ); ?>">
+                        <div class="el_row">
+                            <div class="el_col_6">
+                                <strong><?php echo esc_html( $coorg_name ); ?></strong>
+                            </div>
+                            <div class="el_col_3">
+                                <?php echo EL_Coorg_Helpers::get_status_badge( $coorg->statut ); ?>
+                            </div>
+                            <div class="el_col_3">
+                                <button
+                                    type="button"
+                                    class="el_coorg_remove_btn"
+                                    data-coorg-id="<?php echo esc_attr( $coorg->id ); ?>"
+                                >
+                                    <?php esc_html_e( 'Retirer', 'eventlist' ); ?>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
 
-        <button type="button" id="add_co_organizer_btn" class="btn_add_co_organizer">
-            <?php esc_html_e( 'Ajouter un co-organisateur', 'eventlist' ); ?>
-        </button>
+        <!-- Ajouter un co-organisateur -->
+        <?php if ( ! empty( $accepted_partners ) ) : ?>
+            <div class="el_coorg_add_section">
+                <select id="el_coorg_select_partner" class="selectpicker">
+                    <option value=""><?php esc_html_e( 'Sélectionnez un partenaire...', 'eventlist' ); ?></option>
+                    <?php foreach ( $accepted_partners as $partnership ) :
+                        // Déterminer l'autre organisation
+                        $partner_id = ( $partnership->organisation_principale_id == $current_user_id )
+                            ? $partnership->organisation_invitee_id
+                            : $partnership->organisation_principale_id;
+
+                        $partner_name = EL_Coorg_Helpers::get_organisation_name( $partner_id );
+
+                        // Vérifier si déjà ajouté
+                        $already_added = false;
+                        foreach ( $current_coorganisers as $coorg ) {
+                            if ( $coorg->organisation_coorganisatrice_id == $partner_id ) {
+                                $already_added = true;
+                                break;
+                            }
+                        }
+
+                        if ( ! $already_added ) :
+                    ?>
+                        <option value="<?php echo esc_attr( $partner_id ); ?>">
+                            <?php echo esc_html( $partner_name ); ?>
+                        </option>
+                    <?php
+                        endif;
+                    endforeach;
+                    ?>
+                </select>
+
+                <select id="el_coorg_select_role">
+                    <option value="co-organisateur"><?php esc_html_e( 'Co-organisateur', 'eventlist' ); ?></option>
+                    <option value="partenaire"><?php esc_html_e( 'Partenaire', 'eventlist' ); ?></option>
+                    <option value="sponsor"><?php esc_html_e( 'Sponsor', 'eventlist' ); ?></option>
+                </select>
+
+                <button type="button" id="el_coorg_add_btn" class="btn_add_co_organizer">
+                    <?php esc_html_e( 'Ajouter', 'eventlist' ); ?>
+                </button>
+            </div>
+        <?php else : ?>
+            <p class="el_coorg_no_partners">
+                <?php
+                printf(
+                    esc_html__( 'Vous n\'avez pas encore de partenaires. %sInvitez des partenaires%s pour pouvoir les ajouter comme co-organisateurs.', 'eventlist' ),
+                    '<a href="' . home_url( '/vendor/partenariats/' ) . '">',
+                    '</a>'
+                );
+                ?>
+            </p>
+        <?php endif; ?>
     </div>
 
 </div>
@@ -220,34 +290,74 @@ jQuery(document).ready(function($) {
         allowClear: true
     });
 
-    // Co-organizer Repeater Logic
-    $('#add_co_organizer_btn').on('click', function() {
-        var index = $('#co_organizers_list .co_organizer_item').length;
-        var html = `
-            <div class="co_organizer_item el_row" style="margin-top: 10px;">
-                <div class="el_col_5">
-                    <input type="text" name="co_organizers[${index}][name]" placeholder="Nom de l'organisation">
-                </div>
-                <div class="el_col_2 text_center" style="display:flex;align-items:center;justify-content:center;">
-                    <span class="role_label">Son rôle</span>
-                </div>
-                <div class="el_col_4">
-                    <select name="co_organizers[${index}][role]">
-                        <option value="co-organisateur">Co-organisateur</option>
-                        <option value="partenaire">Partenaire</option>
-                        <option value="sponsor">Sponsor</option>
-                    </select>
-                </div>
-                <div class="el_col_1" style="display:flex;align-items:center;">
-                    <button type="button" class="remove_co_organizer" style="background:none;border:none;color:red;font-size:18px;cursor:pointer;">x</button>
-                </div>
-            </div>
-        `;
-        $('#co_organizers_list').append(html);
+    // Ajouter un co-organisateur
+    $('#el_coorg_add_btn').on('click', function() {
+        const partnerId = $('#el_coorg_select_partner').val();
+        const role = $('#el_coorg_select_role').val();
+        const eventId = <?php echo ! empty( $post_id ) ? intval( $post_id ) : 0; ?>;
+
+        if (!partnerId) {
+            alert('<?php esc_html_e( 'Veuillez sélectionner un partenaire', 'eventlist' ); ?>');
+            return;
+        }
+
+        if (!eventId) {
+            alert('<?php esc_html_e( 'Veuillez d\'abord enregistrer l\'événement avant d\'ajouter des co-organisateurs', 'eventlist' ); ?>');
+            return;
+        }
+
+        $.ajax({
+            url: el_coorg_vars.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'el_add_event_coorganiser',
+                nonce: el_coorg_vars.nonce,
+                event_id: eventId,
+                org_id: partnerId,
+                role: role
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(response.data.message);
+                    location.reload();
+                } else {
+                    alert(response.data.message);
+                }
+            },
+            error: function() {
+                alert('<?php esc_html_e( 'Une erreur s\'est produite', 'eventlist' ); ?>');
+            }
+        });
     });
 
-    $(document).on('click', '.remove_co_organizer', function() {
-        $(this).closest('.co_organizer_item').remove();
+    // Retirer un co-organisateur
+    $(document).on('click', '.el_coorg_remove_btn', function() {
+        const coorgId = $(this).data('coorg-id');
+
+        if (!confirm('<?php esc_html_e( 'Êtes-vous sûr de vouloir retirer ce co-organisateur ?', 'eventlist' ); ?>')) {
+            return;
+        }
+
+        $.ajax({
+            url: el_coorg_vars.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'el_remove_event_coorganiser',
+                nonce: el_coorg_vars.nonce,
+                coorg_id: coorgId
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(response.data.message);
+                    location.reload();
+                } else {
+                    alert(response.data.message);
+                }
+            },
+            error: function() {
+                alert('<?php esc_html_e( 'Une erreur s\'est produite', 'eventlist' ); ?>');
+            }
+        });
     });
 });
 </script>
