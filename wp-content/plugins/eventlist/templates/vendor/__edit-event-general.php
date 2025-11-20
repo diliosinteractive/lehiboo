@@ -21,6 +21,7 @@ function el_get_terms_safe($post_id, $taxonomy) {
 }
 
 $selected_cats = el_get_terms_safe($post_id, 'event_cat');
+$selected_special = el_get_terms_safe($post_id, 'event_special');
 $selected_public = el_get_terms_safe($post_id, 'event_public');
 $selected_thematiques = el_get_terms_safe($post_id, 'event_thematique');
 $selected_tags = el_get_terms_safe($post_id, 'event_tag');
@@ -51,16 +52,36 @@ if (!is_array($co_organizers)) $co_organizers = array();
         <input type="text" id="name_event" name="name_event" value="<?php echo esc_attr( $post_title ); ?>" placeholder="<?php esc_html_e( 'Saisir le titre', 'eventlist' ); ?>" required>
     </div>
 
-    <!-- Row 2: Category -->
-    <div class="vendor_field">
-        <label for="event_cat">
-            <?php esc_html_e( 'Catégorie', 'eventlist' ); ?>
-            <span class="el_req">*</span>
-        </label>
-        <?php
-        $selected_cat = !empty($selected_cats) ? $selected_cats[0] : '';
-        el_get_taxonomy3('event_cat', 'event_cat', $selected_cat, true);
-        ?>
+    <!-- Row 2: Category & Special Events -->
+    <div class="el_row">
+        <div class="el_col_6">
+            <div class="vendor_field">
+                <label for="event_cat">
+                    <?php esc_html_e( 'Catégorie', 'eventlist' ); ?>
+                    <span class="el_req">*</span>
+                </label>
+                <?php
+                $selected_cat = !empty($selected_cats) ? $selected_cats[0] : '';
+                el_get_taxonomy3('event_cat', 'event_cat', $selected_cat, true);
+                ?>
+            </div>
+        </div>
+        <div class="el_col_6">
+            <div class="vendor_field">
+                <label for="event_special"><?php esc_html_e( 'Événements Spéciaux', 'eventlist' ); ?></label>
+                <select name="event_special[]" id="event_special" class="selectpicker" multiple>
+                    <?php
+                    $terms = get_terms(array('taxonomy' => 'event_special', 'hide_empty' => false));
+                    if (!is_wp_error($terms)) {
+                        foreach ($terms as $term) {
+                            $selected = in_array($term->term_id, $selected_special) ? 'selected' : '';
+                            echo '<option value="' . esc_attr($term->term_id) . '" ' . $selected . '>' . esc_html($term->name) . '</option>';
+                        }
+                    }
+                    ?>
+                </select>
+            </div>
+        </div>
     </div>
 
     <!-- Row 3: Public & Themes -->
