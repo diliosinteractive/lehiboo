@@ -179,7 +179,14 @@ if (!is_array($co_organizers)) $co_organizers = array();
              <?php
              // Pre-populate with all published events (simplified for now, usually done via AJAX)
              $all_events = get_posts(array('post_type' => 'event', 'numberposts' => -1, 'post_status' => 'publish'));
-             $related_ids = explode(',', $related_events);
+             
+             // Handle both array and comma-separated string formats
+             if (is_array($related_events)) {
+                 $related_ids = $related_events;
+             } else {
+                 $related_ids = !empty($related_events) ? explode(',', $related_events) : array();
+             }
+             
              foreach ($all_events as $evt) {
                  if ($evt->ID == $post_id) continue; // Skip self
                  $selected = in_array($evt->ID, $related_ids) ? 'selected' : '';
