@@ -368,6 +368,7 @@ jQuery(document).ready(function ($) {
             img_thumbnail: allData.img_thumbnail || allData._thumbnail_id || ''
         };
 
+
         // Taxonomies - doivent être dans data_taxonomy avec leur nom complet
         var dataTaxonomy = {};
         if (allData.event_thematique && allData.event_thematique.length > 0) {
@@ -376,8 +377,11 @@ jQuery(document).ready(function ($) {
         if (allData.event_tag && allData.event_tag.length > 0) {
             dataTaxonomy.event_tag = allData.event_tag;
         }
-        if (allData.event_type && allData.event_type.length > 0) {
-            dataTaxonomy.event_type = allData.event_type;
+        if (allData.event_public && allData.event_public.length > 0) {
+            dataTaxonomy.event_public = allData.event_public;
+        }
+        if (allData.event_emotion && allData.event_emotion.length > 0) {
+            dataTaxonomy.event_emotion = allData.event_emotion;
         }
 
         // Ajouter data_taxonomy à postData
@@ -394,7 +398,8 @@ jQuery(document).ready(function ($) {
                     key !== 'name_event' && key !== 'post_title' && key !== 'content_event' &&
                     key !== 'el_content_event' && key !== 'event_cat' && key !== 'event_status' &&
                     key !== 'event_password' && key !== 'img_thumbnail' && key !== '_thumbnail_id' &&
-                    key !== 'event_thematique' && key !== 'event_tag' && key !== 'event_type') {
+                    key !== 'event_thematique' && key !== 'event_tag' && key !== 'event_type' &&
+                    key !== 'event_public' && key !== 'event_emotion') {
 
                     // Remove 'event_' prefix only for meta keys, or use clean name if already prefixed with ova_mb_event_
                     var cleanKey = key;
