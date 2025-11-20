@@ -179,6 +179,22 @@ class EL_Vendor {
 			}
 			break;
 
+			case 'partenariats':
+			if( el_is_vendor() ){
+				$template = apply_filters( 'el_shortcode_partenariats_template', 'vendor/partenariats.php' );
+			}else{
+				$template = apply_filters( 'el_shortcode_myaccount_template_profile', 'vendor/profile.php' );
+			}
+			break;
+
+			case 'coorganisations':
+			if( el_is_vendor() ){
+				$template = apply_filters( 'el_shortcode_coorganisations_template', 'vendor/coorganisations.php' );
+			}else{
+				$template = apply_filters( 'el_shortcode_myaccount_template_profile', 'vendor/profile.php' );
+			}
+			break;
+
 
 		}
 
