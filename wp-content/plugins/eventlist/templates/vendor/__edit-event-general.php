@@ -21,7 +21,6 @@ function el_get_terms_safe($post_id, $taxonomy) {
 }
 
 $selected_cats = el_get_terms_safe($post_id, 'event_cat');
-$selected_types = el_get_terms_safe($post_id, 'event_type');
 $selected_public = el_get_terms_safe($post_id, 'event_public');
 $selected_thematiques = el_get_terms_safe($post_id, 'event_thematique');
 $selected_tags = el_get_terms_safe($post_id, 'event_tag');
@@ -53,39 +52,16 @@ if (!is_array($co_organizers)) $co_organizers = array();
         <input type="text" id="name_event" name="name_event" value="<?php echo esc_attr( $post_title ); ?>" placeholder="<?php esc_html_e( 'Saisir le titre', 'eventlist' ); ?>" required>
     </div>
 
-    <!-- Row 2: Category & Type -->
-    <div class="el_row">
-        <div class="el_col_6">
-            <div class="vendor_field">
-                <label for="event_cat">
-                    <?php esc_html_e( 'Catégorie', 'eventlist' ); ?>
-                    <span class="el_req">*</span>
-                </label>
-                <?php
-                $selected_cat = !empty($selected_cats) ? $selected_cats[0] : '';
-                el_get_taxonomy3('event_cat', 'event_cat', $selected_cat, true); 
-                ?>
-            </div>
-        </div>
-        <div class="el_col_6">
-            <div class="vendor_field">
-                <label for="event_type">
-                    <?php esc_html_e( 'Type d\'événement', 'eventlist' ); ?>
-                </label>
-                <select name="event_type" id="event_type" class="selectpicker">
-                    <option value=""><?php esc_html_e( '--- Sélectionner ---', 'eventlist' ); ?></option>
-                    <?php
-                    $types = get_terms(array('taxonomy' => 'event_type', 'hide_empty' => false));
-                    if (!is_wp_error($types)) {
-                        foreach ($types as $term) {
-                            $selected = in_array($term->term_id, $selected_types) ? 'selected' : '';
-                            echo '<option value="' . esc_attr($term->term_id) . '" ' . $selected . '>' . esc_html($term->name) . '</option>';
-                        }
-                    }
-                    ?>
-                </select>
-            </div>
-        </div>
+    <!-- Row 2: Category -->
+    <div class="vendor_field">
+        <label for="event_cat">
+            <?php esc_html_e( 'Catégorie', 'eventlist' ); ?>
+            <span class="el_req">*</span>
+        </label>
+        <?php
+        $selected_cat = !empty($selected_cats) ? $selected_cats[0] : '';
+        el_get_taxonomy3('event_cat', 'event_cat', $selected_cat, true);
+        ?>
     </div>
 
     <!-- Row 3: Public & Themes -->
