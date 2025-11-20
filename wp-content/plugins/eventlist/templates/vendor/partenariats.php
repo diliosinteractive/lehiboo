@@ -71,8 +71,11 @@ $partnerships_retirees = array_filter( $all_partnerships, function( $p ) { retur
 
             <!-- Invitations en attente de réponse (reçues) -->
             <?php if ( ! empty( $partnerships_en_cours ) ) :
-                $pending_received = array_filter( $partnerships_en_cours, function( $p ) use ( $current_user_id ) {
-                    return $p->organisation_invitee_id == $current_user_id;
+                $current_user = wp_get_current_user();
+                $pending_received = array_filter( $partnerships_en_cours, function( $p ) use ( $current_user_id, $current_user ) {
+                    // Invitation directe par user_id OU invitation par email qui correspond à l'utilisateur connecté
+                    return $p->organisation_invitee_id == $current_user_id
+                        || ( $p->organisation_invitee_id === null && $p->email_invite === $current_user->user_email );
                 });
 
                 if ( ! empty( $pending_received ) ) :

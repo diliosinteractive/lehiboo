@@ -33,18 +33,19 @@ class EL_Coorg_Notifications {
         $to = $invitee->user_email;
         $subject = sprintf( __( 'Invitation à devenir partenaire de %s', 'eventlist' ), $inviter_org_name );
 
-        $message = sprintf(
-            __( 'Bonjour,%s%s souhaite vous ajouter comme organisation partenaire sur Le Hiboo.%sVous pouvez accepter ou refuser cette invitation dans votre espace partenaire :%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
-            "\n\n",
-            $inviter_org_name,
-            "\n\n",
-            "\n",
-            home_url( '/member-account/?vendor=partenariats' ),
-            "\n\n",
-            "\n"
-        );
+        // Email HTML
+        $message = '<html><body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">';
+        $message .= '<p>Bonjour,</p>';
+        $message .= '<p><strong>' . esc_html( $inviter_org_name ) . '</strong> souhaite vous ajouter comme organisation partenaire sur Le Hiboo.</p>';
+        $message .= '<p>Vous pouvez accepter ou refuser cette invitation dans votre espace partenaire :</p>';
+        $message .= '<p><a href="' . esc_url( home_url( '/member-account/?vendor=partenariats' ) ) . '" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Voir mes partenariats</a></p>';
+        $message .= '<p>Bien cordialement,<br>L\'équipe Le Hiboo</p>';
+        $message .= '</body></html>';
 
-        return wp_mail( $to, $subject, $message );
+        // Headers pour HTML
+        $headers = array( 'Content-Type: text/html; charset=UTF-8' );
+
+        return wp_mail( $to, $subject, $message, $headers );
     }
 
     /**
@@ -67,19 +68,20 @@ class EL_Coorg_Notifications {
         $to = $email;
         $subject = sprintf( __( 'Invitation à rejoindre Le Hiboo en tant que partenaire de %s', 'eventlist' ), $inviter_org_name );
 
-        $message = sprintf(
-            __( 'Bonjour,%s%s souhaite collaborer avec vous sur Le Hiboo, la plateforme de gestion d\'événements.%sPour accepter cette invitation, veuillez créer un compte organisation sur Le Hiboo :%s%sUne fois votre compte créé, vous pourrez accepter ou refuser le partenariat.%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
-            "\n\n",
-            $inviter_org_name,
-            "\n\n",
-            "\n",
-            home_url( '/inscription-partenaire/' ),
-            "\n\n",
-            "\n",
-            "\n"
-        );
+        // Email HTML
+        $message = '<html><body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">';
+        $message .= '<p>Bonjour,</p>';
+        $message .= '<p><strong>' . esc_html( $inviter_org_name ) . '</strong> souhaite collaborer avec vous sur Le Hiboo, la plateforme de gestion d\'événements.</p>';
+        $message .= '<p>Pour accepter cette invitation, veuillez créer un compte organisation sur Le Hiboo :</p>';
+        $message .= '<p><a href="' . esc_url( home_url( '/inscription-partenaire/' ) ) . '" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Créer mon compte</a></p>';
+        $message .= '<p>Une fois votre compte créé, vous pourrez accepter ou refuser le partenariat.</p>';
+        $message .= '<p>Bien cordialement,<br>L\'équipe Le Hiboo</p>';
+        $message .= '</body></html>';
 
-        return wp_mail( $to, $subject, $message );
+        // Headers pour HTML
+        $headers = array( 'Content-Type: text/html; charset=UTF-8' );
+
+        return wp_mail( $to, $subject, $message, $headers );
     }
 
     /**
@@ -104,19 +106,18 @@ class EL_Coorg_Notifications {
         $to = $inviter->user_email;
         $subject = sprintf( __( '%s a accepté votre invitation de partenariat', 'eventlist' ), $invitee_org_name );
 
-        $message = sprintf(
-            __( 'Bonjour,%sBonne nouvelle ! %s a accepté votre invitation de partenariat.%sVous pouvez maintenant ajouter cette organisation comme co-organisateur sur vos événements.%sVoir mes partenariats :%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
-            "\n\n",
-            $invitee_org_name,
-            "\n\n",
-            "\n\n",
-            "\n",
-            home_url( '/member-account/?vendor=partenariats' ),
-            "\n\n",
-            "\n"
-        );
+        // Email HTML
+        $message = '<html><body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">';
+        $message .= '<p>Bonjour,</p>';
+        $message .= '<p style="color: #10b981; font-weight: bold;">Bonne nouvelle ! <strong>' . esc_html( $invitee_org_name ) . '</strong> a accepté votre invitation de partenariat.</p>';
+        $message .= '<p>Vous pouvez maintenant ajouter cette organisation comme co-organisateur sur vos événements.</p>';
+        $message .= '<p><a href="' . esc_url( home_url( '/member-account/?vendor=partenariats' ) ) . '" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Voir mes partenariats</a></p>';
+        $message .= '<p>Bien cordialement,<br>L\'équipe Le Hiboo</p>';
+        $message .= '</body></html>';
 
-        return wp_mail( $to, $subject, $message );
+        $headers = array( 'Content-Type: text/html; charset=UTF-8' );
+
+        return wp_mail( $to, $subject, $message, $headers );
     }
 
     /**
@@ -141,18 +142,18 @@ class EL_Coorg_Notifications {
         $to = $inviter->user_email;
         $subject = sprintf( __( '%s a refusé votre invitation de partenariat', 'eventlist' ), $invitee_org_name );
 
-        $message = sprintf(
-            __( 'Bonjour,%s%s a refusé votre invitation de partenariat.%sVous pouvez consulter vos partenariats dans votre espace :%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
-            "\n\n",
-            $invitee_org_name,
-            "\n\n",
-            "\n",
-            home_url( '/member-account/?vendor=partenariats' ),
-            "\n\n",
-            "\n"
-        );
+        // Email HTML
+        $message = '<html><body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">';
+        $message .= '<p>Bonjour,</p>';
+        $message .= '<p><strong>' . esc_html( $invitee_org_name ) . '</strong> a refusé votre invitation de partenariat.</p>';
+        $message .= '<p>Vous pouvez consulter vos partenariats dans votre espace :</p>';
+        $message .= '<p><a href="' . esc_url( home_url( '/member-account/?vendor=partenariats' ) ) . '" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Voir mes partenariats</a></p>';
+        $message .= '<p>Bien cordialement,<br>L\'équipe Le Hiboo</p>';
+        $message .= '</body></html>';
 
-        return wp_mail( $to, $subject, $message );
+        $headers = array( 'Content-Type: text/html; charset=UTF-8' );
+
+        return wp_mail( $to, $subject, $message, $headers );
     }
 
     /**
@@ -178,21 +179,20 @@ class EL_Coorg_Notifications {
         $to = $invitee->user_email;
         $subject = sprintf( __( 'Invitation à co-organiser "%s"', 'eventlist' ), $event->post_title );
 
-        $message = sprintf(
-            __( 'Bonjour,%s%s vous invite à co-organiser l\'événement "%s".%sRôle : %s%sVous pouvez accepter ou refuser cette invitation dans votre espace :%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
-            "\n\n",
-            $inviter_org_name,
-            $event->post_title,
-            "\n\n",
-            $coorg->role,
-            "\n\n",
-            "\n",
-            home_url( '/member-account/?vendor=coorganisations' ),
-            "\n\n",
-            "\n"
-        );
+        // Email HTML
+        $message = '<html><body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">';
+        $message .= '<p>Bonjour,</p>';
+        $message .= '<p><strong>' . esc_html( $inviter_org_name ) . '</strong> vous invite à co-organiser l\'événement <strong>"' . esc_html( $event->post_title ) . '"</strong>.</p>';
+        $message .= '<p><strong>Rôle :</strong> ' . esc_html( $coorg->role ) . '</p>';
+        $message .= '<p>Vous pouvez accepter ou refuser cette invitation dans votre espace :</p>';
+        $message .= '<p><a href="' . esc_url( home_url( '/member-account/?vendor=coorganisations' ) ) . '" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Voir mes co-organisations</a></p>';
+        $message .= '<p>Bien cordialement,<br>L\'équipe Le Hiboo</p>';
+        $message .= '</body></html>';
 
-        return wp_mail( $to, $subject, $message );
+        // Headers pour HTML
+        $headers = array( 'Content-Type: text/html; charset=UTF-8' );
+
+        return wp_mail( $to, $subject, $message, $headers );
     }
 
     /**
@@ -218,19 +218,18 @@ class EL_Coorg_Notifications {
         $to = $inviter->user_email;
         $subject = sprintf( __( '%s a accepté de co-organiser "%s"', 'eventlist' ), $invitee_org_name, $event->post_title );
 
-        $message = sprintf(
-            __( 'Bonjour,%sBonne nouvelle ! %s a accepté votre invitation à co-organiser l\'événement "%s".%sVoir l\'événement :%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
-            "\n\n",
-            $invitee_org_name,
-            $event->post_title,
-            "\n\n",
-            "\n",
-            get_permalink( $event->ID ),
-            "\n\n",
-            "\n"
-        );
+        // Email HTML
+        $message = '<html><body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">';
+        $message .= '<p>Bonjour,</p>';
+        $message .= '<p style="color: #10b981; font-weight: bold;">Bonne nouvelle ! <strong>' . esc_html( $invitee_org_name ) . '</strong> a accepté votre invitation à co-organiser l\'événement <strong>"' . esc_html( $event->post_title ) . '"</strong>.</p>';
+        $message .= '<p>Vous pouvez consulter l\'événement ici :</p>';
+        $message .= '<p><a href="' . esc_url( get_permalink( $event->ID ) ) . '" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Voir l\'événement</a></p>';
+        $message .= '<p>Bien cordialement,<br>L\'équipe Le Hiboo</p>';
+        $message .= '</body></html>';
 
-        return wp_mail( $to, $subject, $message );
+        $headers = array( 'Content-Type: text/html; charset=UTF-8' );
+
+        return wp_mail( $to, $subject, $message, $headers );
     }
 
     /**
@@ -256,18 +255,17 @@ class EL_Coorg_Notifications {
         $to = $inviter->user_email;
         $subject = sprintf( __( '%s a refusé de co-organiser "%s"', 'eventlist' ), $invitee_org_name, $event->post_title );
 
-        $message = sprintf(
-            __( 'Bonjour,%s%s a refusé votre invitation à co-organiser l\'événement "%s".%sVoir l\'événement :%s%sBien cordialement,%sL\'équipe Le Hiboo', 'eventlist' ),
-            "\n\n",
-            $invitee_org_name,
-            $event->post_title,
-            "\n\n",
-            "\n",
-            get_permalink( $event->ID ),
-            "\n\n",
-            "\n"
-        );
+        // Email HTML
+        $message = '<html><body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">';
+        $message .= '<p>Bonjour,</p>';
+        $message .= '<p><strong>' . esc_html( $invitee_org_name ) . '</strong> a refusé votre invitation à co-organiser l\'événement <strong>"' . esc_html( $event->post_title ) . '"</strong>.</p>';
+        $message .= '<p>Vous pouvez consulter l\'événement ici :</p>';
+        $message .= '<p><a href="' . esc_url( get_permalink( $event->ID ) ) . '" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Voir l\'événement</a></p>';
+        $message .= '<p>Bien cordialement,<br>L\'équipe Le Hiboo</p>';
+        $message .= '</body></html>';
 
-        return wp_mail( $to, $subject, $message );
+        $headers = array( 'Content-Type: text/html; charset=UTF-8' );
+
+        return wp_mail( $to, $subject, $message, $headers );
     }
 }

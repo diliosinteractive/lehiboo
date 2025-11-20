@@ -139,9 +139,35 @@ class EL_Coorg_Ajax {
             wp_send_json_error( array( 'message' => __( 'ID de partenariat manquant', 'eventlist' ) ) );
         }
 
+        $current_user_id = get_current_user_id();
+        $current_user = wp_get_current_user();
+
         // Vérifier que l'utilisateur est bien l'invité
         $partnership = EL_Partnership::get( $partnership_id );
-        if ( ! $partnership || $partnership->organisation_invitee_id != get_current_user_id() ) {
+
+        // L'utilisateur peut accepter si :
+        // 1. Il est l'invité direct (organisation_invitee_id correspond)
+        // 2. C'est une invitation par email et l'email correspond
+        $can_accept = false;
+        if ( $partnership ) {
+            if ( $partnership->organisation_invitee_id == $current_user_id ) {
+                $can_accept = true;
+            } elseif ( $partnership->organisation_invitee_id === null && $partnership->email_invite === $current_user->user_email ) {
+                $can_accept = true;
+
+                // Mettre à jour l'organisation_invitee_id avec le user_id actuel
+                global $wpdb;
+                $wpdb->update(
+                    $wpdb->prefix . 'el_organisation_partnerships',
+                    array( 'organisation_invitee_id' => $current_user_id ),
+                    array( 'id' => $partnership_id ),
+                    array( '%d' ),
+                    array( '%d' )
+                );
+            }
+        }
+
+        if ( ! $can_accept ) {
             wp_send_json_error( array( 'message' => __( 'Partenariat introuvable ou accès refusé', 'eventlist' ) ) );
         }
 
@@ -174,9 +200,35 @@ class EL_Coorg_Ajax {
             wp_send_json_error( array( 'message' => __( 'ID de partenariat manquant', 'eventlist' ) ) );
         }
 
+        $current_user_id = get_current_user_id();
+        $current_user = wp_get_current_user();
+
         // Vérifier que l'utilisateur est bien l'invité
         $partnership = EL_Partnership::get( $partnership_id );
-        if ( ! $partnership || $partnership->organisation_invitee_id != get_current_user_id() ) {
+
+        // L'utilisateur peut refuser si :
+        // 1. Il est l'invité direct (organisation_invitee_id correspond)
+        // 2. C'est une invitation par email et l'email correspond
+        $can_refuse = false;
+        if ( $partnership ) {
+            if ( $partnership->organisation_invitee_id == $current_user_id ) {
+                $can_refuse = true;
+            } elseif ( $partnership->organisation_invitee_id === null && $partnership->email_invite === $current_user->user_email ) {
+                $can_refuse = true;
+
+                // Mettre à jour l'organisation_invitee_id avec le user_id actuel
+                global $wpdb;
+                $wpdb->update(
+                    $wpdb->prefix . 'el_organisation_partnerships',
+                    array( 'organisation_invitee_id' => $current_user_id ),
+                    array( 'id' => $partnership_id ),
+                    array( '%d' ),
+                    array( '%d' )
+                );
+            }
+        }
+
+        if ( ! $can_refuse ) {
             wp_send_json_error( array( 'message' => __( 'Partenariat introuvable ou accès refusé', 'eventlist' ) ) );
         }
 
