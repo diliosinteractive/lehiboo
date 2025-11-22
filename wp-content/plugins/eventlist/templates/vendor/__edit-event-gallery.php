@@ -36,30 +36,12 @@ $image_banner = get_post_meta( $post_id, $_prefix.'image_banner', true) ? get_po
 			<?php endforeach; endif; ?>
 		</div>
 	</div>
-	<a class="add_image_gallery button" href="#" data-uploader-title="<?php esc_attr_e( "Add Gallery", 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( "Add image(s)", 'eventlist' ); ?>"><?php esc_html_e( "Add Gallery", 'eventlist' ); ?></a>
-	
+	<a class="add_image_gallery button btn_add_co_organizer" href="#" data-uploader-title="<?php esc_attr_e( 'Ajouter des images', 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( 'Ajouter', 'eventlist' ); ?>">
+		<?php esc_html_e( 'Ajouter une galerie', 'eventlist' ); ?>
+	</a>
 
 
-</div>
 
-
-<!-- Video -->
-<div class="link_video vendor_field">
-
-	<h4 class="heading_section">
-		<?php esc_html_e( 'Video', 'eventlist' ); ?>
-
-		<?php if ( apply_filters( 'el_video_req', false, $args ) == true ): ?>
-			<span class="el_req">*</span>
-		<?php endif; ?>
-
-		<span class="el_icon_help dashicons dashicons-editor-help"
-		data-tippy-content="<?php esc_attr_e( 'Ex: https://www.youtube.com/watch?v=5wZ9LcEbulg or Vimeo: https://player.vimeo.com/video/23534361', 'eventlist' ); ?>"></span>
-	</h4>
-	
-	<div class="wrap_link">
-		<input type="text" id="link_video" name="<?php echo esc_attr( $_prefix.'link_video' ); ?>" value="<?php echo esc_attr( $link_video ); ?>" placeholder="<?php esc_html_e( 'https://', 'eventlist' ); ?>" autocomplete="off" autocorrect="off" autocapitalize="none" />
-	</div>
 </div>
 
 
