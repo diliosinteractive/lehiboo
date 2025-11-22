@@ -60,10 +60,19 @@ if (!is_array($co_organizers)) $co_organizers = array();
                     <?php esc_html_e( 'Catégorie', 'eventlist' ); ?>
                     <span class="el_req">*</span>
                 </label>
-                <?php
-                $selected_cat = !empty($selected_cats) ? $selected_cats[0] : '';
-                el_get_taxonomy3('event_cat', 'event_cat', $selected_cat, true);
-                ?>
+                <select name="event_cat" id="event_cat" class="selectpicker" required>
+                    <option value=""><?php esc_html_e( '--- Sélectionner ---', 'eventlist' ); ?></option>
+                    <?php
+                    $categories = get_terms(array('taxonomy' => 'event_cat', 'hide_empty' => false));
+                    if (!is_wp_error($categories)) {
+                        $selected_cat = !empty($selected_cats) ? $selected_cats[0] : '';
+                        foreach ($categories as $cat) {
+                            $selected = ($cat->term_id == $selected_cat) ? 'selected' : '';
+                            echo '<option value="' . esc_attr($cat->term_id) . '" ' . $selected . '>' . esc_html($cat->name) . '</option>';
+                        }
+                    }
+                    ?>
+                </select>
             </div>
         </div>
         <div class="el_col_6">
