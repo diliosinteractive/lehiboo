@@ -13,6 +13,7 @@ $event_img_url = $event_img_id ? wp_get_attachment_image_url($event_img_id, 'thu
 <!-- Custom Assets for Event Form -->
 <link rel="stylesheet" href="<?php echo EL_PLUGIN_URI . 'assets/css/vendor-event-form.css'; ?>">
 <script src="<?php echo EL_PLUGIN_URI . 'assets/js/vendor-event-form.js'; ?>" defer></script>
+<script src="<?php echo EL_PLUGIN_URI . 'assets/js/frontend/vendor-gallery.js'; ?>" defer></script>
 
 <div class="vendor_wrap el-vendor-event-form-wrapper">
     
