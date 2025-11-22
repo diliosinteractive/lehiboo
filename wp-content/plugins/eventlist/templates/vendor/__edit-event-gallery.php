@@ -17,31 +17,29 @@ $image_banner = get_post_meta( $post_id, $_prefix.'image_banner', true) ? get_po
 
 <!-- Image Gallery -->
 <div class="image_gallery">
-	
-	
-	<div class="gallery_box">
-		<div class="gallery_list">
-			<?php if ( $gallery ) : foreach ( $gallery as $key => $value ) : $image = wp_get_attachment_image_src( $value, 'el_thumbnail' ); ?>
-				<div class="gallery_item">
-					<div class="image_box">
-						<input type="hidden" class="gallery_id" value="<?php echo esc_attr($value); ?>">
-						
-						<img class="image-preview" src="<?php echo esc_url($image[0]); ?>">
+	<div class="wrap_image_upload">
+		<div class="gallery_box">
+			<div class="gallery_list">
+				<?php if ( $gallery ) : foreach ( $gallery as $key => $value ) : $image = wp_get_attachment_image_src( $value, 'el_thumbnail' ); ?>
+					<div class="gallery_item">
+						<div class="image_box">
+							<input type="hidden" class="gallery_id" value="<?php echo esc_attr($value); ?>">
 
-						<a class="remove_image" href="#">
-							<i class="fa fa-times-circle" aria-hidden="true"></i>
-						</a>
+							<img class="image-preview" src="<?php echo esc_url($image[0]); ?>">
+
+							<a class="remove_image" href="#">
+								<i class="fa fa-times-circle" aria-hidden="true"></i>
+							</a>
+						</div>
 					</div>
-				</div>
-			<?php endforeach; endif; ?>
+				<?php endforeach; endif; ?>
+			</div>
 		</div>
+
+		<a class="button add_gallery_images el_btn_add_media" href="#" data-uploader-title="<?php esc_attr_e( 'Ajouter des images', 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( 'Ajouter', 'eventlist' ); ?>">
+			<i class="icon_camera_alt"></i> <?php esc_html_e( 'Ajouter des images', 'eventlist' ); ?>
+		</a>
 	</div>
-	<a class="add_gallery_images button btn_add_co_organizer" href="#" data-uploader-title="<?php esc_attr_e( 'Ajouter des images', 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( 'Ajouter', 'eventlist' ); ?>">
-		<?php esc_html_e( 'Ajouter une galerie', 'eventlist' ); ?>
-	</a>
-
-
-
 </div>
 
 
