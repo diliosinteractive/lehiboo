@@ -228,6 +228,47 @@ if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-re
 }
 
 // ========================================
+// MASQUER LE MENU PRINCIPAL SUR LES PAGES PARTENAIRES
+// ========================================
+/**
+ * Ajoute une classe "is-vendor-page" au body quand on est sur une page partenaire
+ * (quand le paramètre GET "vendor" est présent)
+ */
+add_filter( 'body_class', 'lehiboo_vendor_page_body_class' );
+function lehiboo_vendor_page_body_class( $classes ) {
+	$vendor_page = isset( $_GET['vendor'] ) ? sanitize_text_field( $_GET['vendor'] ) : '';
+	
+	if ( ! empty( $vendor_page ) ) {
+		$classes[] = 'is-vendor-page';
+	}
+	
+	return $classes;
+}
+
+/**
+ * Cache le menu principal (Listing, Page, Blog) sur les pages partenaires
+ * Le menu est généralement dans .ova_menu_clasic ou .ova_nav
+ */
+add_action( 'wp_head', 'lehiboo_hide_menu_on_vendor_pages' );
+function lehiboo_hide_menu_on_vendor_pages() {
+	$vendor_page = isset( $_GET['vendor'] ) ? sanitize_text_field( $_GET['vendor'] ) : '';
+	
+	if ( ! empty( $vendor_page ) ) {
+		?>
+		<style type="text/css">
+			/* Masquer le menu principal (Listing, Page, Blog) sur les pages partenaires */
+			body.is-vendor-page .elementor-element-717d424,
+			body.is-vendor-page .ova_menu_clasic,
+			body.is-vendor-page .ova_nav,
+			body.is-vendor-page .elementor-widget-ova_menu {
+				display: none !important;
+			}
+		</style>
+		<?php
+	}
+}
+
+// ========================================
 // TAXONOMIES PERSONNALISÉES
 // ========================================
 // V1 Le Hiboo : Les anciennes taxonomies personnalisées (Job, Time, Public) ont été remplacées
