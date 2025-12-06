@@ -289,3 +289,169 @@ span#select2-el_coorg_select_role-container {
 button#el_coorg_add_btn {
     margin-top: 0;
 }
+
+/* Label "Son rôle" sur une seule ligne */
+.el_coorg_add_section label[for="el_coorg_select_role"] {
+    white-space: nowrap;
+    margin: 0 10px;
+    font-weight: 500;
+    color: #2F4858;
+}
+
+/* ========================================
+   MENU VERROUILLÉ - BADGE PROCHAINEMENT
+   ======================================== */
+
+.menu_locked a {
+    position: relative;
+    opacity: 0.85;
+}
+
+.menu_badge_soon {
+    display: inline-block;
+    background: linear-gradient(135deg, #FF6600, #FF8533);
+    color: #FFFFFF;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    vertical-align: middle;
+}
+
+/* ========================================
+   PAGE TEASER INDICATEURS
+   ======================================== */
+
+.vendor_indicateurs_teaser {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.teaser_header {
+    margin-bottom: 40px;
+}
+
+.teaser_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #FF6600, #FF8533);
+    color: #FFFFFF;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+}
+
+.teaser_badge i {
+    font-size: 10px;
+}
+
+.teaser_title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2F4858;
+    margin: 0 0 12px 0;
+}
+
+.teaser_subtitle {
+    font-size: 16px;
+    color: #6B7C8A;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.teaser_image_wrapper {
+    position: relative;
+    margin-bottom: 40px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.teaser_image {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: blur(3px);
+    opacity: 0.7;
+}
+
+.teaser_image_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(47, 72, 88, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.teaser_image_overlay i {
+    font-size: 48px;
+    color: #FFFFFF;
+    opacity: 0.9;
+}
+
+.teaser_features {
+    background: #F8F9FA;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.teaser_features h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2F4858;
+    margin: 0 0 20px 0;
+}
+
+.features_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.feature_card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #FFFFFF;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.feature_card i {
+    color: #FF6600;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.feature_card span {
+    font-size: 14px;
+    color: #2F4858;
+    font-weight: 500;
+    text-align: left;
+}
+
+.teaser_cta {
+    padding: 20px;
+}
+
+.teaser_cta p {
+    font-size: 14px;
+    color: #6B7C8A;
+    margin: 0;
+}

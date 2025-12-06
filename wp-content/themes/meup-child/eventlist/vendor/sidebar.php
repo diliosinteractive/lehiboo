@@ -49,15 +49,6 @@ $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_tic
                 <!-- NOUVELLE NAVIGATION PARTENAIRE -->
                 <li class="nav-section-title"><?php esc_html_e( 'Gestion des Activités', 'eventlist' ); ?></li>
 
-                <?php if( apply_filters( 'el_manage_vendor_show_general', true ) ){ ?>
-                    <li class="menu_vendor_general <?php if ($vendor == 'general') echo esc_attr('active');  ?>">
-                        <a href="<?php echo add_query_arg( array( 'vendor' => 'general'), get_myaccount_page() ); ?>">
-                            <i class="icon_house_alt"></i>
-                            <?php esc_html_e( 'Tableau de bord', 'eventlist' ); ?>
-                        </a>
-                    </li>
-                <?php } ?>
-
                 <?php if( apply_filters( 'el_manage_vendor_show_my_listing', true ) ){ ?>
                     <li class="menu_vendor_mylisting <?php if ($vendor == 'listing' || $vendor == 'listing-edit' ) echo esc_attr('active');  ?>">
                         <a href="<?php echo add_query_arg( array( 'vendor' => 'listing', 'listing_type' => 'any'), get_myaccount_page() ); ?>">
@@ -100,7 +91,17 @@ $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_tic
                     </a>
                 </li>
 
-                <li class="nav-section-title"><?php esc_html_e( 'Communication', 'eventlist' ); ?></li>
+                <!-- Section Marketing (anciennement Communication) -->
+                <li class="nav-section-title"><?php esc_html_e( 'Marketing', 'eventlist' ); ?></li>
+
+                <!-- Indicateurs - Verrouillé avec tag Prochainement -->
+                <li class="menu_vendor_indicateurs menu_locked <?php if ($vendor == 'indicateurs') echo esc_attr('active');  ?>">
+                    <a href="<?php echo add_query_arg( array( 'vendor' => 'indicateurs'), get_myaccount_page() ); ?>">
+                        <i class="fas fa-lock"></i>
+                        <?php esc_html_e( 'Indicateurs', 'eventlist' ); ?>
+                        <span class="menu_badge_soon"><?php esc_html_e( 'Prochainement', 'eventlist' ); ?></span>
+                    </a>
+                </li>
 
                 <?php if( apply_filters( 'el_manage_vendor_show_messages', true ) ){
                     // Compter les messages non lus
