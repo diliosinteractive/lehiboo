@@ -753,3 +753,8 @@
     visibility: visible;
     height: auto;
 }
+
+.vendor_wrap .tab-contents {
+    display: none;
+    padding: 30px;
+}

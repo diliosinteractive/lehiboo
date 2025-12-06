@@ -213,6 +213,14 @@ if (!is_array($co_organizers)) $co_organizers = array();
         <label class="co_organizer_label"><?php esc_html_e( 'Ajouter des co-organisateurs', 'eventlist' ); ?></label>
         <p class="field_help_text">
             <?php esc_html_e( 'Sélectionnez vos partenaires pour les inviter à co-organiser cet événement', 'eventlist' ); ?>
+            <br>
+        <?php
+            printf(
+                esc_html__( 'Si vous souhaitez ajouter des co-organisateurs, %sInvitez des partenaires%s pour pouvoir les ajouter comme co-organisateurs.', 'eventlist' ),
+                '<a href="' . add_query_arg( array( 'vendor' => 'partenariats' ), get_myaccount_page() ) . '">',
+                '</a>'
+            );
+            ?>
         </p>
 
         <?php

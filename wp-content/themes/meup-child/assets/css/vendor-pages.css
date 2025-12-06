@@ -162,3 +162,130 @@
 .vendor_user_profile a.edit_profile:not(.profile_image_link) {
     display: none;
 }
+
+
+
+span#select2-event_cat-container,
+span#select2-el_coorg_select_partner-container,
+span#select2-el_coorg_select_role-container {
+    height: 34px;
+    padding: 10px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__clear {
+    cursor: pointer;
+    float: right;
+    font-weight: bold;
+    right: 12px;
+    top: -8px;
+}
+
+
+#current_coorganisers_list .el_coorg_badge_accepted {
+    background: #47bb78;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 15px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 6px;
+    border: 2px solid rgba(0, 0, 0, 0);
+    cursor: pointer;
+    transition: all .3s ease;
+    text-decoration: none;
+    line-height: 1.5;
+    margin-right: 20px;
+}
+
+
+#current_coorganisers_list .el_coorg_remove_btn {
+    background-color: #fff;
+    color: #2F4858;
+    border: 2px solid #2F4858;
+    padding: 5px 15px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .3s ease;
+    text-decoration: none;
+    line-height: 1.5;
+}
+
+#current_coorganisers_list .el_col_6 {
+    flex: 0 0 70%;
+}
+
+#current_coorganisers_list .el_row {
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Grouper les boutons à droite avec moins d'espace */
+#current_coorganisers_list .el_col_3,
+#current_coorganisers_list .el_col_2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    padding: 0 !important;
+}
+
+.el_coorg_badge_pending {
+    background: #fe601f;
+    color: #ffffff;
+}
+
+.el_coorg_badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: math-auto;
+    letter-spacing: 0.5px;
+    min-width: 90px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Cacher les colonnes vides */
+#current_coorganisers_list .el_col_3:empty,
+#current_coorganisers_list .el_col_2:empty {
+    display: none !important;
+}
+
+#current_coorganisers_list .el_coorg_badge_accepted {
+    margin-right: 0 !important;
+}
+
+/* Forcer la row à ne pas avoir d'espace au milieu */
+#current_coorganisers_list .el_row {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Le nom du partenaire prend le reste de l'espace */
+#current_coorganisers_list .el_col_6 {
+    flex: 1 1 auto;
+    max-width: none;
+}
+
+.el_coorg_add_section {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+}
+
+button#el_coorg_add_btn {
+    margin-top: 0;
+}
