@@ -172,6 +172,24 @@ function meup_child_scripts() {
 }
 
 /**
+ * V1 Le Hiboo - Charger les styles vendor-pages.css EN DERNIER (priorité 999)
+ * pour écraser les styles Elementor qui forcent border-radius: 0
+ */
+add_action( 'wp_enqueue_scripts', 'lehiboo_vendor_pages_late_styles', 999 );
+function lehiboo_vendor_pages_late_styles() {
+    if( is_page() ) {
+        global $post;
+        if( $post && has_shortcode( $post->post_content, 'el_member_account' ) ) {
+            // Cache buster avec timestamp du fichier
+            $css_file = get_stylesheet_directory() . '/assets/css/vendor-pages.css';
+            $version = file_exists($css_file) ? filemtime($css_file) : '1.0.0';
+            
+            wp_enqueue_style( 'vendor-pages', get_stylesheet_directory_uri() . '/assets/css/vendor-pages.css', array(), $version );
+        }
+    }
+}
+
+/**
  * V1 Le Hiboo - Inclure le template du popup d'authentification dans le footer
  */
 add_action( 'wp_footer', 'lehiboo_include_auth_popup_template' );

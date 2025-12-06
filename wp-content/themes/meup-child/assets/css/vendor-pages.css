@@ -1,0 +1,164 @@
+/**
+ * Vendor Pages - Custom Styles
+ * 
+ * Styles spécifiques aux pages partenaires Le Hiboo
+ * 
+ * @package LeHiboo
+ * @version 1.0.0
+ */
+
+/* ========================================
+   PHOTO DE PROFIL - SIDEBAR PARTENAIRE
+   ======================================== */
+
+/* Conteneur principal de la photo de profil */
+.vendor_user_profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 24px 16px;
+    margin-bottom: 16px;
+}
+
+/* Wrapper pour l'image avec le crayon */
+.wrap_image_profile {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 12px;
+}
+
+/* Lien cliquable sur l'image - CONTENEUR ROND */
+.profile_image_link,
+.elementor .profile_image_link,
+.vendor_sidebar .profile_image_link {
+    display: block !important;
+    position: relative !important;
+    text-decoration: none !important;
+    margin: 0 auto 15px !important;
+    width: 100px !important;
+    height: 100px !important;
+    border-radius: 50% !important;
+    border: 3px solid #fff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .1) !important;
+}
+
+.profile_image_link:hover,
+.elementor .profile_image_link:hover,
+.vendor_sidebar .profile_image_link:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Image de profil - Remplit le conteneur rond */
+.profile_image_link img,
+.profile_image_link img.user_image_rounded,
+.elementor .profile_image_link img,
+.vendor_sidebar .profile_image_link img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border: none !important;
+    border-radius: 50% !important;
+    display: block !important;
+}
+
+.profile_image_link:hover .user_image_rounded,
+.profile_image_link:hover img {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Icône crayon d'édition */
+.edit_profile_icon {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 28px;
+    height: 28px;
+    background: #FF6600;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #2F4858;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.edit_profile_icon i {
+    color: #FFFFFF;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.edit_profile_icon:hover {
+    background: #e65c00;
+    transform: scale(1.1);
+}
+
+/* Tooltip sur le crayon */
+.edit_profile_icon::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #222222;
+    color: #FFFFFF;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Flèche du tooltip */
+.edit_profile_icon::after {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #222222;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+}
+
+.edit_profile_icon:hover::before,
+.edit_profile_icon:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Nom du profil */
+.profile_name_wrapper .display_name {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #FFFFFF;
+    line-height: 1.4;
+}
+
+/* ========================================
+   OVERRIDE ANCIEN STYLE (si nécessaire)
+   ======================================== */
+
+/* Cacher l'ancien wrapper si présent */
+.vendor_user_profile .wrap_image {
+    display: none;
+}
+
+/* Cacher l'ancien lien d'édition si présent */
+.vendor_user_profile a.edit_profile:not(.profile_image_link) {
+    display: none;
+}
