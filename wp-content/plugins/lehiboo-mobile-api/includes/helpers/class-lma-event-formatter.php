@@ -564,16 +564,8 @@ class LMA_Event_Formatter {
      * Check if event is favorite for user
      */
     private static function is_favorite($event_id, $user_id) {
-        global $wpdb;
-        $table = $wpdb->prefix . 'lehiboo_user_favorites';
-
-        $count = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM $table WHERE user_id = %d AND event_id = %d",
-            $user_id,
-            $event_id
-        ));
-
-        return $count > 0;
+        $favorites = get_user_meta($user_id, 'lma_favorites', true);
+        return is_array($favorites) && in_array($event_id, $favorites);
     }
 
     /**
