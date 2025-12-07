@@ -828,17 +828,17 @@ class EL_Post_Types{
 		// Add new taxonomy, make it hierarchical (like location)
 
 		$labels = array(
-			'name'              => _x( 'Locations', 'taxonomy general name', 'eventlist' ),
-			'singular_name'     => _x( 'Location', 'taxonomy singular name', 'eventlist' ),
-			'search_items'      => __( 'Search Location', 'eventlist' ),
-			'all_items'         => __( 'All Locations', 'eventlist' ),
-			'parent_item'       => __( 'Parent Location', 'eventlist' ),
-			'parent_item_colon' => __( 'Parent Location:', 'eventlist' ),
-			'edit_item'         => __( 'Edit Location', 'eventlist' ),
-			'update_item'       => __( 'Update Location', 'eventlist' ),
-			'add_new_item'      => __( 'Add New Location', 'eventlist' ),
-			'new_item_name'     => __( 'New Location', 'eventlist' ),
-			'menu_name'         => __( 'Locations', 'eventlist' )
+			'name'              => _x( 'Villes', 'taxonomy general name', 'eventlist' ),
+			'singular_name'     => _x( 'Ville', 'taxonomy singular name', 'eventlist' ),
+			'search_items'      => __( 'Rechercher une ville', 'eventlist' ),
+			'all_items'         => __( 'Toutes les villes', 'eventlist' ),
+			'parent_item'       => __( 'Ville parente', 'eventlist' ),
+			'parent_item_colon' => __( 'Ville parente :', 'eventlist' ),
+			'edit_item'         => __( 'Modifier la ville', 'eventlist' ),
+			'update_item'       => __( 'Mettre à jour la ville', 'eventlist' ),
+			'add_new_item'      => __( 'Ajouter une ville', 'eventlist' ),
+			'new_item_name'     => __( 'Nouvelle ville', 'eventlist' ),
+			'menu_name'         => __( 'Villes', 'eventlist' )
 		);
 
 		$args = array(

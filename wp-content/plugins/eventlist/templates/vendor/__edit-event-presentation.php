@@ -17,15 +17,18 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
     <h4 class="heading_section"><?php esc_html_e( 'Présentation', 'eventlist' ); ?></h4>
        
     <p class="field_description">
-        <?php esc_html_e( 'Détaillez votre activité et ajoutez des visuels attractifs.', 'eventlist' ); ?>
+        <?php esc_html_e( 'Présentez votre événement avec du texte, des images et une vidéo.', 'eventlist' ); ?>
     </p>
 
     <!-- Description -->
     <div class="vendor_field">
         <label class="ova_desc" for="content_event">
-            <?php esc_html_e( 'Description de l\'événement', 'eventlist' ); ?>
-            <span class="el_req">*</span>
+            <?php esc_html_e( 'Description', 'eventlist' ); ?>
         </label>
+
+        <p class="field_hint">
+            <?php esc_html_e( "Pour garantir une description complète et percutante, nous vous conseillons vivement d'atteindre un minimum de 500 caractères. Plus votre description sera détaillée, plus elle sera efficace.", 'eventlist' ); ?>
+        </p>
         <?php
         // V1 Le Hiboo - WYSIWYG amélioré avec plus d'options
         $settings_editor = array(
@@ -56,7 +59,7 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
         <!-- Image Feature -->
     <div class="image_feature vendor_field">
         <label>
-            <?php esc_html_e( 'Image à la une', 'eventlist' ); ?>
+            <?php esc_html_e( 'Image de présentation', 'eventlist' ); ?>
             <span class="el_req">*</span>
         </label>
         <p class="field_hint"><?php esc_html_e( 'Taille recommandée: 1920x739px', 'eventlist' ); ?></p>
@@ -81,7 +84,7 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
     <!-- Gallery -->
     <div id="mb_gallery" class="vendor_field">
         <label>
-            <?php esc_html_e( 'Galerie d\'images', 'eventlist' ); ?>
+            <?php esc_html_e( 'Image Galerie', 'eventlist' ); ?>
         </label>
         <p class="field_hint"><?php esc_html_e( 'Taille recommandée: 710x480px', 'eventlist' ); ?></p>
         
@@ -92,9 +95,9 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
 
     <!-- Video -->
     <div class="vendor_field">
-        <label for="event_video"><?php esc_html_e( 'Lien URL d’une vidéo', 'eventlist' ); ?></label>
-        <input type="url" id="event_video" name="<?php echo esc_attr( $_prefix.'event_video' ); ?>" value="<?php echo esc_url( $event_video ); ?>" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
+        <label for="event_video"><?php esc_html_e( 'Lien URL d’une vidéo sur une plateforme streaming.', 'eventlist' ); ?></label>
         <p class="field_hint"><?php esc_html_e( 'La vidéo sera visible dans la galerie d’image.', 'eventlist' ); ?></p>
+        <input type="url" id="event_video" name="<?php echo esc_attr( $_prefix.'event_video' ); ?>" value="<?php echo esc_url( $event_video ); ?>" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
     </div>
 
     <hr class="el_separator">

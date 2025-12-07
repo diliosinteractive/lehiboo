@@ -7,37 +7,197 @@
 
 /* Ajoutez vos correctifs CSS ici */
 
+/* --- FORMULAIRE VENDOR / PRESENTATION STYLE AIRBNB --- */
+
+/* 1. Labels & Typographie */
 .vendor_wrap .contents .vendor_edit_event label,
 .vendor_edit_event label,
 .vendor_wrap .contents .vendor_profile label,
 .vendor_profile label {
     display: block;
-    font-size: 14px;
-    font-weight: 600;
-    color: #2d3748;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #222222 !important;
+    /* Airbnb Black */
+    margin-bottom: 8px !important;
+    margin-top: 24px !important;
+}
+
+/* Hints et Descriptions */
+.vendor_wrap .contents .vendor_edit_event .field_description,
+.vendor_wrap .contents .vendor_edit_event .field_hint,
+.vendor_wrap .contents .vendor_edit_event .char_counter_wrapper {
+    font-size: 12px;
+    color: #717171;
+    /* Airbnb Grey */
+    margin-top: 6px;
     margin-bottom: 0;
-    margin-top: 8px;
-    line-height: 1;
+    line-height: 1.4;
 }
 
-.vendor_wrap .contents .vendor_edit_event .button,
-.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit),
-.vendor_edit_event .button,
-.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit),
-.vendor_wrap .contents .vendor_profile .button,
-.vendor_wrap .contents .vendor_profile button:not(.btn_save_event):not(.el_edit_event_submit),
-.vendor_profile .button,
-.vendor_profile button:not(.btn_save_event):not(.el_edit_event_submit) {
-    padding: 5px;
+/* 2. Champs de saisie (Inputs, Selects, Textarea) */
+.vendor_wrap .contents .vendor_edit_event input[type="text"],
+.vendor_wrap .contents .vendor_edit_event input[type="url"],
+.vendor_wrap .contents .vendor_edit_event input[type="number"],
+.vendor_wrap .contents .vendor_edit_event input[type="email"],
+.vendor_wrap .contents .vendor_edit_event select,
+.vendor_wrap .contents .vendor_edit_event textarea {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    /* Touch friendly */
+    padding: 10px 12px !important;
+    font-size: 16px !important;
+    line-height: 24px;
+    color: #222222;
+    background-color: #ffffff;
+    border: 1px solid #B0B0B0 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease-in-out;
 }
 
+/* Focus State */
+.vendor_wrap .contents .vendor_edit_event input:focus,
+.vendor_wrap .contents .vendor_edit_event select:focus,
+.vendor_wrap .contents .vendor_edit_event textarea:focus {
+    border-color: #222222 !important;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(34, 34, 34, 0.1) !important;
+}
+
+/* Select2 Fix (si utilisé par thème/plugins) */
+.select2-container .select2-selection--single {
+    height: 48px !important;
+    border-radius: 8px !important;
+    border: 1px solid #B0B0B0 !important;
+    display: flex;
+    align-items: center;
+}
+
+/* 3. Éditeur WYSIWYG (TinyMCE) */
 .el_editor_no_border .wp-editor-container,
 .el_editor_no_border #wp-content_event-editor-container,
 .vendor_field .el_editor_no_border .wp-editor-container {
-    border: 2px solid #dcdcde !important;
-    border-radius: 5px;
+    border: 1px solid #B0B0B0 !important;
+    border-radius: 8px !important;
+    overflow: hidden;
 }
 
 .el_editor_wrapper {
     border: none !important;
+}
+
+/* 4. Upload Image Zone */
+.vendor_wrap .contents .vendor_edit_event .image_feature .wrap_image_upload,
+.vendor_wrap .contents .vendor_edit_event #mb_gallery .wrap_image_upload {
+    margin-top: 8px;
+}
+
+.vendor_wrap .contents .vendor_edit_event .add_image.el_btn_add_media {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 140px;
+    /* Plus grand pour l'appel à l'action */
+    background-color: #F7F7F7;
+    border: 1px dashed #B0B0B0;
+    border-radius: 12px;
+    color: #222222;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    text-transform: none;
+    /* Pas de majuscules forcées */
+    font-size: 15px;
+}
+
+.vendor_wrap .contents .vendor_edit_event .add_image.el_btn_add_media:hover {
+    background-color: #EBEBEB;
+    border-color: #222222;
+}
+
+.vendor_wrap .contents .vendor_edit_event .add_image.el_btn_add_media i {
+    font-size: 32px;
+    margin-bottom: 8px;
+    color: #FF385C;
+    /* Airbnb Brand Color pour l'icône */
+}
+
+/* Preview Image */
+.vendor_wrap .contents .vendor_edit_event .image_box {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #DDDDDD;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.vendor_wrap .contents .vendor_edit_event .image_box img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.vendor_wrap .contents .vendor_edit_event .image_box .remove_image {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #222222;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
+    text-decoration: none;
+}
+
+.vendor_wrap .contents .vendor_edit_event .image_box .remove_image:hover {
+    transform: scale(1.1);
+    color: #C13515;
+}
+
+/* 5. Réseaux Sociaux */
+.vendor_wrap .contents .vendor_edit_event .social_item {
+    background: white;
+    padding: 0;
+    margin-bottom: 12px;
+    border-radius: 0;
+    border: none;
+}
+
+.vendor_wrap .contents .vendor_edit_event .btn_add_co_organizer {
+    background: transparent !important;
+    color: #222222 !important;
+    border: 1px solid #222222 !important;
+    padding: 8px 20px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    margin-top: 16px;
+    display: inline-block;
+    cursor: pointer;
+    text-transform: none;
+}
+
+.vendor_wrap .contents .vendor_edit_event .btn_add_co_organizer:hover {
+    background: #F7F7F7 !important;
+}
+
+/* Separators */
+.vendor_wrap .contents .vendor_edit_event hr.el_separator {
+    margin: 40px 0;
+    border: 0;
+    border-top: 1px solid #DDDDDD;
+}
+
+/* Boutons généraux */
+.vendor_wrap .contents .vendor_edit_event .button {
+    border-radius: 8px;
 }
