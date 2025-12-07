@@ -28,41 +28,6 @@ function lehiboo_v1_debug_info() {
     if ( $post && has_shortcode( $post->post_content, 'el_member_account' ) ) {
         $has_shortcode = true;
     }
-
-    ?>
-    <script>
-    console.group('🔍 LeHiboo V1 - Debug Info');
-    console.log('📄 Page:', '<?php echo is_page() ? "Page" : "Non-page"; ?>');
-    console.log('📋 Shortcode [el_member_account]:', <?php echo $has_shortcode ? 'true' : 'false'; ?>);
-    console.log('👤 User logged in:', <?php echo is_user_logged_in() ? 'true' : 'false'; ?>);
-    console.log('🎨 Theme:', '<?php echo get_stylesheet(); ?>');
-    console.log('📁 Templates override directory:', '<?php echo get_stylesheet_directory() . "/eventlist/templates/vendor/"; ?>');
-
-    // Vérifier l'existence des fichiers
-    <?php
-    $files_to_check = [
-        'calendar' => get_stylesheet_directory() . '/eventlist/templates/vendor/__edit-event-calendar.php',
-        'ticket' => get_stylesheet_directory() . '/eventlist/templates/vendor/__edit-event-ticket.php',
-        'localisation' => get_stylesheet_directory() . '/eventlist/templates/vendor/__edit-event-localisation.php',
-        'config' => get_stylesheet_directory() . '/includes/event-v1-config.php',
-        'js_ux' => get_stylesheet_directory() . '/assets/js/vendor-ticket-ux-improvements.js',
-    ];
-
-    foreach ( $files_to_check as $name => $path ) {
-        $exists = file_exists( $path );
-        echo "console.log('✅ Template {$name}:', " . ($exists ? 'true' : 'false') . ");\n";
-    }
-    ?>
-
-    // Vérifier les filtres actifs
-    console.log('🔧 Filtres WordPress:');
-    console.log('  - el_show_yearly_recurrence:', <?php echo apply_filters( 'el_show_yearly_recurrence', true ) ? 'true' : 'false'; ?>);
-    console.log('  - el_show_ticket_type_no_seat:', <?php echo apply_filters( 'el_show_ticket_type_no_seat', true ) ? 'true' : 'false'; ?>);
-    console.log('  - el_show_ticket_paid_ticketing:', <?php echo apply_filters( 'el_show_ticket_paid_ticketing', true ) ? 'true' : 'false'; ?>);
-
-    console.groupEnd();
-    </script>
-    <?php
 }
 
 /**

@@ -307,6 +307,11 @@ jQuery(document).ready(function ($) {
         // Disable button during save
         $saveBtn.prop('disabled', true).addClass('loading');
 
+        // V1 Le Hiboo - Synchroniser TinyMCE avec le textarea avant sauvegarde
+        if (typeof tinyMCE !== 'undefined' && tinyMCE.get('content_event')) {
+            tinyMCE.triggerSave();
+        }
+
         // Helper function to convert form array to nested object
         function serializeObject($form) {
             var obj = {};
@@ -356,12 +361,21 @@ jQuery(document).ready(function ($) {
         // Get all form data as object
         var allData = serializeObject($form);
 
+        // V1 Le Hiboo - Récupérer directement le contenu depuis TinyMCE
+        var editorContent = '';
+        if (typeof tinyMCE !== 'undefined' && tinyMCE.get('content_event')) {
+            editorContent = tinyMCE.get('content_event').getContent();
+        } else {
+            // Fallback: récupérer depuis le textarea
+            editorContent = $('#content_event').val() || '';
+        }
+
         // Prepare data objects
         var postData = {
             post_id: allData.post_id || allData.event_id,
             el_edit_event_nonce: allData.el_edit_event_nonce,
             name_event: allData.name_event || allData.post_title,
-            content_event: allData.el_content_event || allData.content_event || '',
+            content_event: editorContent || allData.el_content_event || allData.content_event || '',
             event_cat: allData.event_cat || '',
             event_status: allData.event_status || 'publish',
             event_password: allData.event_password || '',
@@ -416,11 +430,6 @@ jQuery(document).ready(function ($) {
             }
         }
 
-        // Debug: log what we're sending
-        console.log('POST DATA:', postData);
-        console.log('META DATA:', metaData);
-        console.log('Full Form Object:', allData);
-
         // Send AJAX request
         $.ajax({
             url: ajax_object.ajax_url,
@@ -432,7 +441,6 @@ jQuery(document).ready(function ($) {
                 meta_data: metaData
             },
             success: function (response) {
-                console.log('AJAX Response:', response);
                 $saveBtn.prop('disabled', false).removeClass('loading');
 
                 // Handle successful save

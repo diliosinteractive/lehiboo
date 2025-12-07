@@ -54,23 +54,22 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
             <?php esc_html_e( 'Description de l\'événement', 'eventlist' ); ?>
             <span class="el_req">*</span>
         </label>
-        <p class="field_hint" style="margin-bottom: 10px; font-size: 13px; color: #717171;">
-            <?php esc_html_e( 'Pour garantir une description complète et percutante, nous vous conseillons vivement d\'atteindre un minimum de 500 caractères.', 'eventlist' ); ?>
-        </p>
         <?php
+        // V1 Le Hiboo - WYSIWYG amélioré avec plus d'options
         $settings_editor = array(
             'textarea_name' => 'el_content_event',
             'media_buttons' => false,
-            'textarea_rows' => 10,
-            'editor_height' => 230,
+            'textarea_rows' => 15,
+            'editor_height' => 350,
             'wpautop'       => false,
             'tinymce'       => array(
-                'toolbar1' => 'formatselect,bold,italic,underline,bullist,numlist,alignleft,aligncenter,alignright,undo,redo',
-                'toolbar2' => '',
+                'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,|,bullist,numlist,|,alignleft,aligncenter,alignright,alignjustify,|,link,unlink,|,undo,redo',
+                'toolbar2' => 'forecolor,backcolor,|,hr,blockquote,|,removeformat,pastetext,|,charmap',
+                'block_formats' => 'Paragraphe=p;Titre 2=h2;Titre 3=h3;Titre 4=h4;Préformaté=pre',
             ),
         );
         ?>
-        <div class="el_editor_wrapper">
+        <div class="el_editor_wrapper el_editor_no_border">
             <?php 
             $content = ($post_id != '') ? get_post_field('post_content', $post_id) : '';
             wp_editor( wpautop($content), 'content_event', $settings_editor ); 

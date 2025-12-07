@@ -28,8 +28,9 @@ class EL_Vendor {
 		$current_user_id = wp_get_current_user()->ID;
 		$author_id = get_post_field( 'post_author', $post_id );
 
-		if( el_is_vendor() && apply_filters( 'el_manage_vendor_show_general', true ) ){
-			$template = apply_filters( 'el_shortcode_myaccount_template_general', 'vendor/general.php' );	
+		// V1 Le Hiboo - Dashboard désactivé, afficher listing par défaut
+		if( el_is_vendor() ){
+			$template = apply_filters( 'el_shortcode_myaccount_template_events', 'vendor/events.php' );	
 		}else{
 			$template = apply_filters( 'el_shortcode_myaccount_template_profile', 'vendor/profile.php' );
 		}
@@ -38,8 +39,10 @@ class EL_Vendor {
 		switch ($args_vendor) {
 
 			case 'general':
-			if( el_is_vendor() && apply_filters( 'el_manage_vendor_show_general', true ) ){
-				$template = apply_filters( 'el_shortcode_myaccount_template_general', 'vendor/general.php' );
+			// V1 Le Hiboo - Rediriger general vers listing (dashboard désactivé temporairement)
+			if( el_is_vendor() ){
+				wp_redirect( add_query_arg( array( 'vendor' => 'listing', 'listing_type' => 'any' ), get_myaccount_page() ) );
+				exit;
 			}
 			break;
 
@@ -190,6 +193,15 @@ class EL_Vendor {
 			case 'coorganisations':
 			if( el_is_vendor() ){
 				$template = apply_filters( 'el_shortcode_coorganisations_template', 'vendor/coorganisations.php' );
+			}else{
+				$template = apply_filters( 'el_shortcode_myaccount_template_profile', 'vendor/profile.php' );
+			}
+			break;
+
+			// V1 Le Hiboo - Page Indicateurs (teaser prochainement)
+			case 'indicateurs':
+			if( el_is_vendor() ){
+				$template = apply_filters( 'el_shortcode_indicateurs_template', 'vendor/indicateurs.php' );
 			}else{
 				$template = apply_filters( 'el_shortcode_myaccount_template_profile', 'vendor/profile.php' );
 			}

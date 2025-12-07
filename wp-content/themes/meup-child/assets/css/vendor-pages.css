@@ -1,0 +1,509 @@
+/**
+ * Vendor Pages - Custom Styles
+ * 
+ * Styles spécifiques aux pages partenaires Le Hiboo
+ * 
+ * @package LeHiboo
+ * @version 1.0.0
+ */
+
+/* ========================================
+   PHOTO DE PROFIL - SIDEBAR PARTENAIRE
+   ======================================== */
+
+/* Conteneur principal de la photo de profil */
+.vendor_user_profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 24px 16px;
+    margin-bottom: 16px;
+}
+
+/* Wrapper pour l'image avec le crayon */
+.wrap_image_profile {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 12px;
+}
+
+/* Lien cliquable sur l'image - CONTENEUR ROND */
+.profile_image_link,
+.elementor .profile_image_link,
+.vendor_sidebar .profile_image_link {
+    display: block !important;
+    position: relative !important;
+    text-decoration: none !important;
+    margin: 0 auto 15px !important;
+    width: 100px !important;
+    height: 100px !important;
+    border-radius: 50% !important;
+    border: 3px solid #fff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .1) !important;
+}
+
+.profile_image_link:hover,
+.elementor .profile_image_link:hover,
+.vendor_sidebar .profile_image_link:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Image de profil - Remplit le conteneur rond */
+.profile_image_link img,
+.profile_image_link img.user_image_rounded,
+.elementor .profile_image_link img,
+.vendor_sidebar .profile_image_link img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border: none !important;
+    border-radius: 50% !important;
+    display: block !important;
+}
+
+.profile_image_link:hover .user_image_rounded,
+.profile_image_link:hover img {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Icône crayon d'édition */
+.edit_profile_icon {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 28px;
+    height: 28px;
+    background: #FF6600;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #2F4858;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.edit_profile_icon i {
+    color: #FFFFFF;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.edit_profile_icon:hover {
+    background: #e65c00;
+    transform: scale(1.1);
+}
+
+/* Tooltip sur le crayon */
+.edit_profile_icon::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #222222;
+    color: #FFFFFF;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Flèche du tooltip */
+.edit_profile_icon::after {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #222222;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+}
+
+.edit_profile_icon:hover::before,
+.edit_profile_icon:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Nom du profil */
+.profile_name_wrapper .display_name {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #FFFFFF;
+    line-height: 1.4;
+}
+
+/* ========================================
+   OVERRIDE ANCIEN STYLE (si nécessaire)
+   ======================================== */
+
+/* Cacher l'ancien wrapper si présent */
+.vendor_user_profile .wrap_image {
+    display: none;
+}
+
+/* Cacher l'ancien lien d'édition si présent */
+.vendor_user_profile a.edit_profile:not(.profile_image_link) {
+    display: none;
+}
+
+
+
+span#select2-event_cat-container,
+span#select2-el_coorg_select_partner-container,
+span#select2-el_coorg_select_role-container {
+    height: 34px;
+    padding: 10px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__clear {
+    cursor: pointer;
+    float: right;
+    font-weight: bold;
+    right: 12px;
+    top: -8px;
+}
+
+
+#current_coorganisers_list .el_coorg_badge_accepted {
+    background: #47bb78;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 15px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 6px;
+    border: 2px solid rgba(0, 0, 0, 0);
+    cursor: pointer;
+    transition: all .3s ease;
+    text-decoration: none;
+    line-height: 1.5;
+    margin-right: 20px;
+}
+
+
+#current_coorganisers_list .el_coorg_remove_btn {
+    background-color: #fff;
+    color: #2F4858;
+    border: 2px solid #2F4858;
+    padding: 5px 15px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .3s ease;
+    text-decoration: none;
+    line-height: 1.5;
+}
+
+#current_coorganisers_list .el_col_6 {
+    flex: 0 0 70%;
+}
+
+#current_coorganisers_list .el_row {
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Grouper les boutons à droite avec moins d'espace */
+#current_coorganisers_list .el_col_3,
+#current_coorganisers_list .el_col_2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    padding: 0 !important;
+}
+
+.el_coorg_badge_pending {
+    background: #fe601f;
+    color: #ffffff;
+}
+
+.el_coorg_badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: math-auto;
+    letter-spacing: 0.5px;
+    min-width: 90px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Cacher les colonnes vides */
+#current_coorganisers_list .el_col_3:empty,
+#current_coorganisers_list .el_col_2:empty {
+    display: none !important;
+}
+
+#current_coorganisers_list .el_coorg_badge_accepted {
+    margin-right: 0 !important;
+}
+
+/* Forcer la row à ne pas avoir d'espace au milieu */
+#current_coorganisers_list .el_row {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Le nom du partenaire prend le reste de l'espace */
+#current_coorganisers_list .el_col_6 {
+    flex: 1 1 auto;
+    max-width: none;
+}
+
+.el_coorg_add_section {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+}
+
+button#el_coorg_add_btn {
+    margin-top: 0;
+}
+
+/* Label "Son rôle" sur une seule ligne */
+.el_coorg_add_section label[for="el_coorg_select_role"] {
+    white-space: nowrap;
+    margin: 0 10px;
+    font-weight: 500;
+    color: #2F4858;
+}
+
+/* ========================================
+   WYSIWYG ÉDITEUR DESCRIPTION
+   ======================================== */
+
+/* Retirer le border de l'éditeur */
+.el_editor_no_border .wp-editor-container,
+.el_editor_no_border #wp-content_event-editor-container,
+.vendor_field .el_editor_no_border .wp-editor-container,
+#wp-content_event-wrap {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.el_editor_no_border .mce-panel,
+.el_editor_no_border .mce-container,
+#wp-content_event-wrap .mce-panel {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.el_editor_no_border .mce-toolbar-grp,
+#wp-content_event-wrap .mce-toolbar-grp {
+    background: #f8f9fa !important;
+    border: none !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    border-radius: 8px 8px 0 0 !important;
+}
+
+.el_editor_no_border .mce-edit-area,
+#wp-content_event-wrap .mce-edit-area {
+    border: 1px solid #e0e0e0 !important;
+    border-top: none !important;
+    border-radius: 0 0 8px 8px !important;
+}
+
+.el_editor_no_border .mce-edit-area iframe,
+#wp-content_event-wrap .mce-edit-area iframe {
+    min-height: 300px !important;
+}
+
+.el_editor_no_border .wp-editor-tabs,
+#wp-content_event-wrap .wp-editor-tabs {
+    float: right;
+    margin-bottom: 5px;
+}
+
+/* Retirer aussi le border du conteneur principal */
+#wp-content_event-editor-container {
+    border: none !important;
+}
+
+/* ========================================
+   MENU VERROUILLÉ - BADGE PROCHAINEMENT
+   ======================================== */
+
+.menu_locked a {
+    position: relative;
+    opacity: 0.85;
+}
+
+.menu_badge_soon {
+    display: inline-block;
+    background: linear-gradient(135deg, #FF6600, #FF8533);
+    color: #FFFFFF;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    vertical-align: middle;
+}
+
+/* ========================================
+   PAGE TEASER INDICATEURS
+   ======================================== */
+
+.vendor_indicateurs_teaser {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.teaser_header {
+    margin-bottom: 40px;
+}
+
+.teaser_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #FF6600, #FF8533);
+    color: #FFFFFF;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+}
+
+.teaser_badge i {
+    font-size: 10px;
+}
+
+.teaser_title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2F4858;
+    margin: 0 0 12px 0;
+}
+
+.teaser_subtitle {
+    font-size: 16px;
+    color: #6B7C8A;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.teaser_image_wrapper {
+    position: relative;
+    margin-bottom: 40px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.teaser_image {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: blur(3px);
+    opacity: 0.7;
+}
+
+.teaser_image_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(47, 72, 88, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.teaser_image_overlay i {
+    font-size: 48px;
+    color: #FFFFFF;
+    opacity: 0.9;
+}
+
+.teaser_features {
+    background: #F8F9FA;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.teaser_features h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2F4858;
+    margin: 0 0 20px 0;
+}
+
+.features_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.feature_card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #FFFFFF;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.feature_card i {
+    color: #FF6600;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.feature_card span {
+    font-size: 14px;
+    color: #2F4858;
+    font-weight: 500;
+    text-align: left;
+}
+
+.teaser_cta {
+    padding: 20px;
+}
+
+.teaser_cta p {
+    font-size: 14px;
+    color: #6B7C8A;
+    margin: 0;
+}

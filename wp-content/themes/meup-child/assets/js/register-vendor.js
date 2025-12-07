@@ -4,7 +4,7 @@
  * @version 3.2.0
  */
 
-(function($) {
+(function ($) {
 	'use strict';
 
 	const VendorRegister = {
@@ -17,7 +17,7 @@
 		/**
 		 * Initialisation
 		 */
-		init: function() {
+		init: function () {
 			this.bindEvents();
 			this.initAPIs();
 			this.restoreFormData();
@@ -27,7 +27,7 @@
 		/**
 		 * Bind events
 		 */
-		bindEvents: function() {
+		bindEvents: function () {
 			// Navigation entre étapes
 			$(document).on('click', '.btn_next', this.nextStep.bind(this));
 			$(document).on('click', '.btn_prev', this.prevStep.bind(this));
@@ -50,29 +50,28 @@
 		/**
 		 * Initialiser la sauvegarde automatique
 		 */
-		initAutoSave: function() {
+		initAutoSave: function () {
 			const self = this;
 
 			// Sauvegarder automatiquement lors de la saisie (debounced)
-			$('#vendor_register_form').on('input change', 'input:not([type="file"]), textarea, select', function() {
+			$('#vendor_register_form').on('input change', 'input:not([type="file"]), textarea, select', function () {
 				clearTimeout(self.autoSaveTimer);
-				self.autoSaveTimer = setTimeout(function() {
+				self.autoSaveTimer = setTimeout(function () {
 					self.saveFormData();
 				}, 1000); // Sauvegarde 1s après la dernière modification
 			});
 
 			// Sauvegarder aussi les checkboxes/radios
-			$('#vendor_register_form').on('change', 'input[type="checkbox"], input[type="radio"]', function() {
+			$('#vendor_register_form').on('change', 'input[type="checkbox"], input[type="radio"]', function () {
 				self.saveFormData();
 			});
 
-			console.log('Vendor: Auto-save initialized');
 		},
 
 		/**
 		 * Sauvegarder les données du formulaire dans localStorage
 		 */
-		saveFormData: function() {
+		saveFormData: function () {
 			const formData = {
 				step: this.currentStep,
 				timestamp: Date.now(),
@@ -80,7 +79,7 @@
 			};
 
 			// Sauvegarder tous les champs sauf les fichiers et mots de passe
-			$('#vendor_register_form').find('input:not([type="file"]):not([type="password"]), textarea, select').each(function() {
+			$('#vendor_register_form').find('input:not([type="file"]):not([type="password"]), textarea, select').each(function () {
 				const $field = $(this);
 				const name = $field.attr('name');
 
@@ -99,7 +98,7 @@
 
 			// Sauvegarder les catégories sélectionnées
 			const categories = [];
-			$('input[name="vendor_categories[]"]:checked').each(function() {
+			$('input[name="vendor_categories[]"]:checked').each(function () {
 				categories.push($(this).val());
 			});
 			if (categories.length > 0) {
@@ -108,7 +107,7 @@
 
 			// Sauvegarder les rôles sélectionnés
 			const roles = [];
-			$('input[name="vendor_org_roles[]"]:checked').each(function() {
+			$('input[name="vendor_org_roles[]"]:checked').each(function () {
 				roles.push($(this).val());
 			});
 			if (roles.length > 0) {
@@ -117,7 +116,6 @@
 
 			try {
 				localStorage.setItem(this.storageKey, JSON.stringify(formData));
-				console.log('Vendor: Form data auto-saved', formData);
 			} catch (e) {
 				console.error('Vendor: Failed to save form data', e);
 			}
@@ -126,12 +124,11 @@
 		/**
 		 * Restaurer les données du formulaire depuis localStorage
 		 */
-		restoreFormData: function() {
+		restoreFormData: function () {
 			try {
 				const savedData = localStorage.getItem(this.storageKey);
 
 				if (!savedData) {
-					console.log('Vendor: No saved data found');
 					return;
 				}
 
@@ -140,15 +137,12 @@
 				// Vérifier si les données ne sont pas trop anciennes (7 jours)
 				const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 jours en millisecondes
 				if (Date.now() - formData.timestamp > maxAge) {
-					console.log('Vendor: Saved data expired, clearing');
 					localStorage.removeItem(this.storageKey);
 					return;
 				}
 
-				console.log('Vendor: Restoring form data', formData);
-
 				// Restaurer les champs
-				$.each(formData.fields, function(name, value) {
+				$.each(formData.fields, function (name, value) {
 					const $field = $('[name="' + name + '"]');
 
 					if ($field.length === 0) return;
@@ -156,7 +150,7 @@
 					if ($field.attr('type') === 'checkbox') {
 						if (Array.isArray(value)) {
 							// Pour les checkboxes multiples (catégories, rôles)
-							value.forEach(function(val) {
+							value.forEach(function (val) {
 								$('[name="' + name + '"][value="' + val + '"]').prop('checked', true);
 							});
 						} else {
@@ -171,14 +165,14 @@
 
 				// Restaurer les catégories
 				if (formData.fields.vendor_categories && Array.isArray(formData.fields.vendor_categories)) {
-					formData.fields.vendor_categories.forEach(function(cat) {
+					formData.fields.vendor_categories.forEach(function (cat) {
 						$('input[name="vendor_categories[]"][value="' + cat + '"]').prop('checked', true);
 					});
 				}
 
 				// Restaurer les rôles
 				if (formData.fields.vendor_org_roles && Array.isArray(formData.fields.vendor_org_roles)) {
-					formData.fields.vendor_org_roles.forEach(function(role) {
+					formData.fields.vendor_org_roles.forEach(function (role) {
 						$('input[name="vendor_org_roles[]"][value="' + role + '"]').prop('checked', true);
 					});
 				}
@@ -200,10 +194,9 @@
 		/**
 		 * Nettoyer les données sauvegardées
 		 */
-		clearSavedData: function() {
+		clearSavedData: function () {
 			try {
 				localStorage.removeItem(this.storageKey);
-				console.log('Vendor: Saved data cleared');
 			} catch (e) {
 				console.error('Vendor: Failed to clear saved data', e);
 			}
@@ -212,10 +205,10 @@
 		/**
 		 * Initialize APIs (Entreprise + Adresse)
 		 */
-		initAPIs: function() {
+		initAPIs: function () {
 			// API Recherche d'entreprise (SIREN/SIRET)
 			let orgSearchTimeout;
-			$('#vendor_org_name').on('input', function() {
+			$('#vendor_org_name').on('input', function () {
 				clearTimeout(orgSearchTimeout);
 				const query = $(this).val().trim();
 
@@ -224,14 +217,14 @@
 					return;
 				}
 
-				orgSearchTimeout = setTimeout(function() {
+				orgSearchTimeout = setTimeout(function () {
 					VendorRegister.searchEntreprise(query);
 				}, 300);
 			});
 
 			// API Adresse gouv.fr
 			let addressSearchTimeout;
-			$('#vendor_org_address').on('input', function() {
+			$('#vendor_org_address').on('input', function () {
 				clearTimeout(addressSearchTimeout);
 				const query = $(this).val().trim();
 
@@ -240,13 +233,13 @@
 					return;
 				}
 
-				addressSearchTimeout = setTimeout(function() {
+				addressSearchTimeout = setTimeout(function () {
 					VendorRegister.searchAddress(query);
 				}, 300);
 			});
 
 			// Click en dehors pour fermer les suggestions
-			$(document).on('click', function(e) {
+			$(document).on('click', function (e) {
 				if (!$(e.target).closest('#vendor_org_name, #org_suggestions').length) {
 					$('#org_suggestions').hide();
 				}
@@ -259,7 +252,7 @@
 		/**
 		 * API Recherche d'entreprise via API Entreprise/Annuaire
 		 */
-		searchEntreprise: function(query) {
+		searchEntreprise: function (query) {
 			const $suggestions = $('#org_suggestions');
 			$suggestions.html('<div class="suggestion_loading"><i class="fas fa-spinner fa-spin"></i> Recherche en cours...</div>').show();
 
@@ -272,10 +265,10 @@
 					per_page: 5
 				},
 				dataType: 'json',
-				success: function(response) {
+				success: function (response) {
 					if (response.results && response.results.length > 0) {
 						let html = '';
-						response.results.forEach(function(entreprise) {
+						response.results.forEach(function (entreprise) {
 							const nom = entreprise.nom_complet || entreprise.nom_raison_sociale;
 							const siren = entreprise.siren;
 							const adresse = entreprise.siege ?
@@ -295,7 +288,7 @@
 						$suggestions.html(html).show();
 
 						// Click sur une suggestion
-						$('.suggestion_item').on('click', function() {
+						$('.suggestion_item').on('click', function () {
 							const nom = $(this).data('nom');
 							const siren = $(this).data('siren');
 							const adresse = $(this).data('adresse');
@@ -311,7 +304,7 @@
 						$suggestions.html('<div class="suggestion_empty">Aucune entreprise trouvée</div>').show();
 					}
 				},
-				error: function() {
+				error: function () {
 					$suggestions.html('<div class="suggestion_error">Erreur de recherche</div>').show();
 				}
 			});
@@ -320,7 +313,7 @@
 		/**
 		 * API Adresse gouv.fr
 		 */
-		searchAddress: function(query) {
+		searchAddress: function (query) {
 			const $suggestions = $('#address_suggestions');
 			$suggestions.html('<div class="suggestion_loading"><i class="fas fa-spinner fa-spin"></i> Recherche en cours...</div>').show();
 
@@ -332,10 +325,10 @@
 					limit: 5
 				},
 				dataType: 'json',
-				success: function(response) {
+				success: function (response) {
 					if (response.features && response.features.length > 0) {
 						let html = '';
-						response.features.forEach(function(feature) {
+						response.features.forEach(function (feature) {
 							const address = feature.properties.label;
 							const postcode = feature.properties.postcode;
 							const city = feature.properties.city;
@@ -350,7 +343,7 @@
 						$suggestions.html(html).show();
 
 						// Click sur une suggestion
-						$('.suggestion_item').on('click', function() {
+						$('.suggestion_item').on('click', function () {
 							const address = $(this).data('address');
 							const postcode = $(this).data('postcode');
 							const city = $(this).data('city');
@@ -365,7 +358,7 @@
 						$suggestions.html('<div class="suggestion_empty">Aucune adresse trouvée</div>').show();
 					}
 				},
-				error: function() {
+				error: function () {
 					$suggestions.html('<div class="suggestion_error">Erreur de recherche</div>').show();
 				}
 			});
@@ -374,7 +367,7 @@
 		/**
 		 * Parser et remplir l'adresse depuis une chaîne
 		 */
-		parseAndFillAddress: function(adresseComplete) {
+		parseAndFillAddress: function (adresseComplete) {
 			const parts = adresseComplete.split(',');
 			if (parts.length >= 2) {
 				const street = parts[0].trim();
@@ -392,7 +385,7 @@
 		/**
 		 * Next step
 		 */
-		nextStep: function(e) {
+		nextStep: function (e) {
 			e.preventDefault();
 			const nextStep = parseInt($(e.currentTarget).data('next'));
 
@@ -406,7 +399,7 @@
 		/**
 		 * Previous step
 		 */
-		prevStep: function(e) {
+		prevStep: function (e) {
 			e.preventDefault();
 			const prevStep = parseInt($(e.currentTarget).data('prev'));
 			this.goToStep(prevStep);
@@ -415,7 +408,7 @@
 		/**
 		 * Go to specific step
 		 */
-		goToStep: function(step) {
+		goToStep: function (step) {
 			// Hide current step
 			$(`.form_step[data-step="${this.currentStep}"]`).removeClass('active');
 
@@ -442,12 +435,12 @@
 		/**
 		 * Validate current step
 		 */
-		validateStep: function(step) {
+		validateStep: function (step) {
 			const $currentStep = $(`.form_step[data-step="${step}"]`);
 			const $required = $currentStep.find('[required]');
 			let isValid = true;
 
-			$required.each(function() {
+			$required.each(function () {
 				const $field = $(this);
 				const value = $field.val().trim();
 
@@ -486,35 +479,35 @@
 				}
 			}
 
-		// Validation spécifique step 3 (fichiers + CGU + Cloudflare)
-		if (step === 3) {
-			// Vérifier les uploads requis
-			$('.upload_area[data-required="true"]').each(function() {
-				const inputId = $(this).data('input');
-				const $fileInput = $('#' + inputId);
-				if (!$fileInput[0].files || $fileInput[0].files.length === 0) {
+			// Validation spécifique step 3 (fichiers + CGU + Cloudflare)
+			if (step === 3) {
+				// Vérifier les uploads requis
+				$('.upload_area[data-required="true"]').each(function () {
+					const inputId = $(this).data('input');
+					const $fileInput = $('#' + inputId);
+					if (!$fileInput[0].files || $fileInput[0].files.length === 0) {
+						isValid = false;
+						$(this).addClass('upload_error');
+						VendorRegister.showNotification('error', 'Veuillez télécharger tous les documents obligatoires.');
+						return false;
+					} else {
+						$(this).removeClass('upload_error');
+					}
+				});
+
+				// Vérifier CGU
+				if (!$('#vendor_terms').is(':checked')) {
 					isValid = false;
-					$(this).addClass('upload_error');
-					VendorRegister.showNotification('error', 'Veuillez télécharger tous les documents obligatoires.');
-					return false;
-				} else {
-					$(this).removeClass('upload_error');
+					VendorRegister.showNotification('error', 'Veuillez accepter les conditions générales d\'utilisation.');
 				}
-			});
 
-			// Vérifier CGU
-			if (!$('#vendor_terms').is(':checked')) {
-				isValid = false;
-				VendorRegister.showNotification('error', 'Veuillez accepter les conditions générales d\'utilisation.');
+				// Vérifier Cloudflare Turnstile
+				const turnstileResponse = $('.cf-turnstile').find('input[name="cf-turnstile-response"]').val();
+				if (!turnstileResponse || turnstileResponse.length === 0) {
+					isValid = false;
+					VendorRegister.showNotification('error', 'Veuillez valider le CAPTCHA.');
+				}
 			}
-
-			// Vérifier Cloudflare Turnstile
-			const turnstileResponse = $('.cf-turnstile').find('input[name="cf-turnstile-response"]').val();
-			if (!turnstileResponse || turnstileResponse.length === 0) {
-				isValid = false;
-				VendorRegister.showNotification('error', 'Veuillez valider le CAPTCHA.');
-			}
-		}
 
 			return isValid;
 		},
@@ -522,7 +515,7 @@
 		/**
 		 * Toggle password visibility
 		 */
-		togglePassword: function(e) {
+		togglePassword: function (e) {
 			e.preventDefault();
 			const $button = $(this);
 			const $input = $button.siblings('input');
@@ -540,7 +533,7 @@
 		/**
 		 * Validate password strength
 		 */
-		validatePassword: function() {
+		validatePassword: function () {
 			const password = $(this).val();
 			const isStrong = VendorRegister.isPasswordStrong(password);
 			const $wrapper = $(this).closest('.form_group');
@@ -559,7 +552,7 @@
 		/**
 		 * Check if password is strong
 		 */
-		isPasswordStrong: function(password) {
+		isPasswordStrong: function (password) {
 			if (password.length < 8) return false;
 			if (!/[A-Z]/.test(password)) return false;
 			if (!/[a-z]/.test(password)) return false;
@@ -571,7 +564,7 @@
 		/**
 		 * Check password match
 		 */
-		checkPasswordMatch: function() {
+		checkPasswordMatch: function () {
 			const password = $('#vendor_password').val();
 			const passwordConfirm = $(this).val();
 			const $wrapper = $(this).closest('.form_group');
@@ -590,7 +583,7 @@
 		/**
 		 * Trigger file upload
 		 */
-		triggerFileUpload: function(e) {
+		triggerFileUpload: function (e) {
 			if ($(e.target).is('input[type="file"]')) return;
 			const inputId = $(this).data('input');
 			$(`#${inputId}`).click();
@@ -599,7 +592,7 @@
 		/**
 		 * Handle file select
 		 */
-		handleFileSelect: function(e) {
+		handleFileSelect: function (e) {
 			const file = this.files[0];
 			if (!file) return;
 
@@ -616,7 +609,7 @@
 			// Show preview
 			if (file.type.startsWith('image/')) {
 				const reader = new FileReader();
-				reader.onload = function(e) {
+				reader.onload = function (e) {
 					$preview.html(`<img src="${e.target.result}" alt="Preview"><button type="button" class="remove_file"><i class="fas fa-times"></i></button>`).show();
 				};
 				reader.readAsDataURL(file);
@@ -627,7 +620,7 @@
 			$uploadArea.addClass('has_file');
 
 			// Remove file event
-			$preview.find('.remove_file').on('click', function(e) {
+			$preview.find('.remove_file').on('click', function (e) {
 				e.stopPropagation();
 				$(this).closest('.upload_area').find('input[type="file"]').val('');
 				$preview.hide().html('');
@@ -638,7 +631,7 @@
 		/**
 		 * Handle form submission
 		 */
-		handleSubmit: function(e) {
+		handleSubmit: function (e) {
 			e.preventDefault();
 
 			if (!this.validateStep(this.currentStep)) {
@@ -662,35 +655,33 @@
 				processData: false,
 				contentType: false,
 				dataType: 'json',
-				success: function(response) {
+				success: function (response) {
 					if (response.success) {
 						VendorRegister.showNotification('success', response.data.message);
 
 						// Vérifier si l'OTP est requis
 						if (response.data.otp_required && response.data.show_otp_form) {
-							console.log('Vendor Registration: OTP required, loading OTP form...');
-
 							// Nettoyer les données sauvegardées (inscription réussie)
 							VendorRegister.clearSavedData();
 
 							// Afficher un loader
-							setTimeout(function() {
+							setTimeout(function () {
 								VendorRegister.showNotification('success', '<i class="fas fa-spinner fa-spin"></i> Chargement du formulaire de vérification...');
 							}, 1500);
 
 							// Cacher le formulaire d'inscription
-							$('#vendor_register_form').slideUp(300, function() {
+							$('#vendor_register_form').slideUp(300, function () {
 								$(this).hide();
 							});
 
 							// Charger le script OTP et afficher le formulaire
-							setTimeout(function() {
+							setTimeout(function () {
 								VendorRegister.loadOTPScript();
 								VendorRegister.showOTPForm(response.data.user_id);
 							}, 2500);
 						} else {
 							// Redirection directe si pas d'OTP (cas par défaut, ne devrait plus arriver)
-							setTimeout(function() {
+							setTimeout(function () {
 								window.location.href = '/vendor-pending';
 							}, 2000);
 						}
@@ -699,7 +690,7 @@
 						$submitBtn.prop('disabled', false).html('<i class="fas fa-check"></i> Soumettre ma demande');
 					}
 				},
-				error: function(xhr, status, error) {
+				error: function (xhr, status, error) {
 					console.error('Erreur AJAX:', error);
 					VendorRegister.showNotification('error', 'Une erreur est survenue. Veuillez réessayer.');
 					$submitBtn.prop('disabled', false).html('<i class="fas fa-check"></i> Soumettre ma demande');
@@ -710,12 +701,9 @@
 		/**
 		 * Charger le script OTP dynamiquement
 		 */
-		loadOTPScript: function() {
-			console.log('Vendor: Loading OTP script...');
-
+		loadOTPScript: function () {
 			// Vérifier si le script est déjà chargé
 			if ($('script[src*="otp-verification.js"]').length) {
-				console.log('Vendor: OTP script already loaded, reinitializing...');
 				if (typeof OTPVerification !== 'undefined' && typeof OTPVerification.init === 'function') {
 					OTPVerification.init();
 				}
@@ -732,17 +720,14 @@
 				scriptUrl = themeUrl + '/assets/js/otp-verification.js';
 			}
 
-			console.log('Vendor: Loading OTP script from:', scriptUrl);
-
 			const script = document.createElement('script');
 			script.src = scriptUrl;
-			script.onload = function() {
-				console.log('Vendor: OTP script loaded successfully');
+			script.onload = function () {
 				if (typeof OTPVerification !== 'undefined' && typeof OTPVerification.init === 'function') {
 					OTPVerification.init();
 				}
 			};
-			script.onerror = function() {
+			script.onerror = function () {
 				console.error('Vendor: Failed to load OTP script from:', scriptUrl);
 			};
 			document.head.appendChild(script);
@@ -751,17 +736,13 @@
 		/**
 		 * Afficher le formulaire OTP
 		 */
-		showOTPForm: function(userId) {
-			console.log('Vendor: Showing OTP form for user ID:', userId);
-
+		showOTPForm: function (userId) {
 			// Créer le conteneur OTP s'il n'existe pas
 			let $otpContainer = $('#otp_verification_container');
 			if ($otpContainer.length === 0) {
 				$otpContainer = $('<div id="otp_verification_container"></div>');
 				$('.lehiboo_register_form_wrapper .container').append($otpContainer);
 			}
-
-			console.log('Vendor: OTP container found/created, length:', $otpContainer.length);
 
 			// Générer le HTML du formulaire OTP
 			const otpFormHTML = `
@@ -822,7 +803,7 @@
 			}
 
 			// Scroll vers le formulaire OTP après un court délai
-			setTimeout(function() {
+			setTimeout(function () {
 				$('html, body').animate({
 					scrollTop: $otpContainer.offset().top - 100
 				}, 400);
@@ -832,11 +813,11 @@
 		/**
 		 * Show notification
 		 */
-		showNotification: function(type, message) {
+		showNotification: function (type, message) {
 			const $notification = $(`.register_notification.${type}`);
 			$notification.html(message).slideDown(300);
 
-			setTimeout(function() {
+			setTimeout(function () {
 				$notification.slideUp(300);
 			}, 5000);
 
@@ -848,7 +829,7 @@
 	};
 
 	// Initialize on document ready
-	$(document).ready(function() {
+	$(document).ready(function () {
 		if ($('#vendor_register_form').length) {
 			VendorRegister.init();
 		}

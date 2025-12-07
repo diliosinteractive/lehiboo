@@ -1859,7 +1859,9 @@ if( !class_exists( 'El_Ajax' ) ){
 				$event_status = 'publish';
 			}
 
-			// V1 Le Hiboo - Validation minimum 500 caractères pour publication uniquement
+			// V1 Le Hiboo - Validation minimum 500 caractères DÉSACTIVÉE
+			// (on garde le code commenté pour réactivation future si nécessaire)
+			/*
 			if ( $event_status === 'publish' ) {
 				// Compter les caractères de la description (en retirant les balises HTML)
 				$description_text = strip_tags( $content_event );
@@ -1878,6 +1880,7 @@ if( !class_exists( 'El_Ajax' ) ){
 					wp_die();
 				}
 			}
+			*/
 
 			if( isset( $meta_data['venue'] ) && $meta_data['venue'] ){
 				foreach ( $meta_data['venue'] as $value ) {
@@ -2561,7 +2564,19 @@ if( !class_exists( 'El_Ajax' ) ){
 					'post_password' => $event_password,
 				);
 
-				if( wp_update_post( $post_information ) ){
+				// V1 Le Hiboo - Nettoyer le cache du post pour forcer le rechargement
+				clean_post_cache( $post_id );
+				wp_cache_delete( $post_id, 'posts' );
+				wp_cache_delete( $post_id, 'post_meta' );
+
+				$update_result = wp_update_post( $post_information );
+
+				if( $update_result ){
+
+					// V1 Le Hiboo - Nettoyer le cache du post pour forcer le rechargement
+					clean_post_cache( $post_id );
+					wp_cache_delete( $post_id, 'posts' );
+					wp_cache_delete( $post_id, 'post_meta' );
 
 					do_action( 'el_vendor_after_update_event', $post_id );
 

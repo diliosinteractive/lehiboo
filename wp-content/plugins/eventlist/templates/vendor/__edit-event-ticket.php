@@ -21,6 +21,49 @@ $info_organizer   = get_post_meta( $post_id, $_prefix.'info_organizer', true) ? 
 		<?php esc_html_e( 'Gérez les inscriptions ou redirigez vos visiteurs.', 'eventlist' ); ?>
 	</p>
 
+	<!-- Gratuit / Payant -->
+	<?php $ticket_global_type = get_post_meta( $post_id, $_prefix.'ticket_global_type', true); ?>
+	<div class="vendor_field">
+		<label><strong><?php esc_html_e( 'Cet événement est', 'eventlist' ); ?></strong></label>
+		<div class="el_row" style="margin-top: 8px;">
+			<div class="el_col_6">
+				<label class="el_card_radio <?php echo ($ticket_global_type == 'free') ? 'active' : ''; ?>" for="ticket_global_type_free">
+					<input type="radio" value="free" name="<?php echo esc_attr( $_prefix.'ticket_global_type' ); ?>" id="ticket_global_type_free" <?php checked( $ticket_global_type, 'free' ); ?> />
+					<span class="radio_content">
+						<i class="icon_gift"></i>
+						<span class="radio_title"><?php esc_html_e( 'Gratuit', 'eventlist' ); ?></span>
+					</span>
+				</label>
+			</div>
+			<div class="el_col_6">
+				<label class="el_card_radio <?php echo ($ticket_global_type == 'paid') ? 'active' : ''; ?>" for="ticket_global_type_paid">
+					<input type="radio" value="paid" name="<?php echo esc_attr( $_prefix.'ticket_global_type' ); ?>" id="ticket_global_type_paid" <?php checked( $ticket_global_type, 'paid' ); ?> />
+					<span class="radio_content">
+						<i class="icon_wallet"></i>
+						<span class="radio_title"><?php esc_html_e( 'Payant', 'eventlist' ); ?></span>
+					</span>
+				</label>
+			</div>
+		</div>
+	</div>
+
+	<!-- Type d'entrée -->
+	<?php $ticket_entry_type = get_post_meta( $post_id, $_prefix.'ticket_entry_type', true); ?>
+	<div class="vendor_field">
+		<label for="ticket_entry_type"><?php esc_html_e( 'Type d\'entrée', 'eventlist' ); ?></label>
+		<select name="<?php echo esc_attr( $_prefix.'ticket_entry_type' ); ?>" id="ticket_entry_type" class="selectpicker">
+			<option value=""><?php esc_html_e( 'Sélectionnez...', 'eventlist' ); ?></option>
+			<option value="acces_libre" <?php selected( $ticket_entry_type, 'acces_libre' ); ?>><?php esc_html_e( 'Accès libre', 'eventlist' ); ?></option>
+			<option value="acces_libre_reservation_conseillee" <?php selected( $ticket_entry_type, 'acces_libre_reservation_conseillee' ); ?>><?php esc_html_e( 'Accès libre avec réservation conseillée', 'eventlist' ); ?></option>
+			<option value="sur_reservation_obligatoire" <?php selected( $ticket_entry_type, 'sur_reservation_obligatoire' ); ?>><?php esc_html_e( 'Sur réservation obligatoire', 'eventlist' ); ?></option>
+			<option value="billetterie_sur_place_uniquement" <?php selected( $ticket_entry_type, 'billetterie_sur_place_uniquement' ); ?>><?php esc_html_e( 'Billetterie sur place uniquement', 'eventlist' ); ?></option>
+			<option value="sur_invitation_uniquement" <?php selected( $ticket_entry_type, 'sur_invitation_uniquement' ); ?>><?php esc_html_e( 'Sur invitation uniquement', 'eventlist' ); ?></option>
+			<option value="non_specifie" <?php selected( $ticket_entry_type, 'non_specifie' ); ?>><?php esc_html_e( 'Non spécifié', 'eventlist' ); ?></option>
+		</select>
+	</div>
+
+	<hr class="el_separator">
+
 	<div class="ticket_link_options vendor_field">
 		<label class="label"><strong><?php esc_html_e( 'Mode de billetterie', 'eventlist' ); ?></strong></label>
 		<div class="el_row">
@@ -146,6 +189,12 @@ $info_organizer   = get_post_meta( $post_id, $_prefix.'info_organizer', true) ? 
 								<input type="number" name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][number_max_ticket]' ); ?>" value="<?php echo esc_attr( isset($value['number_max_ticket']) ? $value['number_max_ticket'] : '' ); ?>" />
 							</div>
 						</div>
+					
+					<!-- Description du billet -->
+					<div style="margin-top: 12px;">
+						<label><?php esc_html_e( 'Description du billet', 'eventlist' ); ?></label>
+						<textarea name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][desc_ticket]' ); ?>" rows="2" placeholder="<?php esc_attr_e( 'Description affichée sur la page de l\'activité et sur le PDF du billet', 'eventlist' ); ?>"><?php echo esc_textarea( isset($value['desc_ticket']) ? $value['desc_ticket'] : '' ); ?></textarea>
+					</div>
 					</div>
 				<?php endforeach;
 			endif; ?>

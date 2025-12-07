@@ -11,7 +11,7 @@
  * @version 3.3.1
  */
 
-(function($) {
+(function ($) {
 	'use strict';
 
 	var EventAirbnb = {
@@ -19,7 +19,7 @@
 		/**
 		 * Initialisation
 		 */
-		init: function() {
+		init: function () {
 			this.stickyWidget();
 			this.mobileCtaScroll();
 			this.galleryLightbox();
@@ -31,20 +31,20 @@
 		/**
 		 * Widget Réservation Sticky
 		 */
-		stickyWidget: function() {
+		stickyWidget: function () {
 			var $widget = $('#booking_sticky_widget');
 
-			if ( !$widget.length || $(window).width() < 1024 ) {
+			if (!$widget.length || $(window).width() < 1024) {
 				return;
 			}
 
 			var widgetTop = $widget.offset().top;
 			var headerHeight = 80;
 
-			$(window).on('scroll', function() {
+			$(window).on('scroll', function () {
 				var scrollTop = $(window).scrollTop();
 
-				if ( scrollTop > (widgetTop - headerHeight) ) {
+				if (scrollTop > (widgetTop - headerHeight)) {
 					$widget.addClass('is-sticky');
 				} else {
 					$widget.removeClass('is-sticky');
@@ -59,24 +59,24 @@
 		/**
 		 * CTA Mobile - Afficher/Masquer au scroll
 		 */
-		mobileCtaScroll: function() {
+		mobileCtaScroll: function () {
 			var $mobileCta = $('#mobile_booking_cta');
 
-			if ( !$mobileCta.length || $(window).width() >= 768 ) {
+			if (!$mobileCta.length || $(window).width() >= 768) {
 				return;
 			}
 
 			var lastScroll = 0;
 
-			$(window).on('scroll', function() {
+			$(window).on('scroll', function () {
 				var currentScroll = $(window).scrollTop();
 
-				if ( currentScroll > 200 ) {
+				if (currentScroll > 200) {
 					// Afficher le CTA
 					$mobileCta.addClass('visible');
 
 					// Masquer si scroll vers le haut
-					if ( currentScroll < lastScroll ) {
+					if (currentScroll < lastScroll) {
 						$mobileCta.removeClass('hidden');
 					} else {
 						$mobileCta.addClass('hidden');
@@ -89,10 +89,10 @@
 			});
 
 			// Clic sur le bouton mobile -> scroll vers calendrier
-			$('.btn_book_mobile[data-scroll-to]').on('click', function(e) {
+			$('.btn_book_mobile[data-scroll-to]').on('click', function (e) {
 				var target = $(this).data('scroll-to');
 
-				if ( $(target).length ) {
+				if ($(target).length) {
 					e.preventDefault();
 
 					$('html, body').animate({
@@ -105,9 +105,9 @@
 		/**
 		 * Galerie Lightbox - Fancybox (évite double initialisation)
 		 */
-		galleryLightbox: function() {
+		galleryLightbox: function () {
 			// Vérifier que Fancybox est disponible
-			if ( typeof Fancybox === 'undefined' ) {
+			if (typeof Fancybox === 'undefined') {
 				console.warn('Fancybox not loaded');
 				return;
 			}
@@ -119,7 +119,7 @@
 			// Collecter toutes les images de la galerie
 			var galleryImages = [];
 
-			$('.gallery_lightbox').each(function() {
+			$('.gallery_lightbox').each(function () {
 				var $link = $(this);
 				var imageUrl = $link.attr('href');
 				var title = $link.data('title') || $link.find('img').attr('alt') || '';
@@ -173,17 +173,17 @@
 			};
 
 			// Gestion des clics
-			$('.gallery_lightbox').off('click').on('click', function(e) {
+			$('.gallery_lightbox').off('click').on('click', function (e) {
 				e.preventDefault();
 				e.stopImmediatePropagation();
 
-				if ( Fancybox.getInstance() ) {
+				if (Fancybox.getInstance()) {
 					Fancybox.close();
 				}
 
 				var clickedIndex = $('.gallery_lightbox').index(this);
 
-				setTimeout(function() {
+				setTimeout(function () {
 					Fancybox.show(galleryImages, $.extend({}, fancyboxOptions, {
 						startIndex: clickedIndex
 					}));
@@ -193,15 +193,15 @@
 			});
 
 			// Bouton "Voir toutes les photos"
-			$('.btn_view_all_photos').off('click').on('click', function(e) {
+			$('.btn_view_all_photos').off('click').on('click', function (e) {
 				e.preventDefault();
 				e.stopImmediatePropagation();
 
-				if ( Fancybox.getInstance() ) {
+				if (Fancybox.getInstance()) {
 					Fancybox.close();
 				}
 
-				setTimeout(function() {
+				setTimeout(function () {
 					Fancybox.show(galleryImages, $.extend({}, fancyboxOptions, {
 						startIndex: 0
 					}));
@@ -211,18 +211,18 @@
 			});
 
 			// Overlay miniature
-			$('.view_all_photos_overlay').closest('.gallery_thumbnail_item').off('click').on('click', function(e) {
+			$('.view_all_photos_overlay').closest('.gallery_thumbnail_item').off('click').on('click', function (e) {
 				e.preventDefault();
 				e.stopImmediatePropagation();
 
-				if ( Fancybox.getInstance() ) {
+				if (Fancybox.getInstance()) {
 					Fancybox.close();
 				}
 
 				var $link = $(this).find('.gallery_lightbox');
 				var clickedIndex = $('.gallery_lightbox').index($link);
 
-				setTimeout(function() {
+				setTimeout(function () {
 					Fancybox.show(galleryImages, $.extend({}, fancyboxOptions, {
 						startIndex: clickedIndex
 					}));
@@ -235,15 +235,15 @@
 		/**
 		 * Smooth Scroll pour les liens d'ancre
 		 */
-		smoothScroll: function() {
-			$('a[href^="#"]').on('click', function(e) {
+		smoothScroll: function () {
+			$('a[href^="#"]').on('click', function (e) {
 				var target = $(this).attr('href');
 
-				if ( target === '#' || target === '' ) {
+				if (target === '#' || target === '') {
 					return;
 				}
 
-				if ( $(target).length ) {
+				if ($(target).length) {
 					e.preventDefault();
 
 					$('html, body').animate({
@@ -256,8 +256,8 @@
 		/**
 		 * Accordéons FAQ
 		 */
-		faqAccordions: function() {
-			$('.faq_question').on('click', function(e) {
+		faqAccordions: function () {
+			$('.faq_question').on('click', function (e) {
 				e.preventDefault();
 
 				var $button = $(this);
@@ -266,7 +266,7 @@
 				var isExpanded = $button.attr('aria-expanded') === 'true';
 
 				// Fermer tous les autres
-				$('.faq_item').not($item).each(function() {
+				$('.faq_item').not($item).each(function () {
 					$(this).find('.faq_question')
 						.attr('aria-expanded', 'false')
 						.find('.faq_icon')
@@ -277,7 +277,7 @@
 				});
 
 				// Toggle
-				if( isExpanded ) {
+				if (isExpanded) {
 					$button.attr('aria-expanded', 'false');
 					$button.find('.faq_icon').removeClass('icon_minus').addClass('icon_plus');
 					$answer.slideUp(300);
@@ -292,81 +292,70 @@
 		/**
 		 * Popup Formulaire de Contact
 		 */
-		contactPopup: function() {
-			console.log('=== CONTACT POPUP INIT ===');
+		contactPopup: function () {
 
 			var $popup = $('#contact_organizer_popup');
 			var $openBtn = $('#open_contact_form');
 			var $closeBtn = $('.contact_popup_close');
 
-			console.log('Popup element:', $popup.length);
-			console.log('Open button:', $openBtn.length);
-			console.log('Close button:', $closeBtn.length);
-
-			if ( !$popup.length ) {
+			if (!$popup.length) {
 				console.warn('Popup element not found!');
 				return;
 			}
 
-			if ( !$openBtn.length ) {
+			if (!$openBtn.length) {
 				console.warn('Open button not found!');
 				return;
 			}
 
 			// Ouvrir le popup
-			$openBtn.on('click', function(e) {
+			$openBtn.on('click', function (e) {
 				e.preventDefault();
-				console.log('>>> Button clicked - Opening popup');
 				EventAirbnb.openContactPopup();
 			});
 
 			// Fermer avec le bouton X
-			$closeBtn.on('click', function(e) {
+			$closeBtn.on('click', function (e) {
 				e.preventDefault();
 				EventAirbnb.closeContactPopup();
 			});
 
 			// Fermer au clic sur l'overlay
-			$popup.on('click', function(e) {
-				if ( $(e.target).is('.contact_popup_overlay') ) {
+			$popup.on('click', function (e) {
+				if ($(e.target).is('.contact_popup_overlay')) {
 					EventAirbnb.closeContactPopup();
 				}
 			});
 
 			// Fermer avec Escape
-			$(document).on('keydown', function(e) {
-				if ( e.key === 'Escape' && $popup.hasClass('is-open') ) {
+			$(document).on('keydown', function (e) {
+				if (e.key === 'Escape' && $popup.hasClass('is-open')) {
 					EventAirbnb.closeContactPopup();
 				}
 			});
 
 			// Gérer la soumission du formulaire (AJAX)
-			$('#contact_organizer_form').on('submit', function(e) {
+			$('#contact_organizer_form').on('submit', function (e) {
 				e.preventDefault();
-				EventAirbnb.submitContactForm( $(this) );
+				EventAirbnb.submitContactForm($(this));
 			});
 		},
 
 		/**
 		 * Ouvrir le popup de contact
 		 */
-		openContactPopup: function() {
-			console.log('>>> OPENING CONTACT POPUP');
+		openContactPopup: function () {
 			var $popup = $('#contact_organizer_popup');
-			console.log('Popup element in open function:', $popup.length);
 
 			$popup.addClass('is-open');
 			$popup.show(); // Force display
 			$('body').css('overflow', 'hidden');
-
-			console.log('Popup classes:', $popup.attr('class'));
-			console.log('Popup display:', $popup.css('display'));
 		},
 
 		/**
 		 * Fermer le popup de contact
 		 */
-		closeContactPopup: function() {
+		closeContactPopup: function () {
 			var $popup = $('#contact_organizer_popup');
 			$popup.removeClass('is-open');
 			$('body').css('overflow', '');
@@ -375,26 +364,19 @@
 		/**
 		 * Soumettre le formulaire de contact via AJAX
 		 */
-		submitContactForm: function( $form ) {
+		submitContactForm: function ($form) {
 			var $submitBtn = $form.find('.contact_submit_btn');
 			var originalText = $submitBtn.text();
 
 			// Récupérer le token Turnstile
 			var turnstileResponse = $form.find('[name="cf-turnstile-response"]').val();
 
-			console.log('Form data:', {
-				name: $form.find('[name="contact_name"]').val(),
-				email: $form.find('[name="contact_email"]').val(),
-				message: $form.find('[name="contact_message"]').val(),
-				turnstile: turnstileResponse ? 'présent' : 'absent'
-			});
-
 			// Vérifier le CAPTCHA
-			if ( !turnstileResponse ) {
+			if (!turnstileResponse) {
 				if (typeof ToastNotification !== 'undefined') {
 					ToastNotification.warning('Veuillez valider le CAPTCHA.');
 				} else {
-					alert( 'Veuillez valider le CAPTCHA.' );
+					alert('Veuillez valider le CAPTCHA.');
 				}
 				return;
 			}
@@ -407,55 +389,51 @@
 				? el_ajax_object.ajax_url
 				: '/wp-admin/admin-ajax.php';
 
-			console.log('Sending AJAX to:', ajaxUrl);
-
 			// Préparer les données
 			var formData = $form.serialize();
-			console.log('Serialized form data:', formData);
 
 			// Envoyer via AJAX
 			$.ajax({
 				url: ajaxUrl,
 				type: 'POST',
 				data: formData,
-				success: function(response) {
-					console.log('AJAX Response:', response);
-					if ( response.success ) {
+				success: function (response) {
+					if (response.success) {
 						// Succès
 						if (typeof ToastNotification !== 'undefined') {
 							ToastNotification.success(response.data.message || 'Message envoyé avec succès!');
 						} else {
-							alert( response.data.message || 'Message envoyé avec succès!' );
+							alert(response.data.message || 'Message envoyé avec succès!');
 						}
 						$form[0].reset();
 						// Reset Turnstile
-						if ( typeof turnstile !== 'undefined' ) {
+						if (typeof turnstile !== 'undefined') {
 							turnstile.reset();
 						}
 						EventAirbnb.closeContactPopup();
 					} else {
 						// Erreur
 						var errorMsg = response.data.message || 'Erreur lors de l\'envoi du message.';
-						if ( response.data.errors ) {
+						if (response.data.errors) {
 							errorMsg += '\n\nDétails: ' + response.data.errors.join(', ');
 						}
 						if (typeof ToastNotification !== 'undefined') {
 							ToastNotification.error(errorMsg);
 						} else {
-							alert( errorMsg );
+							alert(errorMsg);
 						}
 					}
 				},
-				error: function(xhr, status, error) {
+				error: function (xhr, status, error) {
 					console.error('AJAX Error:', status, error);
 					console.error('Response:', xhr.responseText);
 					if (typeof ToastNotification !== 'undefined') {
 						ToastNotification.error('Erreur de connexion. Veuillez réessayer.');
 					} else {
-						alert( 'Erreur de connexion. Veuillez réessayer.' );
+						alert('Erreur de connexion. Veuillez réessayer.');
 					}
 				},
-				complete: function() {
+				complete: function () {
 					// Réactiver le bouton
 					$submitBtn.prop('disabled', false).text(originalText);
 				}
@@ -465,23 +443,19 @@
 	};
 
 	// Document Ready
-	$(document).ready(function() {
-		console.log('Document ready');
-		if ( $('.event_single_airbnb').length ) {
-			console.log('Event Airbnb template detected');
+	$(document).ready(function () {
+		if ($('.event_single_airbnb').length) {
 			EventAirbnb.init();
-		} else {
-			console.log('NOT Airbnb template');
 		}
 	});
 
 	// Window Resize
 	var resizeTimer;
-	$(window).on('resize', function() {
+	$(window).on('resize', function () {
 		clearTimeout(resizeTimer);
 
-		resizeTimer = setTimeout(function() {
-			if ( $('.event_single_airbnb').length ) {
+		resizeTimer = setTimeout(function () {
+			if ($('.event_single_airbnb').length) {
 				EventAirbnb.stickyWidget();
 				EventAirbnb.mobileCtaScroll();
 			}

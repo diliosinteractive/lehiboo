@@ -172,6 +172,24 @@ function meup_child_scripts() {
 }
 
 /**
+ * V1 Le Hiboo - Charger les styles vendor-pages.css EN DERNIER (priorité 999)
+ * pour écraser les styles Elementor qui forcent border-radius: 0
+ */
+add_action( 'wp_enqueue_scripts', 'lehiboo_vendor_pages_late_styles', 999 );
+function lehiboo_vendor_pages_late_styles() {
+    if( is_page() ) {
+        global $post;
+        if( $post && has_shortcode( $post->post_content, 'el_member_account' ) ) {
+            // Cache buster avec timestamp du fichier
+            $css_file = get_stylesheet_directory() . '/assets/css/vendor-pages.css';
+            $version = file_exists($css_file) ? filemtime($css_file) : '1.0.0';
+            
+            wp_enqueue_style( 'vendor-pages', get_stylesheet_directory_uri() . '/assets/css/vendor-pages.css', array(), $version );
+        }
+    }
+}
+
+/**
  * V1 Le Hiboo - Inclure le template du popup d'authentification dans le footer
  */
 add_action( 'wp_footer', 'lehiboo_include_auth_popup_template' );
@@ -225,6 +243,47 @@ if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-ad
 // ========================================
 if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-restrictions.php' ) ) {
 	require_once get_stylesheet_directory() . '/includes/class-lehiboo-vendor-restrictions.php';
+}
+
+// ========================================
+// MASQUER LE MENU PRINCIPAL SUR LES PAGES PARTENAIRES
+// ========================================
+/**
+ * Ajoute une classe "is-vendor-page" au body quand on est sur une page partenaire
+ * (quand le paramètre GET "vendor" est présent)
+ */
+add_filter( 'body_class', 'lehiboo_vendor_page_body_class' );
+function lehiboo_vendor_page_body_class( $classes ) {
+	$vendor_page = isset( $_GET['vendor'] ) ? sanitize_text_field( $_GET['vendor'] ) : '';
+	
+	if ( ! empty( $vendor_page ) ) {
+		$classes[] = 'is-vendor-page';
+	}
+	
+	return $classes;
+}
+
+/**
+ * Cache le menu principal (Listing, Page, Blog) sur les pages partenaires
+ * Le menu est généralement dans .ova_menu_clasic ou .ova_nav
+ */
+add_action( 'wp_head', 'lehiboo_hide_menu_on_vendor_pages' );
+function lehiboo_hide_menu_on_vendor_pages() {
+	$vendor_page = isset( $_GET['vendor'] ) ? sanitize_text_field( $_GET['vendor'] ) : '';
+	
+	if ( ! empty( $vendor_page ) ) {
+		?>
+		<style type="text/css">
+			/* Masquer le menu principal (Listing, Page, Blog) sur les pages partenaires */
+			body.is-vendor-page .elementor-element-717d424,
+			body.is-vendor-page .ova_menu_clasic,
+			body.is-vendor-page .ova_nav,
+			body.is-vendor-page .elementor-widget-ova_menu {
+				display: none !important;
+			}
+		</style>
+		<?php
+	}
 }
 
 // ========================================
@@ -538,7 +597,6 @@ function meup_child_locate_vendor_template( $template, $template_name, $template
 
 	// Si le template existe dans le child theme, l'utiliser en priorité
 	if ( file_exists( $child_theme_template ) ) {
-		error_log( 'EVENTLIST TEMPLATE OVERRIDE: Using child theme template - ' . $child_theme_template );
 		return $child_theme_template;
 	}
 

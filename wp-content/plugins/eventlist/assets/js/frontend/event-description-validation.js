@@ -9,10 +9,10 @@
  * - v1.0.0: Version initiale
  */
 
-(function($) {
+(function ($) {
     'use strict';
 
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         // Vérifier si on est sur la page de création/édition d'événement
         if (!$('.vendor_edit_event .event_form_wrapper').length) {
@@ -32,7 +32,7 @@
 
             // Vérifier si TinyMCE est actif
             if (typeof tinymce !== 'undefined' && tinymce.get('content_event')) {
-                content = tinymce.get('content_event').getContent({format: 'text'});
+                content = tinymce.get('content_event').getContent({ format: 'text' });
             } else {
                 // Fallback sur textarea
                 const $textarea = $('#content_event');
@@ -140,7 +140,7 @@
         function checkPublishStatusChange() {
             const $publishRadio = $('#event_status_publish');
 
-            $publishRadio.on('change', function() {
+            $publishRadio.on('change', function () {
                 if ($(this).is(':checked')) {
                     const currentLength = getDescriptionLength();
 
@@ -177,9 +177,9 @@
         // Mettre à jour le compteur à chaque modification
         if (typeof tinymce !== 'undefined') {
             // Pour TinyMCE
-            $(document).on('tinymce-editor-init', function(_event, editor) {
+            $(document).on('tinymce-editor-init', function (_event, editor) {
                 if (editor.id === 'content_event') {
-                    editor.on('keyup change', function() {
+                    editor.on('keyup change', function () {
                         updateCharacterCounter();
                     });
                 }
@@ -187,7 +187,7 @@
         }
 
         // Pour textarea (fallback)
-        $('#content_event').on('keyup change', function() {
+        $('#content_event').on('keyup change', function () {
             updateCharacterCounter();
         });
 
@@ -196,14 +196,11 @@
 
         // Intercepter les clics sur les boutons AVANT tout autre handler
         // Utiliser capture phase pour être exécuté en premier
-        $('.el_edit_event_submit, #trigger_save_event').each(function() {
+        $('.el_edit_event_submit, #trigger_save_event').each(function () {
             const button = this;
-            button.addEventListener('click', function(e) {
-                console.log('Click intercepté sur bouton submit');
-
+            button.addEventListener('click', function (e) {
                 // Valider avant soumission
                 if (!validateBeforeSubmit()) {
-                    console.log('Validation échouée - blocage du submit');
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
@@ -211,20 +208,17 @@
                     // Empêcher tous les événements suivants
                     return false;
                 }
-
-                console.log('Validation réussie - autorisation du submit');
             }, true); // true = capture phase (exécuté en premier)
         });
 
         // Hook AJAX beforeSend pour bloquer si validation échouée
-        $(document).ajaxSend(function(_event, jqxhr, settings) {
+        $(document).ajaxSend(function (_event, jqxhr, settings) {
             // Vérifier si c'est une requête de sauvegarde d'événement
             if (settings.data && typeof settings.data === 'string' && settings.data.indexOf('el_save_edit_event') !== -1) {
                 if (window.el_description_validation_failed === true) {
                     // Annuler la requête AJAX
                     jqxhr.abort();
                     window.el_description_validation_failed = false;
-                    console.log('Soumission bloquée : description trop courte');
                     return false;
                 }
             }

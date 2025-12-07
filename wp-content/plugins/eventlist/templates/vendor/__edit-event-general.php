@@ -52,7 +52,7 @@ if (!is_array($co_organizers)) $co_organizers = array();
         <input type="text" id="name_event" name="name_event" value="<?php echo esc_attr( $post_title ); ?>" placeholder="<?php esc_html_e( 'Saisir le titre', 'eventlist' ); ?>" required>
     </div>
 
-    <!-- Row 2: Category & Special Events -->
+    <!-- Row 2: Category & Type d'événement -->
     <div class="el_row">
         <div class="el_col_6">
             <div class="vendor_field">
@@ -77,13 +77,16 @@ if (!is_array($co_organizers)) $co_organizers = array();
         </div>
         <div class="el_col_6">
             <div class="vendor_field">
-                <label for="event_special"><?php esc_html_e( 'Événements Spéciaux', 'eventlist' ); ?></label>
-                <select name="event_special[]" id="event_special" class="selectpicker" multiple>
+                <label for="event_tag">
+                    <?php esc_html_e( 'Type d\'événement', 'eventlist' ); ?>
+                    <span class="el_req">*</span>
+                </label>
+                <select name="event_tag[]" id="event_tag" class="selectpicker" multiple>
                     <?php
-                    $terms = get_terms(array('taxonomy' => 'event_special', 'hide_empty' => false));
+                    $terms = get_terms(array('taxonomy' => 'event_tag', 'hide_empty' => false));
                     if (!is_wp_error($terms)) {
                         foreach ($terms as $term) {
-                            $selected = in_array($term->term_id, $selected_special) ? 'selected' : '';
+                            $selected = in_array($term->term_id, $selected_tags) ? 'selected' : '';
                             echo '<option value="' . esc_attr($term->term_id) . '" ' . $selected . '>' . esc_html($term->name) . '</option>';
                         }
                     }
@@ -99,6 +102,7 @@ if (!is_array($co_organizers)) $co_organizers = array();
             <div class="vendor_field">
                 <label for="event_public">
                     <?php esc_html_e( 'Public visé', 'eventlist' ); ?>
+                    <span class="el_req">*</span>
                 </label>
                 <select name="event_public[]" id="event_public" class="selectpicker" multiple>
                     <?php
@@ -144,17 +148,17 @@ if (!is_array($co_organizers)) $co_organizers = array();
         </div>
     </div>
 
-    <!-- Row 4: Type d'événement & Émotions -->
+    <!-- Row 4: Événements Spéciaux & Émotions -->
     <div class="el_row">
         <div class="el_col_6">
             <div class="vendor_field">
-                <label for="event_tag"><?php esc_html_e( 'Type d\'événement', 'eventlist' ); ?></label>
-                <select name="event_tag[]" id="event_tag" class="selectpicker" multiple>
+                <label for="event_special"><?php esc_html_e( 'Événements', 'eventlist' ); ?></label>
+                <select name="event_special[]" id="event_special" class="selectpicker" multiple>
                     <?php
-                    $terms = get_terms(array('taxonomy' => 'event_tag', 'hide_empty' => false));
+                    $terms = get_terms(array('taxonomy' => 'event_special', 'hide_empty' => false));
                     if (!is_wp_error($terms)) {
                         foreach ($terms as $term) {
-                            $selected = in_array($term->term_id, $selected_tags) ? 'selected' : '';
+                            $selected = in_array($term->term_id, $selected_special) ? 'selected' : '';
                             echo '<option value="' . esc_attr($term->term_id) . '" ' . $selected . '>' . esc_html($term->name) . '</option>';
                         }
                     }
@@ -208,7 +212,7 @@ if (!is_array($co_organizers)) $co_organizers = array();
     <div class="vendor_field co_organizers_section">
         <label class="co_organizer_label"><?php esc_html_e( 'Ajouter des co-organisateurs', 'eventlist' ); ?></label>
         <p class="field_help_text">
-            <?php esc_html_e( 'Sélectionnez vos partenaires pour les inviter à co-organiser cet événement', 'eventlist' ); ?>
+            <?php esc_html_e( 'Liste des co-organisateurs déjà ajoutés à votre événement', 'eventlist' ); ?>
         </p>
 
         <?php
@@ -252,6 +256,17 @@ if (!is_array($co_organizers)) $co_organizers = array();
             <?php endif; ?>
         </div>
 
+        <p class="field_help_text">
+            <?php esc_html_e( 'Sélectionnez vos partenaires pour les inviter à co-organiser cet événement', 'eventlist' ); ?>
+            <br>
+        <?php
+            printf(
+                esc_html__( 'Si vous souhaitez ajouter des co-organisateurs, %sInvitez des partenaires%s pour pouvoir les ajouter comme co-organisateurs.', 'eventlist' ),
+                '<a href="' . add_query_arg( array( 'vendor' => 'partenariats' ), get_myaccount_page() ) . '">',
+                '</a>'
+            );
+            ?>
+        </p>
         <!-- Ajouter un co-organisateur -->
         <?php if ( ! empty( $accepted_partners ) ) : ?>
             <div class="el_coorg_add_section">
@@ -284,7 +299,7 @@ if (!is_array($co_organizers)) $co_organizers = array();
                     endforeach;
                     ?>
                 </select>
-
+                <label for="el_coorg_select_role"><?php esc_html_e( 'Son rôle ', 'eventlist' ); ?></label>
                 <select id="el_coorg_select_role">
                     <option value="co-organisateur"><?php esc_html_e( 'Co-organisateur', 'eventlist' ); ?></option>
                     <option value="partenaire"><?php esc_html_e( 'Partenaire', 'eventlist' ); ?></option>
