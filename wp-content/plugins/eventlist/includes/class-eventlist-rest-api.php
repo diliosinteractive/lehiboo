@@ -52,6 +52,13 @@ class EventList_REST_API {
             'callback' => array($this, 'get_categories'),
             'permission_callback' => '__return_true',
         ));
+
+        // Route pour les configurations de l'application mobile
+        register_rest_route('eventlist/v1', '/mobile-app/config', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_mobile_app_config'),
+            'permission_callback' => '__return_true',
+        ));
     }
 
     /**
@@ -154,6 +161,68 @@ class EventList_REST_API {
         }
 
         return rest_ensure_response($this->format_event($post));
+    }
+
+    /**
+     * Get mobile app configuration
+     */
+    public function get_mobile_app_config($request) {
+        // Récupérer les options depuis la base de données
+        $options = get_option('ova_eventlist', array());
+        $mobile_app_options = isset($options['mobile_app']) ? $options['mobile_app'] : array();
+
+        // Image hero
+        $hero_image_id = isset($mobile_app_options['hero_image']) ? $mobile_app_options['hero_image'] : '';
+        $hero_image_url = $hero_image_id ? wp_get_attachment_url($hero_image_id) : '';
+
+        // Bannières publicitaires
+        $ads_banner_1_id = isset($mobile_app_options['ads_banner_1']) ? $mobile_app_options['ads_banner_1'] : '';
+        $ads_banner_2_id = isset($mobile_app_options['ads_banner_2']) ? $mobile_app_options['ads_banner_2'] : '';
+        $ads_banner_3_id = isset($mobile_app_options['ads_banner_3']) ? $mobile_app_options['ads_banner_3'] : '';
+
+        $banners = array();
+
+        if ($ads_banner_1_id) {
+            $banners[] = array(
+                'image' => wp_get_attachment_url($ads_banner_1_id),
+                'url' => isset($mobile_app_options['ads_banner_1_url']) ? $mobile_app_options['ads_banner_1_url'] : '',
+            );
+        }
+        if ($ads_banner_2_id) {
+            $banners[] = array(
+                'image' => wp_get_attachment_url($ads_banner_2_id),
+                'url' => isset($mobile_app_options['ads_banner_2_url']) ? $mobile_app_options['ads_banner_2_url'] : '',
+            );
+        }
+        if ($ads_banner_3_id) {
+            $banners[] = array(
+                'image' => wp_get_attachment_url($ads_banner_3_id),
+                'url' => isset($mobile_app_options['ads_banner_3_url']) ? $mobile_app_options['ads_banner_3_url'] : '',
+            );
+        }
+
+        $config = array(
+            'hero' => array(
+                'image' => $hero_image_url,
+                'title' => isset($mobile_app_options['hero_title']) ? $mobile_app_options['hero_title'] : 'Trouvez votre prochaine aventure locale',
+                'subtitle' => isset($mobile_app_options['hero_subtitle']) ? $mobile_app_options['hero_subtitle'] : 'Découvrez les meilleurs événements près de chez vous',
+                'show_search' => isset($mobile_app_options['hero_show_search']) && !empty($mobile_app_options['hero_show_search']),
+                'show_quick_filters' => isset($mobile_app_options['hero_show_quick_filters']) && !empty($mobile_app_options['hero_show_quick_filters']),
+            ),
+            'ads' => array(
+                'enabled' => isset($mobile_app_options['ads_enabled']) && !empty($mobile_app_options['ads_enabled']),
+                'banners' => $banners,
+            ),
+            'texts' => array(
+                'events_section_title' => isset($mobile_app_options['events_section_title']) ? $mobile_app_options['events_section_title'] : 'Retrouvez tous vos événements',
+                'events_section_description' => isset($mobile_app_options['events_section_description']) ? $mobile_app_options['events_section_description'] : 'Explorez notre sélection d\'événements locaux',
+                'thematiques_section_title' => isset($mobile_app_options['thematiques_section_title']) ? $mobile_app_options['thematiques_section_title'] : 'Explorez par thématique',
+                'cities_section_title' => isset($mobile_app_options['cities_section_title']) ? $mobile_app_options['cities_section_title'] : 'Événements par ville',
+                'explore_button_text' => isset($mobile_app_options['explore_button_text']) ? $mobile_app_options['explore_button_text'] : 'Explorer les activités',
+            ),
+        );
+
+        return rest_ensure_response($config);
     }
 
     /**

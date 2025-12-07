@@ -51,6 +51,9 @@ function EL() {
 $GLOBALS['eventlist'] = EL();
 // Global for backwards compatibility.
 
+// Load REST API for mobile app
+require_once plugin_dir_path(__FILE__) . 'eventlist-rest-api-init.php';
+
 /**
  * Plugin activation hook - Create analytics table
  */
