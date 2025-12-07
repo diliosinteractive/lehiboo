@@ -1520,7 +1520,7 @@ if( !class_exists( 'El_Ajax' ) ){
 	                     'post_parent' 		=> $post->post_parent,
 	                     'post_password' 	=> $post->post_password,
 	                     'post_status' 		=> $publish,
-	                     'post_title' 		=> $post->post_title,
+	                     'post_title' 		=> $post->post_title . ' - DUPLIQUÉ',
 	                     'post_type' 		=> $post->post_type,
 	                     'to_ping' 			=> $post->to_ping,
 	                     'menu_order' 		=> $post->menu_order,
