@@ -1,0 +1,23 @@
+/**
+ * Taxonomy Image Styles
+ */
+
+#thematique-image-wrapper {
+    margin-bottom: 10px;
+}
+
+#thematique-image-preview {
+    max-width: 200px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.column-thematique_image {
+    width: 60px;
+}
+
+.column-thematique_image img {
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}

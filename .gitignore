@@ -59,6 +59,7 @@ wp-content/themes/*
 # Plugins (garder seulement nos plugins)
 wp-content/plugins/*
 !wp-content/plugins/lehiboo-ai-assistant/
+!wp-content/plugins/lehiboo-mobile-api/
 !wp-content/plugins/eventlist/
 
 # Uploads
