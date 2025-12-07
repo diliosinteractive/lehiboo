@@ -6,7 +6,7 @@
  * @version 1.0.0
  */
 
-(function($) {
+(function ($) {
     'use strict';
 
     /**
@@ -34,48 +34,46 @@
         /**
          * Initialiser le système
          */
-        init: function() {
+        init: function () {
             if (this.container) return;
 
             // Créer le conteneur principal
             this.container = $('<div class="toast-container"></div>');
             $('body').append(this.container);
-
-            console.log('Toast Notification System initialized');
         },
 
         /**
          * Afficher un toast de succès
          */
-        success: function(message, options) {
+        success: function (message, options) {
             return this.show(message, 'success', options);
         },
 
         /**
          * Afficher un toast d'erreur
          */
-        error: function(message, options) {
+        error: function (message, options) {
             return this.show(message, 'error', options);
         },
 
         /**
          * Afficher un toast d'avertissement
          */
-        warning: function(message, options) {
+        warning: function (message, options) {
             return this.show(message, 'warning', options);
         },
 
         /**
          * Afficher un toast d'information
          */
-        info: function(message, options) {
+        info: function (message, options) {
             return this.show(message, 'info', options);
         },
 
         /**
          * Afficher un toast
          */
-        show: function(message, type, options) {
+        show: function (message, type, options) {
             var self = this;
             var settings = $.extend({}, this.defaults, options);
 
@@ -91,14 +89,14 @@
             this.container.append($toast);
 
             // Animation d'entrée
-            setTimeout(function() {
+            setTimeout(function () {
                 $toast.addClass('toast-show');
             }, 10);
 
             // Gestion de la fermeture automatique
             var timeoutId;
             if (settings.duration > 0) {
-                timeoutId = setTimeout(function() {
+                timeoutId = setTimeout(function () {
                     self.hide($toast);
                 }, settings.duration);
             }
@@ -108,15 +106,15 @@
                 var remainingTime = settings.duration;
                 var startTime = Date.now();
 
-                $toast.on('mouseenter', function() {
+                $toast.on('mouseenter', function () {
                     clearTimeout(timeoutId);
                     remainingTime -= (Date.now() - startTime);
                     $toast.find('.toast-progress-bar').css('animation-play-state', 'paused');
                 });
 
-                $toast.on('mouseleave', function() {
+                $toast.on('mouseleave', function () {
                     startTime = Date.now();
-                    timeoutId = setTimeout(function() {
+                    timeoutId = setTimeout(function () {
                         self.hide($toast);
                     }, remainingTime);
                     $toast.find('.toast-progress-bar').css('animation-play-state', 'running');
@@ -124,7 +122,7 @@
             }
 
             // Bouton de fermeture
-            $toast.find('.toast-close').on('click', function() {
+            $toast.find('.toast-close').on('click', function () {
                 clearTimeout(timeoutId);
                 self.hide($toast);
             });
@@ -135,7 +133,7 @@
         /**
          * Créer l'élément toast
          */
-        createToast: function(message, type, settings) {
+        createToast: function (message, type, settings) {
             var icon = this.getIcon(type);
 
             var $toast = $('<div class="toast toast-' + type + ' toast-' + settings.animation + '"></div>');
@@ -174,10 +172,10 @@
         /**
          * Masquer un toast
          */
-        hide: function($toast) {
+        hide: function ($toast) {
             $toast.removeClass('toast-show');
 
-            setTimeout(function() {
+            setTimeout(function () {
                 $toast.remove();
             }, 400);
         },
@@ -185,7 +183,7 @@
         /**
          * Obtenir l'icône selon le type
          */
-        getIcon: function(type) {
+        getIcon: function (type) {
             var icons = {
                 success: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
                     '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>' +
@@ -214,9 +212,9 @@
         /**
          * Fermer tous les toasts
          */
-        closeAll: function() {
+        closeAll: function () {
             var self = this;
-            this.container.find('.toast').each(function() {
+            this.container.find('.toast').each(function () {
                 self.hide($(this));
             });
         }
@@ -225,7 +223,7 @@
     /**
      * Alias pour compatibilité avec alert()
      */
-    window.showToast = function(message, type, options) {
+    window.showToast = function (message, type, options) {
         type = type || 'info';
         return ToastNotification[type](message, options);
     };
@@ -233,7 +231,7 @@
     /**
      * Stocker un message flash pour le prochain chargement de page
      */
-    window.ToastNotification.setFlashMessage = function(message, type, options) {
+    window.ToastNotification.setFlashMessage = function (message, type, options) {
         if (typeof sessionStorage !== 'undefined') {
             var flashData = {
                 message: message,
@@ -247,7 +245,7 @@
     /**
      * Afficher les messages flash au chargement de la page
      */
-    window.ToastNotification.showFlashMessages = function() {
+    window.ToastNotification.showFlashMessages = function () {
         if (typeof sessionStorage !== 'undefined') {
             var flashData = sessionStorage.getItem('toast_flash_message');
 
@@ -258,7 +256,7 @@
                     sessionStorage.removeItem('toast_flash_message');
 
                     // Afficher le toast après un court délai pour s'assurer que le DOM est prêt
-                    setTimeout(function() {
+                    setTimeout(function () {
                         ToastNotification.show(data.message, data.type, data.options);
                     }, 300);
                 } catch (e) {
@@ -272,7 +270,7 @@
     /**
      * Initialisation automatique au chargement
      */
-    $(document).ready(function() {
+    $(document).ready(function () {
         ToastNotification.init();
         // Afficher les messages flash s'il y en a
         ToastNotification.showFlashMessages();

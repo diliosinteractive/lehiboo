@@ -3,7 +3,7 @@
  * Gère le smooth scroll, l'état actif et les coches de validation
  */
 
-(function($) {
+(function ($) {
 	'use strict';
 
 	// Configuration
@@ -27,7 +27,7 @@
 		}
 
 		// Smooth scroll au clic sur les ancres
-		$(config.navSelector).on('click', 'a[href^="#"]', function(e) {
+		$(config.navSelector).on('click', 'a[href^="#"]', function (e) {
 			e.preventDefault();
 
 			const targetId = $(this).attr('href');
@@ -62,9 +62,9 @@
 	function initScrollSpy() {
 		let ticking = false;
 
-		$(window).on('scroll', function() {
+		$(window).on('scroll', function () {
 			if (!ticking) {
-				window.requestAnimationFrame(function() {
+				window.requestAnimationFrame(function () {
 					updateActiveNavItem();
 					ticking = false;
 				});
@@ -87,7 +87,7 @@
 		let currentCard = null;
 
 		// Trouver la card actuellement visible
-		$cards.each(function() {
+		$cards.each(function () {
 			const $card = $(this);
 			const cardTop = $card.offset().top;
 			const cardBottom = cardTop + $card.outerHeight();
@@ -122,16 +122,16 @@
 		validateAllSections();
 
 		// Re-valider quand un champ change
-		$(document).on('change blur keyup', 'input, textarea, select', function() {
+		$(document).on('change blur keyup', 'input, textarea, select', function () {
 			// Debounce pour éviter trop d'appels
 			clearTimeout(window.validationTimeout);
-			window.validationTimeout = setTimeout(function() {
+			window.validationTimeout = setTimeout(function () {
 				validateAllSections();
 			}, 300);
 		});
 
 		// Re-valider après les événements Select2
-		$(document).on('select2:select select2:unselect', function() {
+		$(document).on('select2:select select2:unselect', function () {
 			setTimeout(validateAllSections, 100);
 		});
 	}
@@ -142,7 +142,7 @@
 	function validateAllSections() {
 		const $navItems = $(config.navItemSelector);
 
-		$navItems.each(function() {
+		$navItems.each(function () {
 			const $navItem = $(this);
 			const sectionId = $navItem.data('section');
 			const $section = $(`#${sectionId}`);
@@ -168,7 +168,7 @@
 	function checkSectionCompletion($section) {
 		// Trouver tous les champs requis dans la section
 		const $requiredFields = $section.find('input[required], textarea[required], select[required]')
-			.add($section.find('input, textarea, select').filter(function() {
+			.add($section.find('input, textarea, select').filter(function () {
 				// Aussi vérifier les champs avec attribut data-required ou classe required
 				return $(this).data('required') || $(this).hasClass('required');
 			}));
@@ -180,7 +180,7 @@
 
 		let allFilled = true;
 
-		$requiredFields.each(function() {
+		$requiredFields.each(function () {
 			const $field = $(this);
 			const fieldType = $field.attr('type');
 			const tagName = $field.prop('tagName').toLowerCase();
@@ -224,8 +224,8 @@
 			return; // Pas de support, pas d'animation
 		}
 
-		const observer = new IntersectionObserver(function(entries) {
-			entries.forEach(function(entry) {
+		const observer = new IntersectionObserver(function (entries) {
+			entries.forEach(function (entry) {
 				if (entry.isIntersecting) {
 					entry.target.classList.add('is-visible');
 					observer.unobserve(entry.target);
@@ -236,7 +236,7 @@
 			rootMargin: '0px 0px -50px 0px'
 		});
 
-		document.querySelectorAll(config.cardSelector).forEach(function(card) {
+		document.querySelectorAll(config.cardSelector).forEach(function (card) {
 			card.classList.add('fade-in-card');
 			observer.observe(card);
 		});
@@ -245,7 +245,7 @@
 	/**
 	 * Initialisation au chargement du DOM
 	 */
-	$(document).ready(function() {
+	$(document).ready(function () {
 		// Vérifier si on est sur la page de création d'événement
 		if (!$('.event_form_single_page').length) {
 			return;
@@ -253,9 +253,6 @@
 
 		initProgressNavigation();
 		initCardAnimations();
-
-		// Log pour debug
-		console.log('Event Form Progress Navigation initialized');
 	});
 
 })(jQuery);

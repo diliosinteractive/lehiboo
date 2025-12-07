@@ -15,21 +15,14 @@
  * - v1.0.0: Version initiale (textarea simple uniquement)
  */
 
-(function($) {
+(function ($) {
     'use strict';
 
-    $(document).ready(function() {
-        console.log('🔵 Profile Presentation Validation - Script chargé');
-        console.log('🔵 Recherche .vendor_profile:', $('.vendor_profile').length);
-        console.log('🔵 Recherche .vendor_wrap:', $('.vendor_wrap').length);
-
+    $(document).ready(function () {
         // Vérifier si on est sur la page profil
         if (!$('.vendor_profile').length && !$('.vendor_wrap').length) {
-            console.log('❌ Pas de .vendor_profile ou .vendor_wrap - sortie');
             return;
         }
-
-        console.log('✅ Page profil détectée');
 
         const MIN_DESCRIPTION_LENGTH = 500;
 
@@ -44,7 +37,7 @@
 
             // Vérifier si TinyMCE est actif
             if (typeof tinymce !== 'undefined' && tinymce.get('description')) {
-                content = tinymce.get('description').getContent({format: 'text'});
+                content = tinymce.get('description').getContent({ format: 'text' });
             } else {
                 // Fallback sur textarea
                 const $textarea = $('#description');
@@ -65,25 +58,18 @@
         function updateCharacterCounter() {
             const currentLength = getDescriptionLength();
             const remaining = MIN_DESCRIPTION_LENGTH - currentLength;
-            console.log('📊 updateCharacterCounter - currentLength:', currentLength, 'remaining:', remaining);
 
             let $counter = $('#presentation-char-counter');
-            console.log('🔍 Compteur existant:', $counter.length);
 
             // Créer le compteur s'il n'existe pas
             if (!$counter.length) {
                 const $descriptionField = $('#description').closest('.vendor_field');
-                console.log('🔍 Champ description parent (.vendor_field):', $descriptionField.length);
 
                 if ($descriptionField.length) {
-                    console.log('➕ Création du compteur');
                     $descriptionField.append(
                         '<div id="presentation-char-counter" class="description-counter"></div>'
                     );
                     $counter = $('#presentation-char-counter');
-                    console.log('✅ Compteur créé:', $counter.length);
-                } else {
-                    console.log('❌ Impossible de trouver .vendor_field parent');
                 }
             }
 
@@ -147,43 +133,29 @@
             return true;
         }
 
-        // Initialiser le compteur de caractères
-        console.log('🚀 Initialisation du compteur...');
-        console.log('🔍 Recherche textarea #description:', $('#description').length);
         updateCharacterCounter();
 
         // Mettre à jour le compteur à chaque modification
         if (typeof tinymce !== 'undefined') {
-            console.log('✅ TinyMCE disponible');
             // Pour TinyMCE
-            $(document).on('tinymce-editor-init', function(_event, editor) {
-                console.log('📝 TinyMCE editor init:', editor.id);
+            $(document).on('tinymce-editor-init', function (_event, editor) {
                 if (editor.id === 'description') {
-                    console.log('✅ Écoute événements TinyMCE sur description');
-                    editor.on('keyup change', function() {
-                        console.log('⌨️ Événement TinyMCE détecté');
+                    editor.on('keyup change', function () {
                         updateCharacterCounter();
                     });
                 }
             });
-        } else {
-            console.log('⚠️ TinyMCE non disponible');
         }
 
         // Pour textarea (fallback)
-        console.log('➕ Ajout listener sur textarea #description');
-        $('#description').on('keyup change', function() {
-            console.log('⌨️ Événement textarea détecté');
+        $('#description').on('keyup change', function () {
             updateCharacterCounter();
         });
 
         // Intercepter les clics sur le bouton de sauvegarde
-        // Utiliser capture phase pour être exécuté en premier
-        console.log('🔍 Recherche bouton el_update_presentation:', $('input[name="el_update_presentation"]').length);
-        $('input[name="el_update_presentation"]').each(function() {
-            console.log('➕ Ajout listener sur bouton sauvegarde');
+        $('input[name="el_update_presentation"]').each(function () {
             const button = this;
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', function (e) {
                 // Valider avant soumission
                 if (!validateBeforeSubmit()) {
                     e.preventDefault();
@@ -195,7 +167,7 @@
         });
 
         // Hook AJAX beforeSend pour bloquer si validation échouée
-        $(document).ajaxSend(function(_event, jqxhr, settings) {
+        $(document).ajaxSend(function (_event, jqxhr, settings) {
             // Vérifier si c'est une requête de sauvegarde de présentation
             if (settings.data && typeof settings.data === 'string' && settings.data.indexOf('el_update_presentation') !== -1) {
                 if (window.el_presentation_validation_failed === true) {

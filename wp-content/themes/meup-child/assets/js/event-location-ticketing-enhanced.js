@@ -3,10 +3,10 @@
  * Gère les interactions pour les améliorations de localisation et billetterie
  */
 
-(function($) {
+(function ($) {
     'use strict';
 
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         /**
          * ========================================
@@ -15,7 +15,7 @@
          */
 
         // Gestion de l'affichage des sections selon le type d'événement sélectionné
-        $('.event_type_radio').on('change', function() {
+        $('.event_type_radio').on('change', function () {
             const selectedType = $(this).val();
 
             // Masquer toutes les sections
@@ -30,7 +30,7 @@
         });
 
         // Gestion de la checkbox "Afficher dans toutes les villes"
-        $('#show_all_cities').on('change', function() {
+        $('#show_all_cities').on('change', function () {
             if ($(this).is(':checked')) {
                 $('.city_selector').hide();
             } else {
@@ -39,7 +39,7 @@
         });
 
         // Gestion des images pour le stationnement
-        $(document).on('click', '.el_add_parking_image', function(e) {
+        $(document).on('click', '.el_add_parking_image', function (e) {
             e.preventDefault();
             const button = $(this);
             const imageWrap = button.prev('.image-wrap-parking');
@@ -52,7 +52,7 @@
                 multiple: false
             });
 
-            mediaUploader.on('select', function() {
+            mediaUploader.on('select', function () {
                 const attachment = mediaUploader.state().get('selection').first().toJSON();
                 imageWrap.html(`
                     <div class="item">
@@ -69,14 +69,14 @@
         });
 
         // Suppression de l'image de stationnement
-        $(document).on('click', '.el_remove_parking_image', function(e) {
+        $(document).on('click', '.el_remove_parking_image', function (e) {
             e.preventDefault();
             $(this).siblings('.item').remove();
             $(this).remove();
         });
 
         // Gestion des images pour l'accès
-        $(document).on('click', '.el_add_access_image', function(e) {
+        $(document).on('click', '.el_add_access_image', function (e) {
             e.preventDefault();
             const button = $(this);
             const imageWrap = button.prev('.image-wrap-access');
@@ -89,7 +89,7 @@
                 multiple: false
             });
 
-            mediaUploader.on('select', function() {
+            mediaUploader.on('select', function () {
                 const attachment = mediaUploader.state().get('selection').first().toJSON();
                 imageWrap.html(`
                     <div class="item">
@@ -106,7 +106,7 @@
         });
 
         // Suppression de l'image d'accès
-        $(document).on('click', '.el_remove_access_image', function(e) {
+        $(document).on('click', '.el_remove_access_image', function (e) {
             e.preventDefault();
             $(this).siblings('.item').remove();
             $(this).remove();
@@ -119,7 +119,7 @@
          */
 
         // Gestion de l'affichage des sections de billetterie
-        $('input[name*="ticket_link"]').on('change', function() {
+        $('input[name*="ticket_link"]').on('change', function () {
             const selectedValue = $(this).val();
 
             // Masquer toutes les sections
@@ -137,7 +137,7 @@
         $('input[name*="ticket_link"]:checked').trigger('change');
 
         // Ajout d'un nouveau tarif externe
-        $('.add_external_price').on('click', function(e) {
+        $('.add_external_price').on('click', function (e) {
             e.preventDefault();
 
             const pricesList = $('.external_prices_list');
@@ -169,13 +169,13 @@
         });
 
         // Suppression d'un tarif externe
-        $(document).on('click', '.remove_external_price', function(e) {
+        $(document).on('click', '.remove_external_price', function (e) {
             e.preventDefault();
             $(this).closest('.external_price_item').remove();
         });
 
         // Mise à jour dynamique des styles pour le bouton de choix de billetterie
-        $('.el_btn_ticket_choice input[type="radio"]').on('change', function() {
+        $('.el_btn_ticket_choice input[type="radio"]').on('change', function () {
             $('.el_btn_ticket_choice').removeClass('active');
             if ($(this).is(':checked')) {
                 $(this).closest('.el_btn_ticket_choice').addClass('active');
@@ -183,7 +183,7 @@
         });
 
         // Initialisation : activer le bouton sélectionné
-        $('.el_btn_ticket_choice input[type="radio"]:checked').each(function() {
+        $('.el_btn_ticket_choice input[type="radio"]:checked').each(function () {
             $(this).closest('.el_btn_ticket_choice').addClass('active');
         });
 
@@ -194,7 +194,7 @@
          */
 
         // Validation du format des prix (seulement des chiffres et virgule/point)
-        $(document).on('input', '.price_amount_input, .price_ticket', function() {
+        $(document).on('input', '.price_amount_input, .price_ticket', function () {
             let value = $(this).val();
             // Remplacer les virgules par des points
             value = value.replace(',', '.');
@@ -212,8 +212,8 @@
         function showSuccessMessage(message) {
             const successDiv = $('<div class="el-success-message"></div>').text(message);
             $('.vendor_edit_event').prepend(successDiv);
-            setTimeout(function() {
-                successDiv.fadeOut(function() {
+            setTimeout(function () {
+                successDiv.fadeOut(function () {
                     $(this).remove();
                 });
             }, 3000);
@@ -223,8 +223,8 @@
         function showErrorMessage(message) {
             const errorDiv = $('<div class="el-error-message"></div>').text(message);
             $('.vendor_edit_event').prepend(errorDiv);
-            setTimeout(function() {
-                errorDiv.fadeOut(function() {
+            setTimeout(function () {
+                errorDiv.fadeOut(function () {
                     $(this).remove();
                 });
             }, 5000);
@@ -243,8 +243,6 @@
         if ($('#show_all_cities').is(':checked')) {
             $('.city_selector').hide();
         }
-
-        console.log('Event Location & Ticketing Enhanced - Initialized');
     });
 
 })(jQuery);

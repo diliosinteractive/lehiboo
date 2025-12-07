@@ -3,7 +3,7 @@
  * @version 1.2.2
  */
 
-(function($) {
+(function ($) {
 	'use strict';
 
 	const OTPVerification = {
@@ -15,10 +15,9 @@
 		 * Récupérer les données AJAX
 		 * Support pour le script chargé dynamiquement ou via WordPress
 		 */
-		getAjaxData: function() {
+		getAjaxData: function () {
 			// Priorité 1: lehiboo_otp_ajax (si le script est chargé via wp_enqueue_script)
 			if (typeof lehiboo_otp_ajax !== 'undefined') {
-				console.log('OTP: Using lehiboo_otp_ajax data');
 				return {
 					ajax_url: lehiboo_otp_ajax.ajax_url,
 					nonce: lehiboo_otp_ajax.nonce
@@ -26,7 +25,6 @@
 			}
 			// Priorité 2: lehiboo_register_ajax (contient aussi les données OTP pour customer/vendor)
 			else if (typeof lehiboo_register_ajax !== 'undefined' && lehiboo_register_ajax.otp_ajax_url) {
-				console.log('OTP: Using lehiboo_register_ajax OTP data');
 				return {
 					ajax_url: lehiboo_register_ajax.otp_ajax_url,
 					nonce: lehiboo_register_ajax.otp_nonce
@@ -34,7 +32,6 @@
 			}
 			// Priorité 3: lehiboo_auth_ajax (données OTP incluses, pour popup)
 			else if (typeof lehiboo_auth_ajax !== 'undefined') {
-				console.log('OTP: Using lehiboo_auth_ajax data');
 				return {
 					ajax_url: lehiboo_auth_ajax.otp_ajax_url || lehiboo_auth_ajax.ajax_url,
 					nonce: lehiboo_auth_ajax.otp_nonce || lehiboo_auth_ajax.nonce
@@ -42,7 +39,6 @@
 			}
 			// Fallback: utiliser les URLs par défaut WordPress
 			else {
-				console.warn('OTP: Aucune donnée AJAX localisée trouvée, utilisation du fallback');
 				return {
 					ajax_url: '/wp-admin/admin-ajax.php',
 					nonce: ''
@@ -53,8 +49,7 @@
 		/**
 		 * Initialisation
 		 */
-		init: function() {
-			console.log('OTP Verification: Initializing...');
+		init: function () {
 			// Nettoyer les anciens événements pour éviter les doublons
 			$(document).off('input', '.otp_digit');
 			$(document).off('keydown', '.otp_digit');
@@ -71,33 +66,33 @@
 		/**
 		 * Événements
 		 */
-		bindEvents: function() {
+		bindEvents: function () {
 			// Auto-focus et navigation entre les inputs
-			$(document).on('input', '.otp_digit', function(e) {
+			$(document).on('input', '.otp_digit', function (e) {
 				OTPVerification.handleInput($(this), e);
 			});
 
 			// Gestion backspace
-			$(document).on('keydown', '.otp_digit', function(e) {
+			$(document).on('keydown', '.otp_digit', function (e) {
 				if (e.key === 'Backspace' && !$(this).val()) {
 					OTPVerification.focusPreviousInput($(this));
 				}
 			});
 
 			// Gestion paste (coller)
-			$(document).on('paste', '.otp_digit', function(e) {
+			$(document).on('paste', '.otp_digit', function (e) {
 				e.preventDefault();
 				OTPVerification.handlePaste(e.originalEvent);
 			});
 
 			// Submit form
-			$(document).on('submit', '#otp_verification_form', function(e) {
+			$(document).on('submit', '#otp_verification_form', function (e) {
 				e.preventDefault();
 				OTPVerification.verifyOTP($(this));
 			});
 
 			// Resend OTP
-			$(document).on('click', '#resend_otp_btn', function(e) {
+			$(document).on('click', '#resend_otp_btn', function (e) {
 				e.preventDefault();
 				OTPVerification.resendOTP($(this).data('user-id'));
 			});
@@ -106,9 +101,8 @@
 		/**
 		 * Gérer l'input d'un chiffre
 		 */
-		handleInput: function($input, e) {
+		handleInput: function ($input, e) {
 			const value = $input.val();
-			console.log('OTP: Input event on index', $input.data('index'), 'value:', value);
 
 			// Ne garder que le dernier chiffre si plusieurs sont saisis
 			if (value.length > 1) {
@@ -129,8 +123,7 @@
 
 			// Vérifier si tous les champs sont remplis
 			if (this.isCodeComplete()) {
-				console.log('OTP: Code complete, submitting');
-				setTimeout(function() {
+				setTimeout(function () {
 					$('#otp_verification_form').submit();
 				}, 100);
 			}
@@ -139,15 +132,13 @@
 		/**
 		 * Gérer le paste (collage)
 		 */
-		handlePaste: function(e) {
-			console.log('OTP: Paste event triggered');
+		handlePaste: function (e) {
 			const pastedData = (e.clipboardData || window.clipboardData).getData('text');
 			const code = pastedData.replace(/[^0-9]/g, '').slice(0, 6);
-			console.log('OTP: Pasted code:', code);
 
 			if (code.length > 0) {
 				// Remplir tous les champs à partir du code
-				$('.otp_digit').each(function(index) {
+				$('.otp_digit').each(function (index) {
 					if (code[index]) {
 						$(this).val(code[index]).addClass('filled');
 					}
@@ -157,8 +148,7 @@
 				if (code.length === 6) {
 					$('.otp_digit').last().focus();
 					// Auto-submit si code complet
-					setTimeout(function() {
-						console.log('OTP: Auto-submitting form');
+					setTimeout(function () {
 						$('#otp_verification_form').submit();
 					}, 100);
 				} else {
@@ -171,10 +161,9 @@
 		/**
 		 * Focus sur le champ suivant
 		 */
-		focusNextInput: function($input) {
+		focusNextInput: function ($input) {
 			const index = parseInt($input.data('index'));
 			const $nextInput = $(`.otp_digit[data-index="${index + 1}"]`);
-			console.log('OTP: Focusing next input from', index, 'to', index + 1, 'found:', $nextInput.length);
 
 			if ($nextInput.length) {
 				$nextInput.focus().select();
@@ -184,7 +173,7 @@
 		/**
 		 * Focus sur le champ précédent
 		 */
-		focusPreviousInput: function($input) {
+		focusPreviousInput: function ($input) {
 			const index = parseInt($input.data('index'));
 			const $prevInput = $(`.otp_digit[data-index="${index - 1}"]`);
 
@@ -196,16 +185,16 @@
 		/**
 		 * Focus sur le premier input
 		 */
-		focusFirstInput: function() {
+		focusFirstInput: function () {
 			$('.otp_digit[data-index="0"]').focus();
 		},
 
 		/**
 		 * Vérifier si le code est complet
 		 */
-		isCodeComplete: function() {
+		isCodeComplete: function () {
 			let complete = true;
-			$('.otp_digit').each(function() {
+			$('.otp_digit').each(function () {
 				if (!$(this).val()) {
 					complete = false;
 					return false;
@@ -217,9 +206,9 @@
 		/**
 		 * Récupérer le code OTP
 		 */
-		getCode: function() {
+		getCode: function () {
 			let code = '';
-			$('.otp_digit').each(function() {
+			$('.otp_digit').each(function () {
 				code += $(this).val();
 			});
 			return code;
@@ -228,7 +217,7 @@
 		/**
 		 * Vérifier l'OTP via AJAX
 		 */
-		verifyOTP: function($form) {
+		verifyOTP: function ($form) {
 			const code = this.getCode();
 
 			if (code.length !== 6) {
@@ -254,8 +243,6 @@
 			const formNonce = $form.find('[name="otp_nonce"]').val();
 			const nonce = formNonce || ajaxData.nonce;
 
-			console.log('OTP: Using nonce:', nonce);
-
 			$.ajax({
 				url: ajaxData.ajax_url,
 				type: 'POST',
@@ -266,16 +253,13 @@
 					otp_nonce: nonce
 				},
 				dataType: 'json',
-				success: function(response) {
+				success: function (response) {
 					if (response.success) {
-						console.log('OTP: Verification success response:', response);
 						OTPVerification.showNotification('success', response.data.message);
 
 						// Connexion automatique et redirection vers le compte
-						setTimeout(function() {
+						setTimeout(function () {
 							const redirectUrl = response.data.redirect_url || '/member-account/';
-							console.log('OTP: Full redirect URL:', redirectUrl);
-							console.log('OTP: Redirecting to', redirectUrl);
 							window.location.href = redirectUrl;
 						}, 1500);
 					} else {
@@ -286,7 +270,7 @@
 						$btnLoader.hide();
 					}
 				},
-				error: function() {
+				error: function () {
 					OTPVerification.showNotification('error', 'Une erreur est survenue. Veuillez réessayer.');
 					OTPVerification.clearInputs();
 					$submitBtn.prop('disabled', false);
@@ -299,7 +283,7 @@
 		/**
 		 * Renvoyer le code OTP
 		 */
-		resendOTP: function(userId) {
+		resendOTP: function (userId) {
 			const $btn = $('#resend_otp_btn');
 
 			$btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Envoi en cours...');
@@ -317,7 +301,7 @@
 					otp_nonce: ajaxData.nonce
 				},
 				dataType: 'json',
-				success: function(response) {
+				success: function (response) {
 					if (response.success) {
 						OTPVerification.showNotification('success', response.data.message);
 						OTPVerification.startCountdown();
@@ -326,7 +310,7 @@
 						$btn.prop('disabled', false).html('<i class="fas fa-redo-alt"></i> Renvoyer le code');
 					}
 				},
-				error: function() {
+				error: function () {
 					OTPVerification.showNotification('error', 'Erreur lors du renvoi du code.');
 					$btn.prop('disabled', false).html('<i class="fas fa-redo-alt"></i> Renvoyer le code');
 				}
@@ -336,7 +320,7 @@
 		/**
 		 * Démarrer le compte à rebours
 		 */
-		startCountdown: function() {
+		startCountdown: function () {
 			const $btn = $('#resend_otp_btn');
 			const $countdown = $('#resend_countdown');
 			const $timer = $('#countdown_timer');
@@ -346,7 +330,7 @@
 			this.countdown = 60;
 			$timer.text(this.countdown);
 
-			this.countdownInterval = setInterval(function() {
+			this.countdownInterval = setInterval(function () {
 				OTPVerification.countdown--;
 				$timer.text(OTPVerification.countdown);
 
@@ -361,7 +345,7 @@
 		/**
 		 * Afficher une notification
 		 */
-		showNotification: function(type, message) {
+		showNotification: function (type, message) {
 			const $notification = $(`.otp_notification.${type}`);
 			$notification.html(message).fadeIn(300);
 		},
@@ -369,21 +353,21 @@
 		/**
 		 * Effacer les notifications
 		 */
-		clearNotifications: function() {
+		clearNotifications: function () {
 			$('.otp_notification').hide().html('');
 		},
 
 		/**
 		 * Effacer les inputs
 		 */
-		clearInputs: function() {
+		clearInputs: function () {
 			$('.otp_digit').val('').removeClass('filled');
 			this.focusFirstInput();
 		}
 	};
 
 	// Initialiser au chargement du DOM
-	$(document).ready(function() {
+	$(document).ready(function () {
 		if ($('#otp_verification_form').length) {
 			OTPVerification.init();
 		}

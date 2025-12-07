@@ -9,7 +9,7 @@
  * @version 1.0.0
  */
 
-(function($) {
+(function ($) {
     'use strict';
 
     /**
@@ -19,7 +19,7 @@
         var count = 0;
 
         // Compter les billets qui ont un nom
-        $('.list_type_ticket .item_ticket').each(function() {
+        $('.list_type_ticket .item_ticket').each(function () {
             var ticketName = $(this).find('.name_ticket').val();
             if (ticketName && ticketName.trim() !== '') {
                 count++;
@@ -50,7 +50,7 @@
                 'color': '#10b981'
             });
 
-            setTimeout(function() {
+            setTimeout(function () {
                 $counter.css({
                     'transform': 'scale(1)',
                     'color': ''
@@ -93,12 +93,12 @@
         var $toast = $('<div class="lehiboo-toast" style="position: fixed; bottom: 30px; right: 30px; background: ' + bgColor + '; color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 99999; font-weight: 600; display: flex; align-items: center; gap: 10px; animation: slideInUp 0.3s ease;">' +
             '<span style="font-size: 18px;">' + icon + '</span>' +
             '<span>' + message + '</span>' +
-        '</div>');
+            '</div>');
 
         $('body').append($toast);
 
-        setTimeout(function() {
-            $toast.fadeOut(300, function() {
+        setTimeout(function () {
+            $toast.fadeOut(300, function () {
                 $(this).remove();
             });
         }, 3000);
@@ -108,7 +108,7 @@
      * Améliorer le feedback du bouton "Valider ce billet"
      */
     function improveTicketSaveButton() {
-        $(document).on('click', '.save_ticket', function(e) {
+        $(document).on('click', '.save_ticket', function (e) {
             e.preventDefault();
 
             var $ticket = $(this).closest('.item_ticket');
@@ -139,9 +139,9 @@
      * Améliorer le bouton "Ajouter un billet"
      */
     function improveAddTicketButton() {
-        $(document).on('click', '.add_ticket', function() {
+        $(document).on('click', '.add_ticket', function () {
             // Attendre que le nouveau billet soit ajouté par le code d'origine
-            setTimeout(function() {
+            setTimeout(function () {
                 updateTicketCounter();
                 showToast('Nouveau billet ajouté', 'success');
 
@@ -153,7 +153,7 @@
                     }, 500);
 
                     // Focus sur le nom du billet
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $lastTicket.find('.name_ticket').focus();
                     }, 600);
                 }
@@ -165,7 +165,7 @@
      * Améliorer la suppression de billet
      */
     function improveDeleteTicketButton() {
-        $(document).on('click', '.delete_ticket', function() {
+        $(document).on('click', '.delete_ticket', function () {
             var $ticket = $(this).closest('.item_ticket');
             var ticketName = $ticket.find('.name_ticket').val() || 'ce billet';
 
@@ -175,7 +175,7 @@
             }
 
             // Attendre que le billet soit supprimé par le code d'origine
-            setTimeout(function() {
+            setTimeout(function () {
                 updateTicketCounter();
                 showToast('Billet supprimé', 'success');
             }, 300);
@@ -186,13 +186,13 @@
      * Mise à jour dynamique du compteur quand le nom change
      */
     function watchTicketNameChanges() {
-        $(document).on('input', '.name_ticket', function() {
+        $(document).on('input', '.name_ticket', function () {
             var $ticket = $(this).closest('.item_ticket');
             addTicketValidationIndicator($ticket);
         });
 
         // Mise à jour initiale au focus
-        $(document).on('focus', '.name_ticket', function() {
+        $(document).on('focus', '.name_ticket', function () {
             var $ticket = $(this).closest('.item_ticket');
             $ticket.find('.ticket-status-badge').remove();
         });
@@ -203,10 +203,10 @@
      */
     function improveSaveEventFeedback() {
         // Intercepter le submit du formulaire principal
-        $('#event_edit_form').on('submit', function() {
+        $('#event_edit_form').on('submit', function () {
             var ticketCount = 0;
 
-            $('.list_type_ticket .item_ticket').each(function() {
+            $('.list_type_ticket .item_ticket').each(function () {
                 var ticketName = $(this).find('.name_ticket').val();
                 if (ticketName && ticketName.trim() !== '') {
                     ticketCount++;
@@ -214,7 +214,7 @@
             });
 
             if (ticketCount > 0) {
-                console.log('Sauvegarde de l\'événement avec ' + ticketCount + ' billet(s)');
+                // Sauvegarde avec ticketCount billet(s)
             }
         });
     }
@@ -226,7 +226,7 @@
         // Tooltip pour les couleurs
         var colorFields = $('.el_color_wrap');
         if (colorFields.length) {
-            colorFields.each(function() {
+            colorFields.each(function () {
                 var $field = $(this);
                 var helpText = 'Ces couleurs seront utilisées pour le design de vos billets PDF';
 
@@ -241,11 +241,10 @@
     /**
      * Initialisation au chargement du document
      */
-    $(document).ready(function() {
-        console.log('LeHiboo V1: Améliorations UX Billetterie chargées');
+    $(document).ready(function () {
 
         // Initialiser tous les billets existants avec des indicateurs
-        $('.list_type_ticket .item_ticket').each(function() {
+        $('.list_type_ticket .item_ticket').each(function () {
             addTicketValidationIndicator($(this));
         });
 

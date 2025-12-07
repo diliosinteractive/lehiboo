@@ -597,7 +597,6 @@ function meup_child_locate_vendor_template( $template, $template_name, $template
 
 	// Si le template existe dans le child theme, l'utiliser en priorité
 	if ( file_exists( $child_theme_template ) ) {
-		error_log( 'EVENTLIST TEMPLATE OVERRIDE: Using child theme template - ' . $child_theme_template );
 		return $child_theme_template;
 	}
 

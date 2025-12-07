@@ -299,6 +299,58 @@ button#el_coorg_add_btn {
 }
 
 /* ========================================
+   WYSIWYG ÉDITEUR DESCRIPTION
+   ======================================== */
+
+/* Retirer le border de l'éditeur */
+.el_editor_no_border .wp-editor-container,
+.el_editor_no_border #wp-content_event-editor-container,
+.vendor_field .el_editor_no_border .wp-editor-container,
+#wp-content_event-wrap {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.el_editor_no_border .mce-panel,
+.el_editor_no_border .mce-container,
+#wp-content_event-wrap .mce-panel {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.el_editor_no_border .mce-toolbar-grp,
+#wp-content_event-wrap .mce-toolbar-grp {
+    background: #f8f9fa !important;
+    border: none !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    border-radius: 8px 8px 0 0 !important;
+}
+
+.el_editor_no_border .mce-edit-area,
+#wp-content_event-wrap .mce-edit-area {
+    border: 1px solid #e0e0e0 !important;
+    border-top: none !important;
+    border-radius: 0 0 8px 8px !important;
+}
+
+.el_editor_no_border .mce-edit-area iframe,
+#wp-content_event-wrap .mce-edit-area iframe {
+    min-height: 300px !important;
+}
+
+.el_editor_no_border .wp-editor-tabs,
+#wp-content_event-wrap .wp-editor-tabs {
+    float: right;
+    margin-bottom: 5px;
+}
+
+/* Retirer aussi le border du conteneur principal */
+#wp-content_event-editor-container {
+    border: none !important;
+}
+
+/* ========================================
    MENU VERROUILLÉ - BADGE PROCHAINEMENT
    ======================================== */
 

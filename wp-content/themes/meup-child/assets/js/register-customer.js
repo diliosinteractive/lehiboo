@@ -4,7 +4,7 @@
  * @version 1.1.0
  */
 
-(function($) {
+(function ($) {
 	'use strict';
 
 	const CustomerRegister = {
@@ -12,7 +12,7 @@
 		/**
 		 * Initialisation
 		 */
-		init: function() {
+		init: function () {
 			this.bindEvents();
 			this.initPasswordStrength();
 		},
@@ -20,24 +20,24 @@
 		/**
 		 * Événements
 		 */
-		bindEvents: function() {
+		bindEvents: function () {
 			// Toggle password visibility
-			$(document).on('click', '.toggle_password', function() {
+			$(document).on('click', '.toggle_password', function () {
 				CustomerRegister.togglePasswordVisibility($(this));
 			});
 
 			// Password strength
-			$(document).on('input', '#customer_password', function() {
+			$(document).on('input', '#customer_password', function () {
 				CustomerRegister.checkPasswordStrength($(this).val());
 			});
 
 			// Password match
-			$(document).on('input', '#customer_password_confirm', function() {
+			$(document).on('input', '#customer_password_confirm', function () {
 				CustomerRegister.checkPasswordMatch();
 			});
 
 			// Submit form
-			$(document).on('submit', '#customer_register_form', function(e) {
+			$(document).on('submit', '#customer_register_form', function (e) {
 				e.preventDefault();
 				CustomerRegister.handleSubmit($(this));
 			});
@@ -46,7 +46,7 @@
 		/**
 		 * Toggle password visibility
 		 */
-		togglePasswordVisibility: function($button) {
+		togglePasswordVisibility: function ($button) {
 			const $input = $button.siblings('input');
 			const $icon = $button.find('i');
 
@@ -62,8 +62,8 @@
 		/**
 		 * Initialiser la vérification de force du mot de passe
 		 */
-		initPasswordStrength: function() {
-			$('#customer_password').on('input', function() {
+		initPasswordStrength: function () {
+			$('#customer_password').on('input', function () {
 				const password = $(this).val();
 				CustomerRegister.checkPasswordStrength(password);
 			});
@@ -72,7 +72,7 @@
 		/**
 		 * Vérifier la force du mot de passe
 		 */
-		checkPasswordStrength: function(password) {
+		checkPasswordStrength: function (password) {
 			const $fill = $('.strength_bar_fill');
 			const $text = $('.strength_text');
 
@@ -116,7 +116,7 @@
 		/**
 		 * Vérifier si les mots de passe correspondent
 		 */
-		checkPasswordMatch: function() {
+		checkPasswordMatch: function () {
 			const password = $('#customer_password').val();
 			const confirm = $('#customer_password_confirm').val();
 			const $confirmInput = $('#customer_password_confirm');
@@ -138,7 +138,7 @@
 		/**
 		 * Gérer la soumission du formulaire
 		 */
-		handleSubmit: function($form) {
+		handleSubmit: function ($form) {
 			// Validation
 			if (!this.validateForm($form)) {
 				return;
@@ -161,18 +161,18 @@
 				type: 'POST',
 				data: $form.serialize() + '&action=lehiboo_customer_register',
 				dataType: 'json',
-				success: function(response) {
+				success: function (response) {
 					if (response.success) {
 						CustomerRegister.showNotification('success', response.data.message);
 
 						// Si OTP requis, charger le formulaire OTP
 						if (response.data.show_otp_form) {
-							setTimeout(function() {
+							setTimeout(function () {
 								CustomerRegister.loadOTPForm(response.data.user_id);
 							}, 1500);
 						} else {
 							// Connexion automatique réussie (pas d'OTP)
-							setTimeout(function() {
+							setTimeout(function () {
 								window.location.href = response.data.redirect_url || '/';
 							}, 1500);
 						}
@@ -183,7 +183,7 @@
 						$btnLoader.hide();
 					}
 				},
-				error: function(xhr, status, error) {
+				error: function (xhr, status, error) {
 					console.error('Erreur AJAX:', error);
 					CustomerRegister.showNotification('error', 'Une erreur est survenue. Veuillez réessayer.');
 					$submitBtn.prop('disabled', false);
@@ -196,7 +196,7 @@
 		/**
 		 * Valider le formulaire
 		 */
-		validateForm: function($form) {
+		validateForm: function ($form) {
 			const firstname = $('#customer_firstname').val().trim();
 			const lastname = $('#customer_lastname').val().trim();
 			const email = $('#customer_email').val().trim();
@@ -240,7 +240,7 @@
 		/**
 		 * Valider le format email
 		 */
-		isValidEmail: function(email) {
+		isValidEmail: function (email) {
 			const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 			return regex.test(email);
 		},
@@ -248,13 +248,13 @@
 		/**
 		 * Afficher une notification
 		 */
-		showNotification: function(type, message) {
+		showNotification: function (type, message) {
 			const $notification = $(`.register_notification.${type}`);
 			$notification.html(message).fadeIn(300);
 
 			// Auto-hide après 5 secondes pour les succès
 			if (type === 'success') {
-				setTimeout(function() {
+				setTimeout(function () {
 					$notification.fadeOut(300);
 				}, 5000);
 			}
@@ -268,14 +268,14 @@
 		/**
 		 * Effacer les notifications
 		 */
-		clearNotifications: function() {
+		clearNotifications: function () {
 			$('.register_notification').hide().html('');
 		},
 
 		/**
 		 * Charger le formulaire OTP
 		 */
-		loadOTPForm: function(userId) {
+		loadOTPForm: function (userId) {
 			// Remplacer le contenu du formulaire par le formulaire OTP
 			$.ajax({
 				url: lehiboo_register_ajax.ajax_url,
@@ -284,7 +284,7 @@
 					action: 'load_otp_template',
 					user_id: userId
 				},
-				success: function(response) {
+				success: function (response) {
 					if (response.success) {
 						// Remplacer le contenu
 						$('.register_form_inner').html(response.data.html);
@@ -310,12 +310,9 @@
 		/**
 		 * Charger le script OTP dynamiquement
 		 */
-		loadOTPScript: function() {
-			console.log('Loading OTP script...');
-
+		loadOTPScript: function () {
 			// Vérifier si le script est déjà chargé
 			if ($('script[src*="otp-verification.js"]').length) {
-				console.log('OTP script already loaded, reinitializing...');
 				if (typeof OTPVerification !== 'undefined' && typeof OTPVerification.init === 'function') {
 					OTPVerification.init();
 				}
@@ -332,17 +329,14 @@
 				scriptUrl = themeUrl + '/assets/js/otp-verification.js';
 			}
 
-			console.log('Loading OTP script from:', scriptUrl);
-
 			const script = document.createElement('script');
 			script.src = scriptUrl;
-			script.onload = function() {
-				console.log('OTP script loaded successfully');
+			script.onload = function () {
 				if (typeof OTPVerification !== 'undefined' && typeof OTPVerification.init === 'function') {
 					OTPVerification.init();
 				}
 			};
-			script.onerror = function() {
+			script.onerror = function () {
 				console.error('Failed to load OTP script from:', scriptUrl);
 			};
 			document.head.appendChild(script);
@@ -350,7 +344,7 @@
 	};
 
 	// Initialiser au chargement du DOM
-	$(document).ready(function() {
+	$(document).ready(function () {
 		if ($('#customer_register_form').length) {
 			CustomerRegister.init();
 		}
