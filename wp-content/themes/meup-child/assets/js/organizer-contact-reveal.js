@@ -8,7 +8,7 @@
  * @since 1.0.0
  */
 
-(function($) {
+(function ($) {
     'use strict';
 
     /**
@@ -31,12 +31,12 @@
                 event_id: eventId || null,
                 context: context || 'unknown'
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
-                    console.log('Contact view tracked:', contactType);
+                    // console.log('Contact view tracked:', contactType);
                 }
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error('Tracking error:', error);
             }
         });
@@ -45,7 +45,7 @@
     /**
      * Reveal phone number
      */
-    $(document).on('click', '.btn_reveal_phone', function(e) {
+    $(document).on('click', '.btn_reveal_phone', function (e) {
         e.preventDefault();
 
         const $btn = $(this);
@@ -65,7 +65,7 @@
         }
 
         // Hide button with fade
-        $btn.fadeOut(300, function() {
+        $btn.fadeOut(300, function () {
             $(this).remove();
         });
 
@@ -76,7 +76,7 @@
     /**
      * Reveal address
      */
-    $(document).on('click', '.btn_reveal_address', function(e) {
+    $(document).on('click', '.btn_reveal_address', function (e) {
         e.preventDefault();
 
         const $btn = $(this);
@@ -96,7 +96,7 @@
         }
 
         // Hide button with fade
-        $btn.fadeOut(300, function() {
+        $btn.fadeOut(300, function () {
             $(this).remove();
         });
 

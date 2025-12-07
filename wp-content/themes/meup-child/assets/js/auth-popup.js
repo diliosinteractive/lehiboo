@@ -3,7 +3,7 @@
  * @version 1.0.0
  */
 
-(function($) {
+(function ($) {
 	'use strict';
 
 	const AuthPopup = {
@@ -11,7 +11,7 @@
 		/**
 		 * Initialisation
 		 */
-		init: function() {
+		init: function () {
 			this.bindEvents();
 			this.checkButtonsRequireLogin();
 		},
@@ -19,40 +19,40 @@
 		/**
 		 * Événements
 		 */
-		bindEvents: function() {
+		bindEvents: function () {
 			// Fermer le popup
-			$(document).on('click', '.auth_popup_close, .auth_popup_overlay', function(e) {
+			$(document).on('click', '.auth_popup_close, .auth_popup_overlay', function (e) {
 				if (e.target === this) {
 					AuthPopup.closePopup();
 				}
 			});
 
 			// Échap pour fermer
-			$(document).on('keydown', function(e) {
+			$(document).on('keydown', function (e) {
 				if (e.key === 'Escape' && $('#auth_popup_modal').is(':visible')) {
 					AuthPopup.closePopup();
 				}
 			});
 
 			// Switch tabs
-			$(document).on('click', '.auth_tab_btn', function() {
+			$(document).on('click', '.auth_tab_btn', function () {
 				const tab = $(this).data('tab');
 				AuthPopup.switchTab(tab);
 			});
 
 			// Toggle password visibility
-			$(document).on('click', '.toggle_password', function() {
+			$(document).on('click', '.toggle_password', function () {
 				AuthPopup.togglePassword($(this));
 			});
 
 			// Formulaire de connexion
-			$(document).on('submit', '#auth_login_form', function(e) {
+			$(document).on('submit', '#auth_login_form', function (e) {
 				e.preventDefault();
 				AuthPopup.handleLogin($(this));
 			});
 
 			// Formulaire d'inscription
-			$(document).on('submit', '#auth_register_form', function(e) {
+			$(document).on('submit', '#auth_register_form', function (e) {
 				e.preventDefault();
 				AuthPopup.handleRegister($(this));
 			});
@@ -61,10 +61,10 @@
 		/**
 		 * Vérifier les boutons nécessitant une connexion
 		 */
-		checkButtonsRequireLogin: function() {
+		checkButtonsRequireLogin: function () {
 			// Intercepter les boutons "Envoyer un message" - avec capture priority
 			// Utiliser l'événement direct sur les boutons pour être sûr de capter en premier
-			$(document).on('click', '#open_contact_modal, #open_contact_form, .btn_send_message, .organizer_contact_btn, .btn_contact', function(e) {
+			$(document).on('click', '#open_contact_modal, #open_contact_form, .btn_send_message, .organizer_contact_btn, .btn_contact', function (e) {
 				const requireLogin = $(this).data('require-login');
 
 				if (requireLogin === true || requireLogin === 'true') {
@@ -82,8 +82,8 @@
 			// Backup: désactiver complètement les handlers existants sur ces boutons
 			// Cela garantit que même si notre handler ne s'exécute pas en premier,
 			// les anciens handlers seront supprimés
-			setTimeout(function() {
-				$('#open_contact_modal, #open_contact_form, .btn_send_message, .organizer_contact_btn, .btn_contact').each(function() {
+			setTimeout(function () {
+				$('#open_contact_modal, #open_contact_form, .btn_send_message, .organizer_contact_btn, .btn_contact').each(function () {
 					const $btn = $(this);
 					const requireLogin = $btn.data('require-login');
 
@@ -95,7 +95,7 @@
 							$btn.off('click');
 
 							// Ajouter SEULEMENT notre handler
-							$btn.on('click', function(e) {
+							$btn.on('click', function (e) {
 								e.preventDefault();
 								e.stopPropagation();
 								e.stopImmediatePropagation();
@@ -111,14 +111,14 @@
 		/**
 		 * Ouvrir le popup
 		 */
-		openPopup: function(tab = 'login') {
+		openPopup: function (tab = 'login') {
 			// Le template est déjà dans la page (chargé via wp_footer)
 			if ($('#auth_popup_modal').length > 0) {
 				AuthPopup.showPopup(tab);
 			} else {
 				// Fallback: charger via AJAX si pas trouvé
 				console.warn('Template popup non trouvé, chargement via AJAX...');
-				AuthPopup.loadPopupTemplate(function() {
+				AuthPopup.loadPopupTemplate(function () {
 					AuthPopup.showPopup(tab);
 				});
 			}
@@ -127,7 +127,7 @@
 		/**
 		 * Afficher le popup
 		 */
-		showPopup: function(tab) {
+		showPopup: function (tab) {
 			// Calculer la largeur de la scrollbar pour éviter le décalage
 			const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
@@ -148,7 +148,7 @@
 		/**
 		 * Fermer le popup
 		 */
-		closePopup: function() {
+		closePopup: function () {
 			$('#auth_popup_modal').fadeOut(300);
 			$('body').removeClass('modal-open').css({
 				'overflow': '',
@@ -163,10 +163,10 @@
 		/**
 		 * Charger le template du popup via AJAX
 		 */
-		loadPopupTemplate: function(callback) {
+		loadPopupTemplate: function (callback) {
 			// Vérifier si le popup n'existe pas déjà avant de le charger
 			if ($('#auth_popup_modal').length > 0) {
-				console.log('Popup template already exists in DOM, skipping AJAX load');
+				// console.log('Popup template already exists in DOM, skipping AJAX load');
 				if (typeof callback === 'function') {
 					callback();
 				}
@@ -179,7 +179,7 @@
 				data: {
 					action: 'load_auth_popup_template'
 				},
-				success: function(response) {
+				success: function (response) {
 					if (response.success) {
 						// Double vérification avant d'ajouter
 						if ($('#auth_popup_modal').length === 0) {
@@ -196,7 +196,7 @@
 		/**
 		 * Changer d'onglet
 		 */
-		switchTab: function(tab) {
+		switchTab: function (tab) {
 			$('.auth_tab_btn').removeClass('active');
 			$(`.auth_tab_btn[data-tab="${tab}"]`).addClass('active');
 
@@ -209,7 +209,7 @@
 		/**
 		 * Toggle password visibility
 		 */
-		togglePassword: function($button) {
+		togglePassword: function ($button) {
 			const $input = $button.siblings('input');
 			const $icon = $button.find('i');
 
@@ -225,7 +225,7 @@
 		/**
 		 * Gérer la connexion
 		 */
-		handleLogin: function($form) {
+		handleLogin: function ($form) {
 			const $submitBtn = $form.find('.auth_submit_btn');
 			const $btnText = $submitBtn.find('.btn_text');
 			const $btnLoader = $submitBtn.find('.btn_loader');
@@ -242,12 +242,12 @@
 				type: 'POST',
 				data: $form.serialize() + '&action=lehiboo_ajax_login',
 				dataType: 'json',
-				success: function(response) {
+				success: function (response) {
 					if (response.success) {
 						AuthPopup.showNotification('login', 'success', response.data.message);
 
 						// Attendre 1 seconde puis recharger la page
-						setTimeout(function() {
+						setTimeout(function () {
 							window.location.reload();
 						}, 1000);
 					} else {
@@ -257,7 +257,7 @@
 						$btnLoader.hide();
 					}
 				},
-				error: function() {
+				error: function () {
 					AuthPopup.showNotification('login', 'error', 'Une erreur est survenue. Veuillez réessayer.');
 					$submitBtn.prop('disabled', false);
 					$btnText.show();
@@ -269,7 +269,7 @@
 		/**
 		 * Gérer l'inscription
 		 */
-		handleRegister: function($form) {
+		handleRegister: function ($form) {
 			const $submitBtn = $form.find('.auth_submit_btn');
 			const $btnText = $submitBtn.find('.btn_text');
 			const $btnLoader = $submitBtn.find('.btn_loader');
@@ -286,23 +286,23 @@
 				type: 'POST',
 				data: $form.serialize() + '&action=lehiboo_ajax_register',
 				dataType: 'json',
-				success: function(response) {
+				success: function (response) {
 					if (response.success) {
 						AuthPopup.showNotification('register', 'success', response.data.message);
 
 						// Si OTP requis, charger le formulaire OTP dans le popup
 						if (response.data.show_otp_form) {
-							setTimeout(function() {
+							setTimeout(function () {
 								AuthPopup.loadOTPForm(response.data.user_id);
 							}, 1500);
 						} else if (response.data.otp_required && response.data.redirect_url) {
 							// Redirection vers page OTP externe
-							setTimeout(function() {
+							setTimeout(function () {
 								window.location.href = response.data.redirect_url;
 							}, 2000);
 						} else {
 							// Connexion automatique réussie (pas d'OTP)
-							setTimeout(function() {
+							setTimeout(function () {
 								window.location.reload();
 							}, 1500);
 						}
@@ -313,7 +313,7 @@
 						$btnLoader.hide();
 					}
 				},
-				error: function() {
+				error: function () {
 					AuthPopup.showNotification('register', 'error', 'Une erreur est survenue. Veuillez réessayer.');
 					$submitBtn.prop('disabled', false);
 					$btnText.show();
@@ -325,7 +325,7 @@
 		/**
 		 * Afficher une notification
 		 */
-		showNotification: function(tab, type, message) {
+		showNotification: function (tab, type, message) {
 			const $notification = $(`#auth_tab_${tab} .auth_notification.${type}`);
 			$notification.html(message).fadeIn(300);
 		},
@@ -333,7 +333,7 @@
 		/**
 		 * Effacer les notifications
 		 */
-		clearNotifications: function(tab = null) {
+		clearNotifications: function (tab = null) {
 			if (tab) {
 				$(`#auth_tab_${tab} .auth_notification`).hide().html('');
 			} else {
@@ -344,7 +344,7 @@
 		/**
 		 * Effacer les formulaires
 		 */
-		clearForms: function() {
+		clearForms: function () {
 			$('#auth_login_form')[0].reset();
 			$('#auth_register_form')[0].reset();
 		},
@@ -352,7 +352,7 @@
 		/**
 		 * Charger le formulaire OTP dans le popup
 		 */
-		loadOTPForm: function(userId) {
+		loadOTPForm: function (userId) {
 			// Masquer les onglets
 			$('.auth_tabs_nav').hide();
 			$('.auth_tab_content').hide();
@@ -365,7 +365,7 @@
 					action: 'load_otp_template',
 					user_id: userId
 				},
-				success: function(response) {
+				success: function (response) {
 					if (response.success) {
 						// Injecter le HTML OTP dans le body du popup
 						$('.auth_popup_body').html(response.data.html);
@@ -390,11 +390,11 @@
 		/**
 		 * Charger le script OTP dynamiquement
 		 */
-		loadOTPScript: function() {
+		loadOTPScript: function () {
 			if (!$('script[src*="otp-verification.js"]').length) {
 				const script = document.createElement('script');
 				script.src = lehiboo_auth_ajax.otp_script_url;
-				script.onload = function() {
+				script.onload = function () {
 					if (typeof OTPVerification !== 'undefined' && typeof OTPVerification.init === 'function') {
 						OTPVerification.init();
 					}
@@ -405,7 +405,7 @@
 	};
 
 	// Initialiser au chargement du DOM
-	$(document).ready(function() {
+	$(document).ready(function () {
 		AuthPopup.init();
 	});
 
