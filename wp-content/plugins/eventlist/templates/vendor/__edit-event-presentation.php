@@ -15,35 +15,7 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
 
 <div class="event_basic_block">
     <h4 class="heading_section"><?php esc_html_e( 'Présentation', 'eventlist' ); ?></h4>
-    
-        <!-- Image Feature -->
-    <div class="image_feature vendor_field">
-        <label>
-            <?php esc_html_e( 'Image à la une', 'eventlist' ); ?>
-            <span class="el_req">*</span>
-        </label>
-        <p class="field_hint"><?php esc_html_e( 'Taille recommandée: 1920x739px', 'eventlist' ); ?></p>
-
-        <div class="wrap_image_upload">
-            <?php if ( get_the_post_thumbnail_url($post_id) ) { ?>
-                <div class="image_box">
-                    <img class="image-preview" src="<?php echo esc_url( get_the_post_thumbnail_url( $post_id ) ); ?>" alt="#">
-                    <a class="button remove_image" href="#"><i class="icon_close" aria-hidden="true"></i></a>
-                </div>
-            <?php } ?>
-            
-            <a class="button add_image el_btn_add_media" href="#" data-uploader-title="<?php esc_attr_e( "Ajouter une image", 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( "Ajouter", 'eventlist' ); ?>">
-                <i class="icon_camera_alt"></i> <?php esc_html_e( "Ajouter une image", 'eventlist' ); ?>
-            </a>
-            <input type="hidden" name="img_thumbnail" class="img_thumbnail" id="img_thumbnail" value="<?php echo esc_attr( get_post_thumbnail_id( $post_id ) ); ?>">
-        </div>
-    </div>
-
-    <hr class="el_separator">
-
-    
-    
-    
+       
     <p class="field_description">
         <?php esc_html_e( 'Détaillez votre activité et ajoutez des visuels attractifs.', 'eventlist' ); ?>
     </p>
@@ -77,6 +49,30 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
         </div>
         <div class="char_counter_wrapper" style="text-align: right; font-size: 12px; color: #717171; margin-top: 5px;">
             <span id="desc_char_count">0</span> <?php esc_html_e( 'caractères', 'eventlist' ); ?>
+        </div>
+    </div>
+
+    <hr class="el_separator">
+        <!-- Image Feature -->
+    <div class="image_feature vendor_field">
+        <label>
+            <?php esc_html_e( 'Image à la une', 'eventlist' ); ?>
+            <span class="el_req">*</span>
+        </label>
+        <p class="field_hint"><?php esc_html_e( 'Taille recommandée: 1920x739px', 'eventlist' ); ?></p>
+
+        <div class="wrap_image_upload">
+            <?php if ( get_the_post_thumbnail_url($post_id) ) { ?>
+                <div class="image_box">
+                    <img class="image-preview" src="<?php echo esc_url( get_the_post_thumbnail_url( $post_id ) ); ?>" alt="#">
+                    <a class="button remove_image" href="#"><i class="icon_close" aria-hidden="true"></i></a>
+                </div>
+            <?php } ?>
+            
+            <a class="button add_image el_btn_add_media" href="#" data-uploader-title="<?php esc_attr_e( "Ajouter une image", 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( "Ajouter", 'eventlist' ); ?>">
+                <i class="icon_camera_alt"></i> <?php esc_html_e( "Ajouter une image", 'eventlist' ); ?>
+            </a>
+            <input type="hidden" name="img_thumbnail" class="img_thumbnail" id="img_thumbnail" value="<?php echo esc_attr( get_post_thumbnail_id( $post_id ) ); ?>">
         </div>
     </div>
 

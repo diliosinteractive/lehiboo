@@ -1,0 +1,43 @@
+/**
+ * Custom Optimizations & Fixes
+ * 
+ * Ce fichier est chargé en dernier (priorité 2000) pour écraser
+ * tous les autres styles (parent, enfant, plugins, etc.)
+ */
+
+/* Ajoutez vos correctifs CSS ici */
+
+.vendor_wrap .contents .vendor_edit_event label,
+.vendor_edit_event label,
+.vendor_wrap .contents .vendor_profile label,
+.vendor_profile label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0;
+    margin-top: 8px;
+    line-height: 1;
+}
+
+.vendor_wrap .contents .vendor_edit_event .button,
+.vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit),
+.vendor_edit_event .button,
+.vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit),
+.vendor_wrap .contents .vendor_profile .button,
+.vendor_wrap .contents .vendor_profile button:not(.btn_save_event):not(.el_edit_event_submit),
+.vendor_profile .button,
+.vendor_profile button:not(.btn_save_event):not(.el_edit_event_submit) {
+    padding: 5px;
+}
+
+.el_editor_no_border .wp-editor-container,
+.el_editor_no_border #wp-content_event-editor-container,
+.vendor_field .el_editor_no_border .wp-editor-container {
+    border: 2px solid #dcdcde !important;
+    border-radius: 5px;
+}
+
+.el_editor_wrapper {
+    border: none !important;
+}

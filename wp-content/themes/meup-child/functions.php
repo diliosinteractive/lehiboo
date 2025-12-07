@@ -187,6 +187,18 @@ function lehiboo_vendor_pages_late_styles() {
 }
 
 /**
+ * V1 Le Hiboo - Charger les optimisations globales VRAIMENT EN DERNIER (priorité 2000)
+ * Pour centraliser tous les petits fix CSS sans se perdre
+ */
+add_action( 'wp_enqueue_scripts', 'lehiboo_global_custom_optimizations', 2000 );
+function lehiboo_global_custom_optimizations() {
+    $css_file = get_stylesheet_directory() . '/assets/css/custom-optimizations.css';
+    $version = file_exists($css_file) ? filemtime($css_file) : '1.0.0';
+    
+    wp_enqueue_style( 'lehiboo-custom-optimizations', get_stylesheet_directory_uri() . '/assets/css/custom-optimizations.css', array(), $version );
+}
+
+/**
  * V1 Le Hiboo - Inclure le template du popup d'authentification dans le footer
  */
 add_action( 'wp_footer', 'lehiboo_include_auth_popup_template' );
