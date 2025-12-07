@@ -62,9 +62,6 @@ function meup_child_scripts() {
             $js_file = get_stylesheet_directory() . '/assets/js/vendor-ticket-ux-improvements.js';
             $version = file_exists($js_file) ? filemtime($js_file) : '1.0.0';
             wp_enqueue_script( 'vendor-ticket-ux-improvements', get_stylesheet_directory_uri() . '/assets/js/vendor-ticket-ux-improvements.js', array('jquery'), $version, true );
-
-            // Debug: signaler que le script est chargé
-            wp_add_inline_script( 'vendor-ticket-ux-improvements', 'console.log("LeHiboo: vendor-ticket-ux-improvements.js chargé - version ' . $version . '");', 'before' );
         }
     }
 
