@@ -1,1404 +1,1613 @@
 <?php if ( ! defined( 'ABSPATH' ) ) exit();
 
-$post_id 	= isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : '';
-$_prefix 	= OVA_METABOX_EVENT;
-$time 		= el_calendar_time_format();
-$format 	= el_date_time_format_js();
-$first_day 	= el_first_day_of_week();
-$placeholder_dateformat = el_placeholder_dateformat();
-$placeholder_timeformat = el_placeholder_timeformat();
+$post_id = isset( $_REQUEST['id'] ) ? intval( $_REQUEST['id'] ) : 0;
+$_prefix = OVA_METABOX_EVENT;
 
-$seat_option = get_post_meta( $post_id, $_prefix.'seat_option', true) ? get_post_meta( $post_id, $_prefix.'seat_option', true) : apply_filters( 'el_ticket_type_default', '' );
-$textare_seat_option = get_post_meta( $post_id, $_prefix.'textare_seat_option', true) ? get_post_meta( $post_id, $_prefix.'textare_seat_option', true) : '';
+// Récupération des données existantes
+$is_free_event = get_post_meta( $post_id, $_prefix.'is_free_event', true );
+$entry_type = get_post_meta( $post_id, $_prefix.'entry_type', true );
+$contact_email = get_post_meta( $post_id, $_prefix.'contact_email', true );
+$contact_phone = get_post_meta( $post_id, $_prefix.'contact_phone', true );
 
-$ticket = get_post_meta( $post_id, $_prefix.'ticket', true) ? get_post_meta( $post_id, $_prefix.'ticket', true) : '';
-$value_ticket_map = get_post_meta( $post_id, $_prefix.'ticket_map', true) ? get_post_meta( $post_id, $_prefix.'ticket_map', true) : array();
-$currency = _el_symbol_price();
-
-
-// Tax
-$event_tax 		= get_post_meta( $post_id, $_prefix.'event_tax', true);
-$enable_tax 	= EL()->options->tax_fee->get('enable_tax');
-$percent_tax 	= EL()->options->tax_fee->get('pecent_tax');
-
-if ( $post_id ) {
-	$check_allow_change_tax = check_allow_change_tax_by_event($post_id);
-} else {
-	$check_allow_change_tax = check_allow_change_tax_by_user_login();
+// Si pas d'email de contact, utiliser l'email de l'organisation
+if ( empty( $contact_email ) ) {
+    $current_user = wp_get_current_user();
+    $contact_email = $current_user->user_email;
+}
+if ( empty( $contact_phone ) ) {
+    $contact_phone = get_user_meta( get_current_user_id(), 'org_phone_contact', true );
 }
 
-if ( empty( $event_tax ) && $event_tax !== '0') {
-	$event_tax = $percent_tax;
+// Mode billetterie
+$ticket_link = get_post_meta( $post_id, $_prefix.'ticket_link', true );
+if ( empty( $ticket_link ) ) {
+    $ticket_link = apply_filters( 'el_ticket_link_default', '' );
 }
 
-$ticket_link = get_post_meta( $post_id, $_prefix.'ticket_link', true) ? get_post_meta( $post_id, $_prefix.'ticket_link', true) : apply_filters( 'el_ticket_link_default', '' );
-$ticket_external_link = get_post_meta( $post_id, $_prefix.'ticket_external_link', true) ? get_post_meta( $post_id, $_prefix.'ticket_external_link', true) : '';
-$ticket_external_link_price = get_post_meta( $post_id, $_prefix.'ticket_external_link_price', true) ? get_post_meta( $post_id, $_prefix.'ticket_external_link_price', true) : '';
+// Lien externe
+$ticket_external_link = get_post_meta( $post_id, $_prefix.'ticket_external_link', true );
+$external_prices = get_post_meta( $post_id, $_prefix.'ticket_external_prices', true );
+if ( ! is_array( $external_prices ) ) {
+    $external_prices = array();
+}
 
-$decimal_separator 	= EL()->options->general->get('decimal_separator','.');
-$number_decimals 	= EL()->options->general->get('number_decimals','2');
-$data_curency = array(
-	'decimal_separator' => $decimal_separator,
-	'number_decimals' 	=> $number_decimals,
+// Créneaux associés
+$slots_mode = get_post_meta( $post_id, $_prefix.'slots_mode', true );
+if ( empty( $slots_mode ) ) {
+    $slots_mode = 'all';
+}
+$selected_slots = get_post_meta( $post_id, $_prefix.'selected_slots', true );
+if ( ! is_array( $selected_slots ) ) {
+    $selected_slots = array();
+}
+
+// Billets
+$tickets = get_post_meta( $post_id, $_prefix.'ticket', true );
+if ( ! is_array( $tickets ) ) {
+    $tickets = array();
+}
+
+// Types d'entrée disponibles
+$entry_types = array(
+    '' => __( 'À sélectionner', 'eventlist' ),
+    'standard' => __( 'Entrée standard', 'eventlist' ),
+    'vip' => __( 'Entrée VIP', 'eventlist' ),
+    'family' => __( 'Pass famille', 'eventlist' ),
+    'group' => __( 'Groupe', 'eventlist' ),
 );
 
-// Type seat
-$type_seat = [];
-
-$seating_map = get_post_meta( $post_id, $_prefix.'seating_map', true );
-
+// Récupérer les créneaux de l'événement pour la sélection
+$event_slots = array();
+$calendar_data = get_post_meta( $post_id, $_prefix.'calendar', true );
+if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
+    foreach ( $calendar_data as $slot ) {
+        if ( isset( $slot['start_date'] ) && isset( $slot['start_time'] ) ) {
+            $event_slots[] = array(
+                'id' => md5( $slot['start_date'] . $slot['start_time'] ),
+                'label' => date_i18n( get_option('date_format'), strtotime( $slot['start_date'] ) ) . ' - ' . $slot['start_time'],
+                'date' => $slot['start_date'],
+                'time' => $slot['start_time'],
+            );
+        }
+    }
+}
 ?>
-<div class="edit_ticket_info">
-	<h4 class="heading_section"><?php esc_html_e( 'Billetterie', 'eventlist' ); ?></h4>
-	<p class="ticket_description">
-		<?php esc_html_e( 'Gérez la billetterie (prochainement) ou les inscriptions directement sur LeHiboo, ou redirigez vos utilisateurs vers une plateforme externe si vous utilisez un outil tiers pour la billetterie.', 'eventlist' ); ?>
-		<br><br>
-		<?php esc_html_e( 'Si vous n\'avez pas besoin de billetterie ni de liste de participation, passez simplement cette étape.', 'eventlist' ); ?>
-	</p>
+
+<div class="billetterie_section">
+    <!-- En-tête -->
+    <div class="section_header">
+        <h4 class="section_title"><?php esc_html_e( 'Billetterie', 'eventlist' ); ?></h4>
+        <p class="section_subtitle"><?php esc_html_e( 'Configurez les billets et tarifs pour votre événement', 'eventlist' ); ?></p>
+    </div>
+
+    <!-- Sélection Gratuit/Payant -->
+    <div class="billetterie_field">
+        <label class="field_label"><strong><?php esc_html_e( 'Sélectionnez si l\'événement est :', 'eventlist' ); ?></strong></label>
+        <div class="billetterie_price_choice">
+            <label class="price_choice_card <?php echo $is_free_event === 'yes' ? 'selected' : ''; ?>">
+                <input type="checkbox"
+                       name="<?php echo esc_attr( $_prefix.'is_free_event' ); ?>"
+                       value="yes"
+                       class="price_choice_input is_free_checkbox"
+                       <?php checked( $is_free_event, 'yes' ); ?>>
+                <span class="price_choice_checkmark"></span>
+                <span class="price_choice_label"><?php esc_html_e( 'Gratuit', 'eventlist' ); ?></span>
+            </label>
+            <label class="price_choice_card <?php echo $is_free_event !== 'yes' && !empty($is_free_event) ? 'selected' : ''; ?>">
+                <input type="checkbox"
+                       name="<?php echo esc_attr( $_prefix.'is_paid_event' ); ?>"
+                       value="yes"
+                       class="price_choice_input is_paid_checkbox"
+                       <?php checked( $is_free_event, 'no' ); ?>>
+                <span class="price_choice_checkmark"></span>
+                <span class="price_choice_label"><?php esc_html_e( 'Payant', 'eventlist' ); ?></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Type d'entrée -->
+    <div class="billetterie_field">
+        <label class="field_label"><strong><?php esc_html_e( 'Sélectionnez le type d\'entrée :', 'eventlist' ); ?></strong></label>
+        <div class="select_wrapper">
+            <select name="<?php echo esc_attr( $_prefix.'entry_type' ); ?>" class="billetterie_select" id="entry_type_select">
+                <?php foreach ( $entry_types as $value => $label ) : ?>
+                    <option value="<?php echo esc_attr( $value ); ?>" <?php selected( $entry_type, $value ); ?>>
+                        <?php echo esc_html( $label ); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+
+    <!-- Email et Téléphone de contact -->
+    <div class="billetterie_contact_row">
+        <div class="contact_field">
+            <label class="field_label"><strong><?php esc_html_e( 'Email de contact', 'eventlist' ); ?></strong></label>
+            <p class="field_hint"><?php esc_html_e( 'L\'email de contact', 'eventlist' ); ?></p>
+            <input type="email"
+                   name="<?php echo esc_attr( $_prefix.'contact_email' ); ?>"
+                   value="<?php echo esc_attr( $contact_email ); ?>"
+                   class="billetterie_input"
+                   placeholder="email@exemple.com">
+        </div>
+        <div class="contact_field">
+            <label class="field_label"><strong><?php esc_html_e( 'Téléphone de contact', 'eventlist' ); ?></strong></label>
+            <p class="field_hint"><?php esc_html_e( 'Le numéro de téléphone de contact', 'eventlist' ); ?></p>
+            <input type="tel"
+                   name="<?php echo esc_attr( $_prefix.'contact_phone' ); ?>"
+                   value="<?php echo esc_attr( $contact_phone ); ?>"
+                   class="billetterie_input"
+                   placeholder="07 81 45 67 38">
+        </div>
+    </div>
+
+    <!-- Texte explicatif -->
+    <div class="billetterie_info_text">
+        <p><?php esc_html_e( 'Gérez la billetterie (prochainement) ou les inscriptions directement sur LeHiboo, ou redirigez vos utilisateurs vers une plateforme externe si vous utilisez un outil tiers pour la billetterie.', 'eventlist' ); ?></p>
+    </div>
+
+    <!-- Options de billetterie -->
+    <div class="billetterie_options">
+        <label class="billetterie_option_card <?php echo $ticket_link === 'ticket_internal_link' || empty($ticket_link) ? 'selected' : ''; ?>">
+            <input type="radio"
+                   name="<?php echo esc_attr( $_prefix.'ticket_link' ); ?>"
+                   value="ticket_internal_link"
+                   class="option_radio"
+                   <?php checked( $ticket_link, 'ticket_internal_link' ); ?>
+                   <?php if ( empty($ticket_link) ) echo 'checked'; ?>>
+            <span class="option_checkmark"></span>
+            <div class="option_content">
+                <span class="option_title"><?php esc_html_e( 'Utiliser le module de réservation', 'eventlist' ); ?></span>
+                <span class="option_desc"><?php esc_html_e( 'Les utilisateurs vont pouvoir s\'inscrire gratuitement à votre événement. Gérez les inscriptions depuis votre espace LeHiboo.', 'eventlist' ); ?></span>
+            </div>
+        </label>
+
+        <label class="billetterie_option_card <?php echo $ticket_link === 'ticket_external_link' ? 'selected' : ''; ?>">
+            <input type="radio"
+                   name="<?php echo esc_attr( $_prefix.'ticket_link' ); ?>"
+                   value="ticket_external_link"
+                   class="option_radio"
+                   <?php checked( $ticket_link, 'ticket_external_link' ); ?>>
+            <span class="option_checkmark"></span>
+            <div class="option_content">
+                <span class="option_title"><?php esc_html_e( 'Afficher un lien externe pour réserver', 'eventlist' ); ?></span>
+                <span class="option_desc"><?php esc_html_e( 'Insérer un lien vers une plateforme de billetterie', 'eventlist' ); ?></span>
+            </div>
+        </label>
+    </div>
+
+    <!-- Section Module de réservation interne -->
+    <div class="billetterie_internal_section" style="<?php echo ($ticket_link === 'ticket_internal_link' || empty($ticket_link)) ? '' : 'display: none;'; ?>">
+
+        <!-- Créneaux Associés -->
+        <div class="creneaux_associes_wrapper">
+            <h5 class="subsection_title"><?php esc_html_e( 'Créneaux Associés', 'eventlist' ); ?></h5>
+            <p class="subsection_hint"><?php esc_html_e( 'Sélectionnez certains ou tous les créneaux d\'activités', 'eventlist' ); ?></p>
+
+            <div class="slots_selection">
+                <label class="slots_option <?php echo $slots_mode === 'all' ? 'selected' : ''; ?>">
+                    <input type="radio"
+                           name="<?php echo esc_attr( $_prefix.'slots_mode' ); ?>"
+                           value="all"
+                           class="slots_radio"
+                           <?php checked( $slots_mode, 'all' ); ?>>
+                    <span class="slots_checkmark"></span>
+                    <span class="slots_label"><?php esc_html_e( 'Tous les créneaux', 'eventlist' ); ?></span>
+                </label>
+
+                <label class="slots_option slots_select_option <?php echo $slots_mode === 'selected' ? 'selected' : ''; ?>">
+                    <input type="radio"
+                           name="<?php echo esc_attr( $_prefix.'slots_mode' ); ?>"
+                           value="selected"
+                           class="slots_radio"
+                           <?php checked( $slots_mode, 'selected' ); ?>>
+                    <span class="slots_checkmark"></span>
+                    <span class="slots_label"><?php esc_html_e( 'Sélectionnez un ou plusieurs créneaux', 'eventlist' ); ?></span>
+                </label>
+            </div>
+
+            <!-- Sélection de créneaux spécifiques -->
+            <div class="slots_picker" style="<?php echo $slots_mode === 'selected' ? '' : 'display: none;'; ?>">
+                <div class="slots_picker_row">
+                    <div class="slots_picker_field">
+                        <label><?php esc_html_e( 'Date de début', 'eventlist' ); ?></label>
+                        <input type="date" class="billetterie_input slot_start_date" placeholder="JJ/MM/AAAA">
+                    </div>
+                    <div class="slots_picker_field">
+                        <label><?php esc_html_e( 'Date de fin', 'eventlist' ); ?></label>
+                        <input type="date" class="billetterie_input slot_end_date" placeholder="JJ/MM/AAAA">
+                    </div>
+                </div>
+                <div class="slots_picker_row">
+                    <div class="slots_picker_field slots_picker_field_select">
+                        <label><?php esc_html_e( 'Sélection du créneau', 'eventlist' ); ?></label>
+                        <select class="billetterie_select slot_select">
+                            <option value=""><?php esc_html_e( 'Choisissez le créneau', 'eventlist' ); ?></option>
+                            <?php foreach ( $event_slots as $slot ) : ?>
+                                <option value="<?php echo esc_attr( $slot['id'] ); ?>"><?php echo esc_html( $slot['label'] ); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="slots_picker_field slots_picker_field_btn">
+                        <button type="button" class="btn_add_slot el_button_primary"><?php esc_html_e( 'Ajouter', 'eventlist' ); ?></button>
+                    </div>
+                </div>
+
+                <!-- Liste des créneaux sélectionnés -->
+                <div class="selected_slots_list">
+                    <?php foreach ( $selected_slots as $index => $slot ) : ?>
+                        <div class="selected_slot_item" data-slot-id="<?php echo esc_attr( $slot['id'] ); ?>">
+                            <span class="slot_info"><?php echo esc_html( $slot['label'] ); ?></span>
+                            <input type="hidden" name="<?php echo esc_attr( $_prefix.'selected_slots['.$index.'][id]' ); ?>" value="<?php echo esc_attr( $slot['id'] ); ?>">
+                            <input type="hidden" name="<?php echo esc_attr( $_prefix.'selected_slots['.$index.'][label]' ); ?>" value="<?php echo esc_attr( $slot['label'] ); ?>">
+                            <button type="button" class="btn_remove_slot"><i class="fa fa-times"></i></button>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des billets -->
+        <div class="tickets_list_wrapper" data-prefix="<?php echo esc_attr( $_prefix ); ?>">
+            <?php
+            $ticket_index = 0;
+            foreach ( $tickets as $key => $ticket ) :
+                if ( ! isset( $ticket['name_ticket'] ) || empty( $ticket['name_ticket'] ) ) continue;
+
+                // Récupération des données du billet
+                $ticket_name = isset( $ticket['name_ticket'] ) ? $ticket['name_ticket'] : '';
+                $ticket_desc = isset( $ticket['desc_ticket'] ) ? $ticket['desc_ticket'] : '';
+                $number_total = isset( $ticket['number_total_ticket'] ) ? $ticket['number_total_ticket'] : '';
+                $number_min = isset( $ticket['number_min_ticket'] ) ? $ticket['number_min_ticket'] : 1;
+                $number_max = isset( $ticket['number_max_ticket'] ) ? $ticket['number_max_ticket'] : '';
+                $registration_mode = isset( $ticket['registration_mode'] ) ? $ticket['registration_mode'] : 'before_start';
+                $minutes_before = isset( $ticket['minutes_before'] ) ? $ticket['minutes_before'] : 0;
+                $reg_start_date = isset( $ticket['start_ticket_date'] ) ? $ticket['start_ticket_date'] : '';
+                $reg_start_time = isset( $ticket['start_ticket_time'] ) ? $ticket['start_ticket_time'] : '00:00';
+                $reg_end_date = isset( $ticket['close_ticket_date'] ) ? $ticket['close_ticket_date'] : '';
+                $reg_end_time = isset( $ticket['close_ticket_time'] ) ? $ticket['close_ticket_time'] : '23:59';
+                $is_active = isset( $ticket['is_active'] ) ? $ticket['is_active'] : 'yes';
+            ?>
+                <div class="ticket_form_item" data-index="<?php echo esc_attr( $key ); ?>">
+                    <div class="ticket_form_content">
+                        <!-- Nom du billet -->
+                        <div class="ticket_form_field">
+                            <label class="field_label"><strong><?php esc_html_e( 'Nom du billet', 'eventlist' ); ?></strong> <span class="required">*</span> :</label>
+                            <input type="text"
+                                   name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][name_ticket]' ); ?>"
+                                   value="<?php echo esc_attr( $ticket_name ); ?>"
+                                   class="billetterie_input ticket_name_input"
+                                   placeholder="<?php esc_attr_e( 'Réservation des Petits Pouces du 5 Décembre', 'eventlist' ); ?>"
+                                   required>
+                        </div>
+
+                        <!-- Description du billet -->
+                        <div class="ticket_form_field">
+                            <label class="field_label"><strong><?php esc_html_e( 'Description du billet', 'eventlist' ); ?></strong></label>
+                            <p class="field_hint"><?php esc_html_e( 'Cette description sera affichée sur la page de l\'activité au niveau du billet, et également sur la version PDF du billet.', 'eventlist' ); ?> :</p>
+                            <textarea name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][desc_ticket]' ); ?>"
+                                      class="billetterie_textarea"
+                                      rows="3"
+                                      placeholder="<?php esc_attr_e( 'Description du billet...', 'eventlist' ); ?>"><?php echo esc_textarea( $ticket_desc ); ?></textarea>
+                        </div>
+
+                        <!-- Nombre de places -->
+                        <div class="ticket_form_row_3cols">
+                            <div class="ticket_form_field">
+                                <label class="field_label"><strong><?php esc_html_e( 'Nombre total de places', 'eventlist' ); ?></strong> :</label>
+                                <input type="number"
+                                       name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][number_total_ticket]' ); ?>"
+                                       value="<?php echo esc_attr( $number_total ); ?>"
+                                       class="billetterie_input"
+                                       min="1"
+                                       placeholder="20">
+                            </div>
+                            <div class="ticket_form_field">
+                                <label class="field_label"><strong><?php esc_html_e( 'Nombre minimum de place autorisé par réservation', 'eventlist' ); ?></strong> :</label>
+                                <input type="number"
+                                       name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][number_min_ticket]' ); ?>"
+                                       value="<?php echo esc_attr( $number_min ); ?>"
+                                       class="billetterie_input"
+                                       min="1"
+                                       placeholder="1">
+                            </div>
+                            <div class="ticket_form_field">
+                                <label class="field_label"><strong><?php esc_html_e( 'Nombre maximum de places autorisé par réservation', 'eventlist' ); ?></strong> :</label>
+                                <input type="number"
+                                       name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][number_max_ticket]' ); ?>"
+                                       value="<?php echo esc_attr( $number_max ); ?>"
+                                       class="billetterie_input"
+                                       min="1"
+                                       placeholder="">
+                            </div>
+                        </div>
+
+                        <!-- Période d'inscription -->
+                        <div class="ticket_form_field">
+                            <label class="field_label"><strong><?php esc_html_e( 'Période d\'inscription', 'eventlist' ); ?></strong> :</label>
+
+                            <div class="registration_period_options">
+                                <label class="registration_option <?php echo $registration_mode === 'before_start' ? 'selected' : ''; ?>">
+                                    <input type="radio"
+                                           name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][registration_mode]' ); ?>"
+                                           value="before_start"
+                                           class="registration_radio"
+                                           <?php checked( $registration_mode, 'before_start' ); ?>>
+                                    <span class="registration_checkmark"></span>
+                                    <span class="registration_text">
+                                        <?php esc_html_e( 'Les réservations sont ouvertes jusqu\'à', 'eventlist' ); ?>
+                                        <input type="number"
+                                               name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][minutes_before]' ); ?>"
+                                               value="<?php echo esc_attr( $minutes_before ); ?>"
+                                               class="minutes_input"
+                                               min="0"
+                                               placeholder="0">
+                                        <?php esc_html_e( 'minute(s) avant le début de l\'activité', 'eventlist' ); ?>
+                                    </span>
+                                </label>
+
+                                <label class="registration_option <?php echo $registration_mode === 'date_range' ? 'selected' : ''; ?>">
+                                    <input type="radio"
+                                           name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][registration_mode]' ); ?>"
+                                           value="date_range"
+                                           class="registration_radio"
+                                           <?php checked( $registration_mode, 'date_range' ); ?>>
+                                    <span class="registration_checkmark"></span>
+                                    <span class="registration_text"><?php esc_html_e( 'Les réservations sont ouvertes à partir du', 'eventlist' ); ?></span>
+                                </label>
+                            </div>
+
+                            <div class="registration_date_range" style="<?php echo $registration_mode === 'date_range' ? '' : 'display: none;'; ?>">
+                                <div class="date_range_row">
+                                    <input type="date"
+                                           name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][start_ticket_date]' ); ?>"
+                                           value="<?php echo esc_attr( $reg_start_date ); ?>"
+                                           class="billetterie_input date_input"
+                                           placeholder="JJ/MM/AAAA">
+                                    <input type="time"
+                                           name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][start_ticket_time]' ); ?>"
+                                           value="<?php echo esc_attr( $reg_start_time ); ?>"
+                                           class="billetterie_input time_input">
+                                </div>
+                                <span class="date_range_separator"><?php esc_html_e( 'jusqu\'au', 'eventlist' ); ?></span>
+                                <div class="date_range_row">
+                                    <input type="date"
+                                           name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][close_ticket_date]' ); ?>"
+                                           value="<?php echo esc_attr( $reg_end_date ); ?>"
+                                           class="billetterie_input date_input"
+                                           placeholder="JJ/MM/AAAA">
+                                    <input type="time"
+                                           name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][close_ticket_time]' ); ?>"
+                                           value="<?php echo esc_attr( $reg_end_time ); ?>"
+                                           class="billetterie_input time_input">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Champ caché pour le statut actif -->
+                        <input type="hidden"
+                               name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][is_active]' ); ?>"
+                               value="<?php echo esc_attr( $is_active ); ?>"
+                               class="ticket_is_active">
+
+                        <!-- Boutons d'action -->
+                        <div class="ticket_form_actions">
+                            <button type="button" class="btn_save_ticket el_button_outline_primary">
+                                <?php esc_html_e( 'Sauvegarder ce billet', 'eventlist' ); ?>
+                            </button>
+                            <button type="button" class="btn_stop_reservation el_button_outline_warning" data-index="<?php echo esc_attr( $key ); ?>">
+                                <?php esc_html_e( 'Stopper la réservation', 'eventlist' ); ?>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <?php
+                $ticket_index++;
+            endforeach;
+            ?>
+        </div>
+
+        <!-- Bouton Ajouter un billet -->
+        <button type="button" class="btn_add_ticket el_button_primary">
+            <?php esc_html_e( 'Ajouter un autre billet', 'eventlist' ); ?>
+        </button>
+    </div>
+
+    <!-- Section Lien externe -->
+    <div class="billetterie_external_section" style="<?php echo $ticket_link === 'ticket_external_link' ? '' : 'display: none;'; ?>">
+
+        <!-- Lien URL -->
+        <div class="billetterie_field">
+            <label class="field_label"><strong><?php esc_html_e( 'Lien URL de réservation', 'eventlist' ); ?></strong></label>
+            <p class="field_hint"><?php esc_html_e( 'Insérez le lien vers votre billetterie ou autre type de réservation externe', 'eventlist' ); ?></p>
+            <input type="url"
+                   name="<?php echo esc_attr( $_prefix.'ticket_external_link' ); ?>"
+                   value="<?php echo esc_url( $ticket_external_link ); ?>"
+                   class="billetterie_input"
+                   placeholder="https://">
+        </div>
+
+        <!-- Section Tarifs -->
+        <div class="external_tarifs_wrapper">
+            <h5 class="subsection_title"><?php esc_html_e( 'Tarifs', 'eventlist' ); ?></h5>
+            <p class="subsection_hint"><?php esc_html_e( 'Ajoutez un ou plusieurs tarifs pour informer vos visiteurs', 'eventlist' ); ?></p>
+
+            <div class="external_tarifs_list" data-prefix="<?php echo esc_attr( $_prefix ); ?>">
+                <?php foreach ( $external_prices as $index => $price ) : ?>
+                    <div class="external_tarif_item" data-index="<?php echo esc_attr( $index ); ?>">
+                        <div class="tarif_row">
+                            <div class="tarif_field tarif_name_field">
+                                <label><?php esc_html_e( 'Nom du tarif', 'eventlist' ); ?></label>
+                                <input type="text"
+                                       name="<?php echo esc_attr( $_prefix.'ticket_external_prices['.$index.'][name]' ); ?>"
+                                       value="<?php echo esc_attr( isset($price['name']) ? $price['name'] : '' ); ?>"
+                                       class="billetterie_input"
+                                       placeholder="<?php esc_attr_e( 'Tarif Normal', 'eventlist' ); ?>">
+                            </div>
+                            <div class="tarif_field tarif_price_field">
+                                <label><?php esc_html_e( 'Prix', 'eventlist' ); ?></label>
+                                <div class="price_input_wrapper">
+                                    <input type="number"
+                                           name="<?php echo esc_attr( $_prefix.'ticket_external_prices['.$index.'][price]' ); ?>"
+                                           value="<?php echo esc_attr( isset($price['price']) ? $price['price'] : '' ); ?>"
+                                           class="billetterie_input tarif_price_input"
+                                           min="0"
+                                           step="0.01"
+                                           placeholder="5">
+                                    <span class="currency_symbol">€</span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn_remove_tarif"><i class="fa fa-times"></i></button>
+                        </div>
+                        <div class="tarif_field tarif_info_field">
+                            <label><?php esc_html_e( 'Informations', 'eventlist' ); ?></label>
+                            <textarea name="<?php echo esc_attr( $_prefix.'ticket_external_prices['.$index.'][info]' ); ?>"
+                                      class="billetterie_textarea"
+                                      rows="2"
+                                      placeholder="<?php esc_attr_e( 'Type de public pour ce tarif', 'eventlist' ); ?>"><?php echo esc_textarea( isset($price['info']) ? $price['info'] : '' ); ?></textarea>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <button type="button" class="btn_add_tarif el_button_primary">
+                <?php esc_html_e( 'Ajouter un tarif', 'eventlist' ); ?>
+            </button>
+        </div>
+    </div>
 </div>
 
-<?php if ( apply_filters( 'el_show_ticket_link_opt', true ) ): ?>
-	<div class="ticket_link">
-		<label><strong><?php esc_html_e( 'Choisissez votre mode de billetterie :', 'eventlist' ); ?></strong></label>
+<style>
+/* ==========================================================================
+   Billetterie Section - Styles
+   ========================================================================== */
 
-		<?php if ( apply_filters( 'el_show_ticket_paid_ticketing', false ) ): ?>
-			<label for="ticket_paid_ticketing" class="el_input_radio el_btn_ticket_choice" style="min-width: auto;">
-				<span class="choice_icon">🎫</span>
-				<span class="choice_label"><?php esc_html_e( 'Créer une billetterie', 'eventlist' ); ?></span>
-				<span class="choice_badge"><?php esc_html_e( '(prochainement)', 'eventlist' ); ?></span>
-				<input
-					type="radio"
-					value="ticket_paid_ticketing"
-					name="<?php echo esc_attr( $_prefix.'ticket_link' ); ?>"
-					id="ticket_paid_ticketing"
-					disabled
-				/>
-				<span class="checkmark"></span>
-			</label>
-		<?php endif; ?>
+.billetterie_section {
+    padding: 0;
+}
 
-		<?php if ( apply_filters( 'el_show_ticket_internal_link_field', true ) ): ?>
-			<label for="ticket_internal_link" class="el_input_radio el_btn_ticket_choice" style="min-width: auto;">
-				<span class="choice_icon">📝</span>
-				<span class="choice_label"><?php esc_html_e( 'Créer une liste d\'inscription', 'eventlist' ); ?></span>
-				<input
-					type="radio"
-					value="ticket_internal_link"
-					name="<?php echo esc_attr( $_prefix.'ticket_link' ); ?>"
-					id="ticket_internal_link"
-					<?php if ( $ticket_link == 'ticket_internal_link' || $ticket_link == '') echo esc_attr('checked') ; ?>
-				/>
-				<span class="checkmark"></span>
-			</label>
-		<?php endif; ?>
+.billetterie_section .section_header {
+    margin-bottom: 30px;
+}
 
-		<?php if ( apply_filters( 'el_show_ticket_external_link_field', true ) ): ?>
-			<label for="ticket_external_link" class="el_input_radio el_btn_ticket_choice" style="min-width: auto;">
-				<span class="choice_icon">🔗</span>
-				<span class="choice_label"><?php esc_html_e( 'Utiliser un lien externe', 'eventlist' ); ?></span>
-				<input
-					type="radio"
-					value="ticket_external_link"
-					id="ticket_external_link"
-					name="<?php echo esc_attr( $_prefix.'ticket_link' ); ?>"
-					<?php if ( $ticket_link == 'ticket_external_link') echo esc_attr('checked') ; ?>
-				/>
-				<span class="checkmark"></span>
-			</label>
-		<?php endif; ?>
-	</div>
-<?php endif; ?>
-<?php if ( apply_filters( 'el_show_ticket_external_link_field', true ) ): ?>
-	<div class="ticket_external_link">
-		<h5 class="section_subtitle"><?php esc_html_e( 'Configuration du lien externe', 'eventlist' ); ?></h5>
+.billetterie_section .section_title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a365d;
+    margin: 0 0 8px;
+}
 
-		<div class="vendor_field">
-			<label class="label">
-				<strong><?php esc_html_e( 'Lien URL', 'eventlist' ); ?></strong>
-			</label>
-			<input
-				type="url"
-				name="<?php echo esc_attr( $_prefix.'ticket_external_link' ); ?>"
-				value="<?php echo esc_url( $ticket_external_link ); ?>"
-				placeholder="<?php esc_attr_e( 'https://', 'eventlist' ); ?>"
-			/>
-			<p class="field_hint"><?php esc_html_e( 'Insérez le lien vers votre billetterie externe', 'eventlist' ); ?></p>
-		</div>
+.billetterie_section .section_subtitle {
+    font-size: 15px;
+    color: #64748b;
+    margin: 0;
+}
 
-		<div class="vendor_field">
-			<label class="label">
-				<strong><?php esc_html_e( 'Tarifs', 'eventlist' ); ?></strong>
-			</label>
-			<p class="field_description"><?php esc_html_e( 'Ajoutez un ou plusieurs tarifs pour informer vos visiteurs', 'eventlist' ); ?></p>
+/* Fields */
+.billetterie_field {
+    margin-bottom: 24px;
+}
 
-			<?php
-			$external_prices = get_post_meta( $post_id, $_prefix.'ticket_external_prices', true);
-			if ( !is_array($external_prices) ) {
-				$external_prices = array();
-			}
-			?>
+.billetterie_field .field_label {
+    display: block;
+    font-size: 14px;
+    color: #334155;
+    margin-bottom: 10px;
+}
 
-			<div class="external_prices_list" data-prefix="<?php echo esc_attr($_prefix); ?>">
-				<?php if ( !empty($external_prices) ): ?>
-					<?php foreach ($external_prices as $key => $price_item): ?>
-						<div class="external_price_item">
-							<input
-								type="text"
-								name="<?php echo esc_attr( $_prefix.'ticket_external_prices['.$key.'][name]' ); ?>"
-								value="<?php echo esc_attr($price_item['name']); ?>"
-								placeholder="<?php esc_attr_e( 'Nom du tarif (ex: Tarif Adulte)', 'eventlist' ); ?>"
-								class="price_name_input"
-							/>
-							<input
-								type="text"
-								name="<?php echo esc_attr( $_prefix.'ticket_external_prices['.$key.'][price]' ); ?>"
-								value="<?php echo esc_attr($price_item['price']); ?>"
-								placeholder="<?php esc_attr_e( 'Prix (en euros)', 'eventlist' ); ?>"
-								class="price_amount_input"
-							/>
-							<span class="currency_symbol">€</span>
-							<button type="button" class="button remove_external_price">
-								<span class="dashicons dashicons-no"></span>
-							</button>
-						</div>
-					<?php endforeach; ?>
-				<?php endif; ?>
-			</div>
+.billetterie_field .field_hint,
+.billetterie_section .field_hint {
+    font-size: 13px;
+    color: #94a3b8;
+    font-style: italic;
+    margin: 0 0 8px;
+}
 
-			<button type="button" class="button button-secondary add_external_price">
-				<span class="dashicons dashicons-plus"></span>
-				<?php esc_html_e( 'Ajouter un tarif', 'eventlist' ); ?>
-			</button>
-		</div>
-	</div>
-<?php endif; ?>
+/* Inputs */
+.billetterie_input,
+.billetterie_select,
+.billetterie_textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #334155;
+    background: #fff;
+    transition: all 0.2s;
+}
 
-<?php if ( apply_filters( 'el_show_ticket_internal_link_field', true ) ): ?>
-	<div class="ticket_internal_link">
+.billetterie_input:focus,
+.billetterie_select:focus,
+.billetterie_textarea:focus {
+    outline: none;
+    border-color: #FF6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+}
 
-		<?php if ( $check_allow_change_tax == 'yes' && $enable_tax == 'yes' ) : ?>
-			<div class="event_tax event_basic_block">
-				<h4 class="heading_section"><?php esc_html_e( 'Tax', 'eventlist' ); ?></h4>
-				<div class="wrap_event_tax vendor_field">
-					<label for="event_tax"><?php esc_html_e( 'Event Tax', 'eventlist' ); ?></label>
-					<input
-						type="text"
-						id="event_tax"
-						name="<?php echo esc_attr( $_prefix.'event_tax' ); ?>"
-						value="<?php echo esc_attr( $event_tax ); ?>"
-						placeholder="<?php esc_html_e( 'percent tax', 'eventlist' ); ?>"
-						autocomplete="off" autocorrect="off" autocapitalize="none" required
-					/>
-					<span class="desc">%</span>
-				</div>
-			</div>
-		<?php endif; ?>
-		<!-- Seat Option -->
-		<div class="wrap_seat_option vendor_field">
-			<label class="label">
-				<strong>
-					<?php esc_html_e( 'Type:', 'eventlist' ); ?>
-				</strong>
-			</label>
-			<div class="radio_seat_option">
-				<?php if ( apply_filters( 'el_show_ticket_type_no_seat', true ) ): ?>
-		
-					<label for="seat_none_opt" class="el_input_radio" style="min-width: auto;">
-						<?php esc_html_e( 'No Seat', 'eventlist' ); ?>
-						<input
-						type="radio"
-						name="<?php echo esc_attr( $_prefix.'seat_option' ); ?>"
-						class="seat_option"
-						id="seat_none_opt"
-						value="<?php echo esc_attr('none'); ?>"
-						<?php if ( $seat_option == 'none' || $seat_option == '') echo esc_attr('checked') ; ?>
-						/>
-						<span class="checkmark"></span>
-					</label>						
+.billetterie_input::placeholder,
+.billetterie_textarea::placeholder {
+    color: #94a3b8;
+    font-style: italic;
+}
 
-				<?php endif; ?>
-				<?php if ( apply_filters( 'el_show_ticket_type_simple', true ) ): ?>
+.select_wrapper {
+    position: relative;
+}
 
-					<label for="seat_simple_opt" class="el_input_radio" style="min-width: auto;">
-						<?php esc_html_e( 'Simple Seat', 'eventlist' ); ?>
-						<input
-							type="radio"
-							name="<?php echo esc_attr( $_prefix.'seat_option' ); ?>"
-							class="seat_option"
-							id="seat_simple_opt"
-							value="<?php echo esc_attr('simple'); ?>"
-							<?php if ( $seat_option == 'simple') echo esc_attr('checked') ; ?>
-						/>
-						<span class="checkmark"></span>
-					</label>
+.select_wrapper::after {
+    content: '\f107';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    pointer-events: none;
+}
 
-				<?php endif; ?>
-				<?php if ( apply_filters( 'el_show_ticket_type_map', true ) ): ?>
-					<label for="seat_map_opt" class="el_input_radio" style="min-width: auto;">
-						<?php esc_html_e( 'Map', 'eventlist' ); ?>
-						<input
-							type="radio"
-							name="<?php echo esc_attr( $_prefix.'seat_option' ); ?>"
-							class="seat_option"
-							id="seat_map_opt"
-							value="<?php echo esc_attr('map'); ?>"
-							<?php if ( $seat_option == 'map') echo esc_attr('checked') ; ?>
-						/>
-						<span class="checkmark"></span>
-					</label>
-				<?php endif; ?>
-			</div>
-		</div>
+.billetterie_select {
+    appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
+}
 
+/* Price Choice Cards (Gratuit/Payant) */
+.billetterie_price_choice {
+    display: flex;
+    gap: 16px;
+}
 
-		<?php
-		$class_active = $seat_option == 'simple' ? 'is-active' : '';
-		?>
+.price_choice_card {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fff;
+}
 
-		<div class="seating_map_wrapper <?php echo esc_attr( $class_active ); ?>">
-			<label>
-				<strong>
-					<?php esc_html_e( 'Global Regional Image', 'eventlist' ); ?>
-				</strong>
-			</label>
-			<div class="el-add-image-wrap">
-	    		<div class="image-wrap">
-	    			<?php if ( $seating_map ): ?>
-	    				<div class="item">
-	    					<img src="<?php echo esc_attr( wp_get_attachment_url( $seating_map ) ); ?>" class="image" />
-	        				<input type="hidden" name="image" value="<?php echo $seating_map; ?>"/>
-	    				</div>
-	    				<a href="#" class="el_remove_seating_map">
-	    					<span class="dashicons dashicons-no"></span>
-	    				</a>
-	    			<?php endif; ?>
-	    		</div>
-	            
-	            <a href="#" class="button button-secondary el_add_image"><?php esc_html_e( 'Choose image', 'eventlist' ); ?></a>
-	    	</div>
-		</div>
+.price_choice_card:hover {
+    border-color: #FF6600;
+    background: #fff8f5;
+}
 
+.price_choice_card.selected {
+    border-color: #FF6600;
+    background: #fff8f5;
+}
 
-		<!-- Ticket items -->
-		<div class="wrap">
-			<?php if ( apply_filters( 'el_show_ticket_type_no_seat', true ) || apply_filters( 'el_show_ticket_type_simple', true ) ): ?>
-				<div class="ticket_none_simple" style="<?php echo esc_attr( $seat_option !== 'map' ? 'display: block;' : 'display: none;' ); ?>">
-					<?php 
-					if ( $ticket ):
-						foreach ( $ticket as $key => $value ):  
-							/* Check Name Ticket */
-							if ( isset( $value['name_ticket'] ) ): ?>
-								<div class="ticket_item" data-prefix="<?php echo esc_attr( $_prefix ); ?>">
-									<!-- Headding Ticket -->
-									<div class="heading_ticket">
-										<div class="left">
-											<i class=" fas fa-ticket-alt"></i>
-											<input
-												type="text"
-												name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][name_ticket]' ); ?>"
-												class="name_ticket"
-												value="<?php echo esc_attr( $value['name_ticket'] ); ?>"
-												placeholder="<?php esc_attr_e( 'Nom du tarif (ex: Tarif Étudiant, Tarif Adulte +18 ans)', 'eventlist' ); ?>"
-												required
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-											/>
-										</div>
-										<div class="right">
-											<i class="fas fa-edit edit_ticket"></i>
-											<i class="fas fa-trash delete_ticket"></i>
-										</div>
-									</div>
-									<!-- Content Ticket -->
-									<div class="content_ticket">
-										<!-- ID Ticket -->
-										<div class="id_ticket">
-											<label><strong><?php esc_html_e( 'SKU: *', 'eventlist' ); ?></strong></label>
-											<input
-												type="text"
-												class="ticket_id"
-												name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][ticket_id]' ); ?>"
-												value="<?php echo esc_attr( isset( $value['ticket_id'] ) ? $value['ticket_id'] : '' ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-											/>
-											<span><?php esc_html_e( 'Auto render if empty', 'eventlist' ); ?></span>
-										</div>
-										<!-- Top Ticket -->
-										<div class="top_ticket">
-											<div class="col_price_ticket col">
-												<div class="top">
-													<span>
-														<strong>
-															<?php esc_html_e( 'Prix', 'eventlist' ); ?>
-														</strong>
-													</span>
-													<div class="radio_type_price" data-type-price="<?php echo esc_attr( $value['type_price'] ); ?>">
+.price_choice_card .price_choice_input {
+    display: none;
+}
 
-														<label for="type_price_paid<?php echo $key; ?>" class="el_input_radio">
-															<?php esc_html_e( 'Payant', 'eventlist' ); ?>
-															<input
-																type="radio"
-																name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][type_price]' ); ?>"
-																class="type_price"
-																id="type_price_paid<?php echo $key; ?>"
-																value="<?php echo esc_attr('paid'); ?>"
-																<?php if ( $value['type_price'] == 'paid' ) echo esc_attr('checked') ; ?>
-															/>
-															<span class="checkmark el_bg_white"></span>
-														</label>
+.price_choice_card .price_choice_checkmark {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
 
+.price_choice_card.selected .price_choice_checkmark {
+    background: #FF6600;
+    border-color: #FF6600;
+}
 
-														<label for="type_price_free<?php echo $key; ?>" class="el_input_radio el_ml_10px">
-															<?php esc_html_e( 'Gratuit', 'eventlist' ); ?>
-															<input
-																type="radio"
-																name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][type_price]' ); ?>"
+.price_choice_card.selected .price_choice_checkmark::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 12px;
+    color: #fff;
+}
 
-																class="type_price"
-																id="type_price_free<?php echo $key; ?>"
-																value="<?php echo esc_attr('free'); ?>"
-																<?php if ( $value['type_price'] == 'free' ) echo esc_attr('checked') ; ?>
-															/>
-															<span class="checkmark el_bg_white"></span>
-														</label>
+.price_choice_label {
+    font-size: 15px;
+    font-weight: 500;
+    color: #334155;
+}
 
-													</div>
-												</div>
-												<div class="ova_wrap_price_ticket" data-curency="<?php echo esc_attr( json_encode( $data_curency ) ); ?>">
-													<?php
-													$price_ticket = !empty($value['price_ticket']) ? $value['price_ticket'] : 0;
-													$price_ticket = str_replace(".", $decimal_separator, $price_ticket);
-													?>
-													<div class="price_input_wrapper">
-														<input
-															type="text"
-															name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][price_ticket]' ); ?>"
-															class="price_ticket"
-															value="<?php echo esc_attr( $price_ticket ); ?>"
-															<?php if ( $value['type_price'] == 'free' ) echo esc_attr('disabled'); ?>
-															placeholder="<?php esc_attr_e( '0', 'eventlist' ); ?>"
-															autocomplete="off" autocorrect="off" autocapitalize="none"
-														/>
-														<span class="price_currency_indicator">€</span>
-													</div>
-													<span class="ova_price_ticket_err">
-														<?php printf( esc_html__( 'Veuillez entrer une valeur numérique avec un séparateur décimal ( %s ) sans séparateur de milliers ni symbole monétaire.', 'eventlist' ), $decimal_separator ); ?>
-													</span>
-												</div>
-											</div>
-											<?php $class_active = $seat_option == 'none' ? 'is-active' : ''; ?>
-											<div class="col_total_number_ticket col <?php echo esc_attr( $class_active ); ?>">
-												<div class="top">
-													<strong><?php esc_html_e( 'Total ', 'eventlist' ); ?></strong>
-													<span><?php esc_html_e( 'number of tickets', 'eventlist' ); ?></span>
-												</div>
-												<input
-													type="number"
-													name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][number_total_ticket]' ); ?>"
-													class="number_total_ticket"
-													<?php $number_total_ticket = ! empty( $value['number_total_ticket'] ) ? $value['number_total_ticket'] : 1; ?>
-													value="<?php echo esc_attr( $number_total_ticket ); ?>"
-													placeholder="<?php esc_attr_e( '10', 'eventlist' ); ?>"
-													autocomplete="off" autocorrect="off" autocapitalize="none"
-													min="0"
-												/>
-											</div>
-											<div class="col_min_number_ticket col">
-												<div class="top">
-													<strong><?php esc_html_e( 'Minimum ', 'eventlist' ); ?></strong>
-													<span><?php esc_html_e( 'number of tickets for one purchase', 'eventlist' ); ?></span>
-												</div>
-												<input
-													type="number"
-													name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][number_min_ticket]' ); ?>"
-													class="number_min_ticket"
-													<?php $number_min_ticket = ! empty( $value['number_min_ticket'] ) ? $value['number_min_ticket'] : 1; ?>
-													value="<?php echo esc_attr( $number_min_ticket ); ?>"
-													placeholder="<?php esc_attr_e( '1', 'eventlist' ); ?>"
-													min="0"
-													autocomplete="off" autocorrect="off" autocapitalize="none"
-												/>
-											</div>
-											<div class="col_max_number_ticket col">
-												<div class="top">
-													<strong><?php esc_html_e( 'Maximum ', 'eventlist' ); ?></strong>
-													<span><?php esc_html_e( 'number of tickets for one purchase', 'eventlist' ); ?></span>
-												</div>
-												<input
-													type="number"
-													name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][number_max_ticket]' ); ?>"
-													class="number_max_ticket"
-													<?php $number_max_ticket = !empty($value['number_max_ticket']) ? $value['number_max_ticket'] : 1; ?>
-													value="<?php echo esc_attr( $number_max_ticket ); ?>"
-													placeholder="<?php esc_attr_e( '10', 'eventlist' ); ?>"
-													autocomplete="off" autocorrect="off" autocapitalize="none"
-													min="0"
-												/>
-											</div>
-										</div>
-										<!-- Middle Ticket -->
-										<div class="middle_ticket">
-											<div class="date_ticket">
-												<div class="start_date">
-													<span>
-														<?php esc_html_e( 'Start date for selling tickets', 'eventlist' ); ?>
-													</span>
-													<div>
-														<input
-															type="text"
-															name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][start_ticket_date]' ); ?>"
-															class="start_ticket_date"
-															value="<?php echo esc_attr( $value['start_ticket_date'] ); ?>"
-															data-format="<?php echo esc_attr( $format ); ?>"
-															data-firstday="<?php echo esc_attr( $first_day ); ?>"
-															placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-															autocomplete="off" autocorrect="off" autocapitalize="none"
-														/>
-														<input
-															type="text"
-															name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][start_ticket_time]' ); ?>"
-															
-															class="start_ticket_time"
-															value="<?php echo esc_attr( $value['start_ticket_time'] ); ?>"
-															data-time="<?php echo esc_attr( $time ); ?>"
-															placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>"
-															autocomplete="off" autocorrect="off" autocapitalize="none"
-														/>
-													</div>
-												</div>
-												<div class="end_date">
-													<span>
-														<?php esc_html_e( 'End date for selling tickets', 'eventlist' ); ?>
-													</span>
-													<div>
-														<input
-															type="text"
-															name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][close_ticket_date]' ); ?>"
-															class="close_ticket_date"
-															value="<?php echo esc_attr( $value['close_ticket_date'] ); ?>"
-															data-format="<?php echo esc_attr( $format ); ?>"
-															data-firstday="<?php echo esc_attr( $first_day ); ?>"
-															placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-															autocomplete="off" autocorrect="off" autocapitalize="none"
-														/>
-														<input
-															type="text"
-															name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][close_ticket_time]' ); ?>"
-															class="close_ticket_time"
-															value="<?php echo esc_attr( $value['close_ticket_time'] ); ?>"
-															data-time="<?php echo esc_attr( $time ); ?>"
-															placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>"
-															autocomplete="off" autocorrect="off" autocapitalize="none"
-														/>
-													</div>
-												</div>
-											</div>
-											<div class="wrap_color_ticket">
-												<div>
-													<div class="span9">
-														<span>
-															<?php esc_html_e( 'Ticket border color', 'eventlist' ); ?>
-														</span>
-														<small>
-															<?php esc_html_e( '(Color border in ticket)', 'eventlist' ); ?>
-														</small>
-													</div>
-													<div class="span3">
-														<input
-															type="text"
-															name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][color_ticket]' ); ?>"
-															class="color_ticket"
-															value="<?php echo esc_attr( $value['color_ticket'] ); ?>"
-															autocomplete="off" autocorrect="off" autocapitalize="none"
-														/>
-													</div>
-												</div>
-												<div>
-													<div class="span9">
-														<span>
-															<?php esc_html_e( 'Ticket label color', 'eventlist' ); ?>
-														</span>
-														<small>
-															<?php esc_html_e( '(Color label in ticket)', 'eventlist' ); ?>
-														</small>
-													</div>
-													<div class="span3">
-														<input
-															type="text"
-															name="<?php echo esc_attr($_prefix . 'ticket['.$key.'][color_label_ticket]' ); ?>"
-															class="color_label_ticket"
-															value="<?php echo esc_attr( $value['color_label_ticket'] ); ?>"
-															autocomplete="off" autocorrect="off" autocapitalize="none"
-														/>
-													</div>
-												</div>
-												<div>
-													<div class="span9">
-														<span>
-															<?php esc_html_e( 'Ticket content color', 'eventlist' ); ?>
-														</span>
-														<small>
-															<?php esc_html_e( '(Color content in ticket)', 'eventlist' ); ?>
-														</small>
-													</div>
-													<div class="span3">
-														<input
-															type="text"
-															name="<?php echo esc_attr($_prefix . 'ticket['.$key.'][color_content_ticket]' ); ?>"
-															
-															class="color_content_ticket"
-															value="<?php echo esc_attr( $value['color_content_ticket'] ); ?>"
-															autocomplete="off" autocorrect="off" autocapitalize="none"
-														/>
-													</div>
-												</div>
-											</div>
-										</div>
-										<!-- Bottom Ticket -->
-										<div class="bottom_ticket">
-											<div class="title_add_desc">
-												<small class="text_title">
-													<?php esc_html_e( 'Description display at frontend and PDF Ticket', 'eventlist' ); ?>
-													<i class="arrow_triangle-down"></i>
-												</small>
-											</div>
-											<div class="content_desc">
-												<textarea name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][desc_ticket]' ); ?>" class="desc_ticket" cols="30" rows="5"><?php echo esc_attr( $value['desc_ticket'] ); ?></textarea>
-												<div class="image_ticket" data-index="<?php echo esc_attr( $key ); ?>">
-													<div class="add_image_ticket">
-														<input
-															type="hidden"
-															name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][image_ticket]' ); ?>"
-															class="image_ticket"
-															value="<?php echo esc_attr( isset( $value['image_ticket'] ) ) ? $value['image_ticket'] : ''; ?>"
-														/>
-														<?php if ( isset($value['image_ticket']) && $value['image_ticket'] != '' ): ?>
-															<img class="image-preview-ticket" src="<?php echo esc_url(wp_get_attachment_url( $value['image_ticket'] ) ); ?>" alt="<?php esc_attr_e( 'image ticket', 'eventlist' ); ?>">
-														<?php else: ?>
-															<i class="icon_plus_alt2"></i>
-															<?php esc_html_e('Add ticket logo (.jpg, .png)', 'eventlist'); ?>
-															<br/>
-															<span>
-																<?php esc_html_e( 'Recommended size: 130x50px','eventlist' ); ?>
-															</span>
-														<?php endif; ?>
-													</div>
-													<div class="remove_image_ticket">
-														<?php if ( isset( $value['image_ticket'] ) && $value['image_ticket'] != '' ): ?>
-															<span><?php esc_html_e( 'x', 'eventlist' ); ?></span>
-														<?php endif; ?>
-													</div>
-												</div>
-											</div>
-											<!-- Private description ticket -->
-											<div class="private_desc_ticket">
-												<div class="title_add_desc">
-													<small class="text_title">
-														<?php esc_html_e( 'Private Description in Ticket - Only see when bought ticket', 'eventlist' ); ?>
-														<i class="arrow_triangle-down"></i>
-													</small>
-												</div>
-												<textarea name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][private_desc_ticket]' ); ?>" class="private_desc_ticket" cols="30" rows="5"><?php echo isset( $value['private_desc_ticket'] ) ? esc_html( $value['private_desc_ticket'] ) : ''; ?></textarea>
-											</div>
-											<!-- setup info ticket online	 -->
-											<div class="setting_ticket_online">
-												<div class="title_add_desc">
-													<small class="text_title"><?php esc_html_e( 'These info only display in mail', 'eventlist' ); ?><i class="arrow_triangle-down"></i></small>
-												</div>
-												<div class="online_field link">
-													<label><?php esc_html_e( 'Link', 'eventlist' ); ?></label>
-													<input
-														type="text"
-														class="online_link"
-														name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][online_link]' ); ?>"
-														value="<?php echo isset( $value['online_link'] ) ? $value['online_link'] : ''; ?>"
-													/>
-												</div>
-												<div class="online_field password">
-													<label><?php esc_html_e( 'Password', 'eventlist' ); ?></label>
-													<input
-														type="text"
-														class="online_password"
-														name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][online_password]' ); ?>"
-														value="<?php echo isset( $value['online_password'] ) ? $value['online_password'] : ''; ?>"
-													/>
-												</div>
-												<div class="online_field other">
-													<label><?php esc_html_e( 'Other info', 'eventlist' ); ?></label>
-													<input
-														type="text"
-														class="online_other"
-														name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][online_other]' ); ?>"
-														value="<?php echo isset( $value['online_other'] ) ? $value['online_other'] : ''; ?>"
-													/>
-												</div>
-											</div>
-										</div>
-										<?php if ( apply_filters( 'el_show_ticket_type_simple', true ) ): ?>
-											<?php
-											$setup_mode = isset( $value['setup_mode'] ) ? $value['setup_mode'] : 'manually';
-											$class_active = $seat_option == "simple" ? "is-active" : "";
-											$_ticket = $_prefix.'ticket';
-											?>
-											<!-- Seat List -->
-											<div class="wrap_seat_list <?php echo esc_attr( $class_active ); ?>">
+/* Contact Row */
+.billetterie_contact_row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
 
-												<div class="seat_setup_wrap">
+.contact_field .field_label {
+    display: block;
+    font-size: 14px;
+    color: #334155;
+    margin-bottom: 4px;
+}
 
-													<label>
-														<strong><?php esc_html_e( 'Setup Mode', 'eventlist' ); ?></strong>
-													</label>
+.contact_field .field_hint {
+    font-size: 13px;
+    color: #94a3b8;
+    font-style: italic;
+    margin: 0 0 8px;
+}
 
-													<label for="setup_mode_manually_<?php echo $key ?>">
-														<input type="radio"
-														id="setup_mode_manually_<?php echo $key ?>"
-														class="setup_mode_input"
-														<?php checked( $setup_mode, 'manually' ); ?>
-														name="<?php echo esc_attr( $_prefix.'['.$key.'][setup_mode]' ); ?>"
-														value="manually" checked />
-														<?php esc_html_e( 'Manually', 'eventlist' ); ?>
-													</label>
+/* Info Text */
+.billetterie_info_text {
+    padding: 16px 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
 
-													<label for="setup_mode_automatic_<?php echo $key ?>">
-														<input type="radio"
-														class="setup_mode_input"
-														<?php checked( $setup_mode, 'automatic' ); ?>
-														id="setup_mode_automatic_<?php echo $key ?>"
-														name="<?php echo esc_attr( $_prefix.'['.$key.'][setup_mode]' ); ?>"
-														value="automatic" />
-														<?php esc_html_e( 'Automatic', 'eventlist' ); ?>
-													</label>
+.billetterie_info_text p {
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+}
 
-												</div>
+/* Option Cards (Module réservation / Lien externe) */
+.billetterie_options {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
 
-												<div class="seat_code_wrap">
-													<label class="label">
-														<strong><?php esc_html_e( 'Seat Code List:', 'eventlist' ); ?></strong>
-													</label>
+.billetterie_option_card {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fff;
+}
 
+.billetterie_option_card:hover {
+    border-color: #FF6600;
+}
 
-													<div class="seat_code_container">
-														<?php
-														$class_active = $setup_mode == 'manually' ? 'is-active' : '';
-														?>
-														<div class="seat_code_manually <?php echo esc_attr( $class_active ); ?>">
+.billetterie_option_card.selected {
+    border-color: #FF6600;
+    background: #fff8f5;
+}
 
-															<textarea name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][seat_list]' ); ?>" id="seat_list" class="seat_list" cols="30" rows="5" placeholder="<?php echo esc_attr( 'A1, B2, C3, ...' ); ?>"><?php echo isset( $value['seat_list'] ) ? esc_html( $value['seat_list'] ) : ''; ?></textarea>
-														</div>
-														<?php
-														unset( $class_active );
-														$class_active = $setup_mode == 'automatic' ? 'is-active' : '';
-														$seat_code_setup = isset( $value['seat_code_setup'] ) ? $value['seat_code_setup'] : [];
-														?>
-														<div class="seat_code_automatic <?php echo esc_attr( $class_active ); ?>">
+.billetterie_option_card .option_radio {
+    display: none;
+}
 
-															<ul class="seat_code_setup"
-															data-key="<?php echo esc_attr( $key ); ?>"
-															data-ticket="<?php echo esc_attr( $_ticket ); ?>">
-																<?php if ( ! empty( $seat_code_setup ) ): ?>
-																	<?php foreach ( $seat_code_setup as $_k => $_val ): ?>
-																		<?php include EL_PLUGIN_INC."admin/views/metaboxes/html-seat-code-setup-item.php"; ?>
-																	<?php endforeach; ?>
-																<?php endif; ?>
-															</ul>
+.billetterie_option_card .option_checkmark {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
 
-															<a href="#"
-															data-nonce="<?php echo esc_attr( wp_create_nonce('el_add_seat_code_row') ); ?>"
-															class="button button-secondary add_seat_code_row">
-																<?php esc_html_e( 'Add Seat', 'eventlist' ); ?>
-															</a>
-														</div>
-													</div>
+.billetterie_option_card.selected .option_checkmark {
+    background: #FF6600;
+    border-color: #FF6600;
+}
 
-												</div>
+.billetterie_option_card.selected .option_checkmark::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 12px;
+    color: #fff;
+}
 
-											</div>
-											<!-- The customer choose seat -->
-											<div class="wrap_setup_seat" data-setup-seat="<?php echo esc_attr( $value['setup_seat'] ); ?>" style="<?php if ( $seat_option == 'simple' ) echo esc_attr('display: flex;'); ?>">
-												<label class="label">
-													<strong>
-														<?php esc_html_e( 'The customer choose seat:', 'eventlist' ); ?>
-													</strong>
-												</label>
+.option_content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
 
-												<label for="setup_seat_yes<?php echo $key; ?>" class="el_input_radio">
-													<?php esc_html_e( 'Yes', 'eventlist' ); ?>
-													<input
-														type="radio"
-														name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][setup_seat]' ); ?>"
-														class="setup_seat"
-														id="setup_seat_yes<?php echo $key; ?>"
-														value="yes"
-														<?php if ( isset( $value['setup_seat'] ) ) checked( $value['setup_seat'], 'yes', 'checked' ); ?>
-													/>
-													<span class="checkmark el_bg_white"></span>
-												</label>
+.option_title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e293b;
+}
 
-												<label for="setup_seat_no<?php echo $key; ?>" class="el_input_radio">
-													<?php esc_html_e( 'No', 'eventlist' ); ?>
-													<input
-														type="radio"
-														name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][setup_seat]' ); ?>"
-														class="setup_seat"
-														id="setup_seat_no<?php echo $key; ?>"
-														value="no"
-														<?php if ( isset( $value['setup_seat'] ) ) checked( $value['setup_seat'], 'no', 'checked' ); ?>
-													/>
-													<span class="checkmark el_bg_white"></span>
-												</label>
+.option_desc {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.5;
+}
 
-											</div>
-											<div class="seat_map_ticket" style="<?php if ( $seat_option == 'simple' ) echo esc_attr('display: flex;'); ?>">
-												<label class="label">
-													<strong>
-														<?php esc_html_e( 'Sub-Regional Image:', 'eventlist' ); ?>
-													</strong>
-												</label>
-												<div class="image_ticket_seat_map" data-index="<?php echo esc_attr( $key ); ?>">
-													<div class="add_seat_map_ticket">
-														<input
-															type="hidden"
-															name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][seat_map_ticket]' ); ?>"
-															class="seat_map_ticket"
-															value="<?php echo esc_attr( isset( $value['seat_map_ticket'] ) ) ? $value['seat_map_ticket'] : ''; ?>"
-														/>
-														<?php if ( isset( $value['seat_map_ticket'] ) && $value['seat_map_ticket'] != '' ): ?>
-															<img class="image-preview-ticket" src="<?php echo esc_url(wp_get_attachment_url( $value['seat_map_ticket'] ) ); ?>" alt="<?php esc_attr_e( 'Seat Map Image', 'eventlist' ); ?>">
-														<?php else: ?>
-															<i class="icon_plus_alt2"></i>
-															<?php esc_html_e('Add image (.jpg, .png)', 'eventlist') ?>
-														<?php endif; ?>
-													</div>
-													<div class="remove_seat_map_ticket">
-														<?php if ( isset( $value['seat_map_ticket'] ) && $value['seat_map_ticket'] != '' ): ?>
-															<span><?php esc_html_e( 'x', 'eventlist' ); ?></span>
-														<?php endif; ?>
-													</div>
-												</div>
-											</div>
-										<?php endif; ?>
-										<!-- Save Ticket -->
-										<a href="#" class="save_ticket">
-											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:5px;">
-												<polyline points="20 6 9 17 4 12"></polyline>
-											</svg>
-											<?php esc_html_e('Valider ce billet', 'eventlist') ?>
-										</a>
-									</div>
-								</div>
-							<?php endif;
-						endforeach;
-					endif; ?>
-				</div>
-			<?php endif; ?>
+/* Subsection */
+.subsection_title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 6px;
+}
 
-			<!-- Map -->
-			<?php if ( apply_filters( 'el_show_ticket_type_map', true ) ): ?>
-				<div class="ticket_map" style="<?php echo esc_attr( $seat_option == 'map' ? 'display: block;' : 'display: none;' ); ?>">
-					<div class="top_content">
-						<div class="short_code_map item-col">
-							<label for="short_code_map">
-								<?php esc_html_e( 'Map Shortcode - Contact Admin to get shortcode', 'eventlist' ); ?>
-							</label>
-							<input
-								type="text"
-								name="<?php echo esc_attr( $_prefix.'ticket_map[short_code_map]' ); ?>"
-								class="short_code_map"
-								id="short_code_map"
-								value="<?php echo esc_attr( isset( $value_ticket_map['short_code_map'] ) ? $value_ticket_map['short_code_map'] : '' ); ?>"
-								placeholder="<?php echo esc_attr( '[short_code_map]', 'eventlist' ); ?>"
-								autocomplete="off" autocorrect="off" autocapitalize="none"
-							/>
-						</div>
-						<div class="col_min_number_ticket item-col">
-							<div class="top">
-								<strong><?php esc_html_e( 'Minimum ', 'eventlist' ); ?></strong>
-								<span><?php esc_html_e( 'number of tickets for one purchase', 'eventlist' ); ?></span>
-							</div>
-							<input
-								type="number"
-								name="<?php echo esc_attr( $_prefix.'ticket_map[number_min_ticket]' ); ?>"
-								class="number_min_ticket_map"
-								id="number_min_ticket_map"
-								value="<?php echo esc_attr( isset( $value_ticket_map['number_min_ticket'] ) ? $value_ticket_map['number_min_ticket'] : 1 ); ?>"
-								placeholder="<?php echo esc_attr( '1', 'eventlist' ); ?>"
-								autocomplete="off" autocorrect="off" autocapitalize="none"
-								min= "1"
-							/>
-						</div>
-						<div class="col_max_number_ticket item-col">
-							<div class="top">
-								<strong><?php esc_html_e( 'Maximum ', 'eventlist' ); ?></strong>
-								<span><?php esc_html_e( 'number of tickets for one purchase', 'eventlist' ); ?></span>
-							</div>
-							<input
-								type="number"
-								name="<?php echo esc_attr( $_prefix.'ticket_map[number_max_ticket]' ); ?>"
-								class="number_max_ticket_map"
-								id="number_max_ticket_map"
-								value="<?php echo esc_attr( isset( $value_ticket_map['number_max_ticket'] ) ? $value_ticket_map['number_max_ticket'] : 1 ); ?>"
-								placeholder="<?php echo esc_attr( '10', 'eventlist' ); ?>"
-								autocomplete="off" autocorrect="off" autocapitalize="none"
-							/>
-						</div>
-					</div>
-					<hr>
-					<div class="middle_content">
-						<div class="date_ticket ova_row">
-							<div class="start_date">
-								<span><?php esc_html_e( 'Start date for selling tickets', 'eventlist' ); ?></span>
-								<div class="date_ticket_row">
-									<input
-										type="text"
-										name="<?php echo esc_attr( $_prefix.'ticket_map[start_ticket_date]' ); ?>"
-										class="start_ticket_date_map"
-										value="<?php echo esc_attr( isset( $value_ticket_map['start_ticket_date'] ) ? $value_ticket_map['start_ticket_date'] : '' ); ?>"
-										data-format="<?php echo esc_attr( $format ); ?>"
-										data-firstday="<?php echo esc_attr( $first_day ); ?>"
-										placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-										autocomplete="off" autocorrect="off" autocapitalize="none"
-									/>
-									<input
-										type="text"
-										name="<?php echo esc_attr( $_prefix.'ticket_map[start_ticket_time]' ); ?>"
-										class="start_ticket_time_map"
-										value="<?php echo esc_attr( isset($value_ticket_map['start_ticket_time'] ) ? $value_ticket_map['start_ticket_time'] : '' ); ?>"
-										data-time="<?php echo esc_attr($time); ?>"
-										placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>"
-										autocomplete="off" autocorrect="off" autocapitalize="none"
-									/>
-								</div>
-							</div>
-							<div class="end_date">
-								<span><?php esc_html_e( 'End date for selling tickets', 'eventlist' ); ?></span>
-								<div class="date_ticket_row">
-									<input
-										type="text"
-										name="<?php echo esc_attr( $_prefix.'ticket_map[close_ticket_date]' ); ?>"
-										class="close_ticket_date_map"
-										value="<?php echo esc_attr( isset($value_ticket_map['close_ticket_date'] ) ? $value_ticket_map['close_ticket_date'] : '' ); ?>"
-										data-format="<?php echo esc_attr( $format ); ?>"
-										data-firstday="<?php echo esc_attr( $first_day ); ?>"
-										placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-										autocomplete="off" autocorrect="off" autocapitalize="none"
-									/>
-									<input
-										type="text"
-										name="<?php echo esc_attr( $_prefix.'ticket_map[close_ticket_time]' ); ?>"
-										class="close_ticket_time_map"
-										value="<?php echo esc_attr( isset($value_ticket_map['close_ticket_time'] ) ? $value_ticket_map['close_ticket_time'] : '' ); ?>"
-										data-time="<?php echo esc_attr($time); ?>"
-										placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>"
-										autocomplete="off" autocorrect="off" autocapitalize="none"
-									/>
-								</div>
-							</div>
-						</div>
-						<div class="wrap_color_ticket ova_row">
-							<div>
-								<div class="span9">
-									<span><?php esc_html_e( 'Ticket border color', 'eventlist' ); ?></span>
-									<small><?php esc_html_e( '(Color border in ticket)', 'eventlist' ); ?></small>
-								</div>
-								<div class="span3">
-									<input
-										type="text"
-										name="<?php echo esc_attr( $_prefix.'ticket_map[color_ticket]' ); ?>"
-										id="color_ticket_map"
-										class="color_ticket_map"
-										value="<?php echo isset( $value_ticket_map['color_ticket'] ) && $value_ticket_map['color_ticket'] ? $value_ticket_map['color_ticket'] : '' ; ?>"
-										autocomplete="off" autocorrect="off" autocapitalize="none"
-									/>
-								</div>
-							</div>
-							<div>
-								<div class="span9">
-									<span><?php esc_html_e( 'Ticket label color', 'eventlist' ); ?></span>
-									<small><?php esc_html_e( '(Color label in ticket)', 'eventlist' ); ?></small>
-								</div>
-								<div class="span3">
-									<input
-										type="text"
-										name="<?php echo esc_attr( $_prefix.'ticket_map[color_label_ticket]' ); ?>"
-										id="color_label_ticket_map"
-										class="color_label_ticket_map"
-										value="<?php echo isset( $value_ticket_map['color_label_ticket'] ) && $value_ticket_map['color_label_ticket'] ? $value_ticket_map['color_label_ticket'] : ''; ?>"
-										autocomplete="off" autocorrect="off" autocapitalize="none"
-									/>
-								</div>
-							</div>
-							<div>
-								<div class="span9">
-									<span><?php esc_html_e( 'Ticket content color', 'eventlist' ); ?></span>
-									<small><?php esc_html_e( '(Color content in ticket)', 'eventlist' ); ?></small>
-								</div>
-								<div class="span3">
-									<input
-										type="text"
-										name="<?php echo esc_attr( $_prefix.'ticket_map[color_content_ticket]' ); ?>"
-										id="color_content_ticket_map"
-										class="color_content_ticket_map"
-										value="<?php echo isset( $value_ticket_map['color_content_ticket'] ) && $value_ticket_map['color_content_ticket'] ? $value_ticket_map['color_content_ticket'] : ''; ?>"
-										autocomplete="off" autocorrect="off" autocapitalize="none"
-									/>
-								</div>
-							</div>
-						</div>
-					</div>
-					<hr>
-					<!-- Bottom Ticket -->
-					<div class="bottom_ticket">
-						<div class="title_add_desc">
-							<small class="text_title">
-								<?php esc_html_e( 'Description display at frontend and PDF Ticket', 'eventlist' ); ?>
-								<i class="arrow_triangle-down"></i>
-							</small>
-							<div>
-								<small>
-									<?php esc_html_e( 'Description limited 230 character in ticket', 'eventlist' ); ?>
-								</small>
-							</div>
-						</div>
-						<div class="content_desc">
-							<textarea name="<?php echo esc_attr( $_prefix.'ticket_map[desc_ticket]' ); ?>" class="desc_ticket_map" cols="30" rows="5"><?php echo esc_attr( isset( $value_ticket_map['desc_ticket'] ) ? $value_ticket_map['desc_ticket'] : '' ) ; ?></textarea>
-							<div class="image_ticket_map">
-								<div class="add_image_ticket_map">
-									<input
-										type="hidden"
-										name="<?php echo esc_attr( $_prefix.'ticket_map[image_ticket]' ); ?>"
-										class="image_ticket_map"
-										value="<?php echo isset( $value_ticket_map['image_ticket'] ) ? $value_ticket_map['image_ticket'] : ''; ?>"
-									/>
-									<?php if ( isset( $value_ticket_map['image_ticket'] ) && $value_ticket_map['image_ticket'] != '' ): ?>
-										<img class="image-preview-ticket-map" src="<?php echo esc_url( wp_get_attachment_url( $value_ticket_map['image_ticket'] ) ); ?>" alt="<?php esc_attr_e( 'image ticket', 'eventlist' ); ?>">
-									<?php else: ?>
-										<i class="icon_plus_alt2"></i>
-										<?php esc_html_e('Add ticket logo (.jpg, .png)', 'eventlist') ?>
-										<br/><span><?php esc_html_e( 'Recommended size: 130x50px','eventlist' ); ?></span>
-									<?php endif; ?>
-								</div>
-								<div class="remove_image_ticket_map">
-									<?php if ( isset( $value_ticket_map['image_ticket'] ) && $value_ticket_map['image_ticket'] != '' ): ?>
-										<span><?php esc_html_e( 'x', 'eventlist' ); ?></span>
-									<?php endif; ?>
-								</div>
-							</div>
-						</div>
-						<div class="private_desc_ticket">
-							<div class="title_add_desc">
-								<small class="text_title">
-									<?php esc_html_e( 'Private Description in Ticket - Only see when bought ticket', 'eventlist' ); ?>
-									<i class="arrow_triangle-down"></i>
-								</small>
-							</div>
-							<textarea name="<?php echo esc_attr( $_prefix.'ticket_map[private_desc_ticket_map]' ); ?>" class="private_desc_ticket_map" cols="30" rows="5"><?php echo isset( $value_ticket_map['private_desc_ticket_map'] ) ? esc_html( $value_ticket_map['private_desc_ticket_map'] ) : ''; ?></textarea>
-						</div>
-					</div>
-					<hr>
-					<div class="container_desc_seat_map">
-						<p style="font-weight: bold; margin-bottom: 5px;">
-							<?php esc_html_e('Add description to these seat type:', 'eventlist'); ?>
-						</p>
-						<div class="wrap_desc_seat_map" data-currency="<?php echo esc_attr( $currency ); ?>" data-label="<?php esc_attr_e( 'price', 'eventlist' ); ?>">
-							<?php if ( isset( $value_ticket_map['desc_seat'] ) && $value_ticket_map['desc_seat'] ):
-								foreach ( $value_ticket_map['desc_seat'] as $key => $value ):
-									if ( isset( $value['map_type_seat'] ) && $value['map_type_seat'] ) {
-										array_push( $type_seat, $value['map_type_seat'] );
-									}
-								?>
-									<div class="item_desc_seat" data-prefix="<?php echo esc_attr( OVA_METABOX_EVENT ); ?>">
-										<div class="item-col">
-											<label><?php esc_html_e( 'Type Seat:', 'eventlist' ); ?></label>
-											<input
-												type="text"
-												class="map_type_seat"
-												value="<?php echo esc_attr( isset( $value['map_type_seat'] ) ? $value['map_type_seat'] : '' ); ?>"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[desc_seat]['.$key.'][map_type_seat]' ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-												placeholder="<?php echo esc_attr__( 'Standard', 'eventlist' ); ?>"
-											/>
-										</div>
-										<div class="item-col">
-											<label>
-												<?php esc_html_e( 'Price', 'eventlist' ); ?>
-												<?php echo ' ('. $currency .'):'; ?>
-											</label>
-											<input
-												type="text"
-												class="map_price_type_seat"
-												value="<?php echo esc_attr( isset( $value['map_price_type_seat'] ) ? $value['map_price_type_seat'] : '' ); ?>"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[desc_seat]['.$key.'][map_price_type_seat]' ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-												placeholder="<?php echo esc_attr__( '50.00', 'eventlist' ); ?>"
-											/>
-										</div>
-										<div class="item-col">
-											<label><?php esc_html_e( 'Description:', 'eventlist' ); ?></label>
-											
-											<input
-												type="text"
-												class="map_desc_type_seat"
-												value="<?php echo esc_attr( isset( $value['map_desc_type_seat'] ) ? $value['map_desc_type_seat'] : '' ); ?>"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[desc_seat]['.$key.'][map_desc_type_seat]' ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-												placeholder="<?php echo esc_attr__( 'Description of type seat', 'eventlist' ); ?>"
-											/>
-										</div>
-										<div class="item-col">
-											<label><?php esc_html_e( 'Color:', 'eventlist' ); ?></label>
-											<input
-												type="text"
-												class="map_color_type_seat" 
-												value="<?php echo esc_attr( isset( $value['map_color_type_seat'] ) ? $value['map_color_type_seat'] : '#fff' ); ?>"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[desc_seat]['.$key.'][map_color_type_seat]' ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-												placeholder="<?php echo esc_attr( '#ffffff', 'eventlist' ); ?>"
-											/>
-										</div>
-										<a href="#" class="button remove_desc_seat_map">
-											<?php esc_html_e( 'x', 'eventlist' ); ?>
-										</a>
-									</div>
-								<?php endforeach;
-							endif; ?>
-						</div>
-						<button class="button add_desc_seat_map">
-							<?php esc_html_e( 'Add description seat', 'eventlist' ); ?>
-							<div class="submit-load-more sendmail">
-								<div class="load-more">
-									<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-								</div>
-							</div>
-						</button>
-					</div>
-					<hr>
-					<div class="container_seat_map">
-						<ul class="type_map">
-							<li class="active" data-type="seat">
-								<?php esc_html_e( 'Seat', 'eventlist' ); ?>
-							</li>
-							<li data-type="area">
-								<?php esc_html_e( 'Area', 'eventlist' ); ?>
-							</li>
-						</ul>
-						<div class="wrap_seat_map">
+.subsection_hint {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0 0 16px;
+}
 
-							<div class="person_type_seat_wrap mb-3">
-								<p class="mb-2"><strong><?php esc_html_e( 'Person Type:', 'eventlist' ); ?></strong></p>
-								<ul class="person_type_seat list-unstyled">
-									<?php if ( isset( $value_ticket_map['person_type_seat'] ) && $value_ticket_map['person_type_seat'] ): ?>
-										<?php $person_type = json_decode( $value_ticket_map['person_type_seat'] ); ?>
-										<?php foreach ( $person_type as $key => $value ): ?>
-											<li class="item">
-		                                        <input type="text" class="pertype_seat" required onpaste="return false;" value="<?php echo esc_attr( $value ); ?>" data-slug="<?php echo esc_attr( $key ); ?>">
-		                                        <button type="button" class="button remove_pertype_seat">x</button>
-		                                    </li>
-										<?php endforeach; ?>
-									<?php endif; ?>
-								</ul>
-								<a href="#" class="button button-secondary add_pertype_seat">
-									<?php esc_html_e( 'Add person type', 'eventlist' ); ?>
-								</a>
-								<input type="hidden" id="person_type_seat_data" name="<?php echo esc_attr( $_prefix.'ticket_map[person_type_seat]' ); ?>" value="" />
-							</div>
+/* Créneaux Associés */
+.creneaux_associes_wrapper {
+    padding: 24px;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
 
-							<p style="font-weight: bold; margin-bottom: 5px;"><?php esc_html_e('Add Seat:', 'eventlist'); ?></p>
-							<?php if ( isset( $value_ticket_map['seat'] ) && $value_ticket_map['seat'] ):
-								foreach ( $value_ticket_map['seat'] as $key => $value ): ?>
-									<div class="item_seat" data-prefix="<?php echo esc_attr( OVA_METABOX_EVENT ); ?>">
-										<div class="name_seat_map">
-											<label><?php esc_html_e( 'Seat:', 'eventlist' ); ?></label>
-											<input
-												type="text"
-												class="map_name_seat"
-												value="<?php echo esc_attr( $value['id'] ); ?>"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[seat]['.$key.'][id]' ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-												placeholder="<?php echo esc_attr__( 'A1, A2, A3, ...', 'eventlist' ); ?>"
-											/>
-										</div>
-										<div class="price_seat_map">
-											<label>
-												<?php esc_html_e( 'Price', 'eventlist' ); ?>
-												<?php echo ' ('. $currency .'):'; ?>
-											</label>
-											<input
-												type="text"
-												class="map_price_seat"
-												value="<?php echo esc_attr( $value['price'] ); ?>"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[seat]['.$key.'][price]' ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-												placeholder="<?php echo esc_attr__( '50.00', 'eventlist' ); ?>"
-											/>
-										</div>
-										<?php $person_price = isset( $value['person_price'] ) ? $value['person_price'] : ""; ?>
-										<input type="hidden" class="person_price" name="<?php echo esc_attr( $_prefix.'ticket_map[seat]['.$key.'][person_price]' ); ?>" value="<?php echo esc_attr( $person_price ); ?>">
-										<div class="type_seat_map">
-											<label><?php esc_html_e( 'Type Seat:', 'eventlist' ); ?></label>
-											<select
-												name="<?php echo esc_attr( $_prefix.'ticket_map[seat]['.$key.'][type_seat]' ); ?>"
-												class="select_type_seat"
-												data-default="<?php esc_attr_e( 'Select Type Seat', 'eventlist' ); ?>">
-												<option value="">
-													<?php esc_html_e( 'Select Type Seat', 'eventlist' ); ?>
-												</option>
-												<?php if ( ! empty( $type_seat ) ):
-													$val_type_seat = isset( $value['type_seat'] ) ? $value['type_seat'] : '';
+.slots_selection {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
 
-													foreach ( $type_seat as $v_type_seat ):
-												?>
-														<option value="<?php echo esc_attr( $v_type_seat ); ?>"<?php selected( $v_type_seat, $val_type_seat ); ?>>
-															<?php echo esc_html( $v_type_seat ); ?>
-														</option>
-												<?php endforeach; endif; ?>
-											</select>
-										</div>
-										<div class="map_seat_start_date">
-											<label><?php esc_html_e( 'Start Date:', 'eventlist' ); ?></label>
-											<input
-												type="text"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[seat]['.$key.'][start_date]' ); ?>"
-												class="seat_start_date"
-												value="<?php echo isset( $value['start_date'] ) && $value['start_date'] ? $value['start_date'] : ''; ?>"
-												data-format="<?php echo esc_attr( $format ); ?>"
-												data-firstday="<?php echo esc_attr( $first_day ); ?>"
-												placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-											/>
-										</div>
-										<div class="map_seat_start_time">
-											<label><?php esc_html_e( 'Start Time:', 'eventlist' ); ?></label>
-											<input
-												type="text"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[seat]['.$key.'][start_time]' ); ?>"
-												class="seat_start_time"
-												value="<?php echo isset( $value['start_time'] ) && $value['start_time'] ? $value['start_time'] : ''; ?>"
-												data-time="<?php echo esc_attr( $time ); ?>"
-												placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-											/>
-										</div>
-										<div class="map_seat_end_date">
-											<label><?php esc_html_e( 'End Date:', 'eventlist' ); ?></label>
-											<input
-												type="text"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[seat]['.$key.'][end_date]' ); ?>"
-												class="seat_end_date"
-												value="<?php echo isset( $value['end_date'] ) && $value['end_date'] ? $value['end_date'] : ''; ?>"
-												data-format="<?php echo esc_attr( $format ); ?>"
-												data-firstday="<?php echo esc_attr( $first_day ); ?>"
-												placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-											/>
-										</div>
-										<div class="map_seat_end_time">
-											<label><?php esc_html_e( 'End Time:', 'eventlist' ); ?></label>
-											<input
-												type="text"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[seat]['.$key.'][end_time]' ); ?>"
-												class="seat_end_time"
-												value="<?php echo isset( $value['end_time'] ) && $value['end_time'] ? $value['end_time'] : ''; ?>"
-												data-time="<?php echo esc_attr( $time ); ?>"
-												placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-											/>
-										</div>
-										<a href="#" class="button remove_seat_map">
-											<?php esc_html_e( 'x', 'eventlist' ); ?>
-										</a>
-									</div>
-								<?php endforeach;
-							endif; ?>
-						</div>
-						<button class="button add_seat_map">
-							<?php esc_html_e( 'Add new seat', 'eventlist' ); ?>
-							<div class="submit-load-more sendmail">
-								<div class="load-more">
-									<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-								</div>
-							</div>
-						</button>
-						<div class="wrap_area_map" style="display: none;">
+.slots_option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fff;
+}
 
-							<div class="person_type_wrapper pb-3">
-								<p class="mb-2"><strong><?php esc_html_e( 'Person Type:', 'eventlist' ); ?></strong></p>
-								<ul class="person_type_list list-unstyled">
-									<?php if ( isset( $value_ticket_map['person_type'] ) && $value_ticket_map['person_type'] ): ?>
-										<?php $person_type = json_decode( $value_ticket_map['person_type'] ); ?>
-										<?php foreach ( $person_type as $key => $value ): ?>
-											<li class="item">
-		                                        <input type="text" class="person_type" onpaste="return false;" value="<?php echo esc_attr( $value ); ?>" data-slug="<?php echo esc_attr( $key ); ?>">
-		                                        <button type="button" class="button remove_person_type">x</button>
-		                                    </li>
-										<?php endforeach; ?>
-									<?php endif; ?>
-								</ul>
-								<?php $person_price = isset( $value['person_price'] ) ? $value['person_price'] : ""; ?>
-								<input type="hidden" id="data_person_type" name="<?php echo esc_attr( $_prefix.'ticket_map[person_type]' ); ?>" value="<?php echo esc_attr( json_encode( $person_price ) ); ?>">
-								<button type="button" class="button add_person_type"><?php esc_html_e( 'Add person type', 'eventlist' ); ?></button>
-							</div>
-							
-							<p style="font-weight: bold; margin-bottom: 5px;"><?php esc_html_e('Add Area:', 'eventlist'); ?></p>
-							<?php if ( isset( $value_ticket_map['area'] ) && $value_ticket_map['area'] ):
-								foreach ( $value_ticket_map['area'] as $key => $value ): ?>
-									<div class="item_area" data-prefix="<?php echo esc_attr( OVA_METABOX_EVENT ); ?>">
-										<div class="name_area_map">
-											<label><?php esc_html_e( 'Area:', 'eventlist' ) ?></label>
-											<input
-												type="text"
-												class="map_name_area"
-												value="<?php echo esc_attr( $value['id'] ); ?>"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[area]['.$key.'][id]' ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-												placeholder="<?php echo esc_attr( 'insert only an area', 'eventlist' ); ?>"
-											/>
-										</div>
-										<div class="price_area_map">
-											<label>
-												<?php esc_html_e( 'Price:', 'eventlist' ) ?><?php echo ' ('. $currency .'):'; ?>
-											</label>
-											<input
-												type="text"
-												class="map_price_area"
-												value="<?php echo esc_attr( $value['price'] ); ?>"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[area]['.$key.'][price]' ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-												placeholder="<?php echo esc_attr( '50.00', 'eventlist' ); ?>"
-											/>
-										</div>
-										<?php $person_price = isset( $value['person_price'] ) ? $value['person_price'] : ""; ?>
-										<input type="hidden" class="person_price" name="<?php echo esc_attr( $_prefix.'ticket_map[area]['.$key.'][person_price]' ); ?>" value="<?php echo esc_attr( $person_price ); ?>">
-										<div class="qty_area_map">
-											<label><?php esc_html_e( 'Quantity:', 'eventlist' ) ?></label>
-											<input
-												type="number"
-												class="map_qty_area"
-												value="<?php echo esc_attr( $value['qty'] ); ?>"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[area]['.$key.'][qty]' ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-												placeholder="<?php echo esc_attr( '100', 'eventlist' ); ?>"
-												min="0"
-											/>
-										</div>
-										<div class="type_area_map">
-											<label><?php esc_html_e( 'Type Seat:', 'eventlist' ); ?></label>
-											<select
-												name="<?php echo esc_attr( $_prefix.'ticket_map[area]['.$key.'][type_seat]' ); ?>"
-												class="select_type_area"
-												data-default="<?php esc_attr_e( 'Select Type Seat', 'eventlist' ); ?>">
-												<option value="">
-													<?php esc_html_e( 'Select Type Seat', 'eventlist' ); ?>
-												</option>
-												<?php if ( ! empty( $type_seat ) ):
-													$val_type_seat = isset( $value['type_seat'] ) ? $value['type_seat'] : '';
+.slots_option:hover {
+    border-color: #FF6600;
+}
 
-													foreach ( $type_seat as $v_type_seat ):
-												?>
-														<option value="<?php echo esc_attr( $v_type_seat ); ?>"<?php selected( $v_type_seat, $val_type_seat ); ?>>
-															<?php echo esc_html( $v_type_seat ); ?>
-														</option>
-												<?php endforeach; endif; ?>
-											</select>
-										</div>
-										<div class="map_area_start_date">
-											<label><?php esc_html_e( 'Start Date:', 'eventlist' ); ?></label>
-											<input
-												type="text"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[area]['.$key.'][start_date]' ); ?>"
-												class="area_start_date"
-												value="<?php echo isset( $value['start_date'] ) && $value['start_date'] ? $value['start_date'] : ''; ?>"
-												data-format="<?php echo esc_attr( $format ); ?>"
-												data-firstday="<?php echo esc_attr( $first_day ); ?>"
-												placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-											/>
-										</div>
-										<div class="map_area_start_time">
-											<label><?php esc_html_e( 'Start Time:', 'eventlist' ); ?></label>
-											<input
-												type="text"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[area]['.$key.'][start_time]' ); ?>"
-												class="area_start_time"
-												value="<?php echo isset( $value['start_time'] ) && $value['start_time'] ? $value['start_time'] : ''; ?>"
-												data-time="<?php echo esc_attr( $time ); ?>"
-												placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-											/>
-										</div>
-										<div class="map_area_end_date">
-											<label><?php esc_html_e( 'End Date:', 'eventlist' ); ?></label>
-											<input
-												type="text"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[area]['.$key.'][end_date]' ); ?>"
-												class="area_end_date"
-												value="<?php echo isset( $value['end_date'] ) && $value['end_date'] ? $value['end_date'] : ''; ?>"
-												data-format="<?php echo esc_attr( $format ); ?>"
-												data-firstday="<?php echo esc_attr( $first_day ); ?>"
-												placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-											/>
-										</div>
-										<div class="map_area_end_time">
-											<label><?php esc_html_e( 'End Time:', 'eventlist' ); ?></label>
-											<input
-												type="text"
-												name="<?php echo esc_attr( $_prefix.'ticket_map[area]['.$key.'][end_time]' ); ?>"
-												class="area_end_time"
-												value="<?php echo isset( $value['end_time'] ) && $value['end_time'] ? $value['end_time'] : ''; ?>"
-												data-time="<?php echo esc_attr( $time ); ?>"
-												placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>"
-												autocomplete="off" autocorrect="off" autocapitalize="none"
-											/>
-										</div>
-										<a href="#" class="button remove_area_map"><?php esc_html_e( 'x', 'eventlist' ); ?></a>
-									</div>
-								<?php endforeach;
-							endif; ?>
-						</div>
-						<button class="button add_area_map" style="display: none;">
-							<?php esc_html_e( 'Add new area', 'eventlist' ); ?>
-							<div class="submit-load-more sendmail">
-								<div class="load-more">
-									<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-								</div>
-							</div>
-						</button>
-					</div>
-				</div>
-			<?php endif; ?>
-		</div>
+.slots_option.selected {
+    border-color: #FF6600;
+    background: #fff8f5;
+}
 
-		<!-- Compteur de billets -->
-		<?php
-		$ticket_count = 0;
-		if ( $ticket && is_array( $ticket ) ) {
-			foreach ( $ticket as $t ) {
-				if ( isset( $t['name_ticket'] ) && ! empty( $t['name_ticket'] ) ) {
-					$ticket_count++;
-				}
-			}
-		}
-		?>
-		<div class="ticket-counter" style="margin: 15px 0; padding: 10px; background: #f0f9ff; border-left: 3px solid #3b82f6; border-radius: 4px;">
-			<span style="font-weight: 600; color: #1e40af;">
-				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:5px;">
-					<path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"></path>
-				</svg>
-				<span class="ticket-count-number"><?php echo esc_html( $ticket_count ); ?></span>
-				<?php echo $ticket_count > 1 ? esc_html__( 'billets configurés', 'eventlist' ) : esc_html__( 'billet configuré', 'eventlist' ); ?>
-			</span>
-		</div>
+.slots_option .slots_radio {
+    display: none;
+}
 
-		<button class="button add_ticket" data-event_id="<?php echo esc_attr( $post_id ); ?>" data-seat_option="<?php echo esc_attr( $seat_option ); ?>" style="<?php echo esc_attr( $seat_option !== 'map' ? 'display: block;' : 'display: none;' ); ?>">
-			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:5px;">
-				<line x1="12" y1="5" x2="12" y2="19"></line>
-				<line x1="5" y1="12" x2="19" y2="12"></line>
-			</svg>
-			<?php esc_html_e( 'Ajouter un billet', 'eventlist' ); ?>
-			<div class="submit-load-more sendmail">
-				<div class="load-more">
-					<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-				</div>
-			</div>
-		</button>
-	</div>
-<?php endif; ?>
+.slots_option .slots_checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.slots_option.selected .slots_checkmark {
+    background: #FF6600;
+    border-color: #FF6600;
+}
+
+.slots_option.selected .slots_checkmark::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 10px;
+    color: #fff;
+}
+
+.slots_label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #334155;
+}
+
+/* Slots Picker */
+.slots_picker {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.slots_picker_row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.slots_picker_row:last-child {
+    margin-bottom: 0;
+}
+
+.slots_picker_field {
+    flex: 1;
+}
+
+.slots_picker_field label {
+    display: block;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.slots_picker_field_select {
+    flex: 2;
+}
+
+.slots_picker_field_btn {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: flex-end;
+}
+
+.slots_picker_field_btn .btn_add_slot {
+    height: 44px;
+    padding: 0 24px;
+}
+
+/* Selected Slots List */
+.selected_slots_list {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.selected_slot_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: #e0f2fe;
+    border-radius: 6px;
+}
+
+.selected_slot_item .slot_info {
+    font-size: 13px;
+    color: #0369a1;
+}
+
+.selected_slot_item .btn_remove_slot {
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.selected_slot_item .btn_remove_slot:hover {
+    background: #f1f5f9;
+    color: #ef4444;
+}
+
+/* Tickets List */
+.tickets_list_wrapper {
+    margin-bottom: 24px;
+}
+
+.ticket_form_item {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.ticket_form_content {
+    padding: 24px;
+}
+
+.ticket_form_field {
+    margin-bottom: 20px;
+}
+
+.ticket_form_field:last-of-type {
+    margin-bottom: 24px;
+}
+
+.ticket_form_field .field_label {
+    display: block;
+    font-size: 14px;
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.ticket_form_field .field_label .required {
+    color: #ef4444;
+}
+
+.ticket_form_row_3cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* Registration Period */
+.registration_period_options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.registration_option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.registration_option .registration_radio {
+    display: none;
+}
+
+.registration_option .registration_checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.registration_option.selected .registration_checkmark {
+    background: #FF6600;
+    border-color: #FF6600;
+}
+
+.registration_option.selected .registration_checkmark::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 10px;
+    color: #fff;
+}
+
+.registration_text {
+    font-size: 14px;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.registration_text .minutes_input {
+    width: 60px;
+    padding: 6px 10px;
+    text-align: center;
+}
+
+/* Date Range */
+.registration_date_range {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-left: 32px;
+    flex-wrap: wrap;
+}
+
+.date_range_row {
+    display: flex;
+    gap: 10px;
+}
+
+.date_range_row .date_input {
+    width: 150px;
+}
+
+.date_range_row .time_input {
+    width: 100px;
+}
+
+.date_range_separator {
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* Ticket Form Actions */
+.ticket_form_actions {
+    display: flex;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Buttons */
+.el_button_primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #FF6600;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.el_button_primary:hover {
+    background: #e55c00;
+}
+
+.el_button_outline_primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: transparent;
+    color: #FF6600;
+    border: 2px solid #FF6600;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.el_button_outline_primary:hover {
+    background: #FF6600;
+    color: #fff;
+}
+
+.el_button_outline_warning {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: transparent;
+    color: #FF6600;
+    border: 2px solid #FF6600;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.el_button_outline_warning:hover {
+    background: #fff8f5;
+}
+
+/* External Section */
+.billetterie_external_section {
+    padding-top: 10px;
+}
+
+.external_tarifs_wrapper {
+    margin-top: 30px;
+    padding: 24px;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.external_tarifs_list {
+    margin-bottom: 20px;
+}
+
+.external_tarif_item {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.tarif_row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    margin-bottom: 16px;
+}
+
+.tarif_field {
+    flex: 1;
+}
+
+.tarif_field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #334155;
+    margin-bottom: 6px;
+}
+
+.tarif_name_field {
+    flex: 2;
+}
+
+.tarif_price_field {
+    flex: 1;
+}
+
+.tarif_price_field .price_input_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tarif_price_field .tarif_price_input {
+    width: 100px;
+}
+
+.tarif_price_field .currency_symbol {
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.tarif_info_field {
+    flex: none;
+    width: 100%;
+}
+
+.btn_remove_tarif {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #64748b;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.btn_remove_tarif:hover {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #ef4444;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .billetterie_price_choice {
+        flex-direction: column;
+    }
+
+    .billetterie_contact_row {
+        grid-template-columns: 1fr;
+    }
+
+    .billetterie_options {
+        flex-direction: column;
+    }
+
+    .ticket_form_row_3cols {
+        grid-template-columns: 1fr;
+    }
+
+    .slots_selection {
+        flex-direction: column;
+    }
+
+    .slots_picker_row {
+        flex-direction: column;
+    }
+
+    .registration_date_range {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-left: 32px;
+    }
+
+    .ticket_form_actions {
+        flex-direction: column;
+    }
+
+    .tarif_row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+</style>
+
+<script>
+jQuery(document).ready(function($) {
+    var BilletterieManager = {
+        prefix: '<?php echo esc_js( $_prefix ); ?>',
+        ticketIndex: <?php echo count( $tickets ); ?>,
+        tarifIndex: <?php echo count( $external_prices ); ?>,
+
+        init: function() {
+            this.bindEvents();
+            this.updatePriceChoiceState();
+        },
+
+        bindEvents: function() {
+            var self = this;
+
+            // Choix Gratuit/Payant (mutuellement exclusif)
+            $(document).on('change', '.is_free_checkbox, .is_paid_checkbox', function() {
+                self.handlePriceChoice($(this));
+            });
+
+            // Choix du mode de billetterie
+            $(document).on('change', '.option_radio', function() {
+                self.handleModeChoice();
+            });
+
+            // Choix des créneaux
+            $(document).on('change', '.slots_radio', function() {
+                self.handleSlotsChoice();
+            });
+
+            // Ajout d'un créneau
+            $(document).on('click', '.btn_add_slot', function() {
+                self.addSlot();
+            });
+
+            // Suppression d'un créneau
+            $(document).on('click', '.btn_remove_slot', function() {
+                $(this).closest('.selected_slot_item').remove();
+            });
+
+            // Choix période d'inscription
+            $(document).on('change', '.registration_radio', function() {
+                self.handleRegistrationChoice($(this));
+            });
+
+            // Ajout d'un billet
+            $(document).on('click', '.btn_add_ticket', function() {
+                self.addTicket();
+            });
+
+            // Sauvegarder un billet
+            $(document).on('click', '.btn_save_ticket', function() {
+                self.saveTicket($(this));
+            });
+
+            // Stopper la réservation
+            $(document).on('click', '.btn_stop_reservation', function() {
+                self.stopReservation($(this));
+            });
+
+            // Ajout d'un tarif
+            $(document).on('click', '.btn_add_tarif', function() {
+                self.addTarif();
+            });
+
+            // Suppression d'un tarif
+            $(document).on('click', '.btn_remove_tarif', function() {
+                $(this).closest('.external_tarif_item').remove();
+                self.reindexTarifs();
+            });
+
+            // Update UI states
+            $(document).on('click', '.price_choice_card', function() {
+                self.updatePriceChoiceUI($(this));
+            });
+
+            $(document).on('click', '.billetterie_option_card', function() {
+                self.updateOptionCardUI($(this));
+            });
+
+            $(document).on('click', '.slots_option', function() {
+                self.updateSlotsOptionUI($(this));
+            });
+
+            $(document).on('click', '.registration_option', function() {
+                self.updateRegistrationOptionUI($(this));
+            });
+        },
+
+        handlePriceChoice: function($checkbox) {
+            var isChecked = $checkbox.is(':checked');
+            var isFree = $checkbox.hasClass('is_free_checkbox');
+
+            if (isChecked) {
+                // Décocher l'autre option
+                if (isFree) {
+                    $('.is_paid_checkbox').prop('checked', false);
+                    $('.is_paid_checkbox').closest('.price_choice_card').removeClass('selected');
+                } else {
+                    $('.is_free_checkbox').prop('checked', false);
+                    $('.is_free_checkbox').closest('.price_choice_card').removeClass('selected');
+                }
+                $checkbox.closest('.price_choice_card').addClass('selected');
+            } else {
+                $checkbox.closest('.price_choice_card').removeClass('selected');
+            }
+        },
+
+        updatePriceChoiceState: function() {
+            $('.price_choice_card').each(function() {
+                var $input = $(this).find('input');
+                if ($input.is(':checked')) {
+                    $(this).addClass('selected');
+                } else {
+                    $(this).removeClass('selected');
+                }
+            });
+        },
+
+        updatePriceChoiceUI: function($card) {
+            // Handled by handlePriceChoice
+        },
+
+        handleModeChoice: function() {
+            var mode = $('input[name="' + this.prefix + 'ticket_link"]:checked').val();
+
+            $('.billetterie_option_card').removeClass('selected');
+            $('input[name="' + this.prefix + 'ticket_link"]:checked').closest('.billetterie_option_card').addClass('selected');
+
+            if (mode === 'ticket_internal_link') {
+                $('.billetterie_internal_section').show();
+                $('.billetterie_external_section').hide();
+            } else {
+                $('.billetterie_internal_section').hide();
+                $('.billetterie_external_section').show();
+            }
+        },
+
+        updateOptionCardUI: function($card) {
+            // Handled by handleModeChoice
+        },
+
+        handleSlotsChoice: function() {
+            var mode = $('input[name="' + this.prefix + 'slots_mode"]:checked').val();
+
+            $('.slots_option').removeClass('selected');
+            $('input[name="' + this.prefix + 'slots_mode"]:checked').closest('.slots_option').addClass('selected');
+
+            if (mode === 'selected') {
+                $('.slots_picker').show();
+            } else {
+                $('.slots_picker').hide();
+            }
+        },
+
+        updateSlotsOptionUI: function($option) {
+            // Handled by handleSlotsChoice
+        },
+
+        addSlot: function() {
+            var $select = $('.slot_select');
+            var slotId = $select.val();
+            var slotLabel = $select.find('option:selected').text();
+
+            if (!slotId) {
+                alert('<?php echo esc_js( __( 'Veuillez sélectionner un créneau', 'eventlist' ) ); ?>');
+                return;
+            }
+
+            // Vérifier si déjà ajouté
+            if ($('.selected_slot_item[data-slot-id="' + slotId + '"]').length > 0) {
+                alert('<?php echo esc_js( __( 'Ce créneau est déjà sélectionné', 'eventlist' ) ); ?>');
+                return;
+            }
+
+            var index = $('.selected_slot_item').length;
+            var html = '<div class="selected_slot_item" data-slot-id="' + slotId + '">' +
+                '<span class="slot_info">' + slotLabel + '</span>' +
+                '<input type="hidden" name="' + this.prefix + 'selected_slots[' + index + '][id]" value="' + slotId + '">' +
+                '<input type="hidden" name="' + this.prefix + 'selected_slots[' + index + '][label]" value="' + slotLabel + '">' +
+                '<button type="button" class="btn_remove_slot"><i class="fa fa-times"></i></button>' +
+                '</div>';
+
+            $('.selected_slots_list').append(html);
+            $select.val('');
+        },
+
+        handleRegistrationChoice: function($radio) {
+            var $item = $radio.closest('.ticket_form_item');
+            var mode = $radio.val();
+
+            $item.find('.registration_option').removeClass('selected');
+            $radio.closest('.registration_option').addClass('selected');
+
+            if (mode === 'date_range') {
+                $item.find('.registration_date_range').show();
+            } else {
+                $item.find('.registration_date_range').hide();
+            }
+        },
+
+        updateRegistrationOptionUI: function($option) {
+            // Handled by handleRegistrationChoice
+        },
+
+        addTicket: function() {
+            var self = this;
+            var index = this.ticketIndex;
+
+            var html = '<div class="ticket_form_item" data-index="' + index + '">' +
+                '<div class="ticket_form_content">' +
+                    '<div class="ticket_form_field">' +
+                        '<label class="field_label"><strong><?php echo esc_js( __( 'Nom du billet', 'eventlist' ) ); ?></strong> <span class="required">*</span> :</label>' +
+                        '<input type="text" name="' + this.prefix + 'ticket[' + index + '][name_ticket]" class="billetterie_input ticket_name_input" placeholder="<?php echo esc_js( __( 'Réservation des Petits Pouces du 5 Décembre', 'eventlist' ) ); ?>" required>' +
+                    '</div>' +
+                    '<div class="ticket_form_field">' +
+                        '<label class="field_label"><strong><?php echo esc_js( __( 'Description du billet', 'eventlist' ) ); ?></strong></label>' +
+                        '<p class="field_hint"><?php echo esc_js( __( 'Cette description sera affichée sur la page de l\'activité au niveau du billet, et également sur la version PDF du billet.', 'eventlist' ) ); ?> :</p>' +
+                        '<textarea name="' + this.prefix + 'ticket[' + index + '][desc_ticket]" class="billetterie_textarea" rows="3" placeholder="<?php echo esc_js( __( 'Description du billet...', 'eventlist' ) ); ?>"></textarea>' +
+                    '</div>' +
+                    '<div class="ticket_form_row_3cols">' +
+                        '<div class="ticket_form_field">' +
+                            '<label class="field_label"><strong><?php echo esc_js( __( 'Nombre total de places', 'eventlist' ) ); ?></strong> :</label>' +
+                            '<input type="number" name="' + this.prefix + 'ticket[' + index + '][number_total_ticket]" class="billetterie_input" min="1" placeholder="20">' +
+                        '</div>' +
+                        '<div class="ticket_form_field">' +
+                            '<label class="field_label"><strong><?php echo esc_js( __( 'Nombre minimum de place autorisé par réservation', 'eventlist' ) ); ?></strong> :</label>' +
+                            '<input type="number" name="' + this.prefix + 'ticket[' + index + '][number_min_ticket]" class="billetterie_input" min="1" placeholder="1" value="1">' +
+                        '</div>' +
+                        '<div class="ticket_form_field">' +
+                            '<label class="field_label"><strong><?php echo esc_js( __( 'Nombre maximum de places autorisé par réservation', 'eventlist' ) ); ?></strong> :</label>' +
+                            '<input type="number" name="' + this.prefix + 'ticket[' + index + '][number_max_ticket]" class="billetterie_input" min="1" placeholder="">' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="ticket_form_field">' +
+                        '<label class="field_label"><strong><?php echo esc_js( __( 'Période d\'inscription', 'eventlist' ) ); ?></strong> :</label>' +
+                        '<div class="registration_period_options">' +
+                            '<label class="registration_option selected">' +
+                                '<input type="radio" name="' + this.prefix + 'ticket[' + index + '][registration_mode]" value="before_start" class="registration_radio" checked>' +
+                                '<span class="registration_checkmark"></span>' +
+                                '<span class="registration_text"><?php echo esc_js( __( 'Les réservations sont ouvertes jusqu\'à', 'eventlist' ) ); ?> <input type="number" name="' + this.prefix + 'ticket[' + index + '][minutes_before]" value="0" class="minutes_input" min="0" placeholder="0"> <?php echo esc_js( __( 'minute(s) avant le début de l\'activité', 'eventlist' ) ); ?></span>' +
+                            '</label>' +
+                            '<label class="registration_option">' +
+                                '<input type="radio" name="' + this.prefix + 'ticket[' + index + '][registration_mode]" value="date_range" class="registration_radio">' +
+                                '<span class="registration_checkmark"></span>' +
+                                '<span class="registration_text"><?php echo esc_js( __( 'Les réservations sont ouvertes à partir du', 'eventlist' ) ); ?></span>' +
+                            '</label>' +
+                        '</div>' +
+                        '<div class="registration_date_range" style="display: none;">' +
+                            '<div class="date_range_row">' +
+                                '<input type="date" name="' + this.prefix + 'ticket[' + index + '][start_ticket_date]" class="billetterie_input date_input" placeholder="JJ/MM/AAAA">' +
+                                '<input type="time" name="' + this.prefix + 'ticket[' + index + '][start_ticket_time]" class="billetterie_input time_input" value="00:00">' +
+                            '</div>' +
+                            '<span class="date_range_separator"><?php echo esc_js( __( 'jusqu\'au', 'eventlist' ) ); ?></span>' +
+                            '<div class="date_range_row">' +
+                                '<input type="date" name="' + this.prefix + 'ticket[' + index + '][close_ticket_date]" class="billetterie_input date_input" placeholder="JJ/MM/AAAA">' +
+                                '<input type="time" name="' + this.prefix + 'ticket[' + index + '][close_ticket_time]" class="billetterie_input time_input" value="23:59">' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<input type="hidden" name="' + this.prefix + 'ticket[' + index + '][is_active]" value="yes" class="ticket_is_active">' +
+                    '<div class="ticket_form_actions">' +
+                        '<button type="button" class="btn_save_ticket el_button_outline_primary"><?php echo esc_js( __( 'Sauvegarder ce billet', 'eventlist' ) ); ?></button>' +
+                        '<button type="button" class="btn_stop_reservation el_button_outline_warning" data-index="' + index + '"><?php echo esc_js( __( 'Stopper la réservation', 'eventlist' ) ); ?></button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+
+            $('.tickets_list_wrapper').append(html);
+            this.ticketIndex++;
+
+            // Scroll vers le nouveau billet
+            $('html, body').animate({
+                scrollTop: $('.ticket_form_item').last().offset().top - 100
+            }, 300);
+        },
+
+        saveTicket: function($btn) {
+            var $item = $btn.closest('.ticket_form_item');
+            var $nameInput = $item.find('.ticket_name_input');
+
+            if (!$nameInput.val().trim()) {
+                alert('<?php echo esc_js( __( 'Veuillez saisir un nom pour le billet', 'eventlist' ) ); ?>');
+                $nameInput.focus();
+                return;
+            }
+
+            // Animation de confirmation
+            $btn.text('<?php echo esc_js( __( 'Sauvegardé !', 'eventlist' ) ); ?>');
+            setTimeout(function() {
+                $btn.text('<?php echo esc_js( __( 'Sauvegarder ce billet', 'eventlist' ) ); ?>');
+            }, 2000);
+
+            if (window.ToastNotification) {
+                window.ToastNotification.success('<?php echo esc_js( __( 'Billet sauvegardé', 'eventlist' ) ); ?>');
+            }
+        },
+
+        stopReservation: function($btn) {
+            var $item = $btn.closest('.ticket_form_item');
+
+            if (confirm('<?php echo esc_js( __( 'Êtes-vous sûr de vouloir stopper la réservation pour ce billet ?', 'eventlist' ) ); ?>')) {
+                $item.find('.ticket_is_active').val('no');
+                $item.addClass('ticket_inactive');
+
+                if (window.ToastNotification) {
+                    window.ToastNotification.info('<?php echo esc_js( __( 'Réservation stoppée', 'eventlist' ) ); ?>');
+                }
+            }
+        },
+
+        addTarif: function() {
+            var index = this.tarifIndex;
+
+            var html = '<div class="external_tarif_item" data-index="' + index + '">' +
+                '<div class="tarif_row">' +
+                    '<div class="tarif_field tarif_name_field">' +
+                        '<label><?php echo esc_js( __( 'Nom du tarif', 'eventlist' ) ); ?></label>' +
+                        '<input type="text" name="' + this.prefix + 'ticket_external_prices[' + index + '][name]" class="billetterie_input" placeholder="<?php echo esc_js( __( 'Tarif Normal', 'eventlist' ) ); ?>">' +
+                    '</div>' +
+                    '<div class="tarif_field tarif_price_field">' +
+                        '<label><?php echo esc_js( __( 'Prix', 'eventlist' ) ); ?></label>' +
+                        '<div class="price_input_wrapper">' +
+                            '<input type="number" name="' + this.prefix + 'ticket_external_prices[' + index + '][price]" class="billetterie_input tarif_price_input" min="0" step="0.01" placeholder="5">' +
+                            '<span class="currency_symbol">€</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<button type="button" class="btn_remove_tarif"><i class="fa fa-times"></i></button>' +
+                '</div>' +
+                '<div class="tarif_field tarif_info_field">' +
+                    '<label><?php echo esc_js( __( 'Informations', 'eventlist' ) ); ?></label>' +
+                    '<textarea name="' + this.prefix + 'ticket_external_prices[' + index + '][info]" class="billetterie_textarea" rows="2" placeholder="<?php echo esc_js( __( 'Type de public pour ce tarif', 'eventlist' ) ); ?>"></textarea>' +
+                '</div>' +
+            '</div>';
+
+            $('.external_tarifs_list').append(html);
+            this.tarifIndex++;
+        },
+
+        reindexTarifs: function() {
+            var self = this;
+            $('.external_tarif_item').each(function(index) {
+                $(this).attr('data-index', index);
+                $(this).find('input, textarea').each(function() {
+                    var name = $(this).attr('name');
+                    if (name) {
+                        name = name.replace(/\[\d+\]/, '[' + index + ']');
+                        $(this).attr('name', name);
+                    }
+                });
+            });
+            self.tarifIndex = $('.external_tarif_item').length;
+        }
+    };
+
+    BilletterieManager.init();
+});
+</script>
