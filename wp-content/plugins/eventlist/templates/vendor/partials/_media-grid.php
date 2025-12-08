@@ -68,27 +68,58 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 <!-- Template pour un item en vue liste -->
 <script type="text/template" id="tmpl-media-item-list">
     <div class="media_item_list" data-id="{{attachment_id}}" data-folder="{{folder_id}}">
-        <div class="item_list_checkbox">
-            <input type="checkbox" class="item_select" value="{{attachment_id}}">
+        <div class="item_list_thumb_wrapper">
+            <div class="item_list_checkbox">
+                <input type="checkbox" class="item_select" value="{{attachment_id}}">
+            </div>
+            <div class="item_list_thumb">
+                <img src="{{thumb}}" alt="{{title}}" loading="lazy">
+                <div class="media_item_overlay">
+                    <button type="button" class="overlay_btn btn_view" title="<?php esc_attr_e( 'Voir', 'eventlist' ); ?>">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                    <button type="button" class="overlay_btn btn_edit" title="<?php esc_attr_e( 'Éditer', 'eventlist' ); ?>">
+                        <i class="fa fa-edit"></i>
+                    </button>
+                    <button type="button" class="overlay_btn btn_delete" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="item_list_thumb">
-            <img src="{{thumb}}" alt="{{title}}" loading="lazy">
-        </div>
-        <div class="item_list_info">
-            <h5 class="item_title">{{title}}</h5>
-            <span class="item_size">{{size}}</span>
-            <span class="item_date">{{date}}</span>
-        </div>
-        <div class="item_list_actions">
-            <button type="button" class="action_btn btn_view" title="<?php esc_attr_e( 'Voir', 'eventlist' ); ?>">
-                <i class="fa fa-eye"></i>
-            </button>
-            <button type="button" class="action_btn btn_move" title="<?php esc_attr_e( 'Déplacer', 'eventlist' ); ?>">
-                <i class="fa fa-arrows-alt"></i>
-            </button>
-            <button type="button" class="action_btn btn_delete" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
-                <i class="fa fa-trash"></i>
-            </button>
+        <div class="item_list_details">
+            <div class="detail_row">
+                <span class="detail_label"><?php esc_html_e( 'Titre', 'eventlist' ); ?> :</span>
+                <span class="detail_value item_title">{{title}}</span>
+            </div>
+            <div class="detail_row">
+                <span class="detail_label"><?php esc_html_e( 'Texte alternatif', 'eventlist' ); ?> :</span>
+                <span class="detail_value item_alt">{{alt_text}}</span>
+            </div>
+            <div class="detail_row">
+                <span class="detail_label"><?php esc_html_e( 'Poids', 'eventlist' ); ?> :</span>
+                <span class="detail_value item_size">{{size}}</span>
+            </div>
+            <div class="detail_row">
+                <span class="detail_label"><?php esc_html_e( 'Format', 'eventlist' ); ?> :</span>
+                <span class="detail_value item_format">{{format}}</span>
+            </div>
+            <div class="detail_row">
+                <span class="detail_label"><?php esc_html_e( 'Date de création', 'eventlist' ); ?> :</span>
+                <span class="detail_value item_created">{{created_at}}</span>
+            </div>
+            <div class="detail_row">
+                <span class="detail_label"><?php esc_html_e( 'Date de mise à jour', 'eventlist' ); ?> :</span>
+                <span class="detail_value item_updated">{{updated_at}}</span>
+            </div>
+            <div class="item_list_actions">
+                <button type="button" class="el_button el_button_small btn_edit">
+                    <?php esc_html_e( 'Modifier', 'eventlist' ); ?>
+                </button>
+                <button type="button" class="el_button el_button_small el_button_outline btn_delete">
+                    <?php esc_html_e( 'Supprimer', 'eventlist' ); ?>
+                </button>
+            </div>
         </div>
     </div>
 </script>

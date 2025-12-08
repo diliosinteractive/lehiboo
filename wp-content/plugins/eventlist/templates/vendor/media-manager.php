@@ -30,6 +30,10 @@ $folder_path = $current_folder > 0 ? EL_Vendor_Folders::get_folder_path( $curren
 
 // Nonce pour AJAX
 $nonce = wp_create_nonce( 'el_vendor_media_nonce' );
+
+// Taille max fichier
+$max_file_size = apply_filters( 'el_vendor_media_max_size', 10 * 1024 * 1024 ); // 10MB
+$max_file_size_mb = $max_file_size / ( 1024 * 1024 );
 ?>
 
 <div class="vendor_wrap">
@@ -214,6 +218,106 @@ $nonce = wp_create_nonce( 'el_vendor_media_nonce' );
                     <span class="meta_size"></span>
                     <span class="meta_date"></span>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Upload d'image -->
+    <div class="media_modal modal_upload" style="display: none;">
+        <div class="modal_overlay"></div>
+        <div class="modal_content modal_content_medium">
+            <div class="modal_header">
+                <h3 class="modal_title"><?php esc_html_e( 'Ajouter une image', 'eventlist' ); ?></h3>
+                <button type="button" class="modal_close">&times;</button>
+            </div>
+            <div class="modal_body">
+                <form class="upload_form" enctype="multipart/form-data">
+                    <div class="upload_form_layout">
+                        <!-- Colonne gauche: Dropzone -->
+                        <div class="upload_form_left">
+                            <div class="upload_dropzone">
+                                <div class="dropzone_preview" style="display: none;">
+                                    <img src="" alt="" class="preview_image">
+                                    <button type="button" class="btn_change_image" title="<?php esc_attr_e( 'Changer d\'image', 'eventlist' ); ?>">
+                                        <i class="fa fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                                <div class="dropzone_placeholder">
+                                    <div class="dropzone_icon">
+                                        <i class="fa fa-cloud-upload"></i>
+                                    </div>
+                                    <div class="dropzone_text">
+                                        <p><?php esc_html_e( 'Glissez vos fichiers ici', 'eventlist' ); ?></p>
+                                        <span><?php esc_html_e( 'ou cliquez pour parcourir', 'eventlist' ); ?></span>
+                                    </div>
+                                </div>
+                                <input type="file" class="upload_file_input" accept="image/jpeg,image/png,image/gif,image/webp" style="display: none;">
+                            </div>
+                            <div class="dropzone_info">
+                                <span class="info_formats">
+                                    <?php esc_html_e( 'Formats autorisés :', 'eventlist' ); ?>
+                                    JPG, PNG, GIF, WebP
+                                </span>
+                                <span class="info_size">
+                                    <?php esc_html_e( 'Taille max :', 'eventlist' ); ?>
+                                    <?php echo esc_html( $max_file_size_mb ); ?> MO <?php esc_html_e( 'par fichier', 'eventlist' ); ?>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Colonne droite: Champs de formulaire -->
+                        <div class="upload_form_right">
+                            <div class="form_field">
+                                <label for="upload_title"><?php esc_html_e( 'Titre :', 'eventlist' ); ?></label>
+                                <input type="text" id="upload_title" name="title" placeholder="<?php esc_attr_e( 'Par défaut, nom de votre fichier', 'eventlist' ); ?>">
+                            </div>
+
+                            <div class="form_field">
+                                <label for="upload_folder"><?php esc_html_e( 'Dossier :', 'eventlist' ); ?></label>
+                                <div class="folder_select_wrapper">
+                                    <div class="folder_select_display" data-folder-id="<?php echo esc_attr( $current_folder ?: 0 ); ?>">
+                                        <span class="folder_icon"><i class="fa fa-<?php echo $current_folder ? 'folder' : 'home'; ?>"></i></span>
+                                        <span class="folder_name">
+                                            <?php
+                                            if ( $current_folder_data ) {
+                                                echo esc_html( $current_folder_data->name );
+                                            } else {
+                                                esc_html_e( 'Toutes les images', 'eventlist' );
+                                            }
+                                            ?>
+                                        </span>
+                                        <span class="folder_toggle_btn"><i class="fa fa-chevron-down"></i></span>
+                                        <button type="button" class="folder_clear_btn" title="<?php esc_attr_e( 'Retirer', 'eventlist' ); ?>"><i class="fa fa-times"></i></button>
+                                    </div>
+                                    <input type="hidden" name="folder_id" value="<?php echo esc_attr( $current_folder ?: 0 ); ?>">
+                                    <div class="folder_select_dropdown" style="display: none;">
+                                        <!-- Sera rempli par JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form_field">
+                                <label for="upload_alt"><?php esc_html_e( 'Texte alternatif :', 'eventlist' ); ?></label>
+                                <input type="text" id="upload_alt" name="alt_text" placeholder="<?php esc_attr_e( 'Par défaut, nom du titre', 'eventlist' ); ?>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Barre de progression -->
+                    <div class="upload_progress_bar" style="display: none;">
+                        <div class="progress_bar">
+                            <div class="progress_fill" style="width: 0%;"></div>
+                        </div>
+                        <span class="progress_text"><?php esc_html_e( 'Compression...', 'eventlist' ); ?></span>
+                    </div>
+
+                    <div class="form_actions">
+                        <button type="submit" class="el_button el_button_primary btn_submit_upload" disabled>
+                            <i class="fa fa-cloud-upload"></i>
+                            <?php esc_html_e( 'Ajouter l\'image', 'eventlist' ); ?>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -40,6 +40,8 @@ class EL_Vendor_Media_Ajax {
         }
 
         $folder_id = isset( $_POST['folder_id'] ) ? absint( $_POST['folder_id'] ) : 0;
+        $title = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
+        $alt_text = isset( $_POST['alt_text'] ) ? sanitize_text_field( $_POST['alt_text'] ) : '';
 
         if ( empty( $_FILES['files'] ) ) {
             wp_send_json_error( array( 'message' => __( 'Aucun fichier reçu', 'eventlist' ) ) );
@@ -48,6 +50,30 @@ class EL_Vendor_Media_Ajax {
         $result = EL_Vendor_Media_Manager::upload_images( $_FILES['files'], $folder_id );
 
         if ( ! empty( $result['success'] ) ) {
+            // Mettre à jour le titre et le texte alternatif pour chaque image uploadée
+            foreach ( $result['success'] as $uploaded ) {
+                $attachment_id = $uploaded['attachment_id'];
+
+                // Déterminer le titre final
+                $final_title = ! empty( $title ) ? $title : $uploaded['title'];
+
+                // Mettre à jour le titre de l'attachment
+                if ( ! empty( $final_title ) ) {
+                    wp_update_post( array(
+                        'ID'         => $attachment_id,
+                        'post_title' => $final_title,
+                    ) );
+                }
+
+                // Déterminer le texte alternatif (par défaut = titre)
+                $final_alt = ! empty( $alt_text ) ? $alt_text : $final_title;
+
+                // Mettre à jour le texte alternatif
+                if ( ! empty( $final_alt ) ) {
+                    update_post_meta( $attachment_id, '_wp_attachment_image_alt', $final_alt );
+                }
+            }
+
             wp_send_json_success( array(
                 'message' => sprintf(
                     _n( '%d image uploadée avec succès', '%d images uploadées avec succès', count( $result['success'] ), 'eventlist' ),

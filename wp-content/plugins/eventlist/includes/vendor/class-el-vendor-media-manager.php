@@ -457,7 +457,7 @@ class EL_Vendor_Media_Manager {
 
         // Query
         $query = "
-            SELECT i.*, p.post_title, p.post_mime_type
+            SELECT i.*, p.post_title, p.post_mime_type, p.post_modified
             FROM " . self::get_table_name() . " i
             LEFT JOIN {$wpdb->posts} p ON i.attachment_id = p.ID
             {$where}
@@ -467,12 +467,38 @@ class EL_Vendor_Media_Manager {
 
         $images = $wpdb->get_results( $wpdb->prepare( $query, $args['per_page'], $offset ) );
 
-        // Enrichir avec les URLs
+        // Enrichir avec les URLs et métadonnées
         foreach ( $images as &$image ) {
             $image->url = wp_get_attachment_url( $image->attachment_id );
             $image->thumb = wp_get_attachment_image_url( $image->attachment_id, 'thumbnail' );
             $image->medium = wp_get_attachment_image_url( $image->attachment_id, 'medium' );
             $image->full = wp_get_attachment_image_url( $image->attachment_id, 'full' );
+
+            // Texte alternatif
+            $image->alt_text = get_post_meta( $image->attachment_id, '_wp_attachment_image_alt', true );
+            if ( empty( $image->alt_text ) ) {
+                $image->alt_text = $image->post_title;
+            }
+
+            // Taille du fichier
+            $file_path = get_attached_file( $image->attachment_id );
+            if ( $file_path && file_exists( $file_path ) ) {
+                $image->filesize = filesize( $file_path );
+                $image->filesize_formatted = size_format( $image->filesize );
+            } else {
+                $image->filesize = 0;
+                $image->filesize_formatted = __( 'Inconnu', 'eventlist' );
+            }
+
+            // Format (extension du mime type)
+            $mime_parts = explode( '/', $image->post_mime_type );
+            $image->format = isset( $mime_parts[1] ) ? $mime_parts[1] : $image->post_mime_type;
+
+            // Dates formatées
+            $image->created_at_formatted = date_i18n( 'j F Y', strtotime( $image->created_at ) );
+            $image->updated_at_formatted = ( $image->post_modified && $image->post_modified !== $image->created_at )
+                ? date_i18n( 'j F Y', strtotime( $image->post_modified ) )
+                : __( 'Aucune date', 'eventlist' );
         }
 
         // Total
