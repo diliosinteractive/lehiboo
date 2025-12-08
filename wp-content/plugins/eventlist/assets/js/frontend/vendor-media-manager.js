@@ -21,6 +21,7 @@
         uploadQueue: [],
         imagesToMove: [],
         targetFolderId: null,
+        loadedImages: [], // Images actuellement chargées pour re-render
 
         /**
          * Initialisation
