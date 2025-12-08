@@ -31,11 +31,24 @@ if ( $post_id !== '' ) {
 // Type d'événement
 $event_type = get_post_meta( $post_id, $_prefix.'event_type', true) ? get_post_meta( $post_id, $_prefix.'event_type', true) : 'classic';
 
-// Récupérer l'adresse de l'entité courante (profil utilisateur)
-$user_address = get_user_meta( $user_id, 'user_address', true ) ? get_user_meta( $user_id, 'user_address', true ) : '';
-$user_venue   = get_user_meta( $user_id, 'organisation_name', true ) ? get_user_meta( $user_id, 'organisation_name', true ) : get_the_author_meta('display_name', $user_id);
-$user_lat     = get_user_meta( $user_id, 'user_lat', true ) ? get_user_meta( $user_id, 'user_lat', true ) : $map_lat;
-$user_lng     = get_user_meta( $user_id, 'user_lng', true ) ? get_user_meta( $user_id, 'user_lng', true ) : $map_lng;
+// Récupérer le nom public de l'entité courante
+if ( class_exists('EL_Coorg_Helpers') ) {
+    $user_public_name = EL_Coorg_Helpers::get_organisation_name( $user_id );
+} else {
+    $org_display_name = get_user_meta( $user_id, 'org_display_name', true );
+    $org_name = get_user_meta( $user_id, 'org_name', true );
+    $user_public_name = !empty($org_display_name) ? $org_display_name : (!empty($org_name) ? $org_name : get_the_author_meta('display_name', $user_id));
+}
+
+// Adresse complète de l'entité
+$user_address_line1 = get_user_meta( $user_id, 'user_address_line1', true );
+$user_city = get_user_meta( $user_id, 'user_city', true );
+$user_postcode = get_user_meta( $user_id, 'user_postcode', true );
+$user_address_parts = array_filter([$user_address_line1, $user_postcode, $user_city]);
+$user_address = !empty($user_address_parts) ? implode(', ', $user_address_parts) : get_user_meta( $user_id, 'user_address', true );
+
+$user_lat = get_user_meta( $user_id, 'user_lat', true ) ? get_user_meta( $user_id, 'user_lat', true ) : $map_lat;
+$user_lng = get_user_meta( $user_id, 'user_lng', true ) ? get_user_meta( $user_id, 'user_lng', true ) : $map_lng;
 
 // Récupérer les partenaires acceptés
 $partners = array();
@@ -50,14 +63,25 @@ if ( class_exists('EL_Partnership') ) {
             : $partnership->organisation_principale_id;
 
         if ( $partner_id ) {
-            $partner_name = get_user_meta( $partner_id, 'organisation_name', true );
-            if ( !$partner_name ) {
-                $partner_name = get_the_author_meta('display_name', $partner_id);
+            // Nom public du partenaire
+            if ( class_exists('EL_Coorg_Helpers') ) {
+                $partner_name = EL_Coorg_Helpers::get_organisation_name( $partner_id );
+            } else {
+                $p_display = get_user_meta( $partner_id, 'org_display_name', true );
+                $p_org = get_user_meta( $partner_id, 'org_name', true );
+                $partner_name = !empty($p_display) ? $p_display : (!empty($p_org) ? $p_org : get_the_author_meta('display_name', $partner_id));
             }
-            $partner_address = get_user_meta( $partner_id, 'user_address', true );
-            $partner_venue   = get_user_meta( $partner_id, 'organisation_venue_name', true );
-            $partner_lat     = get_user_meta( $partner_id, 'user_lat', true );
-            $partner_lng     = get_user_meta( $partner_id, 'user_lng', true );
+
+            // Adresse complète du partenaire
+            $p_address_line1 = get_user_meta( $partner_id, 'user_address_line1', true );
+            $p_city = get_user_meta( $partner_id, 'user_city', true );
+            $p_postcode = get_user_meta( $partner_id, 'user_postcode', true );
+            $p_address_parts = array_filter([$p_address_line1, $p_postcode, $p_city]);
+            $partner_address = !empty($p_address_parts) ? implode(', ', $p_address_parts) : get_user_meta( $partner_id, 'user_address', true );
+
+            $partner_venue = get_user_meta( $partner_id, 'organisation_venue_name', true );
+            $partner_lat = get_user_meta( $partner_id, 'user_lat', true );
+            $partner_lng = get_user_meta( $partner_id, 'user_lng', true );
 
             $partners[] = array(
                 'id'      => $partner_id,
@@ -77,6 +101,28 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
 
 // Valeur actuelle du venue
 $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue;
+
+// Champs supplémentaires pour lieu physique
+$event_location_type = get_post_meta( $post_id, $_prefix.'event_location_type', true);
+$parking_info = get_post_meta( $post_id, $_prefix.'parking_info', true) ?: '';
+$parking_image = get_post_meta( $post_id, $_prefix.'parking_image', true) ?: '';
+$access_info = get_post_meta( $post_id, $_prefix.'access_info', true) ?: '';
+$access_image = get_post_meta( $post_id, $_prefix.'access_image', true) ?: '';
+$pmr_accessible = get_post_meta( $post_id, $_prefix.'pmr_accessible', true) ?: '';
+$pmr_notes = get_post_meta( $post_id, $_prefix.'pmr_notes', true) ?: '';
+$catering_available = get_post_meta( $post_id, $_prefix.'catering_available', true) ?: '';
+$catering_notes = get_post_meta( $post_id, $_prefix.'catering_notes', true) ?: '';
+$drinks_available = get_post_meta( $post_id, $_prefix.'drinks_available', true) ?: '';
+$drinks_notes = get_post_meta( $post_id, $_prefix.'drinks_notes', true) ?: '';
+
+// Taxonomie type événement
+$event_types_taxonomy = get_terms(array(
+    'taxonomy' => 'event_location_type',
+    'hide_empty' => false,
+));
+if (is_wp_error($event_types_taxonomy)) {
+    $event_types_taxonomy = array();
+}
 ?>
 
 <div class="event_basic_block localisation_section">
@@ -123,13 +169,13 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
             <div class="address_source_options">
                 <!-- Mon entité -->
                 <div class="address_source_row">
-                    <label class="address_source_option" for="address_source_entity">
+                    <label class="address_source_option <?php echo ($address_source == 'entity') ? 'active' : ''; ?>" for="address_source_entity">
                         <input type="radio"
                                value="entity"
                                name="<?php echo esc_attr($_prefix.'address_source'); ?>"
                                id="address_source_entity"
                                class="address_source_radio"
-                               data-venue="<?php echo esc_attr($user_venue); ?>"
+                               data-venue="<?php echo esc_attr($user_public_name); ?>"
                                data-address="<?php echo esc_attr($user_address); ?>"
                                data-lat="<?php echo esc_attr($user_lat); ?>"
                                data-lng="<?php echo esc_attr($user_lng); ?>"
@@ -142,7 +188,7 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
                 <!-- Une entité co-organisatrice -->
                 <?php if ( !empty($partners) ) : ?>
                 <div class="address_source_row with_select">
-                    <label class="address_source_option" for="address_source_coorg">
+                    <label class="address_source_option <?php echo ($address_source == 'coorg') ? 'active' : ''; ?>" for="address_source_coorg">
                         <input type="radio"
                                value="coorg"
                                name="<?php echo esc_attr($_prefix.'address_source'); ?>"
@@ -155,7 +201,8 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
                     <div class="coorg_select_wrapper">
                         <select name="<?php echo esc_attr($_prefix.'coorg_entity_id'); ?>"
                                 id="coorg_entity_select"
-                                class="coorg_entity_select">
+                                class="coorg_entity_select"
+                                <?php echo ($address_source != 'coorg') ? 'disabled' : ''; ?>>
                             <option value=""><?php esc_html_e( 'Sélectionnez...', 'eventlist' ); ?></option>
                             <?php foreach ( $partners as $partner ) : ?>
                                 <option value="<?php echo esc_attr($partner['id']); ?>"
@@ -174,7 +221,7 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
 
                 <!-- Nouvelle adresse -->
                 <div class="address_source_row">
-                    <label class="address_source_option" for="address_source_new">
+                    <label class="address_source_option <?php echo ($address_source == 'new') ? 'active' : ''; ?>" for="address_source_new">
                         <input type="radio"
                                value="new"
                                name="<?php echo esc_attr($_prefix.'address_source'); ?>"
@@ -197,9 +244,10 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
                     <input type="text"
                            name="<?php echo esc_attr($_prefix.'add_venue'); ?>"
                            id="location_venue_name"
-                           class="location_venue_input"
+                           class="location_venue_input <?php echo ($address_source != 'new') ? 'readonly' : ''; ?>"
                            value="<?php echo esc_attr($current_venue); ?>"
-                           placeholder="<?php esc_attr_e( 'Ex: Salle des fêtes, Mairie, etc.', 'eventlist' ); ?>">
+                           placeholder="<?php esc_attr_e( 'Ex: Salle des fêtes, Mairie, etc.', 'eventlist' ); ?>"
+                           <?php echo ($address_source != 'new') ? 'readonly' : ''; ?>>
                 </div>
 
                 <!-- Adresse - Input avec autocomplétion -->
@@ -209,10 +257,11 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
                         <input type="text"
                                name="<?php echo esc_attr($_prefix.'address'); ?>"
                                id="location_address"
-                               class="location_address_input"
+                               class="location_address_input <?php echo ($address_source != 'new') ? 'readonly' : ''; ?>"
                                value="<?php echo esc_attr($address); ?>"
                                placeholder="<?php esc_attr_e( 'Tapez une adresse...', 'eventlist' ); ?>"
-                               autocomplete="off">
+                               autocomplete="off"
+                               <?php echo ($address_source != 'new') ? 'readonly' : ''; ?>>
                         <div class="address_suggestions" id="address_suggestions"></div>
                     </div>
                 </div>
@@ -252,6 +301,165 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
                     <div id="location_osm_map" class="osm_map"></div>
                 </div>
             </div>
+        </div>
+
+        <!-- Séparateur -->
+        <hr class="el_separator location_separator">
+
+        <!-- Champs supplémentaires pour lieu physique -->
+        <div class="location_extra_fields">
+
+            <!-- Type d'événements organisés -->
+            <div class="vendor_field location_extra_field">
+                <label class="field_label"><?php esc_html_e( 'Type d\'événements organisés', 'eventlist' ); ?></label>
+                <p class="field_hint"><?php esc_html_e( 'Informez si les événements que votre structure organise sont plutôt en intérieur, à l\'extérieur, ou les deux.', 'eventlist' ); ?></p>
+                <select name="<?php echo esc_attr($_prefix.'event_location_type'); ?>" id="event_location_type" class="location_type_select">
+                    <option value=""><?php esc_html_e( 'À sélectionner', 'eventlist' ); ?></option>
+                    <option value="interieur" <?php selected($event_location_type, 'interieur'); ?>><?php esc_html_e( 'En intérieur', 'eventlist' ); ?></option>
+                    <option value="exterieur" <?php selected($event_location_type, 'exterieur'); ?>><?php esc_html_e( 'En extérieur', 'eventlist' ); ?></option>
+                    <option value="les_deux" <?php selected($event_location_type, 'les_deux'); ?>><?php esc_html_e( 'Les deux', 'eventlist' ); ?></option>
+                </select>
+            </div>
+
+            <!-- Stationnement -->
+            <div class="vendor_field location_extra_field location_extra_field_with_image">
+                <div class="field_header">
+                    <label class="field_label"><?php esc_html_e( 'Stationnement', 'eventlist' ); ?></label>
+                    <p class="field_hint"><?php esc_html_e( 'Donnez aux visiteurs véhiculés toutes les informations sur le stationnement, vous pouvez importer une image du parking ou du plan pour se garer', 'eventlist' ); ?></p>
+                </div>
+                <div class="field_content_row">
+                    <div class="field_input_wrapper">
+                        <input type="text"
+                               name="<?php echo esc_attr($_prefix.'parking_info'); ?>"
+                               id="parking_info"
+                               value="<?php echo esc_attr($parking_info); ?>"
+                               placeholder="<?php esc_attr_e( 'Champ texte', 'eventlist' ); ?>">
+                    </div>
+                    <div class="field_image_wrapper">
+                        <input type="hidden" name="<?php echo esc_attr($_prefix.'parking_image'); ?>" id="parking_image" value="<?php echo esc_attr($parking_image); ?>">
+                        <button type="button" class="btn_add_location_image" data-target="parking_image">
+                            <i class="fa fa-image"></i> <?php esc_html_e( 'Ajouter une image', 'eventlist' ); ?>
+                        </button>
+                        <?php if ($parking_image) : ?>
+                        <div class="location_image_preview" id="parking_image_preview">
+                            <img src="<?php echo esc_url(wp_get_attachment_image_url($parking_image, 'thumbnail')); ?>" alt="">
+                            <button type="button" class="btn_remove_location_image" data-target="parking_image"><i class="fa fa-times"></i></button>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accès & Transports -->
+            <div class="vendor_field location_extra_field location_extra_field_with_image">
+                <div class="field_header">
+                    <label class="field_label"><?php esc_html_e( 'Accès & Transports', 'eventlist' ); ?></label>
+                    <p class="field_hint"><?php esc_html_e( 'Donnez aux visiteurs toutes les informations pour accéder au lieu.', 'eventlist' ); ?></p>
+                </div>
+                <div class="field_content_row">
+                    <div class="field_input_wrapper">
+                        <input type="text"
+                               name="<?php echo esc_attr($_prefix.'access_info'); ?>"
+                               id="access_info"
+                               value="<?php echo esc_attr($access_info); ?>"
+                               placeholder="<?php esc_attr_e( 'Champ texte', 'eventlist' ); ?>">
+                    </div>
+                    <div class="field_image_wrapper">
+                        <input type="hidden" name="<?php echo esc_attr($_prefix.'access_image'); ?>" id="access_image" value="<?php echo esc_attr($access_image); ?>">
+                        <button type="button" class="btn_add_location_image" data-target="access_image">
+                            <i class="fa fa-image"></i> <?php esc_html_e( 'Ajouter une image', 'eventlist' ); ?>
+                        </button>
+                        <?php if ($access_image) : ?>
+                        <div class="location_image_preview" id="access_image_preview">
+                            <img src="<?php echo esc_url(wp_get_attachment_image_url($access_image, 'thumbnail')); ?>" alt="">
+                            <button type="button" class="btn_remove_location_image" data-target="access_image"><i class="fa fa-times"></i></button>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accessibilité PMR -->
+            <div class="vendor_field location_extra_field location_checkbox_field">
+                <div class="field_header">
+                    <label class="field_label"><?php esc_html_e( 'Accessibilité PMR', 'eventlist' ); ?></label>
+                    <p class="field_hint"><?php esc_html_e( 'Donnez aux visiteurs des informations pour les Personnes à Mobilité Réduite, et cochez si votre structure permet leur accès.', 'eventlist' ); ?></p>
+                </div>
+                <div class="field_content_row field_checkbox_row">
+                    <label class="location_checkbox_option <?php echo ($pmr_accessible == '1') ? 'active' : ''; ?>" for="pmr_accessible">
+                        <input type="checkbox"
+                               name="<?php echo esc_attr($_prefix.'pmr_accessible'); ?>"
+                               id="pmr_accessible"
+                               value="1"
+                               <?php checked($pmr_accessible, '1'); ?>>
+                        <span class="option_checkbox"></span>
+                        <span class="option_label"><?php esc_html_e( 'Accessible PMR', 'eventlist' ); ?></span>
+                    </label>
+                    <div class="field_notes_wrapper">
+                        <label><?php esc_html_e( 'Notes :', 'eventlist' ); ?></label>
+                        <input type="text"
+                               name="<?php echo esc_attr($_prefix.'pmr_notes'); ?>"
+                               id="pmr_notes"
+                               value="<?php echo esc_attr($pmr_notes); ?>"
+                               placeholder="<?php esc_attr_e( 'Champ texte', 'eventlist' ); ?>">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Restauration sur place -->
+            <div class="vendor_field location_extra_field location_checkbox_field">
+                <div class="field_header">
+                    <label class="field_label"><?php esc_html_e( 'Restauration sur place', 'eventlist' ); ?></label>
+                    <p class="field_hint"><?php esc_html_e( 'Donnez aux visiteurs des informations sur la possibilité de se restaurer sur place', 'eventlist' ); ?></p>
+                </div>
+                <div class="field_content_row field_checkbox_row">
+                    <label class="location_checkbox_option <?php echo ($catering_available == '1') ? 'active' : ''; ?>" for="catering_available">
+                        <input type="checkbox"
+                               name="<?php echo esc_attr($_prefix.'catering_available'); ?>"
+                               id="catering_available"
+                               value="1"
+                               <?php checked($catering_available, '1'); ?>>
+                        <span class="option_checkbox"></span>
+                        <span class="option_label"><?php esc_html_e( 'Restauration sur place', 'eventlist' ); ?></span>
+                    </label>
+                    <div class="field_notes_wrapper">
+                        <label><?php esc_html_e( 'Notes :', 'eventlist' ); ?></label>
+                        <input type="text"
+                               name="<?php echo esc_attr($_prefix.'catering_notes'); ?>"
+                               id="catering_notes"
+                               value="<?php echo esc_attr($catering_notes); ?>"
+                               placeholder="<?php esc_attr_e( 'Champ texte', 'eventlist' ); ?>">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boisson sur place -->
+            <div class="vendor_field location_extra_field location_checkbox_field">
+                <div class="field_header">
+                    <label class="field_label"><?php esc_html_e( 'Boisson sur place', 'eventlist' ); ?></label>
+                    <p class="field_hint"><?php esc_html_e( 'Donnez aux visiteurs des informations sur la possibilité d\'avoir des rafraîchissements sur place', 'eventlist' ); ?></p>
+                </div>
+                <div class="field_content_row field_checkbox_row">
+                    <label class="location_checkbox_option <?php echo ($drinks_available == '1') ? 'active' : ''; ?>" for="drinks_available">
+                        <input type="checkbox"
+                               name="<?php echo esc_attr($_prefix.'drinks_available'); ?>"
+                               id="drinks_available"
+                               value="1"
+                               <?php checked($drinks_available, '1'); ?>>
+                        <span class="option_checkbox"></span>
+                        <span class="option_label"><?php esc_html_e( 'Boisson sur place', 'eventlist' ); ?></span>
+                    </label>
+                    <div class="field_notes_wrapper">
+                        <label><?php esc_html_e( 'Notes :', 'eventlist' ); ?></label>
+                        <input type="text"
+                               name="<?php echo esc_attr($_prefix.'drinks_notes'); ?>"
+                               id="drinks_notes"
+                               value="<?php echo esc_attr($drinks_notes); ?>"
+                               placeholder="<?php esc_attr_e( 'Champ texte', 'eventlist' ); ?>">
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -296,13 +504,13 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
         defaultLat: <?php echo $map_lat ? floatval($map_lat) : '48.8566'; ?>,
         defaultLng: <?php echo $map_lng ? floatval($map_lng) : '2.3522'; ?>,
         searchTimeout: null,
-        isFieldsReadonly: true,
+        isFieldsReadonly: <?php echo ($address_source != 'new') ? 'true' : 'false'; ?>,
 
         init: function() {
             this.initMap();
             this.initAddressAutocomplete();
             this.bindEvents();
-            this.handleAddressSource();
+            this.initializeFromSource();
         },
 
         initMap: function() {
@@ -323,6 +531,7 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
 
             // Événement de drag du marqueur
             this.marker.on('dragend', function(e) {
+                if (self.isFieldsReadonly) return;
                 var pos = e.target.getLatLng();
                 self.updateCoordinates(pos.lat, pos.lng);
                 self.reverseGeocode(pos.lat, pos.lng);
@@ -330,6 +539,7 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
 
             // Clic sur la carte pour déplacer le marqueur
             this.map.on('click', function(e) {
+                if (self.isFieldsReadonly) return;
                 self.marker.setLatLng(e.latlng);
                 self.updateCoordinates(e.latlng.lat, e.latlng.lng);
                 self.reverseGeocode(e.latlng.lat, e.latlng.lng);
@@ -343,6 +553,8 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
 
             // Recherche lors de la saisie
             $input.on('input', function() {
+                if (self.isFieldsReadonly) return;
+
                 var query = $(this).val().trim();
 
                 // Effacer le timeout précédent
@@ -371,7 +583,7 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
 
             // Focus sur l'input pour réafficher les suggestions
             $input.on('focus', function() {
-                if ($suggestions.children().length > 0) {
+                if (!self.isFieldsReadonly && $suggestions.children().length > 0) {
                     $suggestions.show();
                 }
             });
@@ -437,6 +649,9 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
             // Mettre à jour les coordonnées et la carte
             this.updateCoordinates(lat, lng);
             this.updateMapPosition(lat, lng);
+
+            // Mettre à jour le champ caché map_address
+            $('#map_address').val(address);
         },
 
         bindEvents: function() {
@@ -470,14 +685,69 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
             $('#coorg_entity_select').on('change', function() {
                 var $selected = $(this).find(':selected');
                 if ($selected.val()) {
-                    var venue = $selected.data('venue');
-                    var address = $selected.data('address');
-                    var lat = $selected.data('lat');
-                    var lng = $selected.data('lng');
+                    var venue = $selected.data('venue') || '';
+                    var address = $selected.data('address') || '';
+                    var lat = $selected.data('lat') || '';
+                    var lng = $selected.data('lng') || '';
 
                     self.fillLocationFields(venue, address, lat, lng, true);
                 }
             });
+
+            // Checkboxes de lieu
+            $('.location_checkbox_option input[type="checkbox"]').on('change', function() {
+                var $label = $(this).closest('.location_checkbox_option');
+                if ($(this).is(':checked')) {
+                    $label.addClass('active');
+                } else {
+                    $label.removeClass('active');
+                }
+            });
+
+            // Bouton ajouter image
+            $(document).on('click', '.btn_add_location_image', function(e) {
+                e.preventDefault();
+                var targetId = $(this).data('target');
+                self.openMediaPicker(targetId);
+            });
+
+            // Bouton supprimer image
+            $(document).on('click', '.btn_remove_location_image', function(e) {
+                e.preventDefault();
+                var targetId = $(this).data('target');
+                $('#' + targetId).val('');
+                $('#' + targetId + '_preview').remove();
+            });
+        },
+
+        initializeFromSource: function() {
+            var source = $('.address_source_radio:checked').val();
+
+            // Si c'est entity ou coorg, pré-remplir les champs
+            if (source === 'entity') {
+                var $entity = $('#address_source_entity');
+                var venue = $entity.data('venue') || '';
+                var address = $entity.data('address') || '';
+                var lat = $entity.data('lat') || '';
+                var lng = $entity.data('lng') || '';
+
+                // Ne pré-remplir que si les champs sont vides
+                if (!$('#location_venue_name').val() && venue) {
+                    this.fillLocationFields(venue, address, lat, lng, true);
+                }
+            } else if (source === 'coorg') {
+                var $selected = $('#coorg_entity_select').find(':selected');
+                if ($selected.val()) {
+                    var venue = $selected.data('venue') || '';
+                    var address = $selected.data('address') || '';
+                    var lat = $selected.data('lat') || '';
+                    var lng = $selected.data('lng') || '';
+
+                    if (!$('#location_venue_name').val() && venue) {
+                        this.fillLocationFields(venue, address, lat, lng, true);
+                    }
+                }
+            }
         },
 
         handleAddressSource: function() {
@@ -495,10 +765,10 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
                 var $selected = $('#coorg_entity_select').find(':selected');
                 if ($selected.val()) {
                     this.fillLocationFields(
-                        $selected.data('venue'),
-                        $selected.data('address'),
-                        $selected.data('lat'),
-                        $selected.data('lng'),
+                        $selected.data('venue') || '',
+                        $selected.data('address') || '',
+                        $selected.data('lat') || '',
+                        $selected.data('lng') || '',
                         true
                     );
                 }
@@ -509,10 +779,11 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
 
             // Remplir avec les données de l'entité
             if (source === 'entity') {
-                var venue = $checked.data('venue');
-                var address = $checked.data('address');
-                var lat = $checked.data('lat');
-                var lng = $checked.data('lng');
+                var $entity = $('#address_source_entity');
+                var venue = $entity.data('venue') || '';
+                var address = $entity.data('address') || '';
+                var lat = $entity.data('lat') || '';
+                var lng = $entity.data('lng') || '';
                 this.fillLocationFields(venue, address, lat, lng, true);
                 this.setFieldsReadonly(true);
             }
@@ -526,23 +797,26 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
 
         setFieldsReadonly: function(readonly) {
             this.isFieldsReadonly = readonly;
+            var $venue = $('#location_venue_name');
+            var $address = $('#location_address');
+
             if (readonly) {
-                $('#location_venue_name, #location_address').prop('readonly', true).addClass('readonly');
+                $venue.prop('readonly', true).addClass('readonly');
+                $address.prop('readonly', true).addClass('readonly');
+                this.marker.dragging.disable();
             } else {
-                $('#location_venue_name, #location_address').prop('readonly', false).removeClass('readonly');
+                $venue.prop('readonly', false).removeClass('readonly');
+                $address.prop('readonly', false).removeClass('readonly');
+                this.marker.dragging.enable();
             }
         },
 
         fillLocationFields: function(venue, address, lat, lng, updateMap) {
             // Nom du lieu
-            if (venue) {
-                $('#location_venue_name').val(venue);
-            }
+            $('#location_venue_name').val(venue || '');
 
             // Adresse
-            if (address) {
-                $('#location_address').val(address);
-            }
+            $('#location_address').val(address || '');
 
             // Coordonnées et carte
             if (lat && lng) {
@@ -565,8 +839,10 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
         },
 
         updateMapPosition: function(lat, lng) {
-            this.marker.setLatLng([lat, lng]);
-            this.map.setView([lat, lng], 15);
+            if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+                this.marker.setLatLng([lat, lng]);
+                this.map.setView([lat, lng], 15);
+            }
         },
 
         reverseGeocode: function(lat, lng) {
@@ -589,9 +865,62 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
                 success: function(data) {
                     if (data && data.display_name) {
                         $('#location_address').val(data.display_name);
+                        $('#map_address').val(data.display_name);
                     }
                 }
             });
+        },
+
+        openMediaPicker: function(targetId) {
+            var self = this;
+
+            // Utiliser le MediaPicker si disponible
+            if (typeof window.EL_MediaPicker !== 'undefined') {
+                window.EL_MediaPicker.open({
+                    mode: 'single',
+                    title: 'Sélectionner une image',
+                    callback: function(images) {
+                        if (images && images.length > 0) {
+                            var image = images[0];
+                            $('#' + targetId).val(image.id);
+
+                            // Créer ou mettre à jour l'aperçu
+                            var $wrapper = $('#' + targetId).closest('.field_image_wrapper');
+                            var $preview = $wrapper.find('.location_image_preview');
+
+                            if ($preview.length === 0) {
+                                $wrapper.append('<div class="location_image_preview" id="' + targetId + '_preview"><img src="' + image.url + '" alt=""><button type="button" class="btn_remove_location_image" data-target="' + targetId + '"><i class="fa fa-times"></i></button></div>');
+                            } else {
+                                $preview.find('img').attr('src', image.url);
+                            }
+                        }
+                    }
+                });
+            } else {
+                // Fallback - WordPress Media Library
+                var mediaFrame = wp.media({
+                    title: 'Sélectionner une image',
+                    button: { text: 'Utiliser cette image' },
+                    multiple: false
+                });
+
+                mediaFrame.on('select', function() {
+                    var attachment = mediaFrame.state().get('selection').first().toJSON();
+                    $('#' + targetId).val(attachment.id);
+
+                    var $wrapper = $('#' + targetId).closest('.field_image_wrapper');
+                    var $preview = $wrapper.find('.location_image_preview');
+                    var thumbUrl = attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
+
+                    if ($preview.length === 0) {
+                        $wrapper.append('<div class="location_image_preview" id="' + targetId + '_preview"><img src="' + thumbUrl + '" alt=""><button type="button" class="btn_remove_location_image" data-target="' + targetId + '"><i class="fa fa-times"></i></button></div>');
+                    } else {
+                        $preview.find('img').attr('src', thumbUrl);
+                    }
+                });
+
+                mediaFrame.open();
+            }
         }
     };
 
@@ -688,5 +1017,264 @@ $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue
 .location_lng_input {
     background-color: #f9f9f9 !important;
     color: #666 !important;
+}
+
+/* Séparateur localisation */
+.location_separator {
+    margin: 40px 0 32px;
+}
+
+/* Champs supplémentaires */
+.location_extra_fields {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.location_extra_field {
+    margin: 0 !important;
+}
+
+.location_extra_field .field_header {
+    margin-bottom: 16px;
+}
+
+.location_extra_field .field_label {
+    display: block;
+    font-weight: 600;
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.location_extra_field .field_hint {
+    color: #666;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Champs avec image */
+.location_extra_field_with_image .field_content_row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.location_extra_field_with_image .field_input_wrapper {
+    flex: 1;
+}
+
+.location_extra_field_with_image .field_input_wrapper input {
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    background: #fff;
+}
+
+.location_extra_field_with_image .field_input_wrapper input:focus {
+    border-color: #333;
+    outline: none;
+}
+
+.location_extra_field_with_image .field_image_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn_add_location_image {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #fff;
+    border: 2px dashed #FF6600;
+    border-radius: 8px;
+    color: #FF6600;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn_add_location_image:hover {
+    background: #fff5f0;
+    border-style: solid;
+}
+
+.location_image_preview {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.location_image_preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.btn_remove_location_image {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: #e74c3c;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Champs checkbox */
+.location_checkbox_field .field_content_row {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+.location_checkbox_option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+}
+
+.location_checkbox_option input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.location_checkbox_option .option_checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.location_checkbox_option:hover .option_checkbox {
+    border-color: #FF6600;
+}
+
+.location_checkbox_option.active .option_checkbox,
+.location_checkbox_option input:checked + .option_checkbox {
+    background: #FF6600;
+    border-color: #FF6600;
+}
+
+.location_checkbox_option .option_label {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.field_notes_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.field_notes_wrapper label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+}
+
+.field_notes_wrapper input {
+    flex: 1;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    background: #fff;
+}
+
+.field_notes_wrapper input:focus {
+    border-color: #333;
+    outline: none;
+}
+
+/* Select type événement */
+.location_type_select {
+    width: 100%;
+    max-width: 300px;
+    height: 48px;
+    padding: 0 40px 0 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 14px center;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.location_type_select:focus {
+    border-color: #333;
+    outline: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .location_extra_field_with_image .field_content_row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .location_extra_field_with_image .field_image_wrapper {
+        width: 100%;
+    }
+
+    .btn_add_location_image {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .location_checkbox_field .field_content_row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .field_notes_wrapper {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .field_notes_wrapper input {
+        width: 100%;
+    }
 }
 </style>

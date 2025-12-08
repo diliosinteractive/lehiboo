@@ -1733,7 +1733,7 @@ button.btn_pick_gallery_images i,
 }
 
 .vendor_wrap .contents .vendor_edit_event label, .vendor_edit_event label, .vendor_wrap .contents .vendor_profile label, .vendor_profile label {
-    display: block;
+    display: inline-flex;
     font-size: 14px;
     font-weight: 600;
     color: #2d3748;
@@ -1859,6 +1859,7 @@ a.button.remove_social {
     display: flex;
     flex-direction: column;
     gap: 6px;
+        margin-top: 20px;
 }
 
 .address_source_row {
@@ -1866,7 +1867,7 @@ a.button.remove_social {
     align-items: center;
     gap: 20px;
     flex-wrap: wrap;
-    padding: 10px 0;
+    padding: 0;
 }
 
 .address_source_row.with_select {
@@ -1972,7 +1973,7 @@ a.button.remove_social {
 .location_fields_left {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 10px;
 }
 
 .location_fields_left .vendor_field {
@@ -2228,8 +2229,7 @@ a.button.remove_social {
     }
 
     .location_type_field {
-        margin-bottom: 28px;
-        padding-bottom: 24px;
+        padding-bottom: 10px;
     }
 
     .address_source_field {
