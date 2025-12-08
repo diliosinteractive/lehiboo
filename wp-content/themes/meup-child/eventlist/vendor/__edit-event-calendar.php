@@ -561,6 +561,15 @@ $arr_recurrence_byweekno = array(
    Créneaux Section - Design compact et horizontal
    ========================================================================== */
 
+/* Forcer le masquage du jQuery timepicker */
+.creneaux_section .ui-timepicker-wrapper,
+.creneaux_section .ui-timepicker-list,
+.ui-timepicker-wrapper,
+.ui-timepicker-list {
+    display: none !important;
+    visibility: hidden !important;
+}
+
 .creneaux_section {
     padding: 0;
 }
@@ -1599,11 +1608,40 @@ $arr_recurrence_byweekno = array(
         },
 
         init: function() {
+            var self = this;
             this.disableJqueryTimepicker();
+            this.fixExistingDayNames();
             this.bindEvents();
             this.updateIntervalDesc();
             this.updateEmptyState();
             this.initWeeklySlots();
+
+            // Réappliquer la désactivation après un délai (au cas où d'autres scripts s'initialisent)
+            setTimeout(function() {
+                self.disableJqueryTimepicker();
+            }, 500);
+            setTimeout(function() {
+                self.disableJqueryTimepicker();
+            }, 1500);
+        },
+
+        // Corriger les noms de jours "undefined" dans les créneaux existants
+        fixExistingDayNames: function() {
+            var self = this;
+            $('.creneaux_time_slot, .creneaux_add_time_slot').each(function() {
+                var $row = $(this);
+                var $dayName = $row.find('.day_name');
+                var currentText = $dayName.text().trim();
+
+                // Si le texte est "undefined" ou vide, le corriger
+                if (currentText === 'undefined' || currentText === '') {
+                    // Trouver le dayKey depuis le parent ou data-key
+                    var dayKey = $row.data('key') || $row.closest('.creneaux_day_block').data('day');
+                    if (dayKey !== undefined && self.dayNames[String(dayKey)]) {
+                        $dayName.text(self.dayNames[String(dayKey)]);
+                    }
+                }
+            });
         },
 
         // Initialiser les classes has_slots pour les jours avec créneaux existants
@@ -1619,22 +1657,35 @@ $arr_recurrence_byweekno = array(
 
         // Désactive le jQuery timepicker sur nos inputs HTML5 natifs
         disableJqueryTimepicker: function() {
-            // Supprimer l'attribut data-time pour empêcher l'initialisation du timepicker
-            $('.creneaux_time_native').removeAttr('data-time');
+            var $timeInputs = $('.creneaux_section input[type="time"]');
+
+            // Supprimer tous les attributs qui pourraient déclencher le timepicker
+            $timeInputs.removeAttr('data-time').removeAttr('data-timepicker');
+            $timeInputs.removeClass('hasTimepicker ui-timepicker-input');
 
             // Si le timepicker jQuery est déjà initialisé, le détruire
             if (typeof $.fn.timepicker !== 'undefined') {
-                $('.creneaux_time_native').each(function() {
+                $timeInputs.each(function() {
+                    var $input = $(this);
                     try {
-                        $(this).timepicker('destroy');
-                    } catch(e) {
-                        // Ignorer les erreurs si pas initialisé
-                    }
+                        if ($input.data('timepicker')) {
+                            $input.timepicker('destroy');
+                        }
+                    } catch(e) {}
+                    try {
+                        $input.timepicker('remove');
+                    } catch(e) {}
                 });
             }
 
+            // Supprimer les éléments UI du timepicker s'ils existent
+            $('.ui-timepicker-wrapper, .ui-timepicker-list').remove();
+
             // Empêcher les futurs événements timepicker sur ces éléments
-            $('.creneaux_time_native').off('focus.timepicker click.timepicker');
+            $timeInputs.off('focus.timepicker click.timepicker showTimepicker');
+
+            // Supprimer les données jQuery associées
+            $timeInputs.removeData('timepicker').removeData('ui-timepicker');
         },
 
         bindEvents: function() {
