@@ -3,6 +3,7 @@
 /**
  * Template: Localisation de l'événement
  * Design selon maquette avec OSM (Leaflet)
+ * Autocomplétion adresse avec Nominatim
  */
 
 $post_id = isset( $_REQUEST['id'] ) ? sanitize_text_field( $_REQUEST['id'] ) : '';
@@ -73,6 +74,9 @@ if ( class_exists('EL_Partnership') ) {
 // URL événement en ligne
 $event_online_url = get_post_meta( $post_id, $_prefix.'event_online_url', true);
 $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', true);
+
+// Valeur actuelle du venue
+$current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue;
 ?>
 
 <div class="event_basic_block localisation_section">
@@ -187,33 +191,30 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
         <!-- Champs d'adresse et carte -->
         <div class="location_fields_wrapper">
             <div class="location_fields_left">
-                <!-- Nom du lieu -->
+                <!-- Nom du lieu - Input texte libre -->
                 <div class="vendor_field">
                     <label for="location_venue_name"><?php esc_html_e( 'Nom du lieu', 'eventlist' ); ?></label>
-                    <select name="<?php echo esc_attr($_prefix.'add_venue'); ?>"
-                            id="location_venue_name"
-                            class="location_venue_select select2_venue">
-                        <option value=""><?php esc_html_e( 'Rechercher ou saisir un lieu...', 'eventlist' ); ?></option>
-                        <?php
-                        // Afficher la valeur actuelle si elle existe
-                        $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue;
-                        if ( $current_venue ) : ?>
-                            <option value="<?php echo esc_attr($current_venue); ?>" selected><?php echo esc_html($current_venue); ?></option>
-                        <?php endif; ?>
-                    </select>
+                    <input type="text"
+                           name="<?php echo esc_attr($_prefix.'add_venue'); ?>"
+                           id="location_venue_name"
+                           class="location_venue_input"
+                           value="<?php echo esc_attr($current_venue); ?>"
+                           placeholder="<?php esc_attr_e( 'Ex: Salle des fêtes, Mairie, etc.', 'eventlist' ); ?>">
                 </div>
 
-                <!-- Adresse -->
-                <div class="vendor_field">
+                <!-- Adresse - Input avec autocomplétion -->
+                <div class="vendor_field address_autocomplete_wrapper">
                     <label for="location_address"><?php esc_html_e( 'Adresse', 'eventlist' ); ?></label>
-                    <select name="<?php echo esc_attr($_prefix.'address'); ?>"
-                            id="location_address"
-                            class="location_address_select select2_address">
-                        <option value=""><?php esc_html_e( 'Rechercher une adresse...', 'eventlist' ); ?></option>
-                        <?php if ( $address ) : ?>
-                            <option value="<?php echo esc_attr($address); ?>" selected><?php echo esc_html($address); ?></option>
-                        <?php endif; ?>
-                    </select>
+                    <div class="address_input_container">
+                        <input type="text"
+                               name="<?php echo esc_attr($_prefix.'address'); ?>"
+                               id="location_address"
+                               class="location_address_input"
+                               value="<?php echo esc_attr($address); ?>"
+                               placeholder="<?php esc_attr_e( 'Tapez une adresse...', 'eventlist' ); ?>"
+                               autocomplete="off">
+                        <div class="address_suggestions" id="address_suggestions"></div>
+                    </div>
                 </div>
 
                 <!-- Latitude -->
@@ -224,7 +225,8 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
                            id="map_lat"
                            value="<?php echo esc_attr($map_lat); ?>"
                            class="location_lat_input"
-                           placeholder="48.8566">
+                           placeholder="48.8566"
+                           readonly>
                 </div>
 
                 <!-- Longitude -->
@@ -235,7 +237,8 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
                            id="map_lng"
                            value="<?php echo esc_attr($map_lng); ?>"
                            class="location_lng_input"
-                           placeholder="2.3522">
+                           placeholder="2.3522"
+                           readonly>
                 </div>
 
                 <!-- Champs cachés -->
@@ -292,10 +295,12 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
         marker: null,
         defaultLat: <?php echo $map_lat ? floatval($map_lat) : '48.8566'; ?>,
         defaultLng: <?php echo $map_lng ? floatval($map_lng) : '2.3522'; ?>,
+        searchTimeout: null,
+        isFieldsReadonly: true,
 
         init: function() {
             this.initMap();
-            this.initSelect2();
+            this.initAddressAutocomplete();
             this.bindEvents();
             this.handleAddressSource();
         },
@@ -331,76 +336,107 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
             });
         },
 
-        initSelect2: function() {
+        initAddressAutocomplete: function() {
             var self = this;
+            var $input = $('#location_address');
+            var $suggestions = $('#address_suggestions');
 
-            // Select2 pour le nom du lieu (tags)
-            $('#location_venue_name').select2({
-                tags: true,
-                placeholder: '<?php esc_html_e( 'Rechercher ou saisir un lieu...', 'eventlist' ); ?>',
-                allowClear: true,
-                width: '100%',
-                language: {
-                    noResults: function() {
-                        return '<?php esc_html_e( 'Tapez pour créer un nouveau lieu', 'eventlist' ); ?>';
-                    }
+            // Recherche lors de la saisie
+            $input.on('input', function() {
+                var query = $(this).val().trim();
+
+                // Effacer le timeout précédent
+                if (self.searchTimeout) {
+                    clearTimeout(self.searchTimeout);
+                }
+
+                // Cacher les suggestions si moins de 3 caractères
+                if (query.length < 3) {
+                    $suggestions.hide().empty();
+                    return;
+                }
+
+                // Attendre 300ms avant de rechercher
+                self.searchTimeout = setTimeout(function() {
+                    self.searchAddress(query);
+                }, 300);
+            });
+
+            // Cacher les suggestions quand on clique ailleurs
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.address_autocomplete_wrapper').length) {
+                    $suggestions.hide();
                 }
             });
 
-            // Select2 pour l'adresse avec recherche Nominatim
-            $('#location_address').select2({
-                placeholder: '<?php esc_html_e( 'Rechercher une adresse...', 'eventlist' ); ?>',
-                allowClear: true,
-                width: '100%',
-                minimumInputLength: 3,
-                language: {
-                    inputTooShort: function() {
-                        return '<?php esc_html_e( 'Saisissez au moins 3 caractères', 'eventlist' ); ?>';
-                    },
-                    searching: function() {
-                        return '<?php esc_html_e( 'Recherche...', 'eventlist' ); ?>';
-                    },
-                    noResults: function() {
-                        return '<?php esc_html_e( 'Aucun résultat trouvé', 'eventlist' ); ?>';
-                    }
+            // Focus sur l'input pour réafficher les suggestions
+            $input.on('focus', function() {
+                if ($suggestions.children().length > 0) {
+                    $suggestions.show();
+                }
+            });
+        },
+
+        searchAddress: function(query) {
+            var self = this;
+            var $suggestions = $('#address_suggestions');
+
+            $.ajax({
+                url: 'https://nominatim.openstreetmap.org/search',
+                dataType: 'json',
+                data: {
+                    q: query,
+                    format: 'json',
+                    addressdetails: 1,
+                    limit: 8,
+                    countrycodes: 'fr',
+                    'accept-language': 'fr'
                 },
-                ajax: {
-                    url: 'https://nominatim.openstreetmap.org/search',
-                    dataType: 'json',
-                    delay: 300,
-                    data: function(params) {
-                        return {
-                            q: params.term,
-                            format: 'json',
-                            addressdetails: 1,
-                            limit: 10,
-                            countrycodes: 'fr',
-                            'accept-language': 'fr'
-                        };
-                    },
-                    processResults: function(data) {
-                        return {
-                            results: data.map(function(item) {
-                                return {
-                                    id: item.display_name,
-                                    text: item.display_name,
-                                    lat: item.lat,
-                                    lon: item.lon
-                                };
-                            })
-                        };
-                    }
-                }
-            });
+                beforeSend: function() {
+                    $suggestions.html('<div class="suggestion_loading"><i class="fa fa-spinner fa-spin"></i> Recherche...</div>').show();
+                },
+                success: function(data) {
+                    $suggestions.empty();
 
-            // Quand une adresse est sélectionnée
-            $('#location_address').on('select2:select', function(e) {
-                var data = e.params.data;
-                if (data.lat && data.lon) {
-                    self.updateMapPosition(parseFloat(data.lat), parseFloat(data.lon));
-                    self.updateCoordinates(data.lat, data.lon);
+                    if (data.length === 0) {
+                        $suggestions.html('<div class="suggestion_empty">Aucune adresse trouvée</div>').show();
+                        return;
+                    }
+
+                    data.forEach(function(item) {
+                        var $item = $('<div class="suggestion_item"></div>')
+                            .attr('data-lat', item.lat)
+                            .attr('data-lng', item.lon)
+                            .attr('data-address', item.display_name)
+                            .html('<i class="fa fa-map-marker-alt"></i><span>' + item.display_name + '</span>');
+
+                        $item.on('click', function() {
+                            self.selectAddress($(this));
+                        });
+
+                        $suggestions.append($item);
+                    });
+
+                    $suggestions.show();
+                },
+                error: function() {
+                    $suggestions.html('<div class="suggestion_empty">Erreur de recherche</div>').show();
                 }
             });
+        },
+
+        selectAddress: function($item) {
+            var address = $item.data('address');
+            var lat = parseFloat($item.data('lat'));
+            var lng = parseFloat($item.data('lng'));
+
+            // Mettre à jour l'input
+            $('#location_address').val(address);
+            $('#address_suggestions').hide();
+
+            // Mettre à jour les coordonnées et la carte
+            this.updateCoordinates(lat, lng);
+            this.updateMapPosition(lat, lng);
         },
 
         bindEvents: function() {
@@ -439,16 +475,7 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
                     var lat = $selected.data('lat');
                     var lng = $selected.data('lng');
 
-                    self.fillLocationFields(venue, address, lat, lng);
-                }
-            });
-
-            // Mise à jour manuelle des coordonnées
-            $('#map_lat, #map_lng').on('change', function() {
-                var lat = parseFloat($('#map_lat').val());
-                var lng = parseFloat($('#map_lng').val());
-                if (!isNaN(lat) && !isNaN(lng)) {
-                    self.updateMapPosition(lat, lng);
+                    self.fillLocationFields(venue, address, lat, lng, true);
                 }
             });
         },
@@ -456,6 +483,7 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
         handleAddressSource: function() {
             var $checked = $('.address_source_radio:checked');
             var source = $checked.val();
+            var self = this;
 
             // Mise à jour visuelle
             $('.address_source_option').removeClass('active');
@@ -470,9 +498,11 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
                         $selected.data('venue'),
                         $selected.data('address'),
                         $selected.data('lat'),
-                        $selected.data('lng')
+                        $selected.data('lng'),
+                        true
                     );
                 }
+                this.setFieldsReadonly(true);
             } else {
                 $('#coorg_entity_select').prop('disabled', true);
             }
@@ -483,49 +513,50 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
                 var address = $checked.data('address');
                 var lat = $checked.data('lat');
                 var lng = $checked.data('lng');
-                this.fillLocationFields(venue, address, lat, lng);
+                this.fillLocationFields(venue, address, lat, lng, true);
+                this.setFieldsReadonly(true);
             }
 
-            // Nouvelle adresse - vider les champs
+            // Nouvelle adresse - vider les champs et les rendre éditables
             if (source === 'new') {
                 this.clearLocationFields();
+                this.setFieldsReadonly(false);
             }
         },
 
-        fillLocationFields: function(venue, address, lat, lng) {
+        setFieldsReadonly: function(readonly) {
+            this.isFieldsReadonly = readonly;
+            if (readonly) {
+                $('#location_venue_name, #location_address').prop('readonly', true).addClass('readonly');
+            } else {
+                $('#location_venue_name, #location_address').prop('readonly', false).removeClass('readonly');
+            }
+        },
+
+        fillLocationFields: function(venue, address, lat, lng, updateMap) {
             // Nom du lieu
             if (venue) {
-                var $venueSelect = $('#location_venue_name');
-                if ($venueSelect.find("option[value='" + venue + "']").length === 0) {
-                    $venueSelect.append(new Option(venue, venue, true, true));
-                } else {
-                    $venueSelect.val(venue);
-                }
-                $venueSelect.trigger('change');
+                $('#location_venue_name').val(venue);
             }
 
             // Adresse
             if (address) {
-                var $addressSelect = $('#location_address');
-                if ($addressSelect.find("option[value='" + address + "']").length === 0) {
-                    $addressSelect.append(new Option(address, address, true, true));
-                } else {
-                    $addressSelect.val(address);
-                }
-                $addressSelect.trigger('change');
+                $('#location_address').val(address);
             }
 
-            // Coordonnées
+            // Coordonnées et carte
             if (lat && lng) {
                 this.updateCoordinates(lat, lng);
-                this.updateMapPosition(parseFloat(lat), parseFloat(lng));
+                if (updateMap) {
+                    this.updateMapPosition(parseFloat(lat), parseFloat(lng));
+                }
             }
         },
 
         clearLocationFields: function() {
-            $('#location_venue_name').val(null).trigger('change');
-            $('#location_address').val(null).trigger('change');
-            // Ne pas effacer lat/lng pour garder la carte visible
+            $('#location_venue_name').val('');
+            $('#location_address').val('');
+            // Garder les coordonnées par défaut pour la carte
         },
 
         updateCoordinates: function(lat, lng) {
@@ -541,8 +572,14 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
         reverseGeocode: function(lat, lng) {
             var self = this;
 
+            // Ne pas faire de reverse geocode si les champs sont en lecture seule
+            if (this.isFieldsReadonly) {
+                return;
+            }
+
             $.ajax({
                 url: 'https://nominatim.openstreetmap.org/reverse',
+                dataType: 'json',
                 data: {
                     lat: lat,
                     lon: lng,
@@ -551,10 +588,7 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
                 },
                 success: function(data) {
                     if (data && data.display_name) {
-                        var $addressSelect = $('#location_address');
-                        $addressSelect.empty();
-                        $addressSelect.append(new Option(data.display_name, data.display_name, true, true));
-                        $addressSelect.trigger('change');
+                        $('#location_address').val(data.display_name);
                     }
                 }
             });
@@ -570,3 +604,89 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
 
 })(jQuery);
 </script>
+
+<style>
+/* Autocomplétion adresse */
+.address_autocomplete_wrapper {
+    position: relative;
+}
+
+.address_input_container {
+    position: relative;
+}
+
+.address_suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.suggestion_item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion_item:last-child {
+    border-bottom: none;
+}
+
+.suggestion_item:hover {
+    background: #f8f8f8;
+}
+
+.suggestion_item i {
+    color: #FF6600;
+    font-size: 14px;
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+
+.suggestion_item span {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.4;
+}
+
+.suggestion_loading,
+.suggestion_empty {
+    padding: 16px;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+}
+
+.suggestion_loading i {
+    margin-right: 8px;
+    color: #FF6600;
+}
+
+/* Champs en lecture seule */
+.location_venue_input.readonly,
+.location_address_input.readonly {
+    background-color: #f9f9f9;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* Lat/Lng en lecture seule toujours */
+.location_lat_input,
+.location_lng_input {
+    background-color: #f9f9f9 !important;
+    color: #666 !important;
+}
+</style>
