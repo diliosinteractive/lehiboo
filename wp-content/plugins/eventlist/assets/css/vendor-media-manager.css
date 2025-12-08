@@ -936,3 +936,560 @@
         min-width: auto;
     }
 }
+
+/* ==========================================================================
+   Media Picker Modal - Sélection d'images
+   ========================================================================== */
+
+.modal_picker {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+}
+
+.modal_picker .modal_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.modal_picker .modal_content_fullscreen {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    max-width: 1200px;
+    height: 90vh;
+    max-height: 800px;
+    margin: 5vh auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+/* Header */
+.modal_picker .modal_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+}
+
+.modal_picker .modal_title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
+    margin: 0;
+}
+
+.modal_picker .modal_close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal_picker .modal_close:hover {
+    background: #f5f5f5;
+    color: #222;
+}
+
+/* Body */
+.modal_picker .modal_body {
+    flex: 1;
+    overflow: hidden;
+    padding: 0;
+}
+
+/* Layout principal */
+.picker_layout {
+    display: flex;
+    height: 100%;
+}
+
+/* Sidebar Dossiers */
+.picker_sidebar {
+    flex: 0 0 220px;
+    background: #f9f9f9;
+    border-right: 1px solid #eee;
+    overflow-y: auto;
+    padding: 16px 0;
+}
+
+.picker_folders {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.picker_folder_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    color: #444;
+}
+
+.picker_folder_item:hover {
+    background: #f0f0f0;
+}
+
+.picker_folder_item.active {
+    background: #fff5f0;
+    color: #FF6600;
+    font-weight: 600;
+}
+
+.picker_folder_item i {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.picker_folder_item span {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.picker_folder_item .folder_count {
+    font-size: 12px;
+    color: #888;
+    font-weight: 400;
+}
+
+/* Zone principale */
+.picker_main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Toolbar */
+.picker_toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+}
+
+.picker_search_wrapper {
+    position: relative;
+    width: 280px;
+}
+
+.picker_search {
+    width: 100%;
+    padding: 10px 16px 10px 40px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.picker_search:focus {
+    outline: none;
+    border-color: #FF6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+}
+
+.picker_search_wrapper i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 14px;
+}
+
+.picker_selection_count {
+    font-size: 14px;
+    color: #666;
+}
+
+.picker_selection_count .selection_text {
+    background: #f5f5f5;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+/* Container de la grille */
+.picker_grid_container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* Loader */
+.picker_loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    gap: 15px;
+    color: #888;
+}
+
+.picker_loader i {
+    font-size: 32px;
+    color: #FF6600;
+}
+
+/* État vide */
+.picker_empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    gap: 15px;
+    color: #888;
+    text-align: center;
+}
+
+.picker_empty i {
+    font-size: 48px;
+    opacity: 0.5;
+}
+
+.picker_empty p {
+    font-size: 16px;
+    margin: 0;
+}
+
+.picker_empty .btn_upload_new {
+    margin-top: 10px;
+    background: #FF6600;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.picker_empty .btn_upload_new:hover {
+    background: #e55c00;
+}
+
+/* Grille d'images */
+.picker_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+}
+
+/* Item image */
+.picker_image_item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #f5f5f5;
+    border: 2px solid transparent;
+}
+
+.picker_image_item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.picker_image_item.selected {
+    border-color: #FF6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2);
+}
+
+/* Thumbnail */
+.picker_image_thumb {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+}
+
+.picker_image_thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.picker_image_item:hover .picker_image_thumb img {
+    transform: scale(1.05);
+}
+
+/* Indicateur de sélection */
+.picker_select_indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s;
+}
+
+.picker_image_item:hover .picker_select_indicator {
+    opacity: 1;
+}
+
+.picker_image_item.selected .picker_select_indicator {
+    opacity: 1;
+    background: #FF6600;
+    border-color: #FF6600;
+}
+
+.picker_select_indicator i {
+    font-size: 12px;
+    color: #fff;
+    opacity: 0;
+}
+
+.picker_image_item.selected .picker_select_indicator i {
+    opacity: 1;
+}
+
+/* Infos image */
+.picker_image_info {
+    padding: 10px;
+    background: #fff;
+}
+
+.picker_image_title {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.picker_image_size {
+    display: block;
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+}
+
+/* Pagination */
+.picker_pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 0;
+    margin-top: 10px;
+}
+
+.picker_pagination .page_btn {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #444;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.picker_pagination .page_btn:hover:not(:disabled) {
+    border-color: #FF6600;
+    color: #FF6600;
+}
+
+.picker_pagination .page_btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.picker_pagination .page_current {
+    background: #FF6600;
+    border-color: #FF6600;
+    color: #fff;
+}
+
+.picker_pagination .page_dots {
+    color: #888;
+    padding: 0 5px;
+}
+
+/* Footer */
+.modal_picker .modal_footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #eee;
+    background: #fff;
+}
+
+.modal_picker .btn_cancel {
+    padding: 12px 24px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal_picker .btn_cancel:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+}
+
+.modal_picker .btn_confirm_selection {
+    padding: 12px 24px;
+    border: none;
+    background: #FF6600;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal_picker .btn_confirm_selection:hover:not(:disabled) {
+    background: #e55c00;
+}
+
+.modal_picker .btn_confirm_selection:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Media Picker - Responsive
+   ========================================================================== */
+
+@media (max-width: 900px) {
+    .picker_sidebar {
+        flex: 0 0 180px;
+    }
+
+    .picker_grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal_picker .modal_content_fullscreen {
+        width: 100%;
+        height: 100%;
+        max-height: none;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .picker_layout {
+        flex-direction: column;
+    }
+
+    .picker_sidebar {
+        flex: none;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        max-height: 150px;
+        overflow-x: auto;
+    }
+
+    .picker_folders {
+        flex-direction: row;
+        padding: 8px 12px;
+        gap: 8px;
+    }
+
+    .picker_folder_item {
+        flex-shrink: 0;
+        padding: 8px 14px;
+        border-radius: 20px;
+        background: #f0f0f0;
+    }
+
+    .picker_folder_item.active {
+        background: #FF6600;
+        color: #fff;
+    }
+
+    .picker_folder_item .folder_count {
+        display: none;
+    }
+
+    .picker_toolbar {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 16px;
+    }
+
+    .picker_search_wrapper {
+        width: 100%;
+    }
+
+    .picker_grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .picker_grid_container {
+        padding: 12px;
+    }
+
+    .picker_image_info {
+        padding: 8px;
+    }
+
+    .picker_image_title {
+        font-size: 11px;
+    }
+
+    .picker_image_size {
+        display: none;
+    }
+}

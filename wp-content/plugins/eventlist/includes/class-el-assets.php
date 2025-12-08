@@ -261,6 +261,22 @@ class EL_Assets{
 			wp_enqueue_script('el_event_form_progress', EL_PLUGIN_URI.'assets/js/frontend/event-form-progress.js', array('jquery'),'1.0',true );
 			// Event Description Validation (500 chars minimum) - V1 Le Hiboo
 			wp_enqueue_script('el_event_description_validation', EL_PLUGIN_URI.'assets/js/frontend/event-description-validation.js', array('jquery'),'1.0.2',true );
+
+			// V1 Le Hiboo - Media Picker pour images et galerie
+			// Sortable.js pour le drag & drop de la galerie
+			wp_enqueue_script('sortablejs', 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js', array(), '1.15.2', true);
+
+			// CSS du Media Manager (pour le picker modal)
+			wp_enqueue_style('el_vendor_media_manager_css', EL_PLUGIN_URI.'assets/css/vendor-media-manager.css', array(), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/css/vendor-media-manager.css'));
+
+			// Media Picker script
+			wp_enqueue_script('el_vendor_media_picker', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-picker.js', array('jquery'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/frontend/vendor-media-picker.js'), true);
+
+			// Configuration JavaScript pour le Media Picker
+			wp_localize_script('el_vendor_media_picker', 'EL_MediaManager', array(
+				'nonce' => wp_create_nonce('el_vendor_media_nonce'),
+				'ajaxUrl' => admin_url('admin-ajax.php'),
+			));
 		}
 
 		// Vendor Gallery Management - V1 Le Hiboo

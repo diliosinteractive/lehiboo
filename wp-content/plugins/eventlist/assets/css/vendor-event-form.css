@@ -1202,3 +1202,322 @@
         justify-content: center;
     }
 }
+
+/* ==========================================================================
+   11. Featured Image Picker - Nouveau design
+   ========================================================================== */
+
+.featured_image_wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.featured_image_preview {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 16/9;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f5f5f5;
+    border: 2px dashed #ddd;
+    display: none;
+}
+
+.featured_image_preview.has_image {
+    display: block;
+    border-style: solid;
+    border-color: #eee;
+}
+
+.featured_image_preview .image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.featured_image_preview .btn_remove_featured {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    opacity: 0;
+}
+
+.featured_image_preview:hover .btn_remove_featured {
+    opacity: 1;
+}
+
+.featured_image_preview .btn_remove_featured:hover {
+    background: #e74c3c;
+}
+
+.btn_pick_featured_image {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    color: #333;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: fit-content;
+}
+
+.btn_pick_featured_image:hover {
+    border-color: #FF6600;
+    color: #FF6600;
+    background: #fff8f5;
+}
+
+.btn_pick_featured_image i {
+    font-size: 18px;
+}
+
+/* ==========================================================================
+   12. Gallery Grid - Nouveau design sortable
+   ========================================================================== */
+
+.event_gallery_wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.gallery_grid_sortable {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+    min-height: 160px;
+    padding: 20px;
+    background: #fafafa;
+    border: 2px dashed #e0e0e0;
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+
+.gallery_grid_sortable:not(.is_empty) {
+    border-style: solid;
+    border-color: #eee;
+    background: #fff;
+}
+
+.gallery_grid_sortable.is_empty .gallery_item {
+    display: none;
+}
+
+/* État vide */
+.gallery_empty_state {
+    grid-column: 1 / -1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    color: #888;
+}
+
+.gallery_grid_sortable.is_empty .gallery_empty_state {
+    display: flex;
+}
+
+.gallery_empty_state i {
+    font-size: 48px;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.gallery_empty_state p {
+    font-size: 16px;
+    font-weight: 500;
+    color: #666;
+    margin: 0 0 5px;
+}
+
+.gallery_empty_state span {
+    font-size: 14px;
+    color: #999;
+}
+
+/* Item de galerie */
+.gallery_item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f5f5f5;
+    cursor: grab;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.gallery_item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.gallery_item.sortable-ghost {
+    opacity: 0.5;
+}
+
+.gallery_item.sortable-drag {
+    cursor: grabbing;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.gallery_item_thumb {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+}
+
+.gallery_item_thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Overlay au survol */
+.gallery_item_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.gallery_item:hover .gallery_item_overlay {
+    opacity: 1;
+}
+
+.btn_gallery_remove {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    color: #e74c3c;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn_gallery_remove:hover {
+    background: #e74c3c;
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* Indicateur de drag */
+.gallery_item_drag {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.gallery_item:hover .gallery_item_drag {
+    opacity: 1;
+}
+
+/* Bouton ajouter des images */
+.btn_pick_gallery_images {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: #20D489;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: fit-content;
+}
+
+.btn_pick_gallery_images:hover {
+    background: #1bb574;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(32, 212, 137, 0.3);
+}
+
+.btn_pick_gallery_images i {
+    font-size: 16px;
+}
+
+/* Hint sous la galerie */
+.gallery_hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #888;
+    margin: 0;
+}
+
+.gallery_hint i {
+    color: #aaa;
+}
+
+/* ==========================================================================
+   12.1 Gallery - Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .gallery_grid_sortable {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .featured_image_preview {
+        max-width: 100%;
+    }
+
+    .btn_pick_featured_image,
+    .btn_pick_gallery_images {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery_grid_sortable {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

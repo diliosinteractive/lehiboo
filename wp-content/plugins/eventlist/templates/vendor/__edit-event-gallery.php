@@ -16,20 +16,47 @@ $image_banner = get_post_meta( $post_id, $_prefix.'image_banner', true) ? get_po
 ?>
 
 <!-- Image Gallery -->
-<div class="image_gallery">
-	<div class="wrap_image_upload">
-		<?php if ( $gallery ) : foreach ( $gallery as $key => $value ) : $image = wp_get_attachment_image_src( $value, 'el_thumbnail' ); ?>
-			<div class="image_box">
-				<input type="hidden" class="gallery_id" value="<?php echo esc_attr($value); ?>">
-				<img class="image-preview" src="<?php echo esc_url($image[0]); ?>">
-				<a class="button remove_image" href="#"><i class="icon_close" aria-hidden="true"></i></a>
-			</div>
-		<?php endforeach; endif; ?>
+<div class="event_gallery_wrapper">
+    <!-- Zone de dépôt des images triables -->
+    <div class="gallery_grid_sortable <?php echo empty($gallery) ? 'is_empty' : ''; ?>" id="gallery_sortable">
+        <?php if ( $gallery ) : foreach ( $gallery as $key => $value ) :
+            $image = wp_get_attachment_image_src( $value, 'medium' );
+            $full_image = wp_get_attachment_image_src( $value, 'full' );
+            if (!$image) continue;
+        ?>
+            <div class="gallery_item" data-id="<?php echo esc_attr($value); ?>">
+                <input type="hidden" name="<?php echo esc_attr($_prefix); ?>gallery[]" value="<?php echo esc_attr($value); ?>">
+                <div class="gallery_item_thumb">
+                    <img src="<?php echo esc_url($image[0]); ?>" alt="">
+                    <div class="gallery_item_overlay">
+                        <button type="button" class="btn_gallery_remove" title="<?php esc_attr_e('Supprimer', 'eventlist'); ?>">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="gallery_item_drag">
+                        <i class="fa fa-grip-vertical"></i>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; endif; ?>
 
-		<a class="button add_gallery_images el_btn_add_media gallery_add_btn" href="#" data-uploader-title="<?php esc_attr_e( 'Ajouter des images', 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( 'Ajouter', 'eventlist' ); ?>">
-			<i class="icon_image"></i> <?php esc_html_e( 'Ajouter des images', 'eventlist' ); ?>
-		</a>
-	</div>
+        <!-- État vide -->
+        <div class="gallery_empty_state">
+            <i class="fa fa-images"></i>
+            <p><?php esc_html_e( 'Aucune image dans la galerie', 'eventlist' ); ?></p>
+            <span><?php esc_html_e( 'Ajoutez des images pour créer votre galerie', 'eventlist' ); ?></span>
+        </div>
+    </div>
+
+    <!-- Bouton d'ajout -->
+    <button type="button" class="el_button btn_pick_gallery_images gallery_add_btn">
+        <i class="fa fa-plus"></i> <?php esc_html_e( 'Ajouter des images', 'eventlist' ); ?>
+    </button>
+
+    <p class="gallery_hint">
+        <i class="fa fa-info-circle"></i>
+        <?php esc_html_e( 'Glissez-déposez les images pour les réorganiser', 'eventlist' ); ?>
+    </p>
 </div>
 
 

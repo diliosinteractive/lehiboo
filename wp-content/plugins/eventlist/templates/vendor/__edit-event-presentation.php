@@ -64,18 +64,24 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
         </label>
         <p class="field_hint"><?php esc_html_e( 'Taille recommandée: 1920x739px', 'eventlist' ); ?></p>
 
-        <div class="wrap_image_upload">
-            <?php if ( get_the_post_thumbnail_url($post_id) ) { ?>
-                <div class="image_box">
-                    <img class="image-preview" src="<?php echo esc_url( get_the_post_thumbnail_url( $post_id ) ); ?>" alt="#">
-                    <a class="button remove_image" href="#"><i class="icon_close" aria-hidden="true"></i></a>
-                </div>
-            <?php } ?>
-            
-            <a class="button add_image el_btn_add_media" href="#" data-uploader-title="<?php esc_attr_e( "Ajouter une image", 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( "Ajouter", 'eventlist' ); ?>">
-                <i class="icon_camera_alt"></i> <?php esc_html_e( "Ajouter une image", 'eventlist' ); ?>
-            </a>
-            <input type="hidden" name="img_thumbnail" class="img_thumbnail" id="img_thumbnail" value="<?php echo esc_attr( get_post_thumbnail_id( $post_id ) ); ?>">
+        <div class="wrap_image_upload featured_image_wrapper">
+            <?php
+            $thumbnail_id = get_post_thumbnail_id( $post_id );
+            $thumbnail_url = get_the_post_thumbnail_url($post_id, 'medium_large');
+            ?>
+            <div class="featured_image_preview <?php echo $thumbnail_url ? 'has_image' : ''; ?>">
+                <?php if ( $thumbnail_url ) { ?>
+                    <img class="image-preview" src="<?php echo esc_url( $thumbnail_url ); ?>" alt="#">
+                    <button type="button" class="btn_remove_featured" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
+                        <i class="fa fa-times"></i>
+                    </button>
+                <?php } ?>
+            </div>
+
+            <button type="button" class="el_button btn_pick_featured_image">
+                <i class="fa fa-image"></i> <?php esc_html_e( "Choisir une image", 'eventlist' ); ?>
+            </button>
+            <input type="hidden" name="img_thumbnail" class="img_thumbnail" id="img_thumbnail" value="<?php echo esc_attr( $thumbnail_id ); ?>">
         </div>
     </div>
 

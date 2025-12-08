@@ -560,4 +560,170 @@ jQuery(document).ready(function ($) {
         });
     });
 
+
+    /* ==========================================================================
+       6. Media Picker Integration
+       ========================================================================== */
+
+    // ---- Featured Image Picker ----
+    $(document).on('click', '.btn_pick_featured_image', function (e) {
+        e.preventDefault();
+
+        // Vérifier si le picker est disponible
+        if (typeof window.EL_MediaPicker === 'undefined') {
+            console.warn('EL_MediaPicker not available');
+            return;
+        }
+
+        var currentId = $('#img_thumbnail').val();
+        var selected = currentId ? [{ id: parseInt(currentId) }] : [];
+
+        window.EL_MediaPicker.open({
+            mode: 'single',
+            title: 'Choisir l\'image de présentation',
+            selected: selected,
+            callback: function (images) {
+                if (images && images.length > 0) {
+                    var image = images[0];
+                    var $wrapper = $('.featured_image_wrapper');
+                    var $preview = $wrapper.find('.featured_image_preview');
+                    var $input = $wrapper.find('#img_thumbnail');
+
+                    // Mettre à jour l'input
+                    $input.val(image.id);
+
+                    // Mettre à jour l'aperçu
+                    if ($preview.find('img').length) {
+                        $preview.find('img').attr('src', image.url);
+                    } else {
+                        $preview.html(`
+                            <img class="image-preview" src="${image.url}" alt="">
+                            <button type="button" class="btn_remove_featured" title="Supprimer">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        `);
+                    }
+                    $preview.addClass('has_image');
+                }
+            }
+        });
+    });
+
+    // ---- Remove Featured Image ----
+    $(document).on('click', '.btn_remove_featured', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $wrapper = $('.featured_image_wrapper');
+        var $preview = $wrapper.find('.featured_image_preview');
+        var $input = $wrapper.find('#img_thumbnail');
+
+        // Vider l'input et l'aperçu
+        $input.val('');
+        $preview.removeClass('has_image').html('');
+    });
+
+
+    // ---- Gallery Picker ----
+    $(document).on('click', '.btn_pick_gallery_images', function (e) {
+        e.preventDefault();
+
+        // Vérifier si le picker est disponible
+        if (typeof window.EL_MediaPicker === 'undefined') {
+            console.warn('EL_MediaPicker not available');
+            return;
+        }
+
+        // Récupérer les images déjà sélectionnées
+        var existingIds = [];
+        $('#gallery_sortable .gallery_item').each(function () {
+            existingIds.push({ id: parseInt($(this).data('id')) });
+        });
+
+        window.EL_MediaPicker.open({
+            mode: 'multiple',
+            title: 'Ajouter des images à la galerie',
+            maxSelection: 20,
+            selected: existingIds,
+            callback: function (images) {
+                if (images && images.length > 0) {
+                    var $grid = $('#gallery_sortable');
+                    var prefix = 'event_';
+
+                    // Ajouter uniquement les nouvelles images
+                    images.forEach(function (image) {
+                        // Vérifier si l'image existe déjà
+                        if ($grid.find('.gallery_item[data-id="' + image.id + '"]').length === 0) {
+                            var html = `
+                                <div class="gallery_item" data-id="${image.id}">
+                                    <input type="hidden" name="${prefix}gallery[]" value="${image.id}">
+                                    <div class="gallery_item_thumb">
+                                        <img src="${image.thumb || image.url}" alt="">
+                                        <div class="gallery_item_overlay">
+                                            <button type="button" class="btn_gallery_remove" title="Supprimer">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <div class="gallery_item_drag">
+                                            <i class="fa fa-grip-vertical"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            $grid.append(html);
+                        }
+                    });
+
+                    // Mettre à jour l'état vide
+                    updateGalleryEmptyState();
+                }
+            }
+        });
+    });
+
+    // ---- Remove Gallery Image ----
+    $(document).on('click', '.btn_gallery_remove', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        $(this).closest('.gallery_item').fadeOut(200, function () {
+            $(this).remove();
+            updateGalleryEmptyState();
+        });
+    });
+
+    // ---- Update Gallery Empty State ----
+    function updateGalleryEmptyState() {
+        var $grid = $('#gallery_sortable');
+        var count = $grid.find('.gallery_item').length;
+
+        if (count === 0) {
+            $grid.addClass('is_empty');
+        } else {
+            $grid.removeClass('is_empty');
+        }
+    }
+
+    // ---- Initialize Sortable for Gallery ----
+    function initGallerySortable() {
+        var el = document.getElementById('gallery_sortable');
+        if (el && typeof Sortable !== 'undefined') {
+            new Sortable(el, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                handle: '.gallery_item',
+                filter: '.gallery_empty_state',
+                draggable: '.gallery_item',
+                onEnd: function () {
+                    // L'ordre est automatiquement mis à jour via les inputs hidden
+                }
+            });
+        }
+    }
+
+    // Initialiser au chargement
+    initGallerySortable();
+    updateGalleryEmptyState();
+
 });
