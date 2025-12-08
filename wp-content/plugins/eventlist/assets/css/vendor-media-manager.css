@@ -492,6 +492,34 @@
 .item_list_actions .el_button_small {
     padding: 8px 16px;
     font-size: 13px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Bouton Modifier - Primary orange */
+.item_list_actions .btn_edit {
+    background: #FF6600;
+    color: #fff;
+    border: 1px solid #FF6600;
+}
+
+.item_list_actions .btn_edit:hover {
+    background: #e55c00;
+    border-color: #e55c00;
+}
+
+/* Bouton Supprimer - Outline orange */
+.item_list_actions .btn_delete {
+    background: transparent;
+    color: #FF6600;
+    border: 1px solid #FF6600;
+}
+
+.item_list_actions .btn_delete:hover {
+    background: #FF6600;
+    color: #fff;
 }
 
 /* ==========================================================================
@@ -530,4 +558,204 @@
     .item_list_actions {
         justify-content: center;
     }
+}
+
+.vendor_media_manager .media_grid_container .media_item_list .item_list_thumb {
+    width: 160px!important;
+    height: 100%!important;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.vendor_media_manager .media_grid_container .media_item_list {
+    gap: 45px;
+}
+
+/* ==========================================================================
+   État vide - Bouton Ajouter des images
+   ========================================================================== */
+
+.vendor_media_manager .media_empty .btn_upload_first {
+    background: #FF6600;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vendor_media_manager .media_empty .btn_upload_first:hover {
+    background: #e55c00;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+}
+
+.vendor_media_manager .media_empty .btn_upload_first i {
+    font-size: 16px;
+}
+
+/* ==========================================================================
+   Bulk Actions - Boutons d'actions de masse
+   ========================================================================== */
+
+.bulk_actions {
+    display: flex;
+    gap: 10px;
+    margin-left: 15px;
+}
+
+.bulk_actions .el_button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bulk_actions .btn_bulk_move {
+    background: #2d3748;
+    color: #fff;
+    border: 1px solid #2d3748;
+}
+
+.bulk_actions .btn_bulk_move:hover {
+    background: #1a202c;
+    border-color: #1a202c;
+}
+
+.bulk_actions .btn_bulk_delete {
+    background: transparent;
+    color: #2d3748;
+    border: 1px solid #2d3748;
+}
+
+.bulk_actions .btn_bulk_delete:hover {
+    background: #2d3748;
+    color: #fff;
+}
+
+/* ==========================================================================
+   Modal Confirmation Suppression
+   ========================================================================== */
+
+.modal_delete_confirm .modal_content_small {
+    max-width: 400px;
+    width: 90%;
+}
+
+.modal_delete_confirm .modal_header {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.modal_delete_confirm .modal_body_centered {
+    text-align: center;
+    padding: 20px 30px 30px;
+}
+
+.modal_delete_confirm .confirm_text {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.modal_delete_confirm .form_actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.modal_delete_confirm .btn_cancel {
+    background: transparent;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 10px 24px;
+    border-radius: 6px;
+}
+
+.modal_delete_confirm .btn_cancel:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+}
+
+.modal_delete_confirm .btn_delete_confirm {
+    background: #2d3748;
+    color: #fff;
+    border: 1px solid #2d3748;
+    padding: 10px 24px;
+    border-radius: 6px;
+}
+
+.modal_delete_confirm .btn_delete_confirm:hover {
+    background: #1a202c;
+}
+
+/* ==========================================================================
+   Modal Move - Améliorations
+   ========================================================================== */
+
+.modal_move .folder_tree_select {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.modal_move .folder_select_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.modal_move .folder_select_item:hover {
+    background: #f5f5f5;
+}
+
+.modal_move .folder_select_item.selected {
+    background: #fff5f0;
+    border: 1px solid #FF6600;
+}
+
+.modal_move .form_actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.modal_move .btn_cancel {
+    background: transparent;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 10px 20px;
+    border-radius: 6px;
+}
+
+.modal_move .btn_move_confirm {
+    background: #FF6600;
+    color: #fff;
+    border: 1px solid #FF6600;
+    padding: 10px 20px;
+    border-radius: 6px;
+}
+
+.modal_move .btn_move_confirm:hover {
+    background: #e55c00;
 }

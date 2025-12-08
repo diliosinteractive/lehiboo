@@ -236,16 +236,21 @@
                 self.updateBulkActions();
             });
 
-            // Bulk actions
-            $(document).on('click', '.btn_bulk_apply', function() {
-                const action = $('.bulk_action_select').val();
-                if (!action || self.selectedImages.length === 0) return;
+            // Bulk actions - Bouton Déplacer
+            $(document).on('click', '.btn_bulk_move', function() {
+                if (self.selectedImages.length === 0) return;
+                self.showMoveModal(self.selectedImages);
+            });
 
-                if (action === 'move') {
-                    self.showMoveModal(self.selectedImages);
-                } else if (action === 'delete') {
-                    self.bulkDelete();
-                }
+            // Bulk actions - Bouton Supprimer
+            $(document).on('click', '.btn_bulk_delete', function() {
+                if (self.selectedImages.length === 0) return;
+                self.showDeleteConfirmModal();
+            });
+
+            // Confirmation de suppression
+            $(document).on('click', '.btn_delete_confirm', function() {
+                self.bulkDelete();
             });
 
             // Image actions
@@ -257,7 +262,8 @@
             $(document).on('click', '.btn_edit', function() {
                 const $item = $(this).closest('[data-id]');
                 const id = $item.data('id');
-                const imageUrl = $item.find('.media_item_thumb img').attr('src');
+                // Supporte les deux vues: grille (.media_item_thumb) et liste (.item_list_thumb)
+                const imageUrl = $item.find('.media_item_thumb img, .item_list_thumb img').attr('src');
                 self.editImage(id, imageUrl);
             });
 
@@ -606,12 +612,22 @@
             $empty.hide();
             $grid.show();
 
+            const self = this;
             images.forEach(function(image) {
                 const tmpl = isListView ? listTemplate : template;
+                // Ajouter un cache buster à l'URL de l'image pour forcer le rechargement après édition
+                const thumbUrl = image.thumb || image.url;
+                // Utiliser le timestamp d'édition forcé s'il est plus récent
+                const serverCacheBuster = image.cache_buster || 0;
+                const cacheBuster = (self.lastEditTimestamp && self.lastEditTimestamp > serverCacheBuster * 1000)
+                    ? self.lastEditTimestamp
+                    : (serverCacheBuster || Date.now());
+                const thumbWithCache = thumbUrl + (thumbUrl.indexOf('?') > -1 ? '&' : '?') + 'v=' + cacheBuster;
+
                 let html = tmpl
                     .replace(/\{\{attachment_id\}\}/g, image.attachment_id)
                     .replace(/\{\{folder_id\}\}/g, image.folder_id)
-                    .replace(/\{\{thumb\}\}/g, image.thumb || image.url)
+                    .replace(/\{\{thumb\}\}/g, thumbWithCache)
                     .replace(/\{\{title\}\}/g, image.post_title || 'Sans titre')
                     .replace(/\{\{alt_text\}\}/g, image.alt_text || image.post_title || '')
                     .replace(/\{\{size\}\}/g, image.filesize_formatted || '')
@@ -847,6 +863,8 @@
             window.EL_MediaEditor.openEditorFromUrl(fullImageUrl, attachmentId, function(response) {
                 // Callback après sauvegarde réussie
                 self.showSuccess('Image mise à jour avec succès');
+                // Forcer un nouveau cache buster pour cette session
+                self.lastEditTimestamp = Date.now();
                 // Recharger les images pour afficher la nouvelle version
                 setTimeout(function() {
                     self.loadImages();
@@ -933,8 +951,25 @@
                         self.showSuccess('Images déplacées avec succès');
                         $('.modal_move').fadeOut(200);
 
-                        // Recharger les images
+                        // Naviguer vers le dossier cible et recharger
+                        const targetFolder = self.targetFolderId;
+
+                        // Rafraîchir les compteurs des dossiers depuis le serveur
+                        self.refreshFolderCounts();
+
                         setTimeout(function() {
+                            // Changer le dossier courant vers le dossier cible
+                            self.currentFolder = targetFolder;
+
+                            // Mettre à jour l'UI de la sidebar
+                            $('.folder_item').removeClass('active');
+                            if (targetFolder === 0 || targetFolder === '0') {
+                                $('.folder_item[data-folder-id="0"]').addClass('active');
+                            } else {
+                                $('.folder_item[data-folder-id="' + targetFolder + '"]').addClass('active');
+                            }
+
+                            // Recharger les images du nouveau dossier
                             self.loadImages();
                             self.selectedImages = [];
                             self.imagesToMove = [];
@@ -966,13 +1001,58 @@
         },
 
         /**
+         * Refresh folder counts from server (plus fiable que le calcul côté client)
+         */
+        refreshFolderCounts: function() {
+            $.ajax({
+                url: this.config.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'el_vendor_get_folder_counts',
+                    nonce: this.config.nonce
+                },
+                success: function(response) {
+                    if (response.success && response.data.counts) {
+                        // Mettre à jour chaque compteur de dossier
+                        $.each(response.data.counts, function(folderId, count) {
+                            const $countSpan = $('.folder_item[data-folder-id="' + folderId + '"] .folder_count');
+                            if ($countSpan.length) {
+                                $countSpan.text('(' + count + ')');
+                            }
+                        });
+                        // Mettre à jour le total "Toutes les images"
+                        if (response.data.total !== undefined) {
+                            $('#all_count').text('(' + response.data.total + ')');
+                        }
+                    }
+                }
+            });
+        },
+
+        /**
+         * Show delete confirmation modal
+         */
+        showDeleteConfirmModal: function() {
+            $('.modal_delete_confirm').fadeIn(200);
+        },
+
+        /**
+         * Hide delete confirmation modal
+         */
+        hideDeleteConfirmModal: function() {
+            $('.modal_delete_confirm').fadeOut(200);
+        },
+
+        /**
          * Bulk delete
          */
         bulkDelete: function() {
-            if (!confirm('Supprimer ' + this.selectedImages.length + ' images ?')) return;
-
             const self = this;
             let completed = 0;
+            const totalToDelete = this.selectedImages.length;
+
+            // Fermer le modal de confirmation
+            this.hideDeleteConfirmModal();
 
             this.selectedImages.forEach(function(id) {
                 $.ajax({
@@ -985,8 +1065,12 @@
                     },
                     success: function() {
                         completed++;
-                        if (completed === self.selectedImages.length) {
+                        if (completed === totalToDelete) {
+                            self.showSuccess(totalToDelete + ' image(s) supprimée(s)');
+                            // Rafraîchir les compteurs des dossiers depuis le serveur
+                            self.refreshFolderCounts();
                             self.selectedImages = [];
+                            self.updateBulkActions();
                             self.loadImages();
                         }
                     }

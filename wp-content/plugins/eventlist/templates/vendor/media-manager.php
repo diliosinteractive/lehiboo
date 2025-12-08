@@ -105,16 +105,19 @@ $max_file_size_mb = $max_file_size / ( 1024 * 1024 );
                             <i class="fa fa-list"></i>
                         </button>
                     </div>
+                    <!-- Actions de masse - visibles quand des images sont sélectionnées -->
+                    <div class="bulk_actions" style="display: none;">
+                        <button type="button" class="el_button el_button_outline btn_bulk_move">
+                            <i class="fa fa-folder-open"></i>
+                            <?php esc_html_e( 'Déplacer', 'eventlist' ); ?>
+                        </button>
+                        <button type="button" class="el_button el_button_outline btn_bulk_delete">
+                            <i class="fa fa-trash"></i>
+                            <?php esc_html_e( 'Supprimer', 'eventlist' ); ?>
+                        </button>
+                    </div>
                 </div>
                 <div class="toolbar_right">
-                    <div class="bulk_actions" style="display: none;">
-                        <select class="bulk_action_select">
-                            <option value=""><?php esc_html_e( 'Actions groupées', 'eventlist' ); ?></option>
-                            <option value="move"><?php esc_html_e( 'Déplacer vers...', 'eventlist' ); ?></option>
-                            <option value="delete"><?php esc_html_e( 'Supprimer', 'eventlist' ); ?></option>
-                        </select>
-                        <button type="button" class="el_button btn_bulk_apply"><?php esc_html_e( 'Appliquer', 'eventlist' ); ?></button>
-                    </div>
                     <span class="images_count">
                         <span class="count_number">0</span>
                         <?php esc_html_e( 'images', 'eventlist' ); ?>
@@ -189,7 +192,7 @@ $max_file_size_mb = $max_file_size / ( 1024 * 1024 );
         <div class="modal_overlay"></div>
         <div class="modal_content">
             <div class="modal_header">
-                <h3 class="modal_title"><?php esc_html_e( 'Déplacer vers...', 'eventlist' ); ?></h3>
+                <h3 class="modal_title"><?php esc_html_e( 'Mes dossiers', 'eventlist' ); ?></h3>
                 <button type="button" class="modal_close">&times;</button>
             </div>
             <div class="modal_body">
@@ -197,8 +200,25 @@ $max_file_size_mb = $max_file_size / ( 1024 * 1024 );
                     <!-- Sera généré par JavaScript -->
                 </div>
                 <div class="form_actions">
-                    <button type="button" class="el_button btn_cancel"><?php esc_html_e( 'Annuler', 'eventlist' ); ?></button>
+                    <button type="button" class="el_button el_button_outline btn_cancel"><?php esc_html_e( 'Annuler', 'eventlist' ); ?></button>
                     <button type="button" class="el_button el_button_primary btn_move_confirm"><?php esc_html_e( 'Déplacer', 'eventlist' ); ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Confirmation suppression -->
+    <div class="media_modal modal_delete_confirm" style="display: none;">
+        <div class="modal_overlay"></div>
+        <div class="modal_content modal_content_small">
+            <div class="modal_header">
+                <button type="button" class="modal_close">&times;</button>
+            </div>
+            <div class="modal_body modal_body_centered">
+                <p class="confirm_text"><?php esc_html_e( 'Confirmez-vous la suppression des photos sélectionnées ?', 'eventlist' ); ?></p>
+                <div class="form_actions">
+                    <button type="button" class="el_button el_button_outline btn_cancel"><?php esc_html_e( 'Annuler', 'eventlist' ); ?></button>
+                    <button type="button" class="el_button el_button_primary btn_delete_confirm"><?php esc_html_e( 'Supprimer', 'eventlist' ); ?></button>
                 </div>
             </div>
         </div>

@@ -53,6 +53,10 @@
                 this.createEditorModal();
             }
 
+            // Réinitialiser le bouton de sauvegarde à son état initial
+            const $btn = $('#media_editor_modal .btn_apply_edit');
+            $btn.prop('disabled', false).text('Appliquer');
+
             // Charger l'image
             const $img = $('#editor_image');
             $img.attr('src', imageDataUrl);

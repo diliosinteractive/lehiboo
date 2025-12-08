@@ -499,6 +499,14 @@ class EL_Vendor_Media_Manager {
             $image->updated_at_formatted = ( $image->post_modified && $image->post_modified !== $image->created_at )
                 ? date_i18n( 'j F Y', strtotime( $image->post_modified ) )
                 : __( 'Aucune date', 'eventlist' );
+
+            // Cache buster - utiliser le timestamp du fichier (plus fiable après crop/edit)
+            $file_path = get_attached_file( $image->attachment_id );
+            if ( $file_path && file_exists( $file_path ) ) {
+                $image->cache_buster = filemtime( $file_path );
+            } else {
+                $image->cache_buster = $image->post_modified ? strtotime( $image->post_modified ) : time();
+            }
         }
 
         // Total
@@ -572,5 +580,49 @@ class EL_Vendor_Media_Manager {
             'total'  => $total,
             'pages'  => ceil( $total / $args['per_page'] ),
         );
+    }
+
+    /**
+     * Compter les images d'un dossier
+     *
+     * @param int $folder_id ID du dossier
+     * @param int|null $user_id ID de l'utilisateur (optionnel, utilise l'utilisateur courant)
+     * @return int Nombre d'images
+     */
+    public static function count_folder_images( $folder_id, $user_id = null ) {
+        global $wpdb;
+
+        if ( is_null( $user_id ) ) {
+            $user_id = get_current_user_id();
+        }
+
+        $count = $wpdb->get_var( $wpdb->prepare(
+            "SELECT COUNT(*) FROM " . self::get_table_name() . " WHERE folder_id = %d AND user_id = %d",
+            $folder_id,
+            $user_id
+        ) );
+
+        return (int) $count;
+    }
+
+    /**
+     * Compter toutes les images d'un utilisateur
+     *
+     * @param int|null $user_id ID de l'utilisateur (optionnel, utilise l'utilisateur courant)
+     * @return int Nombre total d'images
+     */
+    public static function count_all_images( $user_id = null ) {
+        global $wpdb;
+
+        if ( is_null( $user_id ) ) {
+            $user_id = get_current_user_id();
+        }
+
+        $count = $wpdb->get_var( $wpdb->prepare(
+            "SELECT COUNT(*) FROM " . self::get_table_name() . " WHERE user_id = %d",
+            $user_id
+        ) );
+
+        return (int) $count;
     }
 }

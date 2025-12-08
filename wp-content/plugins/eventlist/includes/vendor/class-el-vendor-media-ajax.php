@@ -19,6 +19,7 @@ class EL_Vendor_Media_Ajax {
         add_action( 'wp_ajax_el_vendor_delete_folder', array( __CLASS__, 'delete_folder' ) );
         add_action( 'wp_ajax_el_vendor_get_folders', array( __CLASS__, 'get_folders' ) );
         add_action( 'wp_ajax_el_vendor_move_folder', array( __CLASS__, 'move_folder' ) );
+        add_action( 'wp_ajax_el_vendor_get_folder_counts', array( __CLASS__, 'get_folder_counts' ) );
 
         // Images
         add_action( 'wp_ajax_el_vendor_get_images', array( __CLASS__, 'get_images' ) );
@@ -220,6 +221,35 @@ class EL_Vendor_Media_Ajax {
 
         wp_send_json_success( array(
             'folders' => $folders,
+        ) );
+    }
+
+    /**
+     * Récupérer les compteurs d'images par dossier
+     */
+    public static function get_folder_counts() {
+        check_ajax_referer( 'el_vendor_media_nonce', 'nonce' );
+
+        if ( ! is_user_logged_in() ) {
+            wp_send_json_error( array( 'message' => __( 'Vous devez être connecté', 'eventlist' ) ) );
+        }
+
+        $user_id = get_current_user_id();
+        $folders = EL_Vendor_Folders::get_user_folders( $user_id );
+        $counts = array();
+
+        // Compter les images pour chaque dossier
+        foreach ( $folders as $folder ) {
+            $count = EL_Vendor_Media_Manager::count_folder_images( $folder->id, $user_id );
+            $counts[ $folder->id ] = $count;
+        }
+
+        // Compter le total de toutes les images (inclut les images sans dossier)
+        $total = EL_Vendor_Media_Manager::count_all_images( $user_id );
+
+        wp_send_json_success( array(
+            'counts' => $counts,
+            'total'  => $total,
         ) );
     }
 
