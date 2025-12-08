@@ -156,6 +156,10 @@
                 $('.btn_view_grid, .btn_view_list').removeClass('active');
                 $(this).addClass('active');
                 $('.media_grid').attr('data-view', view);
+                // Re-render images avec le nouveau template
+                if (self.loadedImages && self.loadedImages.length > 0) {
+                    self.renderImages(self.loadedImages);
+                }
             });
 
             // Search
@@ -435,7 +439,9 @@
                 success: function(response) {
                     self.hideLoader();
                     if (response.success) {
-                        self.renderImages(response.data.images);
+                        // Stocker les images pour pouvoir re-rendre lors du changement de vue
+                        self.loadedImages = response.data.images || [];
+                        self.renderImages(self.loadedImages);
                         self.updateImageCount(response.data.total);
                         self.renderPagination(response.data.pages, page);
                     } else {
@@ -551,7 +557,9 @@
                 success: function(response) {
                     self.hideLoader();
                     if (response.success) {
-                        self.renderImages(response.data.images);
+                        // Stocker les images pour pouvoir re-rendre lors du changement de vue
+                        self.loadedImages = response.data.images || [];
+                        self.renderImages(self.loadedImages);
                         self.updateImageCount(response.data.total);
                         self.renderPagination(response.data.pages, 1);
                     }
