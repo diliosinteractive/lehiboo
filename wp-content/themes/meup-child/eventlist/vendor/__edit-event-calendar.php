@@ -142,6 +142,10 @@ $arr_recurrence_byweekno = array(
                            step="900">
                 </div>
             </div>
+            <button type="button" class="btn_add_creneaux_manual">
+                <i class="fa fa-plus"></i>
+                <?php esc_html_e( 'Ajouter un créneau', 'eventlist' ); ?>
+            </button>
         </div>
 
         <!-- Liste des créneaux -->
@@ -240,13 +244,8 @@ $arr_recurrence_byweekno = array(
             <div class="creneaux_empty_state" <?php echo !empty($calendar) ? 'style="display:none;"' : ''; ?>>
                 <i class="fa fa-calendar-alt"></i>
                 <p><?php esc_html_e( 'Aucun créneau configuré', 'eventlist' ); ?></p>
-                <span><?php esc_html_e( 'Cliquez sur le bouton ci-dessous pour ajouter des créneaux', 'eventlist' ); ?></span>
+                <span><?php esc_html_e( 'Utilisez le formulaire ci-dessus pour ajouter des créneaux', 'eventlist' ); ?></span>
             </div>
-
-            <!-- Bouton Ajouter en bas -->
-            <button type="button" class="btn_add_creneaux_manual">
-                <?php esc_html_e( 'Ajouter un créneau', 'eventlist' ); ?>
-            </button>
         </div>
     </div>
 
@@ -1461,9 +1460,30 @@ $arr_recurrence_byweekno = array(
         disableIndex: <?php echo !empty($disable_date) ? max(array_keys($disable_date)) + 1 : 0; ?>,
 
         init: function() {
+            this.disableJqueryTimepicker();
             this.bindEvents();
             this.updateIntervalDesc();
             this.updateEmptyState();
+        },
+
+        // Désactive le jQuery timepicker sur nos inputs HTML5 natifs
+        disableJqueryTimepicker: function() {
+            // Supprimer l'attribut data-time pour empêcher l'initialisation du timepicker
+            $('.creneaux_time_native').removeAttr('data-time');
+
+            // Si le timepicker jQuery est déjà initialisé, le détruire
+            if (typeof $.fn.timepicker !== 'undefined') {
+                $('.creneaux_time_native').each(function() {
+                    try {
+                        $(this).timepicker('destroy');
+                    } catch(e) {
+                        // Ignorer les erreurs si pas initialisé
+                    }
+                });
+            }
+
+            // Empêcher les futurs événements timepicker sur ces éléments
+            $('.creneaux_time_native').off('focus.timepicker click.timepicker');
         },
 
         bindEvents: function() {
@@ -1810,6 +1830,8 @@ $arr_recurrence_byweekno = array(
         },
 
         initPickers: function() {
+            var self = this;
+
             // Initialiser les date pickers seulement
             if (typeof $.fn.datepicker !== 'undefined') {
                 $('.creneaux_input[data-format]').each(function() {
@@ -1824,7 +1846,10 @@ $arr_recurrence_byweekno = array(
                     }
                 });
             }
-            // Les time pickers utilisent maintenant le type="time" HTML5 natif
+
+            // Les time pickers utilisent le type="time" HTML5 natif
+            // Désactiver le jQuery timepicker sur les nouveaux éléments
+            self.disableJqueryTimepicker();
         }
     };
 
