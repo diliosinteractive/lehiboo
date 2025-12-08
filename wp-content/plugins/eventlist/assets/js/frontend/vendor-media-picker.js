@@ -17,6 +17,7 @@
         perPage: 20,
         loadedImages: [],
         maxSelection: 0, // 0 = illimité
+        pendingUploadFile: null, // Fichier en attente d'upload
 
         /**
          * Ouvrir le picker
@@ -100,13 +101,39 @@
                                 <div class="picker_main">
                                     <!-- Toolbar -->
                                     <div class="picker_toolbar">
-                                        <div class="picker_search_wrapper">
-                                            <input type="text" class="picker_search" placeholder="Rechercher...">
-                                            <i class="fa fa-search"></i>
+                                        <div class="picker_toolbar_left">
+                                            <div class="picker_search_wrapper">
+                                                <input type="text" class="picker_search" placeholder="Rechercher...">
+                                                <i class="fa fa-search"></i>
+                                            </div>
                                         </div>
-                                        <div class="picker_selection_count">
-                                            <span class="selection_text">0 sélectionnée(s)</span>
+                                        <div class="picker_toolbar_right">
+                                            <button type="button" class="el_button btn_picker_upload">
+                                                <i class="fa fa-cloud-upload-alt"></i> Ajouter
+                                            </button>
+                                            <div class="picker_selection_count">
+                                                <span class="selection_text">0 sélectionnée(s)</span>
+                                            </div>
                                         </div>
+                                    </div>
+
+                                    <!-- Zone d'upload cachée -->
+                                    <div class="picker_upload_zone" style="display: none;">
+                                        <div class="picker_dropzone">
+                                            <input type="file" class="picker_file_input" accept="image/*" multiple style="display: none;">
+                                            <div class="dropzone_content">
+                                                <i class="fa fa-cloud-upload-alt"></i>
+                                                <p>Glissez vos images ici ou <span class="browse_link">parcourez</span></p>
+                                                <span class="dropzone_hint">JPG, PNG, GIF, WebP - Max 5MB</span>
+                                            </div>
+                                            <div class="upload_progress" style="display: none;">
+                                                <div class="progress_bar"><div class="progress_fill"></div></div>
+                                                <span class="progress_text">Upload en cours...</span>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn_close_upload">
+                                            <i class="fa fa-times"></i>
+                                        </button>
                                     </div>
 
                                     <!-- Grille d'images -->
@@ -229,25 +256,168 @@
                 self.close();
             });
 
-            // Ajouter une nouvelle image (ouvrir le modal d'upload)
-            $(document).on('click', '#media_picker_modal .btn_upload_new', function() {
-                // Cacher temporairement le picker
-                $('#media_picker_modal').hide();
+            // Ajouter une nouvelle image - Afficher la zone d'upload
+            $(document).on('click', '#media_picker_modal .btn_upload_new, #media_picker_modal .btn_picker_upload', function() {
+                self.showUploadZone();
+            });
 
-                // Ouvrir le modal d'upload si disponible
-                if ($('.modal_upload').length) {
-                    $('.modal_upload').fadeIn(200);
+            // Fermer la zone d'upload
+            $(document).on('click', '#media_picker_modal .btn_close_upload', function() {
+                self.hideUploadZone();
+            });
 
-                    // Quand le modal d'upload est fermé, réouvrir le picker et recharger
-                    $('.modal_upload').one('hidden', function() {
-                        $('#media_picker_modal').show();
-                        self.loadImages();
-                    });
-                } else {
-                    // Sinon réouvrir directement
-                    $('#media_picker_modal').show();
+            // Clic sur "parcourez" pour ouvrir le file picker
+            $(document).on('click', '#media_picker_modal .browse_link, #media_picker_modal .dropzone_content', function() {
+                $('#media_picker_modal .picker_file_input').click();
+            });
+
+            // Sélection de fichier
+            $(document).on('change', '#media_picker_modal .picker_file_input', function() {
+                const files = this.files;
+                if (files && files.length > 0) {
+                    self.uploadFiles(files);
                 }
             });
+
+            // Drag & Drop
+            $(document).on('dragover dragenter', '#media_picker_modal .picker_dropzone', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).addClass('dragover');
+            });
+
+            $(document).on('dragleave dragend', '#media_picker_modal .picker_dropzone', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).removeClass('dragover');
+            });
+
+            $(document).on('drop', '#media_picker_modal .picker_dropzone', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).removeClass('dragover');
+
+                const files = e.originalEvent.dataTransfer.files;
+                if (files && files.length > 0) {
+                    self.uploadFiles(files);
+                }
+            });
+        },
+
+        /**
+         * Afficher la zone d'upload
+         */
+        showUploadZone: function() {
+            $('#media_picker_modal .picker_upload_zone').slideDown(200);
+            $('#media_picker_modal .btn_picker_upload').addClass('active');
+        },
+
+        /**
+         * Masquer la zone d'upload
+         */
+        hideUploadZone: function() {
+            $('#media_picker_modal .picker_upload_zone').slideUp(200);
+            $('#media_picker_modal .btn_picker_upload').removeClass('active');
+            // Reset l'input file
+            $('#media_picker_modal .picker_file_input').val('');
+        },
+
+        /**
+         * Uploader des fichiers
+         */
+        uploadFiles: function(files) {
+            const self = this;
+            const $dropzone = $('#media_picker_modal .picker_dropzone');
+            const $content = $dropzone.find('.dropzone_content');
+            const $progress = $dropzone.find('.upload_progress');
+            const $progressFill = $progress.find('.progress_fill');
+            const $progressText = $progress.find('.progress_text');
+
+            // Valider les fichiers
+            const validFiles = [];
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (!allowedTypes.includes(file.type)) {
+                    if (window.ToastNotification) {
+                        window.ToastNotification.error('Type de fichier non supporté: ' + file.name);
+                    }
+                    continue;
+                }
+                if (file.size > maxSize) {
+                    if (window.ToastNotification) {
+                        window.ToastNotification.error('Fichier trop volumineux: ' + file.name);
+                    }
+                    continue;
+                }
+                validFiles.push(file);
+            }
+
+            if (validFiles.length === 0) return;
+
+            // Afficher la progression
+            $content.hide();
+            $progress.show();
+            $progressFill.css('width', '0%');
+            $progressText.text('Upload en cours... 0/' + validFiles.length);
+
+            // Upload séquentiel
+            let uploadedCount = 0;
+            const uploadNext = function(index) {
+                if (index >= validFiles.length) {
+                    // Tous les uploads terminés
+                    $progress.hide();
+                    $content.show();
+                    self.hideUploadZone();
+                    self.loadImages(); // Recharger la grille
+
+                    if (window.ToastNotification) {
+                        window.ToastNotification.success(uploadedCount + ' image(s) ajoutée(s)');
+                    }
+                    return;
+                }
+
+                const file = validFiles[index];
+                const formData = new FormData();
+                formData.append('action', 'el_vendor_upload_image');
+                formData.append('nonce', window.EL_MediaManager.nonce);
+                formData.append('image', file);
+                formData.append('folder_id', self.currentFolder);
+
+                $.ajax({
+                    url: window.EL_MediaManager.ajaxUrl,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    xhr: function() {
+                        const xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', function(e) {
+                            if (e.lengthComputable) {
+                                const percent = Math.round((e.loaded / e.total) * 100);
+                                const totalPercent = Math.round(((index + (percent / 100)) / validFiles.length) * 100);
+                                $progressFill.css('width', totalPercent + '%');
+                            }
+                        });
+                        return xhr;
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            uploadedCount++;
+                        }
+                        $progressText.text('Upload en cours... ' + (index + 1) + '/' + validFiles.length);
+                        uploadNext(index + 1);
+                    },
+                    error: function() {
+                        $progressText.text('Upload en cours... ' + (index + 1) + '/' + validFiles.length);
+                        uploadNext(index + 1);
+                    }
+                });
+            };
+
+            uploadNext(0);
         },
 
         /**

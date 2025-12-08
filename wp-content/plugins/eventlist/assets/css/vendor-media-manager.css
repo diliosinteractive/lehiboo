@@ -1493,3 +1493,189 @@
         display: none;
     }
 }
+
+/* ==========================================================================
+   Media Picker - Toolbar amélioré
+   ========================================================================== */
+
+.picker_toolbar {
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.picker_toolbar_left,
+.picker_toolbar_right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.picker_toolbar_right {
+    margin-left: auto;
+}
+
+/* Bouton Upload dans toolbar */
+.btn_picker_upload {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #FF6600;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn_picker_upload:hover {
+    background: #e55c00;
+}
+
+.btn_picker_upload.active {
+    background: #333;
+}
+
+.btn_picker_upload i {
+    font-size: 14px;
+}
+
+/* ==========================================================================
+   Media Picker - Zone d'upload
+   ========================================================================== */
+
+.picker_upload_zone {
+    position: relative;
+    padding: 16px 20px;
+    background: #f9f9f9;
+    border-bottom: 1px solid #eee;
+}
+
+.picker_dropzone {
+    position: relative;
+    padding: 30px 20px;
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    background: #fff;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.picker_dropzone:hover,
+.picker_dropzone.dragover {
+    border-color: #FF6600;
+    background: #fff8f5;
+}
+
+.picker_dropzone .dropzone_content i {
+    font-size: 36px;
+    color: #FF6600;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.picker_dropzone .dropzone_content p {
+    font-size: 15px;
+    color: #333;
+    margin: 0 0 6px;
+}
+
+.picker_dropzone .browse_link {
+    color: #FF6600;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.picker_dropzone .browse_link:hover {
+    color: #e55c00;
+}
+
+.picker_dropzone .dropzone_hint {
+    font-size: 12px;
+    color: #888;
+}
+
+/* Progress */
+.picker_dropzone .upload_progress {
+    padding: 20px;
+}
+
+.picker_dropzone .progress_bar {
+    height: 8px;
+    background: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.picker_dropzone .progress_fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FF6600, #ff8533);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.picker_dropzone .progress_text {
+    font-size: 13px;
+    color: #666;
+}
+
+/* Bouton fermer upload */
+.btn_close_upload {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: #eee;
+    border-radius: 50%;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn_close_upload:hover {
+    background: #ddd;
+    color: #333;
+}
+
+/* ==========================================================================
+   Media Picker - Responsive Upload Zone
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .picker_toolbar_left,
+    .picker_toolbar_right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .picker_toolbar_right {
+        margin-left: 0;
+    }
+
+    .btn_picker_upload {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    .picker_dropzone {
+        padding: 20px 15px;
+    }
+
+    .picker_dropzone .dropzone_content i {
+        font-size: 28px;
+    }
+
+    .picker_dropzone .dropzone_content p {
+        font-size: 14px;
+    }
+}
