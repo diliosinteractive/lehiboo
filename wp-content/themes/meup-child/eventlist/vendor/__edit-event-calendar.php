@@ -1717,8 +1717,8 @@ $arr_recurrence_byweekno = array(
             if (typeof $.fn.datepicker !== 'undefined') {
                 $('.creneaux_input[data-format]').each(function() {
                     if (!$(this).hasClass('hasDatepicker')) {
-                        var format = $(this).data('format');
-                        var firstDay = $(this).data('firstday');
+                        var format = $(this).attr('data-format') || 'dd/mm/yy';
+                        var firstDay = parseInt($(this).attr('data-firstday')) || 1;
 
                         $(this).datepicker({
                             dateFormat: format,
@@ -1731,11 +1731,12 @@ $arr_recurrence_byweekno = array(
             // Initialiser les time pickers
             if (typeof $.fn.timepicker !== 'undefined') {
                 $('.creneaux_time_input[data-time]').each(function() {
-                    if (!$(this).hasClass('hasTimepicker')) {
-                        var timeFormat = $(this).data('time');
+                    if (!$(this).hasClass('ui-timepicker-input')) {
+                        // Utiliser attr() pour garantir une chaîne de caractères
+                        var timeFormat = $(this).attr('data-time') || 'H:i';
 
                         $(this).timepicker({
-                            timeFormat: timeFormat,
+                            timeFormat: String(timeFormat),
                             interval: 15,
                             dynamic: false,
                             dropdown: true,
