@@ -196,8 +196,8 @@ if ( ! function_exists('get_price_ticket_by_id_event') ) {
 							$list_price[] =  ! is_null($price) ? $price : 0;
 						}
 					}
-					$min_price = min($list_price);
-					$max_price = max($list_price);
+					$min_price = ! empty( $list_price ) ? min($list_price) : '';
+					$max_price = ! empty( $list_price ) ? max($list_price) : '';
 				}
 			} else {
 				if ( ! empty( $ticket_map['seat'] ) && is_array( $ticket_map['seat'] ) ) {

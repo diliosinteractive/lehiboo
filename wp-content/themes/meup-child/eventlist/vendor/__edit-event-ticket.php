@@ -392,11 +392,21 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 
                         <!-- Boutons d'action -->
                         <div class="ticket_form_actions">
-                            <button type="button" class="btn_save_ticket el_button_outline_primary">
-                                <?php esc_html_e( 'Sauvegarder ce billet', 'eventlist' ); ?>
+                            <button type="button" class="btn_save_ticket el_btn_save">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                    <polyline points="7 3 7 8 15 8"></polyline>
+                                </svg>
+                                <span class="btn_text"><?php esc_html_e( 'Sauvegarder ce billet', 'eventlist' ); ?></span>
                             </button>
-                            <button type="button" class="btn_stop_reservation el_button_outline_warning" data-index="<?php echo esc_attr( $key ); ?>">
-                                <?php esc_html_e( 'Stopper la réservation', 'eventlist' ); ?>
+                            <button type="button" class="btn_stop_reservation el_btn_danger" data-index="<?php echo esc_attr( $key ); ?>">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                                </svg>
+                                <span class="btn_text"><?php esc_html_e( 'Stopper la réservation', 'eventlist' ); ?></span>
                             </button>
                         </div>
                     </div>
@@ -408,8 +418,12 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
         </div>
 
         <!-- Bouton Ajouter un billet -->
-        <button type="button" class="btn_add_ticket el_button_primary">
-            <?php esc_html_e( 'Ajouter un autre billet', 'eventlist' ); ?>
+        <button type="button" class="btn_add_ticket el_btn_add">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span class="btn_text"><?php esc_html_e( 'Ajouter un autre billet', 'eventlist' ); ?></span>
         </button>
     </div>
 
@@ -1052,12 +1066,180 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 /* Ticket Form Actions */
 .ticket_form_actions {
     display: flex;
-    gap: 16px;
-    padding-top: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 24px;
+    margin-top: 24px;
     border-top: 1px solid #e2e8f0;
 }
 
-/* Buttons */
+/* Base Button Styles */
+.el_btn_base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.el_btn_base svg {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.el_btn_base:hover svg {
+    transform: scale(1.1);
+}
+
+.el_btn_base:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.25);
+}
+
+.el_btn_base:active {
+    transform: scale(0.98);
+}
+
+/* Save Button - Primary filled */
+.el_btn_save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #FF6600 0%, #e55c00 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.25);
+}
+
+.el_btn_save svg {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.el_btn_save:hover {
+    background: linear-gradient(135deg, #e55c00 0%, #cc5200 100%);
+    box-shadow: 0 6px 16px rgba(255, 102, 0, 0.35);
+    transform: translateY(-1px);
+}
+
+.el_btn_save:hover svg {
+    transform: scale(1.1);
+}
+
+.el_btn_save:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.25), 0 4px 12px rgba(255, 102, 0, 0.25);
+}
+
+.el_btn_save:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.el_btn_save.saved {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+/* Danger Button - Stop reservation */
+.el_btn_danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: transparent;
+    color: #dc2626;
+    border: 2px solid #fecaca;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.el_btn_danger svg {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.el_btn_danger:hover {
+    background: #fef2f2;
+    border-color: #f87171;
+    color: #b91c1c;
+}
+
+.el_btn_danger:hover svg {
+    transform: scale(1.1);
+}
+
+.el_btn_danger:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.el_btn_danger:active {
+    transform: scale(0.98);
+}
+
+/* Add Button - Outlined */
+.el_btn_add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: #fff;
+    color: #FF6600;
+    border: 2px solid #FF6600;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-top: 20px;
+}
+
+.el_btn_add svg {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.el_btn_add:hover {
+    background: #FF6600;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.25);
+    transform: translateY(-1px);
+}
+
+.el_btn_add:hover svg {
+    transform: rotate(90deg);
+}
+
+.el_btn_add:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.25);
+}
+
+.el_btn_add:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Legacy button classes for compatibility */
 .el_button_primary {
     display: inline-flex;
     align-items: center;
@@ -1076,45 +1258,6 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 
 .el_button_primary:hover {
     background: #e55c00;
-}
-
-.el_button_outline_primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    background: transparent;
-    color: #FF6600;
-    border: 2px solid #FF6600;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.el_button_outline_primary:hover {
-    background: #FF6600;
-    color: #fff;
-}
-
-.el_button_outline_warning {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    background: transparent;
-    color: #FF6600;
-    border: 2px solid #FF6600;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.el_button_outline_warning:hover {
-    background: #fff8f5;
 }
 
 /* External Section */
@@ -1210,6 +1353,59 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     color: #ef4444;
 }
 
+/* Input error animation */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.input_error {
+    animation: shake 0.5s ease-in-out;
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+}
+
+/* Button disabled state */
+.btn_disabled,
+.el_btn_danger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+    color: #94a3b8 !important;
+}
+
+.btn_disabled:hover,
+.el_btn_danger:disabled:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Ticket inactive state */
+.ticket_inactive {
+    opacity: 0.7;
+    position: relative;
+}
+
+.ticket_inactive::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(248, 250, 252, 0.5);
+    border-radius: 12px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.ticket_inactive .ticket_form_actions {
+    position: relative;
+    z-index: 2;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .billetterie_price_choice {
@@ -1244,6 +1440,12 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 
     .ticket_form_actions {
         flex-direction: column;
+    }
+
+    .el_btn_save,
+    .el_btn_danger,
+    .el_btn_add {
+        width: 100%;
     }
 
     .tarif_row {
@@ -1515,8 +1717,22 @@ jQuery(document).ready(function($) {
                     '</div>' +
                     '<input type="hidden" name="' + this.prefix + 'ticket[' + index + '][is_active]" value="yes" class="ticket_is_active">' +
                     '<div class="ticket_form_actions">' +
-                        '<button type="button" class="btn_save_ticket el_button_outline_primary"><?php echo esc_js( __( 'Sauvegarder ce billet', 'eventlist' ) ); ?></button>' +
-                        '<button type="button" class="btn_stop_reservation el_button_outline_warning" data-index="' + index + '"><?php echo esc_js( __( 'Stopper la réservation', 'eventlist' ) ); ?></button>' +
+                        '<button type="button" class="btn_save_ticket el_btn_save">' +
+                            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                                '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>' +
+                                '<polyline points="17 21 17 13 7 13 7 21"></polyline>' +
+                                '<polyline points="7 3 7 8 15 8"></polyline>' +
+                            '</svg>' +
+                            '<span class="btn_text"><?php echo esc_js( __( 'Sauvegarder ce billet', 'eventlist' ) ); ?></span>' +
+                        '</button>' +
+                        '<button type="button" class="btn_stop_reservation el_btn_danger" data-index="' + index + '">' +
+                            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                                '<circle cx="12" cy="12" r="10"></circle>' +
+                                '<line x1="15" y1="9" x2="9" y2="15"></line>' +
+                                '<line x1="9" y1="9" x2="15" y2="15"></line>' +
+                            '</svg>' +
+                            '<span class="btn_text"><?php echo esc_js( __( 'Stopper la réservation', 'eventlist' ) ); ?></span>' +
+                        '</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -1533,18 +1749,33 @@ jQuery(document).ready(function($) {
         saveTicket: function($btn) {
             var $item = $btn.closest('.ticket_form_item');
             var $nameInput = $item.find('.ticket_name_input');
+            var $btnText = $btn.find('.btn_text');
 
             if (!$nameInput.val().trim()) {
-                alert('<?php echo esc_js( __( 'Veuillez saisir un nom pour le billet', 'eventlist' ) ); ?>');
+                // Shake animation for validation
+                $nameInput.addClass('input_error');
+                setTimeout(function() {
+                    $nameInput.removeClass('input_error');
+                }, 500);
                 $nameInput.focus();
                 return;
             }
 
-            // Animation de confirmation
-            $btn.text('<?php echo esc_js( __( 'Sauvegardé !', 'eventlist' ) ); ?>');
+            // Animation de confirmation avec changement de couleur
+            var originalText = $btnText.text();
+            $btn.addClass('saved');
+            $btnText.text('<?php echo esc_js( __( 'Sauvegardé !', 'eventlist' ) ); ?>');
+
+            // Changer l'icône en checkmark temporairement
+            var $svg = $btn.find('svg');
+            var originalSvg = $svg.html();
+            $svg.html('<polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline>');
+
             setTimeout(function() {
-                $btn.text('<?php echo esc_js( __( 'Sauvegarder ce billet', 'eventlist' ) ); ?>');
-            }, 2000);
+                $btn.removeClass('saved');
+                $btnText.text(originalText);
+                $svg.html(originalSvg);
+            }, 2500);
 
             if (window.ToastNotification) {
                 window.ToastNotification.success('<?php echo esc_js( __( 'Billet sauvegardé', 'eventlist' ) ); ?>');
@@ -1553,10 +1784,15 @@ jQuery(document).ready(function($) {
 
         stopReservation: function($btn) {
             var $item = $btn.closest('.ticket_form_item');
+            var $btnText = $btn.find('.btn_text');
 
             if (confirm('<?php echo esc_js( __( 'Êtes-vous sûr de vouloir stopper la réservation pour ce billet ?', 'eventlist' ) ); ?>')) {
                 $item.find('.ticket_is_active').val('no');
                 $item.addClass('ticket_inactive');
+
+                // Désactiver le bouton après l'action
+                $btn.prop('disabled', true).addClass('btn_disabled');
+                $btnText.text('<?php echo esc_js( __( 'Réservation stoppée', 'eventlist' ) ); ?>');
 
                 if (window.ToastNotification) {
                     window.ToastNotification.info('<?php echo esc_js( __( 'Réservation stoppée', 'eventlist' ) ); ?>');
