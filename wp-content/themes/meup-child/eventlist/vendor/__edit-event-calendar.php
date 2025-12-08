@@ -122,11 +122,9 @@ $arr_recurrence_byweekno = array(
                 </div>
                 <div class="creneaux_form_col">
                     <label><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?> <span class="el_req">*</span></label>
-                    <input type="text"
-                           class="creneaux_input creneaux_time_input creneaux_new_start_time"
-                           placeholder="HH:MM"
-                           data-time="<?php echo esc_attr( $time ); ?>"
-                           autocomplete="off">
+                    <input type="time"
+                           class="creneaux_input creneaux_time_native creneaux_new_start_time"
+                           step="900">
                 </div>
                 <div class="creneaux_form_col">
                     <label><?php esc_html_e( 'Date de fin', 'eventlist' ); ?> <span class="el_req">*</span></label>
@@ -139,11 +137,9 @@ $arr_recurrence_byweekno = array(
                 </div>
                 <div class="creneaux_form_col">
                     <label><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?> <span class="el_req">*</span></label>
-                    <input type="text"
-                           class="creneaux_input creneaux_time_input creneaux_new_end_time"
-                           placeholder="HH:MM"
-                           data-time="<?php echo esc_attr( $time ); ?>"
-                           autocomplete="off">
+                    <input type="time"
+                           class="creneaux_input creneaux_time_native creneaux_new_end_time"
+                           step="900">
                 </div>
             </div>
             <button type="button" class="btn_add_creneaux_manual">
@@ -205,23 +201,17 @@ $arr_recurrence_byweekno = array(
 
                                 <div class="creneaux_item_time">
                                     <span class="time_label"><?php esc_html_e( 'De', 'eventlist' ); ?></span>
-                                    <input type="text"
-                                           class="creneaux_input creneaux_time_input calendar_start_time"
+                                    <input type="time"
+                                           class="creneaux_input creneaux_time_native calendar_start_time"
                                            value="<?php echo esc_attr( $value['start_time'] ); ?>"
                                            name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][start_time]' ); ?>"
-                                           placeholder="HH:MM"
-                                           data-time="<?php echo esc_attr( $time ); ?>"
-                                           autocomplete="off"
-                                           readonly>
+                                           step="900">
                                     <span class="time_label"><?php esc_html_e( 'À', 'eventlist' ); ?></span>
-                                    <input type="text"
-                                           class="creneaux_input creneaux_time_input calendar_end_time"
+                                    <input type="time"
+                                           class="creneaux_input creneaux_time_native calendar_end_time"
                                            value="<?php echo esc_attr( $value['end_time'] ); ?>"
                                            name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][end_time]' ); ?>"
-                                           placeholder="HH:MM"
-                                           data-time="<?php echo esc_attr( $time ); ?>"
-                                           autocomplete="off"
-                                           readonly>
+                                           step="900">
                                 </div>
 
                                 <!-- Date de fin cachée -->
@@ -341,21 +331,17 @@ $arr_recurrence_byweekno = array(
                                     if ( isset( $ts_end[$day_key][$k_ts] ) && $ts_end[$day_key][$k_ts] ): ?>
                                         <div class="creneaux_time_slot ts-item" data-key="<?php echo esc_attr($day_key); ?>">
                                             <span class="time_label"><?php esc_html_e( 'De :', 'eventlist' ); ?></span>
-                                            <input type="text"
-                                                   class="creneaux_input creneaux_time_input calendar_recurrence_ts_start"
+                                            <input type="time"
+                                                   class="creneaux_input creneaux_time_native calendar_recurrence_ts_start"
                                                    value="<?php echo esc_attr( $v_ts_start ); ?>"
                                                    name="<?php echo esc_attr( $_prefix.'ts_start['.$day_key.']['.$k_ts.']' ); ?>"
-                                                   placeholder="HH:MM"
-                                                   data-time="<?php echo esc_attr( $time ); ?>"
-                                                   autocomplete="off">
+                                                   step="900">
                                             <span class="time_label"><?php esc_html_e( 'À :', 'eventlist' ); ?></span>
-                                            <input type="text"
-                                                   class="creneaux_input creneaux_time_input calendar_recurrence_ts_end"
+                                            <input type="time"
+                                                   class="creneaux_input creneaux_time_native calendar_recurrence_ts_end"
                                                    value="<?php echo esc_attr( $ts_end[$day_key][$k_ts] ); ?>"
                                                    name="<?php echo esc_attr( $_prefix.'ts_end['.$day_key.']['.$k_ts.']' ); ?>"
-                                                   placeholder="HH:MM"
-                                                   data-time="<?php echo esc_attr( $time ); ?>"
-                                                   autocomplete="off">
+                                                   step="900">
                                             <button type="button" class="btn_remove_time_slot close">
                                                 <i class="fa fa-times"></i>
                                             </button>
@@ -367,21 +353,15 @@ $arr_recurrence_byweekno = array(
                             <!-- Formulaire d'ajout de time slot -->
                             <div class="creneaux_add_time_slot">
                                 <span class="time_label"><?php esc_html_e( 'De :', 'eventlist' ); ?></span>
-                                <input type="text"
-                                       class="creneaux_input creneaux_time_input new_ts_start"
-                                       placeholder="HH:MM"
-                                       data-time="<?php echo esc_attr( $time ); ?>"
-                                       autocomplete="off">
+                                <input type="time"
+                                       class="creneaux_input creneaux_time_native new_ts_start"
+                                       step="900">
                                 <span class="time_label"><?php esc_html_e( 'À :', 'eventlist' ); ?></span>
-                                <input type="text"
-                                       class="creneaux_input creneaux_time_input new_ts_end"
-                                       placeholder="HH:MM"
-                                       data-time="<?php echo esc_attr( $time ); ?>"
-                                       autocomplete="off">
+                                <input type="time"
+                                       class="creneaux_input creneaux_time_native new_ts_end"
+                                       step="900">
                                 <button type="button" class="btn_add_time_slot add_time_slot"
-                                        data-key="<?php echo esc_attr($day_key); ?>"
-                                        data-placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>"
-                                        data-time="<?php echo esc_attr( $time ); ?>">
+                                        data-key="<?php echo esc_attr($day_key); ?>">
                                     <?php esc_html_e( 'Ajouter', 'eventlist' ); ?>
                                 </button>
                             </div>
@@ -415,22 +395,18 @@ $arr_recurrence_byweekno = array(
             <label class="field_label"><?php esc_html_e( 'Sélectionnez l\'horaire :', 'eventlist' ); ?></label>
             <div class="creneaux_horaire_row">
                 <span class="horaire_label"><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?></span>
-                <input type="text"
-                       class="creneaux_input creneaux_time_input calendar_recurrence_start_time"
+                <input type="time"
+                       class="creneaux_input creneaux_time_native calendar_recurrence_start_time"
                        name="<?php echo esc_attr( $_prefix.'calendar_recurrence_start_time' ); ?>"
                        value="<?php echo esc_attr( $calendar_recurrence_start_time ); ?>"
-                       placeholder="HH:MM"
-                       data-time="<?php echo esc_attr( $time ); ?>"
-                       autocomplete="off"
+                       step="900"
                        <?php if ( ( $option_calendar == 'auto' ) && ! $schedules_time ) echo 'required'; ?>>
                 <span class="horaire_label"><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?></span>
-                <input type="text"
-                       class="creneaux_input creneaux_time_input calendar_recurrence_end_time"
+                <input type="time"
+                       class="creneaux_input creneaux_time_native calendar_recurrence_end_time"
                        name="<?php echo esc_attr( $_prefix.'calendar_recurrence_end_time' ); ?>"
                        value="<?php echo esc_attr( $calendar_recurrence_end_time ); ?>"
-                       placeholder="HH:MM"
-                       data-time="<?php echo esc_attr( $time ); ?>"
-                       autocomplete="off"
+                       step="900"
                        <?php if ( ( $option_calendar == 'auto' ) && ! $schedules_time ) echo 'required'; ?>>
                 <button type="button" class="btn_add_horaire add_schedules_time"><?php esc_html_e( 'Ajouter', 'eventlist' ); ?></button>
             </div>
@@ -452,24 +428,20 @@ $arr_recurrence_byweekno = array(
                             <div class="creneaux_schedule_item item_schedules_time" data-key="<?php echo esc_attr($key); ?>">
                                 <span class="schedule_time">
                                     <?php esc_html_e( 'De :', 'eventlist' ); ?>
-                                    <input type="text"
-                                           class="creneaux_input creneaux_time_input start_time"
+                                    <input type="time"
+                                           class="creneaux_input creneaux_time_native start_time"
                                            name="<?php echo esc_attr( $_prefix.'schedules_time['.$key.'][start_time]' ); ?>"
                                            value="<?php echo esc_attr( $value['start_time'] ); ?>"
-                                           placeholder="HH:MM"
-                                           data-time="<?php echo esc_attr( $time ); ?>"
-                                           autocomplete="off"
+                                           step="900"
                                            <?php if ( $option_calendar == 'auto' ) echo 'required'; ?>>
                                 </span>
                                 <span class="schedule_time">
                                     <?php esc_html_e( 'À :', 'eventlist' ); ?>
-                                    <input type="text"
-                                           class="creneaux_input creneaux_time_input end_time"
+                                    <input type="time"
+                                           class="creneaux_input creneaux_time_native end_time"
                                            name="<?php echo esc_attr( $_prefix.'schedules_time['.$key.'][end_time]' ); ?>"
                                            value="<?php echo esc_attr( $value['end_time'] ); ?>"
-                                           placeholder="HH:MM"
-                                           data-time="<?php echo esc_attr( $time ); ?>"
-                                           autocomplete="off"
+                                           step="900"
                                            <?php if ( $option_calendar == 'auto' ) echo 'required'; ?>>
                                 </span>
                                 <input type="hidden"
@@ -682,15 +654,31 @@ $arr_recurrence_byweekno = array(
     color: #aaa;
 }
 
-.creneaux_time_input {
-    width: 90px;
-    text-align: center;
-    cursor: pointer;
-}
-
 .creneaux_interval_input {
     width: 55px;
     text-align: center;
+}
+
+/* Input time natif HTML5 */
+.creneaux_time_native {
+    width: 130px;
+    text-align: center;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.creneaux_time_native::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    padding: 4px;
+    margin-right: -4px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.creneaux_time_native::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
 }
 
 /* Select */
@@ -829,7 +817,7 @@ $arr_recurrence_byweekno = array(
     width: 100%;
 }
 
-.creneaux_form_col .creneaux_time_input {
+.creneaux_form_col .creneaux_time_native {
     width: 100%;
 }
 
@@ -1549,9 +1537,9 @@ $arr_recurrence_byweekno = array(
                     </div>
                     <div class="creneaux_item_time">
                         <span class="time_label"><?php esc_html_e("De", "eventlist"); ?></span>
-                        <input type="text" class="creneaux_input creneaux_time_input calendar_start_time" value="${startTime}" name="${prefix}calendar[${key}][start_time]" readonly>
+                        <input type="time" class="creneaux_input creneaux_time_native calendar_start_time" value="${startTime}" name="${prefix}calendar[${key}][start_time]" step="900">
                         <span class="time_label"><?php esc_html_e("À", "eventlist"); ?></span>
-                        <input type="text" class="creneaux_input creneaux_time_input calendar_end_time" value="${endTime}" name="${prefix}calendar[${key}][end_time]" readonly>
+                        <input type="time" class="creneaux_input creneaux_time_native calendar_end_time" value="${endTime}" name="${prefix}calendar[${key}][end_time]" step="900">
                     </div>
                     <input type="hidden" class="calendar_end_date" value="${endDate}" name="${prefix}calendar[${key}][end_date]">
                     <input type="hidden" name="${prefix}calendar[${key}][book_before_minutes]" value="0">
@@ -1589,23 +1577,19 @@ $arr_recurrence_byweekno = array(
 
             var prefix = '<?php echo $_prefix; ?>';
             var tsKey = Date.now();
-            var time = $button.data('time');
-            var placeholder = $button.data('placeholder');
 
             var html = `
                 <div class="creneaux_time_slot ts-item" data-key="${dayKey}">
                     <span class="time_label"><?php esc_html_e("De :", "eventlist"); ?></span>
-                    <input type="text" class="creneaux_input creneaux_time_input calendar_recurrence_ts_start" value="${startTime}" name="${prefix}ts_start[${dayKey}][${tsKey}]" placeholder="${placeholder}" data-time="${time}" autocomplete="off">
+                    <input type="time" class="creneaux_input creneaux_time_native calendar_recurrence_ts_start" value="${startTime}" name="${prefix}ts_start[${dayKey}][${tsKey}]" step="900">
                     <span class="time_label"><?php esc_html_e("À :", "eventlist"); ?></span>
-                    <input type="text" class="creneaux_input creneaux_time_input calendar_recurrence_ts_end" value="${endTime}" name="${prefix}ts_end[${dayKey}][${tsKey}]" placeholder="${placeholder}" data-time="${time}" autocomplete="off">
+                    <input type="time" class="creneaux_input creneaux_time_native calendar_recurrence_ts_end" value="${endTime}" name="${prefix}ts_end[${dayKey}][${tsKey}]" step="900">
                     <button type="button" class="btn_remove_time_slot close"><i class="fa fa-times"></i></button>
                 </div>
             `;
 
             $addForm.before(html);
             $addForm.find('.new_ts_start, .new_ts_end').val('');
-
-            this.initPickers();
         },
 
         addSchedule: function() {
@@ -1619,17 +1603,16 @@ $arr_recurrence_byweekno = array(
 
             var prefix = '<?php echo $_prefix; ?>';
             var key = this.scheduleIndex++;
-            var time = '<?php echo $time; ?>';
 
             var html = `
                 <div class="creneaux_schedule_item item_schedules_time" data-key="${key}">
                     <span class="schedule_time">
                         <?php esc_html_e("De :", "eventlist"); ?>
-                        <input type="text" class="creneaux_input creneaux_time_input start_time" name="${prefix}schedules_time[${key}][start_time]" value="${startTime}" placeholder="HH:MM" data-time="${time}" autocomplete="off">
+                        <input type="time" class="creneaux_input creneaux_time_native start_time" name="${prefix}schedules_time[${key}][start_time]" value="${startTime}" step="900">
                     </span>
                     <span class="schedule_time">
                         <?php esc_html_e("À :", "eventlist"); ?>
-                        <input type="text" class="creneaux_input creneaux_time_input end_time" name="${prefix}schedules_time[${key}][end_time]" value="${endTime}" placeholder="HH:MM" data-time="${time}" autocomplete="off">
+                        <input type="time" class="creneaux_input creneaux_time_native end_time" name="${prefix}schedules_time[${key}][end_time]" value="${endTime}" step="900">
                     </span>
                     <input type="hidden" name="${prefix}schedules_time[${key}][book_before]" value="0">
                     <button type="button" class="btn_remove_schedule remove_schedules_time"><i class="fa fa-times"></i></button>
@@ -1641,7 +1624,6 @@ $arr_recurrence_byweekno = array(
 
             // Mettre à jour le select des désactivations
             this.updateDisableSelect();
-            this.initPickers();
         },
 
         addDisableDate: function() {
@@ -1713,7 +1695,7 @@ $arr_recurrence_byweekno = array(
         },
 
         initPickers: function() {
-            // Initialiser les date pickers
+            // Initialiser les date pickers seulement
             if (typeof $.fn.datepicker !== 'undefined') {
                 $('.creneaux_input[data-format]').each(function() {
                     if (!$(this).hasClass('hasDatepicker')) {
@@ -1727,33 +1709,7 @@ $arr_recurrence_byweekno = array(
                     }
                 });
             }
-
-            // Initialiser les time pickers
-            if (typeof $.fn.timepicker !== 'undefined') {
-                $('.creneaux_time_input[data-time]').each(function() {
-                    if (!$(this).hasClass('ui-timepicker-input')) {
-                        // Convertir le format 12/24 en format timepicker valide
-                        var timeValue = $(this).attr('data-time') || '24';
-                        var timeFormat;
-
-                        // el_calendar_time_format() retourne '12' ou '24'
-                        // Il faut les convertir en format timepicker valide
-                        if (timeValue === '12' || timeValue === 12) {
-                            timeFormat = 'h:i A'; // 12-hour avec AM/PM
-                        } else {
-                            timeFormat = 'H:i'; // 24-hour
-                        }
-
-                        $(this).timepicker({
-                            timeFormat: timeFormat,
-                            interval: 15,
-                            dynamic: false,
-                            dropdown: true,
-                            scrollbar: true
-                        });
-                    }
-                });
-            }
+            // Les time pickers utilisent maintenant le type="time" HTML5 natif
         }
     };
 
