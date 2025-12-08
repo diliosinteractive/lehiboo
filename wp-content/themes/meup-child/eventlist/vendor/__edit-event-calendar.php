@@ -142,10 +142,6 @@ $arr_recurrence_byweekno = array(
                            step="900">
                 </div>
             </div>
-            <button type="button" class="btn_add_creneaux_manual">
-                <i class="fa fa-plus"></i>
-                <?php esc_html_e( 'Ajouter un créneau', 'eventlist' ); ?>
-            </button>
         </div>
 
         <!-- Liste des créneaux -->
@@ -157,13 +153,13 @@ $arr_recurrence_byweekno = array(
                     <span><?php esc_html_e( 'Les créneaux', 'eventlist' ); ?></span>
                 </label>
                 <div class="creneaux_filter">
-                    <span><?php esc_html_e( 'Filtrer par date : De', 'eventlist' ); ?></span>
+                    <span class="filter_label"><?php esc_html_e( 'Filtrer par date : De', 'eventlist' ); ?></span>
                     <input type="text"
                            class="creneaux_filter_input creneaux_filter_start"
                            placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
                            data-format="<?php echo esc_attr( $format ); ?>"
                            data-firstday="<?php echo esc_attr( $first_day ); ?>">
-                    <span><?php esc_html_e( 'À', 'eventlist' ); ?></span>
+                    <span class="filter_separator"><?php esc_html_e( 'À', 'eventlist' ); ?></span>
                     <input type="text"
                            class="creneaux_filter_input creneaux_filter_end"
                            placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
@@ -175,7 +171,11 @@ $arr_recurrence_byweekno = array(
             <div class="creneaux_list list_calendar">
                 <?php if ( $calendar ):
                     foreach ( $calendar as $key => $value ):
-                        if ( !empty($value['date']) ): ?>
+                        if ( !empty($value['date']) ):
+                            // Formater la date de manière lisible
+                            $date_timestamp = strtotime($value['date']);
+                            $formatted_date = date_i18n('l j M Y', $date_timestamp);
+                            ?>
                             <div class="creneaux_item item_calendar" data-key="<?php echo esc_attr($key); ?>">
                                 <label class="creneaux_item_select">
                                     <input type="checkbox" class="creneaux_item_checkbox">
@@ -187,16 +187,13 @@ $arr_recurrence_byweekno = array(
                                        name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][calendar_id]' ); ?>"
                                        value="<?php echo esc_attr( isset( $value['calendar_id'] ) ? $value['calendar_id'] : '' ); ?>">
 
-                                <div class="creneaux_item_date">
-                                    <input type="text"
-                                           class="creneaux_input calendar_date"
+                                <!-- Date affichée en texte lisible -->
+                                <div class="creneaux_item_date_display">
+                                    <span class="date_text"><?php echo esc_html( ucfirst($formatted_date) ); ?></span>
+                                    <input type="hidden"
+                                           class="calendar_date"
                                            value="<?php echo esc_attr( $value['date'] ); ?>"
-                                           name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][date]' ); ?>"
-                                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-                                           data-format="<?php echo esc_attr( $format ); ?>"
-                                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
-                                           autocomplete="off"
-                                           readonly>
+                                           name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][date]' ); ?>">
                                 </div>
 
                                 <div class="creneaux_item_time">
@@ -243,8 +240,13 @@ $arr_recurrence_byweekno = array(
             <div class="creneaux_empty_state" <?php echo !empty($calendar) ? 'style="display:none;"' : ''; ?>>
                 <i class="fa fa-calendar-alt"></i>
                 <p><?php esc_html_e( 'Aucun créneau configuré', 'eventlist' ); ?></p>
-                <span><?php esc_html_e( 'Utilisez le formulaire ci-dessus pour ajouter des créneaux', 'eventlist' ); ?></span>
+                <span><?php esc_html_e( 'Cliquez sur le bouton ci-dessous pour ajouter des créneaux', 'eventlist' ); ?></span>
             </div>
+
+            <!-- Bouton Ajouter en bas -->
+            <button type="button" class="btn_add_creneaux_manual">
+                <?php esc_html_e( 'Ajouter un créneau', 'eventlist' ); ?>
+            </button>
         </div>
     </div>
 
@@ -742,26 +744,48 @@ $arr_recurrence_byweekno = array(
 }
 
 /* Boutons modifier/supprimer */
+/* Bouton éditer - style avec bordure comme la maquette */
 .btn_edit_creneaux {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
+    border: 2px solid #222;
+    border-radius: 8px;
+    background: #fff;
+    color: #222;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s;
+}
+
+.btn_edit_creneaux:hover {
+    background: #f5f5f5;
+    border-color: #000;
+}
+
+/* Bouton supprimer - rouge comme la maquette */
+.btn_remove_creneaux {
+    width: 42px;
+    height: 42px;
     border: none;
-    border-radius: 6px;
-    background: #FF6600;
+    border-radius: 8px;
+    background: #e74c3c;
     color: #fff;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 16px;
     transition: all 0.2s;
 }
 
-.btn_edit_creneaux:hover {
-    background: #e55b00;
+.btn_remove_creneaux:hover {
+    background: #c0392b;
 }
 
-.btn_remove_creneaux,
+/* Autres boutons de suppression */
 .btn_remove_time_slot,
 .btn_remove_schedule,
 .btn_remove_disable {
@@ -779,7 +803,6 @@ $arr_recurrence_byweekno = array(
     transition: all 0.2s;
 }
 
-.btn_remove_creneaux:hover,
 .btn_remove_time_slot:hover,
 .btn_remove_schedule:hover,
 .btn_remove_disable:hover {
@@ -795,14 +818,13 @@ $arr_recurrence_byweekno = array(
     border: 1px solid #eee;
     border-radius: 10px;
     padding: 18px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .creneaux_form_grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 14px;
-    margin-bottom: 14px;
 }
 
 .creneaux_form_col label {
@@ -877,41 +899,51 @@ $arr_recurrence_byweekno = array(
 .creneaux_filter {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 13px;
+    gap: 10px;
+    font-size: 14px;
     color: #666;
 }
 
+.creneaux_filter .filter_label {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.creneaux_filter .filter_separator {
+    font-weight: 500;
+}
+
 .creneaux_filter_input {
-    width: 120px;
-    height: 36px;
-    padding: 0 10px;
+    width: 140px;
+    height: 40px;
+    padding: 0 12px;
     border: 1px solid #ddd;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 14px;
+    background: #fff;
 }
 
 /* Items de créneau */
 .creneaux_list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 
 .creneaux_item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
+    gap: 16px;
+    padding: 16px 20px;
     background: #fff;
-    border: 1px solid #eee;
-    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
     transition: all 0.2s;
 }
 
 .creneaux_item:hover {
-    border-color: #ddd;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-color: #d0d0d0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
 }
 
 .creneaux_item_select {
@@ -945,6 +977,18 @@ $arr_recurrence_byweekno = array(
     border-color: #FF6600;
 }
 
+/* Date affichée en texte lisible */
+.creneaux_item_date_display {
+    flex: 0 0 200px;
+}
+
+.creneaux_item_date_display .date_text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Ancien style pour compatibilité */
 .creneaux_item_date {
     flex: 0 0 150px;
 }
@@ -958,18 +1002,53 @@ $arr_recurrence_byweekno = array(
 .creneaux_item_time {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     flex: 1;
 }
 
+.creneaux_item_time .creneaux_time_native {
+    width: 110px;
+    height: 42px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 0 10px;
+    font-size: 14px;
+    text-align: center;
+}
+
 .time_label {
-    font-size: 13px;
+    font-size: 14px;
     color: #666;
+    font-weight: 500;
 }
 
 .creneaux_item_actions {
     display: flex;
-    gap: 6px;
+    gap: 8px;
+    margin-left: auto;
+}
+
+/* Bouton Ajouter en bas de la liste */
+.creneaux_list_section > .btn_add_creneaux_manual {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    background: #FF6600;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 20px;
+}
+
+.creneaux_list_section > .btn_add_creneaux_manual:hover {
+    background: #e55b00;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
 }
 
 /* État vide */
@@ -1525,6 +1604,9 @@ $arr_recurrence_byweekno = array(
             var prefix = '<?php echo $_prefix; ?>';
             var key = this.calendarIndex++;
 
+            // Formater la date de manière lisible
+            var formattedDate = this.formatDateReadable(startDate);
+
             var html = `
                 <div class="creneaux_item item_calendar" data-key="${key}">
                     <label class="creneaux_item_select">
@@ -1532,8 +1614,9 @@ $arr_recurrence_byweekno = array(
                         <span class="option_checkbox"></span>
                     </label>
                     <input type="hidden" class="calendar_id" name="${prefix}calendar[${key}][calendar_id]" value="">
-                    <div class="creneaux_item_date">
-                        <input type="text" class="creneaux_input calendar_date" value="${startDate}" name="${prefix}calendar[${key}][date]" readonly>
+                    <div class="creneaux_item_date_display">
+                        <span class="date_text">${formattedDate}</span>
+                        <input type="hidden" class="calendar_date" value="${startDate}" name="${prefix}calendar[${key}][date]">
                     </div>
                     <div class="creneaux_item_time">
                         <span class="time_label"><?php esc_html_e("De", "eventlist"); ?></span>
@@ -1561,6 +1644,38 @@ $arr_recurrence_byweekno = array(
 
             this.updateEmptyState();
             this.initPickers();
+        },
+
+        formatDateReadable: function(dateStr) {
+            // Convertir une date (format variable) en format lisible
+            var date;
+
+            // Essayer différents formats de parsing
+            if (dateStr.includes('/')) {
+                var parts = dateStr.split('/');
+                if (parts[2] && parts[2].length === 4) {
+                    // Format dd/mm/yyyy ou mm/dd/yyyy
+                    date = new Date(parts[2], parts[1] - 1, parts[0]);
+                } else {
+                    date = new Date(dateStr);
+                }
+            } else {
+                date = new Date(dateStr);
+            }
+
+            if (isNaN(date.getTime())) {
+                return dateStr; // Retourner la date originale si parsing échoue
+            }
+
+            var days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+            var months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+
+            var dayName = days[date.getDay()];
+            var day = date.getDate();
+            var month = months[date.getMonth()];
+            var year = date.getFullYear();
+
+            return dayName + ' ' + day + ' ' + month + ' ' + year;
         },
 
         addTimeSlot: function($button) {
