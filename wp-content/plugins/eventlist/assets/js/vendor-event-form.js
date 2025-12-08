@@ -584,44 +584,125 @@ jQuery(document).ready(function ($) {
             selected: selected,
             callback: function (images) {
                 if (images && images.length > 0) {
-                    var image = images[0];
-                    var $wrapper = $('.featured_image_wrapper');
-                    var $preview = $wrapper.find('.featured_image_preview');
-                    var $input = $wrapper.find('#img_thumbnail');
-
-                    // Mettre à jour l'input
-                    $input.val(image.id);
-
-                    // Mettre à jour l'aperçu
-                    if ($preview.find('img').length) {
-                        $preview.find('img').attr('src', image.url);
-                    } else {
-                        $preview.html(`
-                            <img class="image-preview" src="${image.url}" alt="">
-                            <button type="button" class="btn_remove_featured" title="Supprimer">
-                                <i class="fa fa-times"></i>
-                            </button>
-                        `);
-                    }
-                    $preview.addClass('has_image');
+                    updateFeaturedImage(images[0]);
                 }
             }
         });
     });
+
+    // ---- Update Featured Image ----
+    function updateFeaturedImage(image) {
+        var $zone = $('.featured_image_zone');
+        var $preview = $zone.find('.featured_image_preview');
+        var $input = $zone.find('#img_thumbnail');
+
+        // Mettre à jour l'input
+        $input.val(image.id);
+
+        // Mettre à jour l'aperçu
+        var $img = $preview.find('.image-preview');
+        if ($img.length) {
+            $img.attr('src', image.url);
+        } else {
+            $preview.prepend('<img class="image-preview" src="' + image.url + '" alt="">');
+        }
+
+        // Ajouter la classe has_image
+        $zone.addClass('has_image');
+    }
 
     // ---- Remove Featured Image ----
     $(document).on('click', '.btn_remove_featured', function (e) {
         e.preventDefault();
         e.stopPropagation();
 
-        var $wrapper = $('.featured_image_wrapper');
-        var $preview = $wrapper.find('.featured_image_preview');
-        var $input = $wrapper.find('#img_thumbnail');
+        var $zone = $('.featured_image_zone');
+        var $preview = $zone.find('.featured_image_preview');
+        var $input = $zone.find('#img_thumbnail');
 
-        // Vider l'input et l'aperçu
+        // Vider l'input et supprimer l'image
         $input.val('');
-        $preview.removeClass('has_image').html('');
+        $preview.find('.image-preview').remove();
+        $zone.removeClass('has_image');
     });
+
+    // ---- Drag & Drop for Featured Image ----
+    var $featuredDropzone = $('.featured_dropzone');
+
+    $featuredDropzone.on('dragover dragenter', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).addClass('is_dragover');
+    });
+
+    $featuredDropzone.on('dragleave dragend', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).removeClass('is_dragover');
+    });
+
+    $featuredDropzone.on('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).removeClass('is_dragover');
+
+        var files = e.originalEvent.dataTransfer.files;
+        if (files.length > 0) {
+            uploadFeaturedImage(files[0]);
+        }
+    });
+
+    // ---- Upload Featured Image ----
+    function uploadFeaturedImage(file) {
+        // Vérifier le type
+        if (!file.type.match(/^image\/(jpeg|jpg|png|gif|webp)$/i)) {
+            alert('Format non supporté. Utilisez JPG, PNG, GIF ou WebP.');
+            return;
+        }
+
+        // Vérifier la taille (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            alert('L\'image est trop volumineuse. Maximum 10 Mo.');
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('action', 'el_upload_vendor_media');
+        formData.append('file', file);
+        formData.append('nonce', el_vendor_media_params.nonce || '');
+
+        // Afficher un état de chargement
+        var $zone = $('.featured_image_zone');
+        var $dropzone = $zone.find('.featured_dropzone');
+        $dropzone.find('.dropzone_inner').hide();
+        $dropzone.append('<div class="upload_loading"><i class="fa fa-spinner fa-spin"></i> Téléversement...</div>');
+
+        $.ajax({
+            url: el_vendor_media_params.ajax_url || ajaxurl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                $dropzone.find('.upload_loading').remove();
+                $dropzone.find('.dropzone_inner').show();
+
+                if (response.success && response.data) {
+                    updateFeaturedImage({
+                        id: response.data.id,
+                        url: response.data.url
+                    });
+                } else {
+                    alert(response.data?.message || 'Erreur lors du téléversement');
+                }
+            },
+            error: function() {
+                $dropzone.find('.upload_loading').remove();
+                $dropzone.find('.dropzone_inner').show();
+                alert('Erreur de connexion');
+            }
+        });
+    }
 
 
     // ---- Gallery Picker ----

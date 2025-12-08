@@ -1204,89 +1204,175 @@
 }
 
 /* ==========================================================================
-   11. Featured Image Picker - Nouveau design
+   11. Featured Image Picker - Nouveau design Dropzone
    ========================================================================== */
 
-.featured_image_wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.featured_image_preview {
+.featured_image_zone {
     position: relative;
     width: 100%;
-    max-width: 400px;
+    max-width: 100%;
     aspect-ratio: 16/9;
     border-radius: 12px;
     overflow: hidden;
-    background: #f5f5f5;
+    background: #fafafa;
+}
+
+/* Zone de dépôt (quand pas d'image) */
+.featured_dropzone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     border: 2px dashed #ddd;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+}
+
+.featured_image_zone.has_image .featured_dropzone {
     display: none;
 }
 
-.featured_image_preview.has_image {
+.featured_dropzone:hover {
+    border-color: #FF6600;
+    background: #fff8f5;
+}
+
+.featured_dropzone.is_dragover {
+    border-color: #FF6600;
+    background: #fff0e6;
+    border-width: 3px;
+}
+
+.dropzone_inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.dropzone_inner i {
+    font-size: 48px;
+    color: #ccc;
+    margin-bottom: 16px;
+    transition: color 0.2s;
+}
+
+.featured_dropzone:hover .dropzone_inner i {
+    color: #FF6600;
+}
+
+.dropzone_inner p {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px;
+}
+
+.dropzone_inner span {
+    font-size: 13px;
+    color: #888;
+}
+
+/* Aperçu de l'image */
+.featured_image_preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
+}
+
+.featured_image_zone.has_image .featured_image_preview {
     display: block;
-    border-style: solid;
-    border-color: #eee;
 }
 
 .featured_image_preview .image-preview {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 12px;
 }
 
-.featured_image_preview .btn_remove_featured {
+/* Overlay au survol avec boutons */
+.featured_preview_overlay {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    gap: 12px;
     opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 12px;
 }
 
-.featured_image_preview:hover .btn_remove_featured {
+.featured_image_preview:hover .featured_preview_overlay {
     opacity: 1;
 }
 
-.featured_image_preview .btn_remove_featured:hover {
-    background: #e74c3c;
-}
-
-.btn_pick_featured_image {
+.featured_preview_overlay button {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 24px;
-    background: #fff;
-    border: 1px solid #ddd;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
     border-radius: 8px;
-    color: #333;
-    font-weight: 500;
     font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
-    width: fit-content;
+    transition: all 0.2s ease;
 }
 
-.btn_pick_featured_image:hover {
-    border-color: #FF6600;
+.btn_change_featured {
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+}
+
+.btn_change_featured:hover {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn_remove_featured {
+    background: rgba(231, 76, 60, 0.9);
+    color: #fff;
+}
+
+.btn_remove_featured:hover {
+    background: #e74c3c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+/* État de chargement upload */
+.upload_loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 14px;
+    color: #666;
+    padding: 20px;
+}
+
+.upload_loading i {
+    font-size: 32px;
     color: #FF6600;
-    background: #fff8f5;
-}
-
-.btn_pick_featured_image i {
-    font-size: 18px;
 }
 
 /* ==========================================================================
@@ -1321,7 +1407,7 @@
     display: none;
 }
 
-/* État vide */
+/* État vide - cliquable */
 .gallery_empty_state {
     grid-column: 1 / -1;
     display: none;
@@ -1331,28 +1417,60 @@
     padding: 40px 20px;
     text-align: center;
     color: #888;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    margin: -10px;
+    padding: 50px 30px;
 }
 
 .gallery_grid_sortable.is_empty .gallery_empty_state {
     display: flex;
 }
 
+.gallery_empty_state:hover {
+    background: #fff8f5;
+}
+
+.gallery_empty_state:hover i {
+    color: #FF6600;
+    transform: scale(1.1);
+}
+
 .gallery_empty_state i {
     font-size: 48px;
     color: #ccc;
     margin-bottom: 15px;
+    transition: all 0.3s ease;
 }
 
 .gallery_empty_state p {
     font-size: 16px;
-    font-weight: 500;
-    color: #666;
-    margin: 0 0 5px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px;
 }
 
 .gallery_empty_state span {
     font-size: 14px;
-    color: #999;
+    color: #888;
+}
+
+.gallery_empty_state .empty_state_hint {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 10px 20px;
+    background: #FF6600;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.gallery_empty_state:hover .empty_state_hint {
+    background: #e55b00;
+    transform: translateY(-1px);
 }
 
 /* Item de galerie */
@@ -1495,28 +1613,57 @@
 }
 
 /* ==========================================================================
-   12.1 Gallery - Responsive
+   12.1 Gallery & Featured Image - Responsive
    ========================================================================== */
 
 @media (max-width: 768px) {
+    .featured_image_zone {
+        aspect-ratio: 4/3;
+    }
+
+    .dropzone_inner {
+        padding: 30px 15px;
+    }
+
+    .dropzone_inner i {
+        font-size: 36px;
+    }
+
+    .dropzone_inner p {
+        font-size: 14px;
+    }
+
+    .featured_preview_overlay {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .featured_preview_overlay button {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+
     .gallery_grid_sortable {
         grid-template-columns: repeat(3, 1fr);
         gap: 10px;
         padding: 12px;
     }
 
-    .featured_image_preview {
-        max-width: 100%;
-    }
-
-    .btn_pick_featured_image,
     .btn_pick_gallery_images {
         width: 100%;
         justify-content: center;
     }
+
+    .gallery_empty_state {
+        padding: 30px 15px;
+    }
 }
 
 @media (max-width: 480px) {
+    .featured_image_zone {
+        aspect-ratio: 3/2;
+    }
+
     .gallery_grid_sortable {
         grid-template-columns: repeat(2, 1fr);
     }

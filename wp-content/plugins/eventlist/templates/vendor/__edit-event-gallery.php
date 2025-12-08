@@ -40,11 +40,12 @@ $image_banner = get_post_meta( $post_id, $_prefix.'image_banner', true) ? get_po
             </div>
         <?php endforeach; endif; ?>
 
-        <!-- État vide -->
-        <div class="gallery_empty_state">
+        <!-- État vide - cliquable -->
+        <div class="gallery_empty_state btn_pick_gallery_images">
             <i class="fa fa-images"></i>
             <p><?php esc_html_e( 'Aucune image dans la galerie', 'eventlist' ); ?></p>
-            <span><?php esc_html_e( 'Ajoutez des images pour créer votre galerie', 'eventlist' ); ?></span>
+            <span><?php esc_html_e( 'Cliquez pour ajouter des images à votre galerie', 'eventlist' ); ?></span>
+            <span class="empty_state_hint"><?php esc_html_e( 'Sélectionner des images', 'eventlist' ); ?></span>
         </div>
     </div>
 
