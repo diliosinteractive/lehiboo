@@ -1,0 +1,636 @@
+/**
+ * V1 Le Hiboo - Dashboard Partenaires (Admin)
+ * Styles pour la page admin du dashboard partenaires
+ */
+
+/* Reset et Container principal */
+.el-admin-vendor-dashboard {
+	max-width: 1400px;
+	margin: 0;
+	padding: 0;
+}
+
+.el-admin-vendor-dashboard * {
+	box-sizing: border-box;
+}
+
+/* Card de sélection de vendor */
+.el-admin-vendor-dashboard .el-vendor-selector-card {
+	background: #fff;
+	padding: 20px;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	margin: 20px 0;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.el-admin-vendor-dashboard .el-vendor-selector-row {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	flex-wrap: wrap;
+}
+
+.el-admin-vendor-dashboard .el-vendor-selector-row label {
+	margin-right: 10px;
+}
+
+.el-admin-vendor-dashboard .el-vendor-select {
+	min-width: 400px;
+	max-width: 100%;
+}
+
+/* Card info vendor */
+.el-admin-vendor-dashboard .el-vendor-info-card {
+	background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+	color: #fff;
+	padding: 25px;
+	border-radius: 8px;
+	margin: 20px 0;
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+.el-admin-vendor-dashboard .el-vendor-avatar img {
+	border-radius: 50%;
+	border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.el-admin-vendor-dashboard .el-vendor-details h2 {
+	color: #fff;
+	margin: 0 0 10px;
+	font-size: 24px;
+}
+
+.el-admin-vendor-dashboard .el-vendor-details p {
+	margin: 5px 0;
+	opacity: 0.9;
+}
+
+.el-admin-vendor-dashboard .el-vendor-details p .dashicons {
+	margin-right: 5px;
+	vertical-align: middle;
+}
+
+.el-admin-vendor-dashboard .el-vendor-details .button {
+	margin-top: 10px;
+	margin-right: 10px;
+}
+
+/* Card filtre de dates */
+.el-admin-vendor-dashboard .el-date-filter-card {
+	background: #fff;
+	padding: 15px 20px;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	margin: 20px 0;
+}
+
+.el-admin-vendor-dashboard .el-date-filter-row {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	flex-wrap: wrap;
+}
+
+.el-admin-vendor-dashboard .el-date-filter-row label {
+	font-weight: 600;
+}
+
+.el-admin-vendor-dashboard .el-custom-dates {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.el-admin-vendor-dashboard .el-custom-dates input[type="date"] {
+	padding: 5px 10px;
+}
+
+/* Navigation onglets */
+.el-admin-vendor-dashboard .nav-tab-wrapper {
+	margin: 20px 0 0;
+	border-bottom: 1px solid #c3c4c7;
+}
+
+.el-admin-vendor-dashboard .nav-tab .dashicons {
+	margin-right: 5px;
+	vertical-align: middle;
+}
+
+/* Contenu du dashboard */
+.el-admin-vendor-dashboard .el-dashboard-content {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-top: none;
+	padding: 25px;
+	margin-bottom: 20px;
+}
+
+.el-admin-vendor-dashboard .el-dashboard-content h3 {
+	margin-top: 0;
+	padding-bottom: 15px;
+	border-bottom: 2px solid #2271b1;
+	color: #1d2327;
+	font-size: 18px;
+}
+
+/* Grille KPI */
+.el-admin-vendor-dashboard .el-admin-kpi-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 20px;
+	margin: 25px 0;
+}
+
+@media screen and (max-width: 1200px) {
+	.el-admin-vendor-dashboard .el-admin-kpi-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.el-admin-vendor-dashboard .el-admin-kpi-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Cards KPI */
+.el-admin-vendor-dashboard .el-admin-kpi-card {
+	background: #fff;
+	border-radius: 8px;
+	padding: 20px;
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	border: 1px solid #e5e5e5;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.el-admin-vendor-dashboard .el-admin-kpi-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.el-admin-vendor-dashboard .el-admin-kpi-card .kpi-icon {
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.el-admin-vendor-dashboard .el-admin-kpi-card .kpi-icon .dashicons {
+	font-size: 28px;
+	width: 28px;
+	height: 28px;
+	color: #fff;
+}
+
+.el-admin-vendor-dashboard .el-admin-kpi-card .kpi-content {
+	flex: 1;
+}
+
+.el-admin-vendor-dashboard .el-admin-kpi-card .kpi-value {
+	font-size: 32px;
+	font-weight: 700;
+	color: #1d2327;
+	line-height: 1.2;
+}
+
+.el-admin-vendor-dashboard .el-admin-kpi-card .kpi-label {
+	font-size: 13px;
+	color: #646970;
+	margin-top: 4px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+/* Couleurs des KPI */
+.el-admin-vendor-dashboard .el-admin-kpi-card.kpi-primary .kpi-icon {
+	background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+}
+
+.el-admin-vendor-dashboard .el-admin-kpi-card.kpi-success .kpi-icon {
+	background: linear-gradient(135deg, #00a32a 0%, #007017 100%);
+}
+
+.el-admin-vendor-dashboard .el-admin-kpi-card.kpi-info .kpi-icon {
+	background: linear-gradient(135deg, #72aee6 0%, #4f94d4 100%);
+}
+
+.el-admin-vendor-dashboard .el-admin-kpi-card.kpi-warning .kpi-icon {
+	background: linear-gradient(135deg, #dba617 0%, #b88c00 100%);
+}
+
+.el-admin-vendor-dashboard .el-admin-kpi-card.kpi-views .kpi-icon {
+	background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+}
+
+.el-admin-vendor-dashboard .el-admin-kpi-card.kpi-visitors .kpi-icon {
+	background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+}
+
+.el-admin-vendor-dashboard .el-admin-kpi-card.kpi-bookings .kpi-icon {
+	background: linear-gradient(135deg, #00a32a 0%, #007017 100%);
+}
+
+.el-admin-vendor-dashboard .el-admin-kpi-card.kpi-conversion .kpi-icon {
+	background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+}
+
+/* Sections de statistiques */
+.el-admin-vendor-dashboard .el-admin-stats-section {
+	background: #f9f9f9;
+	border: 1px solid #e5e5e5;
+	border-radius: 8px;
+	padding: 20px;
+	margin: 25px 0;
+}
+
+.el-admin-vendor-dashboard .el-admin-stats-section h4 {
+	margin: 0 0 20px;
+	font-size: 15px;
+	color: #1d2327;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.el-admin-vendor-dashboard .el-admin-stats-section h4 .dashicons {
+	color: #2271b1;
+}
+
+/* Statistiques d'âge */
+.el-admin-vendor-dashboard .el-admin-age-stats {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.el-admin-vendor-dashboard .age-avg-badge {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+	color: #fff;
+	padding: 15px 30px;
+	border-radius: 8px;
+	width: fit-content;
+}
+
+.el-admin-vendor-dashboard .age-avg-badge strong {
+	font-size: 36px;
+	line-height: 1;
+}
+
+.el-admin-vendor-dashboard .age-avg-badge span {
+	font-size: 12px;
+	margin-top: 5px;
+	opacity: 0.9;
+	text-transform: uppercase;
+}
+
+.el-admin-vendor-dashboard .age-distribution {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 12px;
+}
+
+.el-admin-vendor-dashboard .age-group-item,
+.el-admin-vendor-dashboard .city-item,
+.el-admin-vendor-dashboard .device-item,
+.el-admin-vendor-dashboard .browser-item {
+	background: #fff;
+	padding: 15px;
+	border-radius: 6px;
+	border: 1px solid #e5e5e5;
+}
+
+.el-admin-vendor-dashboard .age-group-header,
+.el-admin-vendor-dashboard .city-header,
+.el-admin-vendor-dashboard .device-header,
+.el-admin-vendor-dashboard .browser-header {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	font-size: 13px;
+}
+
+.el-admin-vendor-dashboard .age-group-label,
+.el-admin-vendor-dashboard .city-name,
+.el-admin-vendor-dashboard .device-label,
+.el-admin-vendor-dashboard .browser-name {
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.el-admin-vendor-dashboard .age-group-count,
+.el-admin-vendor-dashboard .city-count,
+.el-admin-vendor-dashboard .device-count,
+.el-admin-vendor-dashboard .browser-count {
+	color: #646970;
+}
+
+.el-admin-vendor-dashboard .age-group-bar,
+.el-admin-vendor-dashboard .city-bar,
+.el-admin-vendor-dashboard .device-bar,
+.el-admin-vendor-dashboard .browser-bar {
+	height: 10px;
+	background: #e5e5e5;
+	border-radius: 5px;
+	overflow: hidden;
+}
+
+.el-admin-vendor-dashboard .age-group-fill,
+.el-admin-vendor-dashboard .city-fill,
+.el-admin-vendor-dashboard .device-fill,
+.el-admin-vendor-dashboard .browser-fill {
+	height: 100%;
+	border-radius: 5px;
+	transition: width 0.3s ease;
+}
+
+.el-admin-vendor-dashboard .age-group-fill {
+	background: linear-gradient(90deg, #2271b1, #72aee6);
+}
+
+.el-admin-vendor-dashboard .city-fill {
+	background: linear-gradient(90deg, #9b59b6, #a569bd);
+}
+
+.el-admin-vendor-dashboard .device-fill {
+	background: linear-gradient(90deg, #00a32a, #46b450);
+}
+
+.el-admin-vendor-dashboard .browser-fill {
+	background: linear-gradient(90deg, #e67e22, #f39c12);
+}
+
+/* Statistiques de genre */
+.el-admin-vendor-dashboard .el-admin-gender-stats .gender-chart {
+	display: flex;
+	gap: 20px;
+	flex-wrap: wrap;
+}
+
+.el-admin-vendor-dashboard .gender-item {
+	background: #fff;
+	padding: 20px 25px;
+	border-radius: 8px;
+	min-width: 140px;
+	text-align: center;
+	border: 1px solid #e5e5e5;
+}
+
+.el-admin-vendor-dashboard .gender-item.gender-male {
+	border-left: 4px solid #2271b1;
+}
+
+.el-admin-vendor-dashboard .gender-item.gender-female {
+	border-left: 4px solid #e74c3c;
+}
+
+.el-admin-vendor-dashboard .gender-item.gender-other {
+	border-left: 4px solid #9b59b6;
+}
+
+.el-admin-vendor-dashboard .gender-label {
+	font-weight: 600;
+	margin-bottom: 5px;
+	font-size: 14px;
+}
+
+.el-admin-vendor-dashboard .gender-value {
+	color: #646970;
+	font-size: 13px;
+}
+
+/* Interactions */
+.el-admin-vendor-dashboard .el-admin-interactions-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 15px;
+}
+
+@media screen and (max-width: 1200px) {
+	.el-admin-vendor-dashboard .el-admin-interactions-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.el-admin-vendor-dashboard .el-admin-interactions-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.el-admin-vendor-dashboard .interaction-item {
+	background: #fff;
+	border-radius: 8px;
+	padding: 20px;
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	border: 1px solid #e5e5e5;
+}
+
+.el-admin-vendor-dashboard .interaction-icon {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.el-admin-vendor-dashboard .interaction-icon .dashicons {
+	font-size: 22px;
+	width: 22px;
+	height: 22px;
+	color: #fff;
+}
+
+.el-admin-vendor-dashboard .interaction-item.wishlist .interaction-icon {
+	background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.el-admin-vendor-dashboard .interaction-item.contact .interaction-icon {
+	background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+}
+
+.el-admin-vendor-dashboard .interaction-item.share .interaction-icon {
+	background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+}
+
+.el-admin-vendor-dashboard .interaction-item.engagement .interaction-icon {
+	background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+}
+
+.el-admin-vendor-dashboard .interaction-value {
+	font-size: 26px;
+	font-weight: 700;
+	color: #1d2327;
+}
+
+.el-admin-vendor-dashboard .interaction-label {
+	font-size: 12px;
+	color: #646970;
+	text-transform: uppercase;
+}
+
+/* Graphique */
+.el-admin-vendor-dashboard .el-admin-chart-container {
+	background: #f9f9f9;
+	border: 1px solid #e5e5e5;
+	border-radius: 8px;
+	padding: 20px;
+	margin: 25px 0;
+}
+
+.el-admin-vendor-dashboard .el-admin-chart-container h4 {
+	margin: 0 0 20px;
+	font-size: 15px;
+	color: #1d2327;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.el-admin-vendor-dashboard .el-admin-chart-container h4 .dashicons {
+	color: #2271b1;
+}
+
+.el-admin-vendor-dashboard .chart-wrapper {
+	background: #fff;
+	border-radius: 6px;
+	padding: 20px;
+	height: 350px;
+	border: 1px solid #e5e5e5;
+}
+
+/* Métriques secondaires */
+.el-admin-vendor-dashboard .el-admin-secondary-metrics {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	margin-top: 25px;
+	padding-top: 20px;
+	border-top: 2px solid #e5e5e5;
+}
+
+.el-admin-vendor-dashboard .el-admin-secondary-metrics .metric-item {
+	display: flex;
+	flex-direction: column;
+	padding: 15px 25px;
+	background: #f9f9f9;
+	border-radius: 6px;
+	border: 1px solid #e5e5e5;
+	min-width: 200px;
+}
+
+.el-admin-vendor-dashboard .el-admin-secondary-metrics .metric-label {
+	font-size: 12px;
+	color: #646970;
+	margin-bottom: 5px;
+	text-transform: uppercase;
+}
+
+.el-admin-vendor-dashboard .el-admin-secondary-metrics .metric-value {
+	font-size: 20px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.el-admin-vendor-dashboard .el-admin-secondary-metrics .metric-warning {
+	color: #d63638;
+}
+
+/* Message si pas de vendor sélectionné */
+.el-admin-vendor-dashboard .el-no-vendor-selected {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 8px;
+	padding: 60px 40px;
+	text-align: center;
+	margin: 20px 0;
+}
+
+.el-admin-vendor-dashboard .el-no-vendor-selected .dashicons {
+	font-size: 64px;
+	width: 64px;
+	height: 64px;
+	color: #c3c4c7;
+	margin-bottom: 20px;
+}
+
+.el-admin-vendor-dashboard .el-no-vendor-selected p {
+	font-size: 16px;
+	color: #646970;
+	margin: 0;
+}
+
+/* Tables */
+.el-admin-vendor-dashboard .el-admin-stats-section .wp-list-table {
+	margin-top: 15px;
+	border: 1px solid #e5e5e5;
+}
+
+.el-admin-vendor-dashboard .el-admin-stats-section .wp-list-table th {
+	background: #fff;
+}
+
+/* Device/Browser/City stats lists */
+.el-admin-vendor-dashboard .el-admin-device-stats,
+.el-admin-vendor-dashboard .el-admin-browser-stats,
+.el-admin-vendor-dashboard .el-admin-city-stats,
+.el-admin-vendor-dashboard .el-admin-cities-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+	gap: 12px;
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+	.el-admin-vendor-dashboard .el-vendor-selector-row {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.el-admin-vendor-dashboard .el-vendor-select {
+		min-width: 100%;
+		width: 100%;
+	}
+
+	.el-admin-vendor-dashboard .el-vendor-info-card {
+		flex-direction: column;
+		text-align: center;
+	}
+
+	.el-admin-vendor-dashboard .el-date-filter-row {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.el-admin-vendor-dashboard .el-custom-dates {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.el-admin-vendor-dashboard .age-distribution,
+	.el-admin-vendor-dashboard .el-admin-device-stats,
+	.el-admin-vendor-dashboard .el-admin-browser-stats,
+	.el-admin-vendor-dashboard .el-admin-city-stats,
+	.el-admin-vendor-dashboard .el-admin-cities-stats {
+		grid-template-columns: 1fr;
+	}
+}

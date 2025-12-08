@@ -121,6 +121,9 @@ class El_Admin_Menus{
 		// V1 Le Hiboo - Options Espace Partenaire
 		add_submenu_page( 'eventlist', esc_html__( 'Options Partenaire', 'eventlist' ), esc_html__( 'Options Partenaire', 'eventlist' ), 'manage_options', 'el_partner_options', array( $this, 'el_register_partner_options' ) );
 
+		// V1 Le Hiboo - Dashboard Partenaires (Admin)
+		add_submenu_page( 'eventlist', esc_html__( 'Dashboard Partenaires', 'eventlist' ), esc_html__( 'Dashboard Partenaires', 'eventlist' ), 'manage_options', 'el_vendor_dashboard', array( $this, 'el_register_vendor_dashboard' ) );
+
 
 
 
@@ -172,6 +175,13 @@ class El_Admin_Menus{
 	 */
 	public function el_register_partner_options() {
 		EL()->_include( EL_PLUGIN_INC . 'admin/views/settings/partner_options.php' );
+	}
+
+	/**
+	 * V1 Le Hiboo - Dashboard Partenaires (Admin)
+	 */
+	public function el_register_vendor_dashboard() {
+		EL()->_include( EL_PLUGIN_INC . 'admin/views/settings/vendor_dashboard.php' );
 	}
 
 	/**

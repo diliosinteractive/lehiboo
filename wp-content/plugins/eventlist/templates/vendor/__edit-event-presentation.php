@@ -111,7 +111,7 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
                 <?php if ($social_organizer) {
                     foreach ($social_organizer as $key => $value) {
                         if ($value['link_social'] != '') { ?>
-                            <div class="social_item el_row" style="margin-top: 10px; align-items: center;">
+                            <div class="social_item el_row">
                                 <div class="el_col_3">
                                     <select name="<?php echo esc_attr( OVA_METABOX_EVENT.'social_organizer['.$key.'][icon_social]' ); ?>" class="icon_social selectpicker">
                                         <?php foreach (el_get_social() as $key_icon_social => $value_icon_social) { ?>
@@ -122,8 +122,8 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
                                 <div class="el_col_8">
                                     <input type="text" name="<?php echo esc_attr( OVA_METABOX_EVENT.'social_organizer['.$key.'][link_social]' ); ?>" value="<?php echo esc_attr($value['link_social']); ?>" class="link_social" placeholder="https://">
                                 </div>
-                                <div class="el_col_1" style="display:flex;align-items:center;">
-                                    <a href="#" class="button remove_social" style="color:red;font-size:18px;">×</a>
+                                <div class="el_col_1">
+                                    <a href="#" class="button remove_social">×</a>
                                 </div>
                             </div>
                             <?php
@@ -131,7 +131,7 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
                     }
                 } ?>
             </div>
-            <a href="#" class="button add_social btn_add_co_organizer" style="display:inline-block; text-decoration:none;">
+            <a href="#" class="button add_social btn_add_co_organizer">
                 <?php esc_html_e( 'Ajouter un réseau social', 'eventlist' ); ?>
             </a>
         </div>

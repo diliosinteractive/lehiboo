@@ -26,8 +26,8 @@ $image_banner = get_post_meta( $post_id, $_prefix.'image_banner', true) ? get_po
 			</div>
 		<?php endforeach; endif; ?>
 
-		<a class="button add_gallery_images el_btn_add_media" href="#" data-uploader-title="<?php esc_attr_e( 'Ajouter des images', 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( 'Ajouter', 'eventlist' ); ?>">
-			<i class="icon_camera_alt"></i> <?php esc_html_e( 'Ajouter des images', 'eventlist' ); ?>
+		<a class="button add_gallery_images el_btn_add_media gallery_add_btn" href="#" data-uploader-title="<?php esc_attr_e( 'Ajouter des images', 'eventlist' ); ?>" data-uploader-button-text="<?php esc_attr_e( 'Ajouter', 'eventlist' ); ?>">
+			<i class="icon_image"></i> <?php esc_html_e( 'Ajouter des images', 'eventlist' ); ?>
 		</a>
 	</div>
 </div>

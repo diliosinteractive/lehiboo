@@ -796,3 +796,409 @@
     display: none;
     padding: 30px;
 }
+
+/* ==========================================================================
+   10. Presentation Section - Enhanced Styles
+   ========================================================================== */
+
+/* Section Block */
+.event_basic_block {
+    padding: 0;
+}
+
+.event_basic_block .heading_section {
+    font-size: 22px;
+    font-weight: 700;
+    color: #222222;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+/* Field Hint / Description */
+.field_hint {
+    color: #717171;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-top: 4px;
+    margin-bottom: 12px;
+    font-weight: 400;
+}
+
+/* Section Labels - Uppercase Style */
+.vendor_field > label:not(.co_organizer_label),
+#mb_gallery > label,
+.image_feature > label {
+    display: block;
+    font-weight: 700;
+    font-size: 12px;
+    margin-bottom: 6px;
+    color: #222222;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+}
+
+/* Required indicator */
+.el_req {
+    color: #C13515;
+    margin-left: 2px;
+}
+
+/* ==========================================================================
+   10.1 Gallery Section
+   ========================================================================== */
+
+#mb_gallery {
+    margin-bottom: 0;
+}
+
+/* Gallery Add Button - Green Style */
+.gallery_add_btn,
+.el_btn_add_media.gallery_add_btn,
+#mb_gallery .el_btn_add_media {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: #20D489;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 12px;
+}
+
+.gallery_add_btn:hover,
+.el_btn_add_media.gallery_add_btn:hover,
+#mb_gallery .el_btn_add_media:hover {
+    background: #1bb574;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(32, 212, 137, 0.3);
+    color: #ffffff;
+}
+
+.gallery_add_btn i,
+#mb_gallery .el_btn_add_media i {
+    font-size: 16px;
+}
+
+/* ==========================================================================
+   10.2 Video URL Section
+   ========================================================================== */
+
+/* Video input with placeholder styling */
+.vendor_field input[type="url"]#event_video {
+    padding: 14px 16px;
+    border: 1px solid #DDDDDD;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #222222;
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.vendor_field input[type="url"]#event_video:focus {
+    border-color: #222222;
+    box-shadow: 0 0 0 2px rgba(34, 34, 34, 0.1);
+    outline: none;
+}
+
+.vendor_field input[type="url"]#event_video::placeholder {
+    color: #B0B0B0;
+    font-style: normal;
+}
+
+/* ==========================================================================
+   10.3 Social Networks Section
+   ========================================================================== */
+
+/* Social Label */
+.co_organizer_label {
+    display: block;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    margin-bottom: 12px;
+    color: #222222 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+}
+
+/* Social Items Container */
+#social_organizer {
+    margin-top: 8px;
+}
+
+#social_list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Social Item Row */
+.social_item.el_row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 !important;
+    padding: 0;
+    flex-wrap: nowrap;
+}
+
+/* Social Select Dropdown */
+.social_item .icon_social,
+.social_item select.selectpicker {
+    padding: 12px 16px;
+    border: 1px solid #DDDDDD;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #222222;
+    background: #ffffff;
+    min-width: 160px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.social_item .icon_social:hover,
+.social_item .icon_social:focus {
+    border-color: #222222;
+    outline: none;
+}
+
+/* Social Link Input */
+.social_item .link_social {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #DDDDDD;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #222222;
+    background: #ffffff;
+    transition: border-color 0.2s;
+}
+
+.social_item .link_social:focus {
+    border-color: #222222;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(34, 34, 34, 0.1);
+}
+
+.social_item .link_social::placeholder {
+    color: #B0B0B0;
+}
+
+/* Remove Social Button */
+.social_item .remove_social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: #fff5f5;
+    border: 1px solid #ffcdd2;
+    border-radius: 8px;
+    color: #e53935 !important;
+    font-size: 20px;
+    font-weight: 400;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.social_item .remove_social:hover {
+    background: #ffebee;
+    border-color: #e53935;
+    transform: scale(1.05);
+}
+
+/* Social Grid Columns Override */
+.social_item .el_col_3,
+.social_item .el_col_8,
+.social_item .el_col_1 {
+    padding: 0;
+    flex: none;
+    max-width: none;
+}
+
+.social_item .el_col_3 {
+    width: auto;
+    min-width: 160px;
+}
+
+.social_item .el_col_8 {
+    flex: 1;
+}
+
+.social_item .el_col_1 {
+    width: auto;
+}
+
+/* Add Social Button - Green Style */
+.add_social.btn_add_co_organizer {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    background: #20D489;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 16px;
+}
+
+.add_social.btn_add_co_organizer:hover {
+    background: #1bb574;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(32, 212, 137, 0.3);
+    color: #ffffff;
+}
+
+.add_social.btn_add_co_organizer::before {
+    content: "+";
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   10.4 Separator Enhancement
+   ========================================================================== */
+
+.el_separator {
+    border: none;
+    border-top: 1px solid #EBEBEB;
+    margin: 28px 0;
+}
+
+/* ==========================================================================
+   10.5 Image Feature Section
+   ========================================================================== */
+
+.image_feature {
+    margin-bottom: 0;
+}
+
+.image_feature .wrap_image_upload {
+    margin-top: 12px;
+}
+
+/* Add Image Button - Outlined Style */
+.image_feature .el_btn_add_media {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #ffffff;
+    border: 2px dashed #DDDDDD;
+    border-radius: 8px;
+    color: #484848;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.image_feature .el_btn_add_media:hover {
+    border-color: #20D489;
+    color: #20D489;
+    background: #f0fff7;
+}
+
+.image_feature .el_btn_add_media i {
+    font-size: 18px;
+}
+
+/* Image Preview Box */
+.image_feature .image_box {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 16px;
+    max-width: 400px;
+}
+
+.image_feature .image-preview {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid #EBEBEB;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================================================
+   10.6 Editor Enhancement
+   ========================================================================== */
+
+/* Remove border for editor */
+.el_editor_no_border {
+    border: none !important;
+}
+
+.el_editor_no_border .wp-editor-container {
+    border: 1px solid #DDDDDD !important;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.el_editor_no_border .mce-panel {
+    border-color: #EBEBEB !important;
+}
+
+.el_editor_no_border .mce-toolbar-grp {
+    background: #f9f9f9 !important;
+    border-bottom: 1px solid #EBEBEB !important;
+}
+
+/* Character Counter */
+.char_counter_wrapper {
+    font-size: 13px !important;
+    color: #717171 !important;
+    margin-top: 8px !important;
+    text-align: right;
+}
+
+#desc_char_count {
+    font-weight: 600;
+    color: #222222;
+}
+
+/* ==========================================================================
+   10.7 Responsive Adjustments
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .social_item.el_row {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .social_item .el_col_3 {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .social_item .el_col_8 {
+        flex: 1;
+        min-width: calc(100% - 50px);
+    }
+
+    .social_item .icon_social,
+    .social_item select.selectpicker {
+        width: 100%;
+    }
+
+    .gallery_add_btn,
+    .add_social.btn_add_co_organizer {
+        width: 100%;
+        justify-content: center;
+    }
+}

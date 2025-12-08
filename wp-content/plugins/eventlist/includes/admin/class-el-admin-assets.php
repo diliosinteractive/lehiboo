@@ -33,6 +33,13 @@ class El_Admin_Assets{
 	 * Add menu items.
 	 */
 	public function enqueue_scripts() {
+		global $pagenow;
+
+		// V1 Le Hiboo - Charger Chart.js et CSS sur la page Dashboard Partenaires
+		if ( $pagenow === 'admin.php' && isset( $_GET['page'] ) && $_GET['page'] === 'el_vendor_dashboard' ) {
+			wp_enqueue_script( 'chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js', array(), '4.4.1', true );
+			wp_enqueue_style( 'el-vendor-dashboard', EL_PLUGIN_URI . 'assets/css/admin/vendor-dashboard.css', array(), '1.0.0' );
+		}
 		$lat = EL()->options->general->get('event_lat', 40.6976312 );
 		$lng = EL()->options->general->get('event_lng', -74.1444847 );
 		if ( empty( $lat ) ) {
