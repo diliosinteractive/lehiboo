@@ -570,6 +570,40 @@ $arr_recurrence_byweekno = array(
     visibility: hidden !important;
 }
 
+/* Support de l'ancienne structure .ts-item avant conversion */
+.creneaux_day_slots .ts-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.creneaux_day_slots .ts-item input {
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 130px;
+}
+
+.creneaux_day_slots .ts-item .close {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 6px;
+    background: #e74c3c;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-left: auto;
+}
+
 .creneaux_section {
     padding: 0;
 }
@@ -1625,30 +1659,81 @@ $arr_recurrence_byweekno = array(
             }, 1500);
         },
 
-        // Corriger les noms de jours "undefined" dans les créneaux existants
+        // Corriger les noms de jours "undefined" et convertir l'ancienne structure
         fixExistingDayNames: function() {
             var self = this;
-            $('.creneaux_time_slot, .creneaux_add_time_slot').each(function() {
+            var prefix = '<?php echo $_prefix; ?>';
+
+            // Gérer les deux structures : nouvelle (.creneaux_time_slot) et ancienne (.ts-item)
+            $('.creneaux_day_slots .ts-item, .creneaux_time_slot, .creneaux_add_time_slot').each(function() {
                 var $row = $(this);
                 var $dayName = $row.find('.day_name');
-                var currentText = $dayName.text().trim();
+                var dayKey = $row.data('key') || $row.closest('.creneaux_day_block, .ts_recurrence_bydays').data('day');
 
-                // Si le texte est "undefined" ou vide, le corriger
-                if (currentText === 'undefined' || currentText === '') {
-                    // Trouver le dayKey depuis le parent ou data-key
-                    var dayKey = $row.data('key') || $row.closest('.creneaux_day_block').data('day');
-                    if (dayKey !== undefined && self.dayNames[String(dayKey)]) {
-                        $dayName.text(self.dayNames[String(dayKey)]);
+                // Si c'est l'ancienne structure sans .day_name, la reconstruire
+                if ($dayName.length === 0 && dayKey !== undefined) {
+                    var dayNameText = self.dayNames[String(dayKey)] || '';
+
+                    // Vérifier si c'est un .ts-item (ancienne structure)
+                    if ($row.hasClass('ts-item') && !$row.hasClass('creneaux_time_slot')) {
+                        // Récupérer les valeurs des inputs existants
+                        var $startInput = $row.find('input[name*="ts_start"]');
+                        var $endInput = $row.find('input[name*="ts_end"]');
+                        var startVal = $startInput.val() || '';
+                        var endVal = $endInput.val() || '';
+                        var startName = $startInput.attr('name') || '';
+                        var endName = $endInput.attr('name') || '';
+
+                        // Reconstruire la ligne avec la nouvelle structure
+                        var newHtml = `
+                            <label class="creneaux_day_checkbox">
+                                <input type="checkbox" name="${prefix}recurrence_bydays[]" value="${dayKey}" checked class="slot_day_checkbox">
+                                <span class="option_checkbox"></span>
+                                <span class="day_name">${dayNameText}</span>
+                            </label>
+                            <span class="time_label">De :</span>
+                            <input type="time" class="creneaux_input creneaux_time_native calendar_recurrence_ts_start" value="${startVal}" name="${startName}" step="900">
+                            <span class="time_label">À :</span>
+                            <input type="time" class="creneaux_input creneaux_time_native calendar_recurrence_ts_end" value="${endVal}" name="${endName}" step="900">
+                            <button type="button" class="btn_remove_time_slot close"><i class="fa fa-times"></i></button>
+                        `;
+
+                        $row.html(newHtml);
+                        $row.addClass('creneaux_day_row creneaux_time_slot').removeClass('ts-item');
+                    }
+                } else if ($dayName.length > 0) {
+                    // Structure existe, juste corriger le texte si nécessaire
+                    var currentText = $dayName.text().trim();
+                    if ((currentText === 'undefined' || currentText === '') && dayKey !== undefined) {
+                        $dayName.text(self.dayNames[String(dayKey)] || '');
                     }
                 }
+            });
+
+            // Convertir les inputs text en time pour ceux qui ont été modifiés par le timepicker
+            $('.creneaux_section input[data-time="undefined"], .creneaux_section input.calendar_recurrence_ts_start[type="text"], .creneaux_section input.calendar_recurrence_ts_end[type="text"]').each(function() {
+                var $input = $(this);
+                var val = $input.val();
+                var name = $input.attr('name');
+                var classes = $input.attr('class');
+
+                // Créer un nouvel input time
+                var $newInput = $('<input type="time">')
+                    .attr('name', name)
+                    .attr('class', classes + ' creneaux_time_native')
+                    .attr('step', '900')
+                    .val(val);
+
+                $input.replaceWith($newInput);
             });
         },
 
         // Initialiser les classes has_slots pour les jours avec créneaux existants
         initWeeklySlots: function() {
-            $('.creneaux_day_block').each(function() {
+            $('.creneaux_day_block, .ts_recurrence_bydays').each(function() {
                 var $block = $(this);
-                var slotsCount = $block.find('.creneaux_time_slot').length;
+                // Détecter les deux structures : nouvelle et ancienne
+                var slotsCount = $block.find('.creneaux_time_slot, .ts-item').length;
                 if (slotsCount > 0) {
                     $block.addClass('has_slots');
                 }
