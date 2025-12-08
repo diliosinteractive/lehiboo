@@ -277,9 +277,9 @@ class EL_Assets{
 			wp_enqueue_style('cropperjs_css', EL_PLUGIN_URI.'assets/libs/cropperjs/cropper.min.css', array(), '1.6.1');
 
 			// Scripts custom
-			wp_enqueue_script('el_vendor_media_compression', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-compression.js', array('jquery', 'browser_image_compression'), '1.0', true);
-			wp_enqueue_script('el_vendor_media_editor', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-editor.js', array('jquery', 'cropperjs'), '1.0', true);
-			wp_enqueue_script('el_vendor_media_manager', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-manager.js', array('jquery', 'el_vendor_media_compression', 'el_vendor_media_editor'), '1.0', true);
+			wp_enqueue_script('el_vendor_media_compression', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-compression.js', array('jquery', 'browser_image_compression'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/frontend/vendor-media-compression.js'), true);
+			wp_enqueue_script('el_vendor_media_editor', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-editor.js', array('jquery', 'cropperjs'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/frontend/vendor-media-editor.js'), true);
+			wp_enqueue_script('el_vendor_media_manager', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-manager.js', array('jquery', 'el_vendor_media_compression', 'el_vendor_media_editor'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/frontend/vendor-media-manager.js'), true);
 
 			// Configuration JavaScript
 			// null = toutes les images, 0 = racine, >0 = dossier spécifique

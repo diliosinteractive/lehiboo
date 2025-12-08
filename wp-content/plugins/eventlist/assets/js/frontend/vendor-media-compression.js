@@ -47,8 +47,13 @@
 
                 console.log(`[Compression] Compressé: ${(compressedSize / 1024 / 1024).toFixed(2)}MB (${savedPercent}% économisé)`);
 
-                // Retourner le fichier compressé
-                return compressedFile;
+                // Convertir le Blob en File pour préserver le nom original
+                const compressedFileWithName = new File([compressedFile], file.name, {
+                    type: compressedFile.type || file.type,
+                    lastModified: Date.now()
+                });
+
+                return compressedFileWithName;
 
             } catch (error) {
                 console.error('[Compression] Error:', error);

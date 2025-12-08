@@ -364,7 +364,7 @@
             const formData = new FormData();
 
             this.uploadQueue.forEach(function(file, index) {
-                formData.append('files[' + index + ']', file);
+                formData.append('files[]', file);
             });
 
             formData.append('action', 'el_vendor_upload_media');
@@ -387,18 +387,25 @@
             // Complete
             xhr.addEventListener('load', function() {
                 if (xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    if (response.success) {
-                        self.showSuccess(response.data.message);
-                        setTimeout(function() {
-                            self.hideUploadZone();
-                            self.loadImages();
-                        }, 1000);
-                    } else {
-                        self.showError(response.data.message);
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            self.showSuccess(response.data.message);
+                            setTimeout(function() {
+                                self.hideUploadZone();
+                                self.loadImages();
+                            }, 1000);
+                        } else {
+                            self.showError(response.data && response.data.message ? response.data.message : 'Erreur lors de l\'upload');
+                            console.error('Upload error response:', response);
+                        }
+                    } catch (e) {
+                        console.error('Upload response parse error:', e, xhr.responseText);
+                        self.showError('Erreur serveur lors de l\'upload. Vérifiez les logs.');
                     }
                 } else {
-                    self.showError('Erreur lors de l\'upload');
+                    console.error('Upload HTTP error:', xhr.status, xhr.responseText);
+                    self.showError('Erreur lors de l\'upload (HTTP ' + xhr.status + ')');
                 }
             });
 
