@@ -442,45 +442,60 @@ class EL_Vendor_Media_Ajax {
             wp_send_json_error( array( 'message' => __( 'Vous n\'avez pas les permissions pour modifier cette image', 'eventlist' ) ) );
         }
 
-        // Vérifier qu'un fichier a été uploadé
-        if ( ! isset( $_FILES['image'] ) || $_FILES['image']['error'] !== UPLOAD_ERR_OK ) {
-            wp_send_json_error( array( 'message' => __( 'Aucune image fournie', 'eventlist' ) ) );
+        // Récupérer les métadonnées
+        $title = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
+        $alt_text = isset( $_POST['alt_text'] ) ? sanitize_text_field( $_POST['alt_text'] ) : '';
+        $folder_id = isset( $_POST['folder_id'] ) ? absint( $_POST['folder_id'] ) : 0;
+
+        // Mettre à jour le titre
+        if ( ! empty( $title ) ) {
+            wp_update_post( array(
+                'ID'         => $attachment_id,
+                'post_title' => $title,
+            ) );
         }
 
-        // Récupérer le fichier uploadé
-        $uploaded_file = $_FILES['image'];
+        // Mettre à jour le texte alternatif
+        update_post_meta( $attachment_id, '_wp_attachment_image_alt', $alt_text );
 
-        // Validation basique du fichier
-        $allowed_types = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp' );
-        $file_type = wp_check_filetype( $uploaded_file['name'] );
+        // Mettre à jour le dossier
+        EL_Vendor_Media_Manager::move_image( $attachment_id, $folder_id );
 
-        if ( ! in_array( $uploaded_file['type'], $allowed_types ) ) {
-            wp_send_json_error( array( 'message' => __( 'Type de fichier non autorisé', 'eventlist' ) ) );
+        // Traiter l'image si un fichier a été uploadé
+        if ( isset( $_FILES['image'] ) && $_FILES['image']['error'] === UPLOAD_ERR_OK ) {
+            $uploaded_file = $_FILES['image'];
+
+            // Validation basique du fichier
+            $allowed_types = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp' );
+
+            if ( ! in_array( $uploaded_file['type'], $allowed_types ) ) {
+                wp_send_json_error( array( 'message' => __( 'Type de fichier non autorisé', 'eventlist' ) ) );
+            }
+
+            // Récupérer le chemin du fichier original
+            $original_file = get_attached_file( $attachment_id );
+
+            // Sauvegarder la nouvelle image en écrasant l'ancienne
+            $moved = move_uploaded_file( $uploaded_file['tmp_name'], $original_file );
+
+            if ( ! $moved ) {
+                wp_send_json_error( array( 'message' => __( 'Erreur lors de la sauvegarde de l\'image', 'eventlist' ) ) );
+            }
+
+            // Régénérer les miniatures
+            require_once( ABSPATH . 'wp-admin/includes/image.php' );
+            $attach_data = wp_generate_attachment_metadata( $attachment_id, $original_file );
+            wp_update_attachment_metadata( $attachment_id, $attach_data );
         }
-
-        // Récupérer le chemin du fichier original
-        $original_file = get_attached_file( $attachment_id );
-        $upload_dir = wp_upload_dir();
-
-        // Sauvegarder la nouvelle image en écrasant l'ancienne
-        $moved = move_uploaded_file( $uploaded_file['tmp_name'], $original_file );
-
-        if ( ! $moved ) {
-            wp_send_json_error( array( 'message' => __( 'Erreur lors de la sauvegarde de l\'image', 'eventlist' ) ) );
-        }
-
-        // Régénérer les miniatures
-        require_once( ABSPATH . 'wp-admin/includes/image.php' );
-        $attach_data = wp_generate_attachment_metadata( $attachment_id, $original_file );
-        wp_update_attachment_metadata( $attachment_id, $attach_data );
 
         // Nettoyer le cache
         clean_post_cache( $attachment_id );
 
         wp_send_json_success( array(
-            'message' => __( 'Image mise à jour avec succès', 'eventlist' ),
+            'message'       => __( 'Image mise à jour avec succès', 'eventlist' ),
             'attachment_id' => $attachment_id,
-            'url' => wp_get_attachment_url( $attachment_id ),
+            'url'           => wp_get_attachment_url( $attachment_id ),
+            'folder_id'     => $folder_id,
         ) );
     }
 }

@@ -759,3 +759,180 @@
 .modal_move .btn_move_confirm:hover {
     background: #e55c00;
 }
+
+/* ==========================================================================
+   Editor Modal - Métadonnées
+   ========================================================================== */
+
+.modal_editor .modal_content_large {
+    max-width: 800px;
+    width: 95%;
+}
+
+.modal_editor .editor_container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modal_editor .editor_image_wrapper {
+    max-height: 400px;
+    overflow: hidden;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.modal_editor .editor_toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* Section Métadonnées */
+.editor_metadata_section {
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.editor_metadata_form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Champs éditables */
+.editor_field {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.editor_field label {
+    flex-shrink: 0;
+    width: 140px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.editor_field .editor_input,
+.editor_field .editor_select {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.editor_field .editor_input:hover,
+.editor_field .editor_select:hover {
+    border-color: #ccc;
+}
+
+.editor_field .editor_input:focus,
+.editor_field .editor_select:focus {
+    outline: none;
+    border-color: #FF6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+}
+
+.editor_field .editor_select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+}
+
+/* Séparateur entre champs éditables et infos */
+.editor_info_separator {
+    height: 1px;
+    background: #eee;
+    margin: 8px 0;
+}
+
+/* Bloc d'informations en lecture seule */
+.editor_info_block {
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 8px;
+}
+
+.editor_info_row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.editor_info_row + .editor_info_row {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+}
+
+.editor_info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    min-width: 180px;
+}
+
+.editor_info .info_label {
+    color: #888;
+    font-weight: 500;
+}
+
+.editor_info .info_value {
+    color: #333;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .modal_editor .modal_content_large {
+        max-width: 100%;
+        margin: 10px;
+    }
+
+    .editor_field {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .editor_field label {
+        width: auto;
+    }
+
+    .editor_field .editor_input,
+    .editor_field .editor_select {
+        width: 100%;
+    }
+
+    .editor_info_block {
+        padding: 12px 14px;
+    }
+
+    .editor_info_row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .editor_info_row + .editor_info_row {
+        margin-top: 10px;
+        padding-top: 10px;
+    }
+
+    .editor_info {
+        min-width: auto;
+    }
+}

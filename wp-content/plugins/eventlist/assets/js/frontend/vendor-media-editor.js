@@ -34,10 +34,11 @@
         /**
          * Ouvrir l'éditeur depuis une URL (pour éditer une image existante)
          */
-        openEditorFromUrl: function(imageUrl, attachmentId, callback) {
+        openEditorFromUrl: function(imageUrl, attachmentId, callback, imageData) {
             const self = this;
             this.currentFile = null;
             this.currentAttachmentId = attachmentId;
+            this.currentImageData = imageData || {};
             this.callback = callback;
             this.showEditorModal(imageUrl);
         },
@@ -61,6 +62,25 @@
             const $img = $('#editor_image');
             $img.attr('src', imageDataUrl);
 
+            // Remplir les champs de métadonnées si disponibles
+            if (this.currentImageData && this.currentAttachmentId) {
+                $('#editor_title').val(this.currentImageData.title || '');
+                $('#editor_alt_text').val(this.currentImageData.alt_text || '');
+                $('#editor_folder_id').val(this.currentImageData.folder_id || 0);
+
+                // Afficher les infos de fichier
+                $('.editor_filesize').text(this.currentImageData.filesize_formatted || '-');
+                $('.editor_format').text(this.currentImageData.format || '-');
+                $('.editor_created').text(this.currentImageData.created_at_formatted || '-');
+                $('.editor_updated').text(this.currentImageData.updated_at_formatted || '-');
+
+                // Afficher la section métadonnées
+                $('.editor_metadata_section').show();
+            } else {
+                // Cacher la section métadonnées pour les nouveaux fichiers
+                $('.editor_metadata_section').hide();
+            }
+
             // Afficher le modal
             $('#media_editor_modal').fadeIn(200);
 
@@ -74,6 +94,18 @@
          * Créer le modal d'édition
          */
         createEditorModal: function() {
+            // Récupérer la liste des dossiers depuis le DOM
+            let foldersOptions = '<option value="0">Toutes les images</option>';
+            $('.folders_tree .folder_item').each(function() {
+                const folderId = $(this).data('folder-id');
+                if (folderId && folderId !== -1 && folderId !== 0) {
+                    const folderName = $(this).find('> .folder_header .folder_name').first().text();
+                    const level = $(this).parents('.folder_item').length;
+                    const indent = level > 0 ? '&nbsp;&nbsp;'.repeat(level) + '└ ' : '';
+                    foldersOptions += '<option value="' + folderId + '">' + indent + folderName + '</option>';
+                }
+            });
+
             const modalHtml = `
                 <div id="media_editor_modal" class="media_modal modal_editor" style="display: none;">
                     <div class="modal_overlay"></div>
@@ -126,6 +158,50 @@
                                                 <option value="0.75">3:4 (Portrait)</option>
                                             </select>
                                         </label>
+                                    </div>
+                                </div>
+
+                                <!-- Section Métadonnées -->
+                                <div class="editor_metadata_section" style="display: none;">
+                                    <div class="editor_metadata_form">
+                                        <div class="editor_field">
+                                            <label for="editor_title">Titre :</label>
+                                            <input type="text" id="editor_title" name="title" class="editor_input">
+                                        </div>
+                                        <div class="editor_field">
+                                            <label for="editor_folder_id">Dossier :</label>
+                                            <select id="editor_folder_id" name="folder_id" class="editor_select">
+                                                ${foldersOptions}
+                                            </select>
+                                        </div>
+                                        <div class="editor_field">
+                                            <label for="editor_alt_text">Texte alternatif :</label>
+                                            <input type="text" id="editor_alt_text" name="alt_text" class="editor_input">
+                                        </div>
+
+                                        <!-- Bloc d'informations en lecture seule -->
+                                        <div class="editor_info_block">
+                                            <div class="editor_info_row">
+                                                <div class="editor_info">
+                                                    <span class="info_label">Poids :</span>
+                                                    <span class="info_value editor_filesize">-</span>
+                                                </div>
+                                                <div class="editor_info">
+                                                    <span class="info_label">Format :</span>
+                                                    <span class="info_value editor_format">-</span>
+                                                </div>
+                                            </div>
+                                            <div class="editor_info_row">
+                                                <div class="editor_info">
+                                                    <span class="info_label">Date de création :</span>
+                                                    <span class="info_value editor_created">-</span>
+                                                </div>
+                                                <div class="editor_info">
+                                                    <span class="info_label">Date de mise à jour :</span>
+                                                    <span class="info_value editor_updated">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -298,11 +374,19 @@
         uploadEditedImage: function(blob) {
             const self = this;
 
+            // Récupérer les métadonnées du formulaire
+            const title = $('#editor_title').val();
+            const altText = $('#editor_alt_text').val();
+            const folderId = $('#editor_folder_id').val();
+
             // Créer FormData
             const formData = new FormData();
             formData.append('action', 'el_vendor_update_image');
             formData.append('nonce', window.EL_MediaManager.nonce);
             formData.append('attachment_id', this.currentAttachmentId);
+            formData.append('title', title);
+            formData.append('alt_text', altText);
+            formData.append('folder_id', folderId);
             formData.append('image', blob, 'edited-image.jpg');
 
             // Désactiver le bouton de sauvegarde

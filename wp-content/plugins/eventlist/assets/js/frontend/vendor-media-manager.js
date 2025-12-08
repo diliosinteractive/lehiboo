@@ -859,17 +859,38 @@
             // Utiliser l'URL complète plutôt que le thumbnail
             const fullImageUrl = imageUrl.replace(/(-\d+x\d+)(\.[^.]+)$/, '$2');
 
-            // Ouvrir l'éditeur depuis l'URL
+            // Trouver les données complètes de l'image
+            let imageData = null;
+            if (this.loadedImages && this.loadedImages.length > 0) {
+                imageData = this.loadedImages.find(function(img) {
+                    return parseInt(img.attachment_id) === parseInt(attachmentId);
+                });
+            }
+
+            // Préparer les données pour l'éditeur
+            const editorData = imageData ? {
+                title: imageData.post_title || '',
+                alt_text: imageData.alt_text || '',
+                folder_id: imageData.folder_id || 0,
+                filesize_formatted: imageData.filesize_formatted || '-',
+                format: imageData.format || '-',
+                created_at_formatted: imageData.created_at_formatted || '-',
+                updated_at_formatted: imageData.updated_at_formatted || '-'
+            } : null;
+
+            // Ouvrir l'éditeur depuis l'URL avec les données
             window.EL_MediaEditor.openEditorFromUrl(fullImageUrl, attachmentId, function(response) {
                 // Callback après sauvegarde réussie
                 self.showSuccess('Image mise à jour avec succès');
                 // Forcer un nouveau cache buster pour cette session
                 self.lastEditTimestamp = Date.now();
+                // Rafraîchir les compteurs si le dossier a changé
+                self.refreshFolderCounts();
                 // Recharger les images pour afficher la nouvelle version
                 setTimeout(function() {
                     self.loadImages();
                 }, 500);
-            });
+            }, editorData);
         },
 
         /**
