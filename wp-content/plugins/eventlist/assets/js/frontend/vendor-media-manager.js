@@ -22,6 +22,7 @@
         imagesToMove: [],
         targetFolderId: null,
         loadedImages: [], // Images actuellement chargées pour re-render
+        pendingUploadFile: null, // Fichier en attente d'upload dans le modal
 
         /**
          * Initialisation
@@ -38,48 +39,96 @@
         bindEvents: function() {
             const self = this;
 
-            // Upload buttons
+            // Upload buttons - Ouvrir le modal d'upload
             $(document).on('click', '.btn_upload_images, .btn_upload_first', function(e) {
                 e.preventDefault();
-                self.showUploadZone();
+                self.showUploadModal();
             });
 
-            // Dropzone
-            const $dropzone = $('.upload_dropzone');
-
-            $dropzone.on('click', function(e) {
-                if (!$(e.target).is('input')) {
-                    $('.upload_input').click();
+            // Modal Upload - Dropzone click
+            $(document).on('click', '.modal_upload .upload_dropzone', function(e) {
+                if (!$(e.target).is('input') && !$(e.target).closest('.btn_change_image').length) {
+                    $('.modal_upload .upload_file_input').click();
                 }
             });
 
-            $dropzone.on('dragover', function(e) {
+            // Modal Upload - Change image button
+            $(document).on('click', '.modal_upload .btn_change_image', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $('.modal_upload .upload_file_input').click();
+            });
+
+            // Modal Upload - Dropzone drag events
+            $(document).on('dragover', '.modal_upload .upload_dropzone', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 $(this).addClass('dragover');
             });
 
-            $dropzone.on('dragleave', function(e) {
+            $(document).on('dragleave', '.modal_upload .upload_dropzone', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 $(this).removeClass('dragover');
             });
 
-            $dropzone.on('drop', function(e) {
+            $(document).on('drop', '.modal_upload .upload_dropzone', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 $(this).removeClass('dragover');
 
                 const files = e.originalEvent.dataTransfer.files;
-                self.handleFiles(files);
+                if (files.length > 0) {
+                    self.handleUploadModalFile(files[0]);
+                }
             });
 
-            // File input change
-            $('.upload_input').on('change', function(e) {
-                self.handleFiles(this.files);
+            // Modal Upload - File input change
+            $(document).on('change', '.modal_upload .upload_file_input', function(e) {
+                if (this.files.length > 0) {
+                    self.handleUploadModalFile(this.files[0]);
+                }
             });
 
-            // Close upload zone
+            // Modal Upload - Form submit
+            $(document).on('submit', '.upload_form', function(e) {
+                e.preventDefault();
+                self.submitUploadForm();
+            });
+
+            // Modal Upload - Folder selector toggle
+            $(document).on('click', '.folder_select_display', function(e) {
+                if ($(e.target).closest('.folder_clear_btn').length) return;
+                const $dropdown = $(this).siblings('.folder_select_dropdown');
+                $dropdown.toggle();
+                self.populateFolderDropdown($dropdown);
+            });
+
+            // Modal Upload - Folder selector clear
+            $(document).on('click', '.folder_clear_btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                self.setUploadFolder(0, 'Toutes les images', 'home');
+            });
+
+            // Modal Upload - Folder dropdown item click
+            $(document).on('click', '.folder_select_dropdown .folder_option', function(e) {
+                e.preventDefault();
+                const folderId = $(this).data('folder-id');
+                const folderName = $(this).find('.folder_option_name').text();
+                const folderIcon = folderId > 0 ? 'folder' : 'home';
+                self.setUploadFolder(folderId, folderName, folderIcon);
+                $(this).closest('.folder_select_dropdown').hide();
+            });
+
+            // Close folder dropdown on outside click
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.folder_select_wrapper').length) {
+                    $('.folder_select_dropdown').hide();
+                }
+            });
+
+            // Close upload zone (for progress display)
             $(document).on('click', '.btn_close_upload', function() {
                 self.hideUploadZone();
             });
@@ -255,7 +304,233 @@
         },
 
         /**
-         * Show upload zone
+         * Show upload modal
+         */
+        showUploadModal: function() {
+            const $modal = $('.modal_upload');
+
+            // Reset form
+            $modal.find('.upload_form')[0].reset();
+            $modal.find('.dropzone_preview').hide();
+            $modal.find('.dropzone_placeholder').show();
+            $modal.find('.preview_image').attr('src', '');
+            $modal.find('.btn_submit_upload').prop('disabled', true);
+            $modal.find('.upload_progress_bar').hide();
+            $modal.find('.progress_fill').css('width', '0%');
+
+            // Reset pending file
+            this.pendingUploadFile = null;
+
+            // Set current folder
+            const folderId = this.currentFolder || 0;
+            const $folderDisplay = $modal.find('.folder_select_display');
+            const currentFolderName = folderId > 0 ?
+                ($('.folder_item[data-folder-id="' + folderId + '"] .folder_name').first().text() || 'Dossier') :
+                'Toutes les images';
+
+            this.setUploadFolder(folderId, currentFolderName, folderId > 0 ? 'folder' : 'home');
+
+            $modal.fadeIn(200);
+        },
+
+        /**
+         * Hide upload modal
+         */
+        hideUploadModal: function() {
+            $('.modal_upload').fadeOut(200);
+            this.pendingUploadFile = null;
+        },
+
+        /**
+         * Handle file selection in upload modal
+         */
+        handleUploadModalFile: async function(file) {
+            const self = this;
+            const $modal = $('.modal_upload');
+
+            // Validate file type
+            if (!file.type.match('image.*')) {
+                this.showError('Ce fichier n\'est pas une image valide');
+                return;
+            }
+
+            // Show progress bar for compression
+            $modal.find('.upload_progress_bar').show();
+            $modal.find('.progress_text').text('Compression en cours...');
+            $modal.find('.progress_fill').css('width', '30%');
+
+            let processedFile = file;
+
+            // Compress image if compression library is available
+            if (window.EL_MediaCompression) {
+                try {
+                    console.log('[Upload] Compression de l\'image...');
+                    processedFile = await window.EL_MediaCompression.compressImage(file);
+                    console.log('[Upload] Compression terminée');
+                } catch (error) {
+                    console.error('[Upload] Compression error:', error);
+                    // Continue with original file
+                }
+            }
+
+            $modal.find('.progress_fill').css('width', '100%');
+            $modal.find('.progress_text').text('Prêt');
+
+            // Store file for upload
+            this.pendingUploadFile = processedFile;
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $modal.find('.preview_image').attr('src', e.target.result);
+                $modal.find('.dropzone_placeholder').hide();
+                $modal.find('.dropzone_preview').show();
+
+                // Enable submit button
+                $modal.find('.btn_submit_upload').prop('disabled', false);
+
+                // Set default title from filename (without extension)
+                const fileName = file.name.replace(/\.[^/.]+$/, '');
+                if (!$modal.find('input[name="title"]').val()) {
+                    $modal.find('input[name="title"]').attr('placeholder', fileName);
+                }
+
+                // Hide progress bar after a short delay
+                setTimeout(function() {
+                    $modal.find('.upload_progress_bar').hide();
+                }, 500);
+            };
+            reader.readAsDataURL(processedFile);
+        },
+
+        /**
+         * Populate folder dropdown
+         */
+        populateFolderDropdown: function($dropdown) {
+            if ($dropdown.children().length > 0) return; // Already populated
+
+            let html = '<div class="folder_option" data-folder-id="0">';
+            html += '<span class="folder_option_icon"><i class="fa fa-home"></i></span>';
+            html += '<span class="folder_option_name">Toutes les images</span>';
+            html += '</div>';
+
+            // Clone folders from sidebar
+            $('.folders_tree .folder_item').each(function() {
+                const folderId = $(this).data('folder-id');
+                if (folderId === -1) return; // Skip "all images"
+
+                const folderName = $(this).find('> .folder_header .folder_name').first().text();
+                const folderColor = $(this).find('> .folder_header .folder_icon').css('color') || '#FF6B35';
+                const level = $(this).parents('.folder_item').length;
+                const indent = level * 20;
+
+                html += '<div class="folder_option" data-folder-id="' + folderId + '" style="padding-left: ' + (12 + indent) + 'px;">';
+                html += '<span class="folder_option_icon" style="color: ' + folderColor + ';"><i class="fa fa-folder"></i></span>';
+                html += '<span class="folder_option_name">' + folderName + '</span>';
+                html += '</div>';
+            });
+
+            $dropdown.html(html);
+        },
+
+        /**
+         * Set upload folder
+         */
+        setUploadFolder: function(folderId, folderName, iconType) {
+            const $modal = $('.modal_upload');
+            $modal.find('input[name="folder_id"]').val(folderId);
+            $modal.find('.folder_select_display .folder_name').text(folderName);
+            $modal.find('.folder_select_display .folder_icon i').attr('class', 'fa fa-' + iconType);
+            $modal.find('.folder_select_display').attr('data-folder-id', folderId);
+        },
+
+        /**
+         * Submit upload form
+         */
+        submitUploadForm: async function() {
+            const self = this;
+            const $modal = $('.modal_upload');
+            const $form = $modal.find('.upload_form');
+            const $submitBtn = $form.find('.btn_submit_upload');
+
+            if (!this.pendingUploadFile) {
+                this.showError('Veuillez sélectionner une image');
+                return;
+            }
+
+            // Disable submit button
+            $submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Upload...');
+
+            // Show progress
+            $modal.find('.upload_progress_bar').show();
+            $modal.find('.progress_text').text('Upload en cours...');
+            $modal.find('.progress_fill').css('width', '0%');
+
+            // Get form data
+            const title = $form.find('input[name="title"]').val() || '';
+            const folderId = $form.find('input[name="folder_id"]').val() || 0;
+            const altText = $form.find('input[name="alt_text"]').val() || '';
+
+            // Create FormData
+            const formData = new FormData();
+            formData.append('files[]', this.pendingUploadFile);
+            formData.append('action', 'el_vendor_upload_media');
+            formData.append('nonce', this.config.nonce);
+            formData.append('folder_id', folderId);
+            formData.append('title', title);
+            formData.append('alt_text', altText);
+
+            const xhr = new XMLHttpRequest();
+
+            // Progress
+            xhr.upload.addEventListener('progress', function(e) {
+                if (e.lengthComputable) {
+                    const percent = Math.round((e.loaded / e.total) * 100);
+                    $modal.find('.progress_fill').css('width', percent + '%');
+                    $modal.find('.progress_text').text('Upload: ' + percent + '%');
+                }
+            });
+
+            // Complete
+            xhr.addEventListener('load', function() {
+                if (xhr.status === 200) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            self.showSuccess(response.data.message);
+                            self.hideUploadModal();
+                            self.loadImages();
+                        } else {
+                            self.showError(response.data && response.data.message ? response.data.message : 'Erreur lors de l\'upload');
+                            console.error('Upload error response:', response);
+                        }
+                    } catch (e) {
+                        console.error('Upload response parse error:', e, xhr.responseText);
+                        self.showError('Erreur serveur lors de l\'upload');
+                    }
+                } else {
+                    console.error('Upload HTTP error:', xhr.status, xhr.responseText);
+                    self.showError('Erreur lors de l\'upload (HTTP ' + xhr.status + ')');
+                }
+
+                // Reset button
+                $submitBtn.prop('disabled', false).html('<i class="fa fa-cloud-upload"></i> Ajouter l\'image');
+                $modal.find('.upload_progress_bar').hide();
+            });
+
+            // Error
+            xhr.addEventListener('error', function() {
+                self.showError('Erreur réseau lors de l\'upload');
+                $submitBtn.prop('disabled', false).html('<i class="fa fa-cloud-upload"></i> Ajouter l\'image');
+                $modal.find('.upload_progress_bar').hide();
+            });
+
+            xhr.open('POST', this.config.ajaxUrl);
+            xhr.send(formData);
+        },
+
+        /**
+         * Show upload zone (for progress display)
          */
         showUploadZone: function() {
             $('.upload_zone').slideDown(300);
@@ -268,152 +543,7 @@
         hideUploadZone: function() {
             $('.upload_zone').slideUp(300);
             $('.media_grid_container').slideDown(300);
-            $('.upload_input').val('');
-            $('.upload_preview').hide().find('.preview_list').empty();
-        },
-
-        /**
-         * Handle files selection
-         */
-        handleFiles: async function(files) {
-            if (files.length === 0) return;
-
-            const self = this;
-            const $previewList = $('.preview_list');
-
-            $('.upload_preview').show();
-            $previewList.empty();
-
-            // Convert FileList to Array
-            let fileArray = Array.from(files);
-
-            // OPTIMISATION: Compresser les images avant upload
-            if (window.EL_MediaCompression) {
-                try {
-                    console.log('[Upload] Compression de', fileArray.length, 'image(s)...');
-
-                    // Afficher le statut de compression
-                    fileArray.forEach(function(file, index) {
-                        const template = $('#tmpl-upload-preview-item').html();
-                        const html = template
-                            .replace(/\{\{index\}\}/g, index)
-                            .replace(/\{\{preview\}\}/g, '')
-                            .replace(/\{\{name\}\}/g, file.name)
-                            .replace(/\{\{size\}\}/g, self.formatFileSize(file.size));
-
-                        $previewList.append(html);
-                        $('[data-file-index="' + index + '"]').find('.preview_status').text('Compression...');
-                    });
-
-                    // Compresser toutes les images
-                    const compressedFiles = await window.EL_MediaCompression.compressMultiple(fileArray, function(progress) {
-                        const index = progress.current - 1;
-                        $('[data-file-index="' + index + '"]').find('.preview_status').text(
-                            'Compression: ' + progress.percent + '%'
-                        );
-                    });
-
-                    fileArray = compressedFiles;
-
-                    // Mettre à jour les previews avec les images compressées
-                    fileArray.forEach(function(file, index) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            $('[data-file-index="' + index + '"]').find('img').attr('src', e.target.result);
-                            $('[data-file-index="' + index + '"]').find('.preview_size').text(self.formatFileSize(file.size));
-                            $('[data-file-index="' + index + '"]').find('.preview_status').text('Prêt');
-                        };
-                        reader.readAsDataURL(file);
-                    });
-
-                } catch (error) {
-                    console.error('[Upload] Compression error:', error);
-                    // Continuer avec les fichiers originaux en cas d'erreur
-                }
-            } else {
-                // Pas de compression disponible, générer les previews normalement
-                fileArray.forEach(function(file, index) {
-                    if (!file.type.match('image.*')) {
-                        self.showError(file.name + ' n\'est pas une image valide');
-                        return;
-                    }
-
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const template = $('#tmpl-upload-preview-item').html();
-                        const html = template
-                            .replace(/\{\{index\}\}/g, index)
-                            .replace(/\{\{preview\}\}/g, e.target.result)
-                            .replace(/\{\{name\}\}/g, file.name)
-                            .replace(/\{\{size\}\}/g, self.formatFileSize(file.size));
-
-                        $previewList.append(html);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-
-            this.uploadQueue = fileArray;
-
-            // Start upload
-            setTimeout(function() {
-                self.uploadFiles();
-            }, 1000);
-        },
-
-        /**
-         * Upload files
-         */
-        uploadFiles: function() {
-            const self = this;
-            const formData = new FormData();
-
-            this.uploadQueue.forEach(function(file, index) {
-                formData.append('files[' + index + ']', file);
-            });
-
-            formData.append('action', 'el_vendor_upload_media');
-            formData.append('nonce', this.config.nonce);
-            formData.append('folder_id', this.currentFolder);
-
-            const xhr = new XMLHttpRequest();
-
-            // Progress
-            xhr.upload.addEventListener('progress', function(e) {
-                if (e.lengthComputable) {
-                    const percent = Math.round((e.loaded / e.total) * 100);
-                    $('.preview_item').each(function() {
-                        $(this).find('.progress_fill').css('width', percent + '%');
-                        $(this).find('.progress_percent').text(percent + '%');
-                    });
-                }
-            });
-
-            // Complete
-            xhr.addEventListener('load', function() {
-                if (xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    if (response.success) {
-                        self.showSuccess(response.data.message);
-                        setTimeout(function() {
-                            self.hideUploadZone();
-                            self.loadImages();
-                        }, 1000);
-                    } else {
-                        self.showError(response.data.message);
-                    }
-                } else {
-                    self.showError('Erreur lors de l\'upload');
-                }
-            });
-
-            // Error
-            xhr.addEventListener('error', function() {
-                self.showError('Erreur réseau lors de l\'upload');
-            });
-
-            xhr.open('POST', this.config.ajaxUrl);
-            xhr.send(formData);
+            $('.upload_preview').find('.preview_list').empty();
         },
 
         /**
@@ -483,8 +613,12 @@
                     .replace(/\{\{folder_id\}\}/g, image.folder_id)
                     .replace(/\{\{thumb\}\}/g, image.thumb || image.url)
                     .replace(/\{\{title\}\}/g, image.post_title || 'Sans titre')
-                    .replace(/\{\{size\}\}/g, '')
-                    .replace(/\{\{date\}\}/g, '');
+                    .replace(/\{\{alt_text\}\}/g, image.alt_text || image.post_title || '')
+                    .replace(/\{\{size\}\}/g, image.filesize_formatted || '')
+                    .replace(/\{\{format\}\}/g, image.format || '')
+                    .replace(/\{\{created_at\}\}/g, image.created_at_formatted || '')
+                    .replace(/\{\{updated_at\}\}/g, image.updated_at_formatted || '')
+                    .replace(/\{\{date\}\}/g, image.created_at_formatted || '');
 
                 $grid.append(html);
             });

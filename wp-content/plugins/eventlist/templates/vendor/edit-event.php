@@ -11,8 +11,8 @@ $event_img_url = $event_img_id ? wp_get_attachment_image_url($event_img_id, 'thu
 ?>
 
 <!-- Custom Assets for Event Form -->
-<link rel="stylesheet" href="<?php echo EL_PLUGIN_URI . 'assets/css/vendor-event-form.css'; ?>">
-<script src="<?php echo EL_PLUGIN_URI . 'assets/js/vendor-event-form.js'; ?>" defer></script>
+<link rel="stylesheet" href="<?php echo EL_PLUGIN_URI . 'assets/css/vendor-event-form.css?v=' . time(); ?>">
+<script src="<?php echo EL_PLUGIN_URI . 'assets/js/vendor-event-form.js?v=' . time(); ?>" defer></script>
 <script src="<?php echo EL_PLUGIN_URI . 'assets/js/frontend/vendor-gallery.js'; ?>" defer></script>
 
 <div class="vendor_wrap el-vendor-event-form-wrapper">
@@ -40,6 +40,15 @@ $event_img_url = $event_img_id ? wp_get_attachment_image_url($event_img_id, 'thu
                     <a href="<?php echo get_permalink($post_id); ?>" target="_blank" class="btn_preview_profile">
                         <span><?php esc_html_e('Prévisualiser', 'eventlist'); ?></span>
                     </a>
+
+                    <?php if ( !empty($post_id) && get_post_status($post_id) ) : ?>
+                    <!-- Duplicate Button -->
+                    <button type="button" class="btn_duplicate_event" id="el-btn-duplicate" data-post-id="<?php echo esc_attr($post_id); ?>">
+                        <i class="icon_documents_alt"></i>
+                        <span><?php esc_html_e('Dupliquer', 'eventlist'); ?></span>
+                    </button>
+                    <?php wp_nonce_field( 'el_duplicate_post_nonce', 'el_duplicate_post_nonce' ); ?>
+                    <?php endif; ?>
 
                     <!-- Save Button -->
                     <button type="button" class="btn_save_profile" id="el-btn-save">

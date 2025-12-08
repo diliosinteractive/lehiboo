@@ -1,0 +1,691 @@
+/**
+ * Vendor Events Listing - Styles
+ * Style moderne et lisible pour la liste des événements
+ */
+
+/* ==========================================================================
+   1. Table Layout
+   ========================================================================== */
+
+.el-events-listing .wrap_event {
+    overflow-x: auto;
+}
+
+.el-events-listing-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Header */
+.el-events-listing-table thead.event_head {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.el-events-listing-table thead th {
+    padding: 16px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    color: #495057;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.el-events-listing-table thead th a {
+    color: #495057;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.el-events-listing-table thead th a:hover {
+    color: #FF6600;
+}
+
+/* Column widths */
+.col-checkbox { width: 40px; }
+.col-image { width: 140px; }
+.col-event { width: 30%; min-width: 280px; }
+.col-dates { width: 180px; }
+.col-reservations { width: 150px; }
+.col-actions { width: 140px; }
+
+
+/* ==========================================================================
+   2. Table Body
+   ========================================================================== */
+
+.el-events-listing-table tbody tr {
+    border-bottom: 1px solid #e9ecef;
+    transition: background 0.2s;
+}
+
+.el-events-listing-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.el-events-listing-table tbody td {
+    padding: 16px 12px;
+    vertical-align: middle;
+}
+
+.el-events-listing-table tbody td.col-event {
+    vertical-align: top;
+}
+
+/* No events */
+.el-events-listing-table .no-events {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+    font-size: 15px;
+}
+
+
+/* ==========================================================================
+   3. Image Column
+   ========================================================================== */
+
+.event-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #e9ecef;
+}
+
+
+
+/* ==========================================================================
+   4. Event Info Column
+   ========================================================================== */
+
+.event-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+        border-right: 1px solid #ddd;
+}
+
+/* Title */
+.event-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.event-title a {
+    color: #212529;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.event-title a:hover {
+    color: #FF6600;
+}
+
+/* Location */
+.event-location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.event-location i {
+    font-size: 12px;
+    color: #adb5bd;
+}
+
+/* Co-organisateurs */
+.event-coorg {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.coorg-label {
+    font-weight: 500;
+}
+
+.coorg-value {
+    font-style: italic;
+}
+
+/* Tags */
+.event-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.tag-category {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.tag-type {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.tag-public {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+/* Status + Preview */
+.event-status-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px;
+}
+
+.status-online {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-offline {
+    background: #e9ecef;
+    color: #6c757d;
+}
+
+.btn-preview {
+    display: inline-block;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #495057;
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-preview:hover {
+    background: #f8f9fa;
+    border-color: #adb5bd;
+    color: #212529;
+}
+
+
+/* ==========================================================================
+   5. Dates Column
+   ========================================================================== */
+
+.upcoming-dates {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.date-item {
+display: flex;
+    flex-direction: row;
+    padding: 0 20px;
+    border-bottom: 1px dashed #e9ecef;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-between;
+}
+
+.date-item:last-child {
+    border-bottom: none;
+}
+
+.date-day {
+    font-size: 13px;
+    font-weight: 500;
+    color: #212529;
+    text-transform: capitalize;
+}
+
+.date-time {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.btn-more-dates {
+display: inline-block;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #ffffff;
+    background: #233e4c;
+    border: 1px solid #343434;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 4px;
+}
+
+.btn-more-dates:hover {
+    background: #FF6600;
+    border-color: #FF6600;
+}
+
+.no-dates {
+    font-size: 13px;
+    color: #adb5bd;
+    font-style: italic;
+}
+
+
+/* ==========================================================================
+   6. Reservations Column
+   ========================================================================== */
+
+.reservations-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ticket-type-display {
+    margin-bottom: 4px;
+}
+
+.ticket-free {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #155724;
+    background: #d4edda;
+    border-radius: 4px;
+}
+
+.ticket-paid {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #FF6600;
+    background: #fff5eb;
+    border-radius: 4px;
+}
+
+.stats-item {
+    font-size: 13px;
+    color: #495057;
+}
+
+.stats-label {
+    color: #6c757d;
+}
+
+.stats-value {
+    font-weight: 600;
+    color: #FF6600;
+}
+
+.stats-coming-soon .stats-value {
+    color: #adb5bd;
+    font-weight: 400;
+    font-style: italic;
+}
+
+
+/* ==========================================================================
+   7. Actions Column
+   ========================================================================== */
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.btn-action {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    border: 1px solid transparent;
+}
+
+/* Modifier - Primary */
+.btn-edit {
+    background: #FF6600;
+    color: #fff;
+    border-color: #FF6600;
+}
+
+.btn-edit:hover {
+    background: #e55c00;
+    color: #fff;
+}
+
+/* Dupliquer - Secondary */
+.btn-duplicate {
+    background: #fff;
+    color: #495057;
+    border-color: #ced4da;
+}
+
+.btn-duplicate:hover {
+    background: #f8f9fa;
+    border-color: #adb5bd;
+}
+
+.btn-duplicate.loading {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+/* Supprimer - Danger */
+.btn-delete {
+    background: #fff;
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-delete:hover {
+    background: #dc3545;
+    color: #fff;
+}
+
+
+/* ==========================================================================
+   8. Modal Styles
+   ========================================================================== */
+
+.el-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.el-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.el-modal-content {
+    position: relative;
+    background: #fff;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.el-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.el-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #212529;
+}
+
+.el-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.el-modal-close:hover {
+    color: #212529;
+}
+
+.el-modal-body {
+    padding: 24px;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.el-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+/* Modal buttons */
+.btn-modal {
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.btn-modal-cancel {
+    background: #fff;
+    color: #495057;
+    border-color: #ced4da;
+}
+
+.btn-modal-cancel:hover {
+    background: #f8f9fa;
+}
+
+.btn-modal-confirm {
+    background: #FF6600;
+    color: #fff;
+    border-color: #FF6600;
+}
+
+.btn-modal-confirm:hover {
+    background: #e55c00;
+}
+
+/* Delete message */
+.delete-message {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #495057;
+}
+
+.delete-message strong {
+    color: #212529;
+}
+
+
+/* ==========================================================================
+   9. Dates Modal Table
+   ========================================================================== */
+
+.dates-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dates-table th,
+.dates-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.dates-table th {
+    font-weight: 600;
+    font-size: 12px;
+    color: #6c757d;
+    text-transform: uppercase;
+    background: #f8f9fa;
+}
+
+.dates-table td {
+    font-size: 14px;
+    color: #212529;
+}
+
+.dates-table tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* ==========================================================================
+   10. Responsive
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+    .col-event { min-width: 220px; }
+}
+
+@media (max-width: 992px) {
+    .el-events-listing-table thead {
+        display: none;
+    }
+
+    .el-events-listing-table tbody tr {
+        display: block;
+        margin-bottom: 16px;
+        padding: 16px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border: none;
+    }
+
+    .el-events-listing-table tbody td {
+        display: block;
+        padding: 8px 0;
+        border: none;
+    }
+
+    .col-checkbox {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+    }
+
+    .el-events-listing-table tbody tr {
+        position: relative;
+    }
+
+    .event-thumbnail {
+        width: 100%;
+        height: 150px;
+        margin-bottom: 12px;
+    }
+
+    .action-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        flex: 1;
+        min-width: 100px;
+    }
+}
+
+@media (max-width: 576px) {
+    .el-modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+
+    .el-modal-body {
+        padding: 16px;
+    }
+
+    .el-modal-footer {
+        flex-direction: column;
+    }
+
+    .btn-modal {
+        width: 100%;
+    }
+}
+
+
+
+.el-events-listing-table tbody td {
+    padding: 16px 12px;
+    vertical-align: middle!important;
+}
+
+.vendor_wrap table tr td {
+    vertical-align: baseline;
+    border: none;
+    padding: 20px 15px;
+}
+.vendor_wrap .wrap_event table tr th {
+    width: 35px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+}
+.action-buttons .btn-action.btn-edit{
+color: #ffffff;
+}
+
+.status-online {
+    background: green;
+    color: white;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 5px;
+}
+

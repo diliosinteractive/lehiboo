@@ -493,4 +493,71 @@ jQuery(document).ready(function ($) {
         });
     }
 
+
+    /* ==========================================================================
+       5. Duplicate Event Logic
+       ========================================================================== */
+
+    // Handle Duplicate Button Click
+    $('#el-btn-duplicate').on('click', function (e) {
+        e.preventDefault();
+
+        var $btn = $(this);
+        var postId = $btn.data('post-id');
+        var nonce = $('#el_duplicate_post_nonce').val();
+
+        // Confirm action
+        if (!confirm('Voulez-vous dupliquer cette activité ?')) {
+            return;
+        }
+
+        // Disable button during request
+        $btn.prop('disabled', true).addClass('loading');
+
+        $.ajax({
+            url: ajax_object.ajax_url,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'el_duplicate_post',
+                data: {
+                    post_id: postId,
+                    el_duplicate_post_nonce: nonce
+                }
+            },
+            success: function (response) {
+                $btn.prop('disabled', false).removeClass('loading');
+
+                if (response.status === 'success' && response.href) {
+                    if (typeof ToastNotification !== 'undefined') {
+                        ToastNotification.success('Activité dupliquée avec succès !');
+                    }
+                    // Redirect to the new duplicated event
+                    setTimeout(function () {
+                        window.location.href = response.href;
+                    }, 1000);
+                } else if (response.status === 'error') {
+                    if (typeof ToastNotification !== 'undefined') {
+                        ToastNotification.error(response.msg || 'Une erreur est survenue lors de la duplication.');
+                    } else {
+                        alert(response.msg || 'Une erreur est survenue lors de la duplication.');
+                    }
+                    // If there's a redirect URL (e.g., for package upgrade), offer to redirect
+                    if (response.url && confirm(response.msg)) {
+                        window.location.href = response.url;
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+                $btn.prop('disabled', false).removeClass('loading');
+                console.error('Duplicate error:', error);
+                if (typeof ToastNotification !== 'undefined') {
+                    ToastNotification.error('Erreur lors de la duplication. Veuillez réessayer.');
+                } else {
+                    alert('Erreur lors de la duplication. Veuillez réessayer.');
+                }
+            }
+        });
+    });
+
 });
