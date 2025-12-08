@@ -293,6 +293,8 @@ if (is_wp_error($event_types_taxonomy)) {
                 <!-- Champs cachés -->
                 <input type="hidden" name="<?php echo esc_attr($_prefix.'map_name'); ?>" id="map_name" value="<?php echo esc_attr($map_name); ?>">
                 <input type="hidden" name="<?php echo esc_attr($_prefix.'map_address'); ?>" id="map_address" value="<?php echo esc_attr($map_address); ?>">
+                <!-- Venue storage - le backend attend venue[] -->
+                <input type="hidden" name="<?php echo esc_attr($_prefix.'venue[0]'); ?>" id="venue_storage" value="<?php echo esc_attr($current_venue); ?>">
             </div>
 
             <div class="location_fields_right">
@@ -718,6 +720,11 @@ if (is_wp_error($event_types_taxonomy)) {
                 $('#' + targetId).val('');
                 $('#' + targetId + '_preview').remove();
             });
+
+            // Synchroniser le nom du lieu avec le champ hidden lors de la saisie
+            $('#location_venue_name').on('input', function() {
+                $('#venue_storage').val($(this).val());
+            });
         },
 
         initializeFromSource: function() {
@@ -814,6 +821,8 @@ if (is_wp_error($event_types_taxonomy)) {
         fillLocationFields: function(venue, address, lat, lng, updateMap) {
             // Nom du lieu
             $('#location_venue_name').val(venue || '');
+            // Synchroniser avec le champ hidden pour la sauvegarde
+            $('#venue_storage').val(venue || '');
 
             // Adresse
             $('#location_address').val(address || '');
@@ -830,6 +839,8 @@ if (is_wp_error($event_types_taxonomy)) {
         clearLocationFields: function() {
             $('#location_venue_name').val('');
             $('#location_address').val('');
+            // Vider aussi le champ hidden
+            $('#venue_storage').val('');
             // Garder les coordonnées par défaut pour la carte
         },
 
