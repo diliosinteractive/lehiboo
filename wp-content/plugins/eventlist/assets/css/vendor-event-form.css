@@ -939,28 +939,59 @@
     gap: 12px;
 }
 
-/* Social Item Row */
+/* Social Item Row - Force single line */
 .social_item.el_row {
-    display: flex;
+    display: flex !important;
+    flex-direction: row !important;
     align-items: center;
     gap: 12px;
     margin: 0 !important;
     padding: 0;
-    flex-wrap: nowrap;
+    flex-wrap: nowrap !important;
+}
+
+/* Reset column styles completely */
+.social_item .el_col_3,
+.social_item .el_col_8,
+.social_item .el_col_1 {
+    padding: 0 !important;
+    margin: 0 !important;
+    float: none !important;
+    width: auto !important;
+    max-width: none !important;
+    flex: none;
+}
+
+.social_item .el_col_3 {
+    flex: 0 0 160px;
+    order: 1;
+}
+
+.social_item .el_col_8 {
+    flex: 1 1 auto;
+    min-width: 0;
+    order: 2;
+}
+
+.social_item .el_col_1 {
+    flex: 0 0 auto;
+    order: 3;
 }
 
 /* Social Select Dropdown */
 .social_item .icon_social,
 .social_item select.selectpicker {
+    width: 100%;
     padding: 12px 16px;
     border: 1px solid #DDDDDD;
     border-radius: 8px;
     font-size: 14px;
     color: #222222;
     background: #ffffff;
-    min-width: 160px;
     cursor: pointer;
     transition: border-color 0.2s;
+    height: 46px;
+    box-sizing: border-box;
 }
 
 .social_item .icon_social:hover,
@@ -971,7 +1002,7 @@
 
 /* Social Link Input */
 .social_item .link_social {
-    flex: 1;
+    width: 100%;
     padding: 12px 16px;
     border: 1px solid #DDDDDD;
     border-radius: 8px;
@@ -979,6 +1010,8 @@
     color: #222222;
     background: #ffffff;
     transition: border-color 0.2s;
+    height: 46px;
+    box-sizing: border-box;
 }
 
 .social_item .link_social:focus {
@@ -996,8 +1029,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
     background: #fff5f5;
     border: 1px solid #ffcdd2;
     border-radius: 8px;
@@ -1014,28 +1048,6 @@
     background: #ffebee;
     border-color: #e53935;
     transform: scale(1.05);
-}
-
-/* Social Grid Columns Override */
-.social_item .el_col_3,
-.social_item .el_col_8,
-.social_item .el_col_1 {
-    padding: 0;
-    flex: none;
-    max-width: none;
-}
-
-.social_item .el_col_3 {
-    width: auto;
-    min-width: 160px;
-}
-
-.social_item .el_col_8 {
-    flex: 1;
-}
-
-.social_item .el_col_1 {
-    width: auto;
 }
 
 /* Add Social Button - Green Style */
@@ -1176,30 +1188,38 @@
    ========================================================================== */
 
 @media (max-width: 768px) {
-    .social_item.el_row {
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
+    /* Social items - garde sur une ligne sur tablette */
     .social_item .el_col_3 {
-        width: 100%;
-        min-width: 100%;
-    }
-
-    .social_item .el_col_8 {
-        flex: 1;
-        min-width: calc(100% - 50px);
-    }
-
-    .social_item .icon_social,
-    .social_item select.selectpicker {
-        width: 100%;
+        flex: 0 0 120px !important;
     }
 
     .gallery_add_btn,
     .add_social.btn_add_co_organizer {
         width: 100%;
         justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Social items - stack sur mobile */
+    .social_item.el_row {
+        flex-wrap: wrap !important;
+        gap: 8px;
+    }
+
+    .social_item .el_col_3 {
+        flex: 1 1 100% !important;
+        order: 1;
+    }
+
+    .social_item .el_col_8 {
+        flex: 1 1 calc(100% - 58px) !important;
+        order: 2;
+    }
+
+    .social_item .el_col_1 {
+        flex: 0 0 46px !important;
+        order: 3;
     }
 }
 
@@ -1686,4 +1706,47 @@ button.btn_pick_gallery_images i,
     .gallery_grid_sortable {
         grid-template-columns: repeat(2, 1fr);
     }
+}
+
+.vendor_wrap .contents .vendor_edit_event .button, .vendor_wrap .contents .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit), .vendor_edit_event .button, .vendor_edit_event button:not(.btn_save_event):not(.el_edit_event_submit), .vendor_wrap .contents .vendor_profile .button, .vendor_wrap .contents .vendor_profile button:not(.btn_save_event):not(.el_edit_event_submit), .vendor_profile .button, .vendor_profile button:not(.btn_save_event):not(.el_edit_event_submit) {
+
+    gap: 8px;
+    padding: 5px;
+}
+
+.vendor_profile .vendor_field {
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.vendor_wrap .vendor_field {
+    margin: 10px 0px;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+    overflow: visible;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__clear {
+    display: none;
+}
+
+.vendor_wrap .contents .vendor_edit_event label, .vendor_edit_event label, .vendor_wrap .contents .vendor_profile label, .vendor_profile label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0;
+    line-height: 1;
+}
+
+.social_item {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    gap: 16px;
+}
+
+a.button.remove_social {
+    color: white !important;
 }
