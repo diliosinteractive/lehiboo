@@ -1,546 +1,1747 @@
 <?php if ( ! defined( 'ABSPATH' ) ) exit();
 
-$post_id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : '';
+/**
+ * Template: Créneaux de l'événement
+ * Design selon maquette avec checkboxes carrés oranges
+ */
+
+$post_id = isset( $_REQUEST['id'] ) ? sanitize_text_field( $_REQUEST['id'] ) : '';
 $_prefix = OVA_METABOX_EVENT;
 
-$time 		= el_calendar_time_format();
-$format 	= el_date_time_format_js();
-$first_day 	= el_first_day_of_week();
+$time       = el_calendar_time_format();
+$format     = el_date_time_format_js();
+$first_day  = el_first_day_of_week();
 
 $placeholder_dateformat = el_placeholder_dateformat();
 $placeholder_timeformat = el_placeholder_timeformat();
 
-$calendar 			= get_post_meta( $post_id, $_prefix.'calendar', true) ? get_post_meta( $post_id, $_prefix.'calendar', true) : '';
-$disable_date 		= get_post_meta( $post_id, $_prefix.'disable_date', true) ? get_post_meta( $post_id, $_prefix.'disable_date', true) : '';
-$disable_time_slot 	= get_post_meta( $post_id, $_prefix.'disable_date_time_slot', true) ? get_post_meta( $post_id, $_prefix.'disable_date_time_slot', true) : '';
-$schedules_time 	= get_post_meta( $post_id, $_prefix.'schedules_time', true) ? get_post_meta( $post_id, $_prefix.'schedules_time', true) : '';
-$option_calendar 	= get_post_meta( $post_id, $_prefix.'option_calendar', true) ? get_post_meta( $post_id, $_prefix.'option_calendar', true) : 'manual';
+// Données existantes
+$calendar           = get_post_meta( $post_id, $_prefix.'calendar', true) ?: array();
+$disable_date       = get_post_meta( $post_id, $_prefix.'disable_date', true) ?: array();
+$disable_time_slot  = get_post_meta( $post_id, $_prefix.'disable_date_time_slot', true) ?: array();
+$schedules_time     = get_post_meta( $post_id, $_prefix.'schedules_time', true) ?: array();
+$option_calendar    = get_post_meta( $post_id, $_prefix.'option_calendar', true) ?: 'manual';
 
-$calendar_recurrence_id = get_post_meta( $post_id, $_prefix.'calendar_recurrence_id', true) ? get_post_meta( $post_id, $_prefix.'calendar_recurrence_id', true) : '';
-$recurrence_bydays 		= get_post_meta( $post_id, $_prefix.'recurrence_bydays', true) ? get_post_meta( $post_id, $_prefix.'recurrence_bydays', true) : array();
-$recurrence_byweekno 	= get_post_meta( $post_id, $_prefix.'recurrence_byweekno', true) ? get_post_meta( $post_id, $_prefix.'recurrence_byweekno', true) : '1';
-$recurrence_byday 		= get_post_meta( $post_id, $_prefix.'recurrence_byday', true) ? get_post_meta( $post_id, $_prefix.'recurrence_byday', true) : '0';
-$recurrence_frequency 	= get_post_meta( $post_id, $_prefix.'recurrence_frequency', true) ? get_post_meta( $post_id, $_prefix.'recurrence_frequency', true) : 'daily';
-$recurrence_interval 	= get_post_meta( $post_id, $_prefix.'recurrence_interval', true) ? get_post_meta( $post_id, $_prefix.'recurrence_interval', true) : '';
-$recurrence_days 		= get_post_meta( $post_id, $_prefix.'recurrence_days', true) ? get_post_meta( $post_id, $_prefix.'recurrence_days', true) : '0';
+// Récurrence
+$calendar_recurrence_id     = get_post_meta( $post_id, $_prefix.'calendar_recurrence_id', true) ?: '';
+$recurrence_bydays          = get_post_meta( $post_id, $_prefix.'recurrence_bydays', true) ?: array();
+$recurrence_byweekno        = get_post_meta( $post_id, $_prefix.'recurrence_byweekno', true) ?: '1';
+$recurrence_byday           = get_post_meta( $post_id, $_prefix.'recurrence_byday', true) ?: '0';
+$recurrence_frequency       = get_post_meta( $post_id, $_prefix.'recurrence_frequency', true) ?: 'daily';
+$recurrence_interval        = get_post_meta( $post_id, $_prefix.'recurrence_interval', true) ?: '1';
+$recurrence_days            = get_post_meta( $post_id, $_prefix.'recurrence_days', true) ?: '0';
 
-$calendar_recurrence_start_time 	= get_post_meta( $post_id, $_prefix.'calendar_recurrence_start_time', true) ? get_post_meta( $post_id, $_prefix.'calendar_recurrence_start_time', true) : '';
-$calendar_recurrence_end_time 		= get_post_meta( $post_id, $_prefix.'calendar_recurrence_end_time', true) ? get_post_meta( $post_id, $_prefix.'calendar_recurrence_end_time', true) : '';
-$calendar_recurrence_book_before 	= get_post_meta( $post_id, $_prefix.'calendar_recurrence_book_before', true) ? get_post_meta( $post_id, $_prefix.'calendar_recurrence_book_before', true) : '0';
-$calendar_start_date 				= get_post_meta( $post_id, $_prefix.'calendar_start_date', true) ? get_post_meta( $post_id, $_prefix.'calendar_start_date', true) : '';
-$calendar_end_date 					= get_post_meta( $post_id, $_prefix.'calendar_end_date', true) ? get_post_meta( $post_id, $_prefix.'calendar_end_date', true) : '';
+$calendar_recurrence_start_time = get_post_meta( $post_id, $_prefix.'calendar_recurrence_start_time', true) ?: '';
+$calendar_recurrence_end_time   = get_post_meta( $post_id, $_prefix.'calendar_recurrence_end_time', true) ?: '';
+$calendar_recurrence_book_before = get_post_meta( $post_id, $_prefix.'calendar_recurrence_book_before', true) ?: '0';
+$calendar_start_date            = get_post_meta( $post_id, $_prefix.'calendar_start_date', true) ?: '';
+$calendar_end_date              = get_post_meta( $post_id, $_prefix.'calendar_end_date', true) ?: '';
 
-$start_date_str = get_post_meta( $post_id, $_prefix.'start_date_str', true) ? get_post_meta( $post_id, $_prefix.'start_date_str', true) : '';
-$end_date_str 	= get_post_meta( $post_id, $_prefix.'end_date_str', true) ? get_post_meta( $post_id, $_prefix.'end_date_str', true) : '';
-$ts_start 	= get_post_meta( $post_id, $_prefix.'ts_start', true) ? get_post_meta( $post_id, $_prefix.'ts_start', true) : [];
-$ts_end 	= get_post_meta( $post_id, $_prefix.'ts_end', true) ? get_post_meta( $post_id, $_prefix.'ts_end', true) : [];
+$start_date_str = get_post_meta( $post_id, $_prefix.'start_date_str', true) ?: '';
+$end_date_str   = get_post_meta( $post_id, $_prefix.'end_date_str', true) ?: '';
+$ts_start       = get_post_meta( $post_id, $_prefix.'ts_start', true) ?: array();
+$ts_end         = get_post_meta( $post_id, $_prefix.'ts_end', true) ?: array();
 
+// Jours de la semaine
+$days_of_the_week = array(
+    '1' => __('Lundi', 'eventlist'),
+    '2' => __('Mardi', 'eventlist'),
+    '3' => __('Mercredi', 'eventlist'),
+    '4' => __('Jeudi', 'eventlist'),
+    '5' => __('Vendredi', 'eventlist'),
+    '6' => __('Samedi', 'eventlist'),
+    '0' => __('Dimanche', 'eventlist')
+);
+
+// Options pour le modificateur mensuel
+$arr_recurrence_byweekno = array(
+    '1'  => __('premier', 'eventlist'),
+    '2'  => __('deuxième', 'eventlist'),
+    '3'  => __('troisième', 'eventlist'),
+    '4'  => __('quatrième', 'eventlist'),
+    '5'  => __('cinquième', 'eventlist'),
+    '-1' => __('dernier', 'eventlist')
+);
 ?>
 
-<div class="calendar">
-	<p><?php esc_html_e( 'Paramétrez un créneau ou une période pour l\'événement.', 'eventlist' ); ?></p>
-	<div class="option_calendar vendor_field">
-		<label><?php esc_html_e( 'Sélectionnez si l\'événement est * :', 'eventlist' ); ?></label>
+<div class="event_basic_block creneaux_section">
+    <h4 class="heading_section"><?php esc_html_e( 'Créneaux', 'eventlist' ); ?></h4>
+    <p class="field_description">
+        <?php esc_html_e( 'Paramétrez un créneau ou une période pour l\'événement.', 'eventlist' ); ?>
+    </p>
 
-		<label for="option_calendar_manual" class="el_input_radio" style="min-width:auto;">
-			<?php esc_html_e( 'Ponctuel ou annuel', 'eventlist' ); ?>
-			<input
-				type="radio"
-				class="option_calendar"
-				id="option_calendar_manual"
-				name="<?php echo esc_attr( $_prefix.'option_calendar' ); ?>"
-				value="manual" <?php checked( $option_calendar, 'manual' ); ?>>
-			<span class="checkmark"></span>
-		</label>
+    <!-- Hidden fields pour dates -->
+    <input type="hidden" class="event_start_date_str" name="<?php echo esc_attr( $_prefix.'start_date_str' ); ?>" value="<?php echo esc_attr( $start_date_str ); ?>">
+    <input type="hidden" class="event_end_date_str" name="<?php echo esc_attr( $_prefix.'end_date_str' ); ?>" value="<?php echo esc_attr( $end_date_str ); ?>">
 
-		<label for="option_calendar_auto" class="el_input_radio el_ml_10px" style="min-width:auto;">
-			<?php esc_html_e( 'Récurrent', 'eventlist' ); ?>
-			<input
-				type="radio"
-				class="option_calendar"
-				id="option_calendar_auto"
-				name="<?php echo esc_attr( $_prefix.'option_calendar' ); ?>"
-				value="auto" <?php checked( $option_calendar, 'auto' ); ?> />
+    <!-- Type de créneau: Ponctuel ou Récurrent -->
+    <div class="vendor_field creneaux_type_field">
+        <label class="field_label"><?php esc_html_e( 'Sélectionnez si l\'événement est', 'eventlist' ); ?> <span class="el_req">*</span> :</label>
 
-			<span class="checkmark"></span>
-		</label>
-	</div>
-	<input 
-		type="hidden" 
-		class="event_start_date_str" 
-		name="<?php echo esc_attr( $_prefix.'start_date_str' ); ?>"
-		value="<?php echo esc_attr( $start_date_str ); ?>" />
-	<input 
-		type="hidden" 
-		class="event_end_date_str" 
-		name="<?php echo esc_attr( $_prefix.'end_date_str' ); ?>"
-		value="<?php echo esc_attr( $end_date_str ); ?>" />
-	<div class="manual" style="<?php if ( $option_calendar == 'manual') echo esc_attr('display: block;'); ?>">
-		<div class="list_calendar">
-			<?php if ( $calendar ): ?>
-				<?php foreach ( $calendar as $key => $value ): ?>
-					<?php if ( $value['date'] != ''): ?> 
-						<div class="item_calendar">
-							<input 
-								type="hidden" 
-								class="calendar_id" 
-								name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][calendar_id]' ); ?>"
-								value="<?php echo esc_attr( isset( $value['calendar_id'] ) ? $value['calendar_id'] : '' ); ?>" />
-							<div class="date">
-								<label class="label"><?php esc_html_e( 'Start Date:', 'eventlist' ); ?></label>
-								<input 
-									type="text" 
-									class="calendar_date" 
-									value="<?php echo esc_attr( $value['date'] ); ?>" 
-									name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][date]' ); ?>" 
-									autocomplete="off" autocorrect="off" autocapitalize="none" 
-									placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>" 
-									data-format="<?php echo esc_attr( $format ); ?>" 
-									data-firstday="<?php echo esc_attr( $first_day ); ?>" 
-									<?php if ( $option_calendar == 'manual' ) echo esc_attr( 'required' ); ?> />
-							</div>
-							<div class="end_date">
-								<label class="label"><?php esc_html_e( 'End Date:', 'eventlist' ); ?></label>
-								<input 
-									type="text" 
-									class="calendar_end_date" 
-									value="<?php echo esc_attr( isset($value['end_date']) ? $value['end_date'] : '' ); ?>" 
-									name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][end_date]' ); ?>" 
-									autocomplete="off" autocorrect="off" autocapitalize="none" 
-									placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>" 
-									data-format="<?php echo esc_attr( $format ); ?>" 
-									data-firstday="<?php echo esc_attr( $first_day ); ?>" 
-									<?php if ( $option_calendar == 'manual' ) echo esc_attr( 'required' ); ?> />
-							</div>
-							<div class="start_time">
-								<label class="label"><?php esc_html_e( 'From:', 'eventlist' ); ?></label>
-								<input 
-									type="text" 
-									class="calendar_start_time" 
-									value="<?php echo esc_attr( $value['start_time'] ); ?>" 
-									name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][start_time]' ); ?>" 
-									autocomplete="off" autocorrect="off" autocapitalize="none" 
-									placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>" 
-									data-time="<?php echo esc_attr( $time ); ?>"
-									<?php if ( $option_calendar == 'manual' ) echo esc_attr( 'required' ); ?> />
-							</div>
-							<div class="end_time">
-								<label class="label"><?php esc_html_e( 'To:', 'eventlist' ); ?></label>
-								<input 
-									type="text" 
-									class="calendar_end_time" 
-									value="<?php echo esc_attr( $value['end_time'] ); ?>" 
-									name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][end_time]' ); ?>" 
-									autocomplete="off" autocorrect="off" autocapitalize="none" 
-									placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>" 
-									data-time="<?php echo esc_attr( $time ); ?>"
-									<?php if ( $option_calendar == 'manual' ) echo esc_attr( 'required' ); ?> />
-							</div>
-							<div class="book_before_minutes">
-								<label class="label"><?php esc_html_e( 'Booking before x minutes:', 'eventlist' ); ?></label>
-								<input 
-									type="number" 
-									name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][book_before_minutes]' ); ?>" 
-									class="number_time_book_before"
-									<?php $book_before_minutes = ! empty( $value['book_before_minutes'] ) ? $value['book_before_minutes'] : 0 ?> 
-									value="<?php echo esc_attr( $book_before_minutes ); ?>" 
-									placeholder="<?php echo esc_attr( '30', 'eventlist' ); ?>" 
-									autocomplete="off" autocorrect="off" autocapitalize="none" />
-							</div>
-							<button class="button remove_calendar">x</button>
-						</div>
-					<?php endif; ?>
-				<?php endforeach; ?>
-			<?php endif; ?>
-		</div>
-		<button class="button add_calendar">
-			<?php esc_html_e( 'Ajouter un créneau', 'eventlist' ); ?>
-			<div class="submit-load-more sendmail">
-				<div class="load-more">
-					<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-				</div>
-			</div>
-		</button>
-	</div>
-	<div class="auto" style="<?php if ( $option_calendar == 'auto') echo esc_attr('display: block;'); ?>">
-		<div class="time-range vendor_field" style="<?php if ( $schedules_time ) echo esc_attr( 'display: none;' ); ?>">
-			<label>
-				<?php _e('Events start from','eventlist'); ?>
-			</label>
-			<input 
-				type="text" 
-				class="calendar_recurrence_start_time" 
-				name="<?php echo esc_attr( $_prefix.'calendar_recurrence_start_time' ); ?>" 
-				value="<?php echo esc_attr( $calendar_recurrence_start_time ); ?>" 
-				autocomplete="off" autocorrect="off" autocapitalize="none" 
-				placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>" 
-				data-time="<?php echo esc_attr( $time ); ?>"
-				<?php if ( ( $option_calendar == 'auto' ) && ! ( $schedules_time ) ) echo esc_attr( 'required' );?> />
-			<?php _e('to','eventlist'); ?>
-			<input 
-				type="text" 
-				class="calendar_recurrence_end_time" 
-				name="<?php echo esc_attr( $_prefix.'calendar_recurrence_end_time' ); ?>" 
-				value="<?php echo esc_attr( $calendar_recurrence_end_time ); ?>" 
-				autocomplete="off" autocorrect="off" autocapitalize="none" 
-				placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>" 
-				data-time="<?php echo esc_attr( $time ); ?>"
-				<?php if ( ( $option_calendar == 'auto' ) && ! ( $schedules_time ) ) echo esc_attr('required'); ?> />
-			<span class="calendar_recurrence_book_before">
-				<label class="label"><?php esc_html_e( 'Booking before x minutes:', 'eventlist' ); ?></label>
-				<input 
-					type="number" 
-					name="<?php echo esc_attr($_prefix.'calendar_recurrence_book_before' ); ?>" 
-					class="calendar_recurrence_time_book_before"
-					value="<?php echo esc_attr( $calendar_recurrence_book_before ); ?>" 
-					placeholder="<?php echo esc_attr( '30', 'eventlist' ); ?>" 
-					autocomplete="off" autocorrect="off" autocapitalize="none" />
-			</span>
-		</div>
-		<div class="event-form-when-wrap vendor_field">
-			<label>
-				<?php esc_html_e ( 'Cet événement se répète :', 'eventlist' ); ?>
-			</label>
-			<select id="recurrence-frequency" name="<?php echo esc_attr( $_prefix.'recurrence_frequency' ); ?>">
-				<option value="daily" <?php selected( $recurrence_frequency, 'daily' ); ?> ><?php esc_html_e( 'chaque jour', 'eventlist' ); ?></option>
-				<option value="weekly" <?php selected( $recurrence_frequency, 'weekly' ); ?> ><?php esc_html_e( 'chaque semaine', 'eventlist' ); ?></option>
-				<option value="monthly" <?php selected( $recurrence_frequency, 'monthly' ); ?> ><?php esc_html_e( 'chaque mois', 'eventlist' ); ?></option>
-				<?php if ( apply_filters( 'el_show_yearly_recurrence', false ) ): ?>
-				<option value="yearly" <?php selected( $recurrence_frequency, 'yearly' ); ?> ><?php esc_html_e( 'chaque année', 'eventlist' ); ?></option>
-				<?php endif; ?>
-			</select>
-			<?php esc_html_e ( 'every', 'eventlist' )?>
-			<input 
-				id="recurrence-interval" 
-				name='<?php echo esc_attr( $_prefix.'recurrence_interval' ); ?>' 
-				size='2' 
-				value='<?php echo esc_attr( $recurrence_interval ); ?>' />
-			<span class='interval-desc' id="interval-daily-singular"><?php esc_html_e ( 'day', 'eventlist' )?></span>
-			<span class='interval-desc' id="interval-daily-plural"><?php esc_html_e ( 'days', 'eventlist' ) ?></span>
-			<span class='interval-desc' id="interval-weekly-singular"><?php esc_html_e ( 'week on', 'eventlist' ); ?></span>
-			<span class='interval-desc' id="interval-weekly-plural"><?php esc_html_e ( 'weeks on', 'eventlist' ); ?></span>
-			<span class='interval-desc' id="interval-monthly-singular"><?php esc_html_e ( 'month on the', 'eventlist' )?></span>
-			<span class='interval-desc' id="interval-monthly-plural"><?php esc_html_e ( 'months on the', 'eventlist' )?></span>
-			<span class='interval-desc' id="interval-yearly-singular"><?php esc_html_e ( 'year', 'eventlist' )?></span> 
-			<span class='interval-desc' id="interval-yearly-plural"><?php esc_html_e ( 'years', 'eventlist' ) ?></span>
+        <div class="creneaux_type_options">
+            <label class="creneaux_type_option <?php echo ($option_calendar == 'manual') ? 'active' : ''; ?>" for="option_calendar_manual">
+                <input type="radio"
+                       value="manual"
+                       name="<?php echo esc_attr($_prefix.'option_calendar'); ?>"
+                       id="option_calendar_manual"
+                       class="option_calendar_radio"
+                       <?php checked($option_calendar, 'manual'); ?>>
+                <span class="option_checkbox"></span>
+                <span class="option_label"><?php esc_html_e( 'Ponctuel ou annuel', 'eventlist' ); ?></span>
+            </label>
 
-			<!-- Weekly -->
-			<div class="alternate-selector" id="weekly-selector">
-				<div class="ts-weekly">
-				<?php 
-				$days_of_the_week = array(
-					'1' => esc_html__('Mon', 'eventlist'),
-					'2' => esc_html__('Tue', 'eventlist'),
-					'3' => esc_html__('Wed', 'eventlist'),
-					'4' => esc_html__('Thu', 'eventlist'),
-					'5' => esc_html__('Fri', 'eventlist'),
-					'6' => esc_html__('Sat', 'eventlist'),
-					'0' => esc_html__('Sun', 'eventlist')
-				);
+            <label class="creneaux_type_option <?php echo ($option_calendar == 'auto') ? 'active' : ''; ?>" for="option_calendar_auto">
+                <input type="radio"
+                       value="auto"
+                       name="<?php echo esc_attr($_prefix.'option_calendar'); ?>"
+                       id="option_calendar_auto"
+                       class="option_calendar_radio"
+                       <?php checked($option_calendar, 'auto'); ?>>
+                <span class="option_checkbox"></span>
+                <span class="option_label"><?php esc_html_e( 'Récurrent', 'eventlist' ); ?></span>
+            </label>
+        </div>
+    </div>
 
-				foreach ( $days_of_the_week as $key => $value ): ?>
-					<div class="ts_recurrence_bydays">
-						
-						<label for="recurrence_bydays<?php echo $key; ?>" class="el_input_checkbox">
-							<?php echo $value; ?>
-							<input 
-								type="checkbox"
-								id="recurrence_bydays<?php echo $key; ?>"
-								name="<?php echo esc_attr( $_prefix.'recurrence_bydays[]' ); ?>" 
-								value="<?php echo esc_attr($key); ?>" <?php if ( in_array( $key, $recurrence_bydays ) ) echo esc_attr('checked'); ?>>
-							<span class="checkmark"></span>
-						</label>
+    <!-- ================================================== -->
+    <!-- SECTION PONCTUEL/ANNUEL (manual) -->
+    <!-- ================================================== -->
+    <div class="creneaux_manual_section" style="<?php echo ($option_calendar == 'manual') ? 'display: block;' : 'display: none;'; ?>">
 
-						<div class="ts-list">
-							<?php if ( isset( $ts_start[$key] ) && ! empty( $ts_start[$key] ) && is_array( $ts_start[$key] ) ):
-								foreach ( $ts_start[$key] as $k_ts_start => $v_ts_start ):
-									if ( isset( $ts_end[$key][$k_ts_start] ) && $ts_end[$key][$k_ts_start] ):
-							?>
-									<div class="ts-item" data-key="<?php echo esc_attr( $key ); ?>">
-										<input 
-											type="text" 
-											class="calendar_recurrence_ts_start" 
-											value="<?php echo esc_attr( $v_ts_start ); ?>" 
-											name="<?php echo esc_attr( $_prefix.'ts_start['.$key.']['.$k_ts_start.']' ); ?>" 
-											autocomplete="off" 
-											autocorrect="off" 
-											autocapitalize="none" 
-											placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>" 
-											data-time="<?php echo esc_attr( $time ); ?>" />
-										<input 
-											type="text" 
-											class="calendar_recurrence_ts_end" 
-											value="<?php echo esc_attr( $ts_end[$key][$k_ts_start] ); ?>" 
-											name="<?php echo esc_attr( $_prefix.'ts_end['.$key.']['.$k_ts_start.']' ); ?>" 
-											autocomplete="off" 
-											autocorrect="off" 
-											autocapitalize="none" 
-											placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>" 
-											data-time="<?php echo esc_attr( $time ); ?>" />
-										<span class="close">x</span>
-									</div>
-						<?php endif; endforeach; endif; ?>
-						</div>
-						<button class="button add_time_slot" data-key="<?php echo esc_attr( $key ); ?>" data-placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>" data-time="<?php echo esc_attr( $time ); ?>">
-							<?php esc_html_e( 'Add Time Slot', 'eventlist' ); ?>
-						</button>
-					</div>
-				<?php endforeach; ?>
-				</div>
-			</div>
+        <!-- Formulaire d'ajout de créneau -->
+        <div class="creneaux_add_form">
+            <div class="creneaux_form_row">
+                <div class="creneaux_form_col">
+                    <label><?php esc_html_e( 'Date de début', 'eventlist' ); ?> <span class="el_req">*</span></label>
+                    <input type="text"
+                           class="creneaux_input creneaux_new_start_date"
+                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
+                           data-format="<?php echo esc_attr( $format ); ?>"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
+                           autocomplete="off">
+                </div>
+                <div class="creneaux_form_col">
+                    <label><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?> <span class="el_req">*</span></label>
+                    <input type="text"
+                           class="creneaux_input creneaux_new_start_time"
+                           placeholder="HH:MM"
+                           data-time="<?php echo esc_attr( $time ); ?>"
+                           autocomplete="off">
+                </div>
+            </div>
+            <div class="creneaux_form_row">
+                <div class="creneaux_form_col">
+                    <label><?php esc_html_e( 'Date de fin', 'eventlist' ); ?> <span class="el_req">*</span></label>
+                    <input type="text"
+                           class="creneaux_input creneaux_new_end_date"
+                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
+                           data-format="<?php echo esc_attr( $format ); ?>"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
+                           autocomplete="off">
+                </div>
+                <div class="creneaux_form_col">
+                    <label><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?> <span class="el_req">*</span></label>
+                    <input type="text"
+                           class="creneaux_input creneaux_new_end_time"
+                           placeholder="HH:MM"
+                           data-time="<?php echo esc_attr( $time ); ?>"
+                           autocomplete="off">
+                </div>
+            </div>
+            <button type="button" class="btn_add_creneaux_manual">
+                <i class="fa fa-plus"></i>
+                <?php esc_html_e( 'Ajouter un créneau', 'eventlist' ); ?>
+            </button>
+        </div>
 
-			<!-- Monthly -->
-			<p class="alternate-selector" id="monthly-selector" style="display:inline;">
-				<select id="monthly-modifier" name="<?php echo esc_attr( $_prefix.'recurrence_byweekno' ); ?>">
-					<?php 
-					$arr_recurrence_byweekno = array(
-						'1'  => esc_html__('first', 'eventlist'),
-						'2'  => esc_html__('second', 'eventlist'),
-						'3'  => esc_html__('third', 'eventlist'),
-						'4'  => esc_html__('fourth', 'eventlist'),
-						'5'  => esc_html__('fifth', 'eventlist'),
-						'-1' => esc_html__('last', 'eventlist')
-					);
+        <!-- Liste des créneaux -->
+        <div class="creneaux_list_section">
+            <div class="creneaux_list_header">
+                <label class="creneaux_select_all_label">
+                    <input type="checkbox" class="creneaux_select_all">
+                    <span class="option_checkbox"></span>
+                    <span><?php esc_html_e( 'Les créneaux', 'eventlist' ); ?></span>
+                </label>
+                <div class="creneaux_filter">
+                    <span><?php esc_html_e( 'Filtrer par date : De', 'eventlist' ); ?></span>
+                    <input type="text"
+                           class="creneaux_filter_input creneaux_filter_start"
+                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
+                           data-format="<?php echo esc_attr( $format ); ?>"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
+                    <span><?php esc_html_e( 'À', 'eventlist' ); ?></span>
+                    <input type="text"
+                           class="creneaux_filter_input creneaux_filter_end"
+                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
+                           data-format="<?php echo esc_attr( $format ); ?>"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
+                </div>
+            </div>
 
-					foreach ( $arr_recurrence_byweekno as $key => $value ) { ?>
-						<option value="<?php echo esc_attr($key); ?>" <?php selected( $recurrence_byweekno, $key ); ?>><?php echo $value; ?></option>
-					<?php } ?>
-				</select>
-				<select id="recurrence-weekday" name="<?php echo esc_attr( $_prefix.'recurrence_byday' ); ?>">
-					<?php 
-					foreach ( $days_of_the_week as $key => $value ) { ?>
-						<option value="<?php echo esc_attr($key); ?>" <?php selected( $recurrence_byday, $key ); ?>><?php echo $value; ?></option>
-					<?php } ?>
-				</select>
-				<?php esc_html_e('of each month', 'eventlist' ); ?>
-			</p>
-			<div class="event-form-recurrence-when">
-				<p class="date-range vendor_field">
-					<?php esc_html_e ( 'Recurrences span from ', 'eventlist' ); ?>	
-					<input 
-						type="text" 
-						autocomplete="off" autocorrect="off" autocapitalize="none" 
-						class="calendar_start_date calendar_auto_start_date" 
-						name="<?php echo esc_attr( $_prefix.'calendar_start_date' ); ?>" 
-						value="<?php echo esc_attr( $calendar_start_date ); ?>" 
-						placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>" 
-						data-format="<?php echo esc_attr( $format ); ?>" 
-						data-firstday="<?php echo esc_attr( $first_day ); ?>" 
-						<?php if ( $option_calendar == 'auto' ) echo esc_attr( 'required' ); ?> />
-					<?php esc_html_e('to', 'eventlist' ); ?>
-					<input 
-						type="text" 
-						autocomplete="off" autocorrect="off" autocapitalize="none" 
-						class="calendar_end_date calendar_auto_end_date" 
-						name="<?php echo esc_attr( $_prefix.'calendar_end_date' ); ?>" 
-						value="<?php echo esc_attr( $calendar_end_date ); ?>" 
-						placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>" 
-						data-format="<?php echo esc_attr( $format ); ?>" 
-						data-firstday="<?php echo esc_attr( $first_day ); ?>" 
-						<?php if ( $option_calendar == 'auto' ) echo esc_attr('required'); ?> />
-				</p>
-			</div>
-		</div>
-		<div class="schedules_time">
-			<label>
-				<strong>
-					<?php esc_html_e( 'Schedules Time', 'eventlist' ); ?>
-				</strong>
-			</label>
-			<div class="wrap_schedules_time">
-				<?php if ( $schedules_time ): ?>
-					<?php foreach ( $schedules_time as $key => $value ): ?>
-						<?php if ( $value['start_time'] != '' ): ?> 
-							<div class="item_schedules_time" data-key='<?php echo esc_attr( $key ) ;?>'>
-								<span>
-									<?php esc_html_e( 'Form:', 'eventlist' ); ?>
-									<input 
-										type="text" 
-										class="start_time" 
-										name="<?php echo esc_attr( $_prefix.'schedules_time['.$key.'][start_time]'  ); ?>"
-										value="<?php echo esc_attr( isset( $value['start_time'] ) ? $value['start_time'] : '' ); ?>"
-										autocomplete="off" autocorrect="off" autocapitalize="none" 
-										placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>" 
-										data-time="<?php echo esc_attr( $time ); ?>" 
-										<?php if ( $option_calendar == 'auto' ) echo esc_attr('required'); ?> />
-								</span>
-								<span>
-									<?php esc_html_e( 'To:', 'eventlist' ); ?>
-									<input 
-										type="text" 
-										class="end_time" 
-										name="<?php echo esc_attr( $_prefix.'schedules_time['.$key.'][end_time]'  ); ?>"
-										value="<?php echo esc_attr( isset( $value['end_time'] ) ? $value['end_time'] : '' ); ?>"
-										autocomplete="off" autocorrect="off" autocapitalize="none" 
-										placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>" 
-										data-time="<?php echo esc_attr( $time ); ?>"
-										<?php if ( $option_calendar == 'auto' ) echo esc_attr('required'); ?> />
-								</span>
-									<span class="schedules_time_book_before">
-									<label class="label"><?php esc_html_e( 'Booking before x minutes:', 'eventlist' ); ?></label>
-									<input 
-										type="number" 
-										name="<?php echo esc_attr(  $_prefix.'schedules_time['.$key.'][book_before]' ); ?>" 
-										class="schedules_time_book"
-										value="<?php echo esc_attr( isset( $value['book_before'] ) ? $value['book_before'] : '0' ); ?>"
-										placeholder="<?php echo esc_attr( '30', 'eventlist' ); ?>" 
-										autocomplete="off" autocorrect="off" autocapitalize="none" />
-								</span>
-								<button class="button remove_schedules_time"><?php esc_html_e( 'x', 'eventlist' ); ?></button>
-							</div>
-						<?php endif; ?>
-					<?php endforeach; ?>
-				<?php endif; ?>
-			</div>
-			<div class="label">
-				<button class="button add_schedules_time ">
-					<?php esc_html_e( 'Add', 'eventlist' ); ?>
-					<div class="submit-load-more sendmail">
-						<div class="load-more">
-							<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-						</div>
-					</div>
-				</button>
-			</div>
-		</div>
-		<div class="disable_date vendor_field">
-			<label>
-				<strong>
-					<?php esc_html_e( 'Disable date', 'eventlist' ); ?>
-				</strong>
-			</label>
-			<div class="wrap_disable_date">
-			<?php if ( $disable_date ): ?>
-				<?php foreach ( $disable_date as $key => $value ): ?>
-					<?php if ( $value['start_date'] != '' ): ?> 
-						<div class="item_disable_date">
-							<span>
-								<?php esc_html_e( 'Form:', 'eventlist' ); ?>
-								<input 
-									type="text" 
-									class="start_date" 
-									name="<?php echo esc_attr( $_prefix.'disable_date['.$key.'][start_date]' ); ?>"
-									value="<?php echo esc_attr( isset( $value['start_date'] ) ? $value['start_date'] : '' ); ?>"
-									autocomplete="off" autocorrect="off" autocapitalize="none" 
-									placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>" 
-									data-format="<?php echo esc_attr( $format ); ?>" 
-									data-firstday="<?php echo esc_attr( $first_day ); ?>" />
-							</span>
-							<span>
-								<?php esc_html_e( 'To:', 'eventlist' ); ?>
-								<input 
-									type="text" 
-									class="end_date" 
-									name="<?php echo esc_attr( $_prefix.'disable_date['.$key.'][end_date]' ); ?>"
-									value="<?php echo esc_attr( isset( $value['end_date'] ) ? $value['end_date'] : '' ); ?>"
-									autocomplete="off" autocorrect="off" autocapitalize="none" 
-									placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>" 
-									data-format="<?php echo esc_attr( $format ); ?>" 
-									data-firstday="<?php echo esc_attr( $first_day ); ?>" />
-							</span>
-                            <?php if ( $schedules_time ): ?>
-							<span class="disable_time">
-								<select name="<?php echo esc_attr( $_prefix.'disable_date['.$key.'][schedules_time]' ); ?>" class = "schedules_time">
-									<option value=""><?php esc_html_e( 'Choose Schedules Time', 'eventlist' ); ?></option>
-									<?php 
-									foreach ( $schedules_time as $key => $value2 ):
-										$disable_time = isset( $value['schedules_time'] ) ? $value['schedules_time'] : '';
-									?>
-										<option value="<?php echo $key; ?>" <?php selected( $key, $disable_time ); ?>>
-											<?php echo $value2['start_time'].'-'.$value2['end_time'];; ?>
-										</option>
-									<?php endforeach; ?>
-								</select>								
-							</span>
-							<?php endif; ?>
-							<button class="button remove_disable_date"><?php esc_html_e( 'x', 'eventlist' ); ?></button>
-						</div>
-					<?php endif; ?>
-				<?php endforeach; ?>
-			<?php endif; ?>
-			</div>
-			<div class="label">
-				<button class="button add_disable_date">
-					<?php esc_html_e( 'Add', 'eventlist' ); ?>
-					<div class="submit-load-more sendmail">
-						<div class="load-more">
-							<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-						</div>
-					</div>
-				</button>
-			</div>
-		</div>
-		<div class="disable_time_slot vendor_field">
-			<label>
-				<strong>
-					<?php esc_html_e( 'Disable Time Slot', 'eventlist' ); ?>
-				</strong>
-			</label>
-			<div class="wrap_disable_time_slot">
-				<?php if ( $disable_time_slot ): ?>
-					<?php foreach ( $disable_time_slot as $key => $value ): ?>
-						<?php if ( $value['start_date'] != ''): ?> 
-							<div class="item_disable_time_slot">
-								<span>
-									<?php esc_html_e( 'Form:', 'eventlist' ); ?>
-									<input 
-										type="text" 
-										class="start_date" 
-										name="<?php echo esc_attr( $_prefix.'disable_date_time_slot['.$key.'][start_date]' ); ?>"
-										value="<?php echo esc_attr( isset( $value['start_date'] ) ? $value['start_date'] : '' ); ?>"
-										autocomplete="off" autocorrect="off" autocapitalize="none" 
-										placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>" 
-										data-format="<?php echo esc_attr( $format ); ?>" 
-										data-firstday="<?php echo esc_attr( $first_day ); ?>" />
-								</span>
-								<span>
-									<input 
-										type="text" 
-										class="start_time" 
-										name="<?php echo esc_attr( $_prefix.'disable_date_time_slot['.$key.'][start_time]' ); ?>"
-										value="<?php echo esc_attr( isset( $value['start_time'] ) ? $value['start_time'] : '' ); ?>"
-										autocomplete="off" autocorrect="off" autocapitalize="none" 
-										placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>" 
-										data-time="<?php echo esc_attr( $time ); ?>" />
-								</span>
-								<span>
-									<?php esc_html_e( 'To:', 'eventlist' ); ?>
-									<input 
-										type="text" 
-										class="end_date" 
-										name="<?php echo esc_attr( $_prefix.'disable_date_time_slot['.$key.'][end_date]' ); ?>"
-										value="<?php echo esc_attr( isset( $value['end_date'] ) ? $value['end_date'] : '' ); ?>"
-										autocomplete="off" autocorrect="off" autocapitalize="none" 
-										placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>" 
-										data-format="<?php echo esc_attr( $format ); ?>" 
-										data-firstday="<?php echo esc_attr( $first_day ); ?>" />
-								</span>
-								<span>
-									<input 
-										type="text" 
-										class="end_time" 
-										name="<?php echo esc_attr( $_prefix.'disable_date_time_slot['.$key.'][end_time]' ); ?>"
-										value="<?php echo esc_attr( isset( $value['end_time'] ) ? $value['end_time'] : '' ); ?>"
-										autocomplete="off" autocorrect="off" autocapitalize="none" 
-										placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>" 
-										data-time="<?php echo esc_attr( $time ); ?>" />
-								</span>
-								<button class="button remove_disable_time_slot"><?php esc_html_e( 'x', 'eventlist' ); ?></button>
-							</div>
-						<?php endif ?>
-					<?php endforeach; ?>
-				<?php endif; ?>
-			</div>
-			<div class="label">
-				<button class="button add_disable_time_slot">
-					<?php esc_html_e( 'Add', 'eventlist' ); ?>
-					<div class="submit-load-more sendmail">
-						<div class="load-more">
-							<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-						</div>
-					</div>
-				</button>
-			</div>
-		</div>
-	</div>
+            <div class="creneaux_list list_calendar">
+                <?php if ( $calendar ):
+                    foreach ( $calendar as $key => $value ):
+                        if ( !empty($value['date']) ): ?>
+                            <div class="creneaux_item item_calendar" data-key="<?php echo esc_attr($key); ?>">
+                                <label class="creneaux_item_select">
+                                    <input type="checkbox" class="creneaux_item_checkbox">
+                                    <span class="option_checkbox"></span>
+                                </label>
+
+                                <input type="hidden"
+                                       class="calendar_id"
+                                       name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][calendar_id]' ); ?>"
+                                       value="<?php echo esc_attr( isset( $value['calendar_id'] ) ? $value['calendar_id'] : '' ); ?>">
+
+                                <div class="creneaux_item_date">
+                                    <input type="text"
+                                           class="creneaux_input calendar_date"
+                                           value="<?php echo esc_attr( $value['date'] ); ?>"
+                                           name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][date]' ); ?>"
+                                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
+                                           data-format="<?php echo esc_attr( $format ); ?>"
+                                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
+                                           autocomplete="off"
+                                           readonly>
+                                </div>
+
+                                <div class="creneaux_item_time">
+                                    <span class="time_label"><?php esc_html_e( 'De', 'eventlist' ); ?></span>
+                                    <input type="text"
+                                           class="creneaux_input creneaux_time_input calendar_start_time"
+                                           value="<?php echo esc_attr( $value['start_time'] ); ?>"
+                                           name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][start_time]' ); ?>"
+                                           placeholder="HH:MM"
+                                           data-time="<?php echo esc_attr( $time ); ?>"
+                                           autocomplete="off"
+                                           readonly>
+                                    <span class="time_label"><?php esc_html_e( 'À', 'eventlist' ); ?></span>
+                                    <input type="text"
+                                           class="creneaux_input creneaux_time_input calendar_end_time"
+                                           value="<?php echo esc_attr( $value['end_time'] ); ?>"
+                                           name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][end_time]' ); ?>"
+                                           placeholder="HH:MM"
+                                           data-time="<?php echo esc_attr( $time ); ?>"
+                                           autocomplete="off"
+                                           readonly>
+                                </div>
+
+                                <!-- Date de fin cachée -->
+                                <input type="hidden"
+                                       class="calendar_end_date"
+                                       value="<?php echo esc_attr( isset($value['end_date']) ? $value['end_date'] : '' ); ?>"
+                                       name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][end_date]' ); ?>">
+
+                                <!-- Booking before cachée -->
+                                <input type="hidden"
+                                       name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][book_before_minutes]' ); ?>"
+                                       value="<?php echo esc_attr( isset($value['book_before_minutes']) ? $value['book_before_minutes'] : '0' ); ?>">
+
+                                <div class="creneaux_item_actions">
+                                    <button type="button" class="btn_edit_creneaux" title="<?php esc_attr_e( 'Modifier', 'eventlist' ); ?>">
+                                        <i class="fa fa-pencil-alt"></i>
+                                    </button>
+                                    <button type="button" class="btn_remove_creneaux remove_calendar" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        <?php endif;
+                    endforeach;
+                endif; ?>
+            </div>
+
+            <!-- État vide -->
+            <div class="creneaux_empty_state" <?php echo !empty($calendar) ? 'style="display:none;"' : ''; ?>>
+                <i class="fa fa-calendar-alt"></i>
+                <p><?php esc_html_e( 'Aucun créneau configuré', 'eventlist' ); ?></p>
+                <span><?php esc_html_e( 'Utilisez le formulaire ci-dessus pour ajouter des créneaux', 'eventlist' ); ?></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================== -->
+    <!-- SECTION RÉCURRENT (auto) -->
+    <!-- ================================================== -->
+    <div class="creneaux_auto_section auto" style="<?php echo ($option_calendar == 'auto') ? 'display: block;' : 'display: none;'; ?>">
+
+        <!-- Sélection de la période -->
+        <div class="vendor_field creneaux_periode_field">
+            <label class="field_label"><?php esc_html_e( 'Sélectionnez la période :', 'eventlist' ); ?></label>
+            <div class="creneaux_periode_row">
+                <div class="creneaux_periode_col">
+                    <span class="periode_label"><?php esc_html_e( 'Date de début', 'eventlist' ); ?></span>
+                    <input type="text"
+                           class="creneaux_input calendar_start_date calendar_auto_start_date"
+                           name="<?php echo esc_attr( $_prefix.'calendar_start_date' ); ?>"
+                           value="<?php echo esc_attr( $calendar_start_date ); ?>"
+                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
+                           data-format="<?php echo esc_attr( $format ); ?>"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
+                           autocomplete="off"
+                           <?php if ( $option_calendar == 'auto' ) echo 'required'; ?>>
+                </div>
+                <div class="creneaux_periode_col">
+                    <span class="periode_label"><?php esc_html_e( 'Date de fin', 'eventlist' ); ?></span>
+                    <input type="text"
+                           class="creneaux_input calendar_end_date calendar_auto_end_date"
+                           name="<?php echo esc_attr( $_prefix.'calendar_end_date' ); ?>"
+                           value="<?php echo esc_attr( $calendar_end_date ); ?>"
+                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
+                           data-format="<?php echo esc_attr( $format ); ?>"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
+                           autocomplete="off"
+                           <?php if ( $option_calendar == 'auto' ) echo 'required'; ?>>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sélection de la fréquence -->
+        <div class="vendor_field creneaux_frequence_field">
+            <label class="field_label"><?php esc_html_e( 'Sélectionnez la fréquence :', 'eventlist' ); ?></label>
+            <div class="creneaux_frequence_row">
+                <span class="frequence_label"><?php esc_html_e( 'Chaque', 'eventlist' ); ?></span>
+                <select id="recurrence-frequency" name="<?php echo esc_attr( $_prefix.'recurrence_frequency' ); ?>" class="creneaux_select">
+                    <option value="daily" <?php selected( $recurrence_frequency, 'daily' ); ?>><?php esc_html_e( 'jour', 'eventlist' ); ?></option>
+                    <option value="weekly" <?php selected( $recurrence_frequency, 'weekly' ); ?>><?php esc_html_e( 'semaine', 'eventlist' ); ?></option>
+                    <option value="monthly" <?php selected( $recurrence_frequency, 'monthly' ); ?>><?php esc_html_e( 'mois', 'eventlist' ); ?></option>
+                </select>
+                <span class="frequence_label"><?php esc_html_e( 'tous les', 'eventlist' ); ?></span>
+                <input type="number"
+                       id="recurrence-interval"
+                       name="<?php echo esc_attr( $_prefix.'recurrence_interval' ); ?>"
+                       class="creneaux_input creneaux_interval_input"
+                       value="<?php echo esc_attr( $recurrence_interval ); ?>"
+                       min="1">
+                <span class="interval_desc" id="interval-daily"><?php esc_html_e( 'jour(s)', 'eventlist' ); ?></span>
+                <span class="interval_desc" id="interval-weekly"><?php esc_html_e( 'semaine(s)', 'eventlist' ); ?></span>
+                <span class="interval_desc" id="interval-monthly"><?php esc_html_e( 'mois', 'eventlist' ); ?></span>
+            </div>
+        </div>
+
+        <!-- Section hebdomadaire - Jours de la semaine -->
+        <div class="creneaux_weekly_section alternate-selector" id="weekly-selector" style="<?php echo ($recurrence_frequency == 'weekly') ? 'display: block;' : 'display: none;'; ?>">
+            <label class="field_label"><?php esc_html_e( 'Sélectionnez le(s) jour(s) de semaine et indiquez l(es) horaire(s).', 'eventlist' ); ?></label>
+
+            <div class="creneaux_weekly_days ts-weekly">
+                <?php foreach ( $days_of_the_week as $day_key => $day_name ): ?>
+                    <div class="creneaux_day_row ts_recurrence_bydays" data-day="<?php echo esc_attr($day_key); ?>">
+                        <label class="creneaux_day_checkbox">
+                            <input type="checkbox"
+                                   id="recurrence_bydays<?php echo $day_key; ?>"
+                                   name="<?php echo esc_attr( $_prefix.'recurrence_bydays[]' ); ?>"
+                                   value="<?php echo esc_attr($day_key); ?>"
+                                   <?php if ( in_array( $day_key, $recurrence_bydays ) ) echo 'checked'; ?>>
+                            <span class="option_checkbox"></span>
+                            <span class="day_name"><?php echo esc_html($day_name); ?></span>
+                        </label>
+
+                        <!-- Time slots pour ce jour -->
+                        <div class="creneaux_day_times ts-list">
+                            <?php if ( isset( $ts_start[$day_key] ) && is_array( $ts_start[$day_key] ) ):
+                                foreach ( $ts_start[$day_key] as $k_ts => $v_ts_start ):
+                                    if ( isset( $ts_end[$day_key][$k_ts] ) && $ts_end[$day_key][$k_ts] ): ?>
+                                        <div class="creneaux_time_slot ts-item" data-key="<?php echo esc_attr($day_key); ?>">
+                                            <span class="time_label"><?php esc_html_e( 'De :', 'eventlist' ); ?></span>
+                                            <input type="text"
+                                                   class="creneaux_input creneaux_time_input calendar_recurrence_ts_start"
+                                                   value="<?php echo esc_attr( $v_ts_start ); ?>"
+                                                   name="<?php echo esc_attr( $_prefix.'ts_start['.$day_key.']['.$k_ts.']' ); ?>"
+                                                   placeholder="HH:MM"
+                                                   data-time="<?php echo esc_attr( $time ); ?>"
+                                                   autocomplete="off">
+                                            <span class="time_label"><?php esc_html_e( 'À :', 'eventlist' ); ?></span>
+                                            <input type="text"
+                                                   class="creneaux_input creneaux_time_input calendar_recurrence_ts_end"
+                                                   value="<?php echo esc_attr( $ts_end[$day_key][$k_ts] ); ?>"
+                                                   name="<?php echo esc_attr( $_prefix.'ts_end['.$day_key.']['.$k_ts.']' ); ?>"
+                                                   placeholder="HH:MM"
+                                                   data-time="<?php echo esc_attr( $time ); ?>"
+                                                   autocomplete="off">
+                                            <button type="button" class="btn_remove_time_slot close">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    <?php endif;
+                                endforeach;
+                            endif; ?>
+
+                            <!-- Formulaire d'ajout de time slot -->
+                            <div class="creneaux_add_time_slot">
+                                <span class="time_label"><?php esc_html_e( 'De :', 'eventlist' ); ?></span>
+                                <input type="text"
+                                       class="creneaux_input creneaux_time_input new_ts_start"
+                                       placeholder="HH:MM"
+                                       data-time="<?php echo esc_attr( $time ); ?>"
+                                       autocomplete="off">
+                                <span class="time_label"><?php esc_html_e( 'À :', 'eventlist' ); ?></span>
+                                <input type="text"
+                                       class="creneaux_input creneaux_time_input new_ts_end"
+                                       placeholder="HH:MM"
+                                       data-time="<?php echo esc_attr( $time ); ?>"
+                                       autocomplete="off">
+                                <button type="button" class="btn_add_time_slot add_time_slot"
+                                        data-key="<?php echo esc_attr($day_key); ?>"
+                                        data-placeholder="<?php echo esc_attr( $placeholder_timeformat ); ?>"
+                                        data-time="<?php echo esc_attr( $time ); ?>">
+                                    <?php esc_html_e( 'Ajouter', 'eventlist' ); ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+        <!-- Section mensuelle -->
+        <div class="creneaux_monthly_section alternate-selector" id="monthly-selector" style="<?php echo ($recurrence_frequency == 'monthly') ? 'display: block;' : 'display: none;'; ?>">
+            <div class="creneaux_monthly_row">
+                <span class="monthly_label"><?php esc_html_e( 'Le', 'eventlist' ); ?></span>
+                <select id="monthly-modifier" name="<?php echo esc_attr( $_prefix.'recurrence_byweekno' ); ?>" class="creneaux_select">
+                    <?php foreach ( $arr_recurrence_byweekno as $key => $value ): ?>
+                        <option value="<?php echo esc_attr($key); ?>" <?php selected( $recurrence_byweekno, $key ); ?>><?php echo esc_html($value); ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <select id="recurrence-weekday" name="<?php echo esc_attr( $_prefix.'recurrence_byday' ); ?>" class="creneaux_select">
+                    <?php foreach ( $days_of_the_week as $key => $value ): ?>
+                        <option value="<?php echo esc_attr($key); ?>" <?php selected( $recurrence_byday, $key ); ?>><?php echo esc_html($value); ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <span class="monthly_label"><?php esc_html_e( 'de chaque mois', 'eventlist' ); ?></span>
+                <button type="button" class="btn_add_monthly_rule"><?php esc_html_e( 'Ajouter', 'eventlist' ); ?></button>
+            </div>
+        </div>
+
+        <!-- Sélection de l'horaire (pour daily/monthly) -->
+        <div class="vendor_field creneaux_horaire_field time-range" style="<?php if ( $schedules_time ) echo 'display: none;'; ?>">
+            <label class="field_label"><?php esc_html_e( 'Sélectionnez l\'horaire :', 'eventlist' ); ?></label>
+            <div class="creneaux_horaire_row">
+                <span class="horaire_label"><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?></span>
+                <input type="text"
+                       class="creneaux_input creneaux_time_input calendar_recurrence_start_time"
+                       name="<?php echo esc_attr( $_prefix.'calendar_recurrence_start_time' ); ?>"
+                       value="<?php echo esc_attr( $calendar_recurrence_start_time ); ?>"
+                       placeholder="HH:MM"
+                       data-time="<?php echo esc_attr( $time ); ?>"
+                       autocomplete="off"
+                       <?php if ( ( $option_calendar == 'auto' ) && ! $schedules_time ) echo 'required'; ?>>
+                <span class="horaire_label"><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?></span>
+                <input type="text"
+                       class="creneaux_input creneaux_time_input calendar_recurrence_end_time"
+                       name="<?php echo esc_attr( $_prefix.'calendar_recurrence_end_time' ); ?>"
+                       value="<?php echo esc_attr( $calendar_recurrence_end_time ); ?>"
+                       placeholder="HH:MM"
+                       data-time="<?php echo esc_attr( $time ); ?>"
+                       autocomplete="off"
+                       <?php if ( ( $option_calendar == 'auto' ) && ! $schedules_time ) echo 'required'; ?>>
+                <button type="button" class="btn_add_horaire add_schedules_time"><?php esc_html_e( 'Ajouter', 'eventlist' ); ?></button>
+            </div>
+
+            <!-- Hidden field pour book before -->
+            <input type="hidden"
+                   name="<?php echo esc_attr($_prefix.'calendar_recurrence_book_before' ); ?>"
+                   class="calendar_recurrence_time_book_before"
+                   value="<?php echo esc_attr( $calendar_recurrence_book_before ); ?>">
+        </div>
+
+        <!-- Liste des horaires programmés -->
+        <div class="creneaux_schedules_section schedules_time">
+            <label class="field_label"><?php esc_html_e( 'Horaires programmés', 'eventlist' ); ?></label>
+            <div class="wrap_schedules_time">
+                <?php if ( $schedules_time ):
+                    foreach ( $schedules_time as $key => $value ):
+                        if ( !empty($value['start_time']) ): ?>
+                            <div class="creneaux_schedule_item item_schedules_time" data-key="<?php echo esc_attr($key); ?>">
+                                <span class="schedule_time">
+                                    <?php esc_html_e( 'De :', 'eventlist' ); ?>
+                                    <input type="text"
+                                           class="creneaux_input creneaux_time_input start_time"
+                                           name="<?php echo esc_attr( $_prefix.'schedules_time['.$key.'][start_time]' ); ?>"
+                                           value="<?php echo esc_attr( $value['start_time'] ); ?>"
+                                           placeholder="HH:MM"
+                                           data-time="<?php echo esc_attr( $time ); ?>"
+                                           autocomplete="off"
+                                           <?php if ( $option_calendar == 'auto' ) echo 'required'; ?>>
+                                </span>
+                                <span class="schedule_time">
+                                    <?php esc_html_e( 'À :', 'eventlist' ); ?>
+                                    <input type="text"
+                                           class="creneaux_input creneaux_time_input end_time"
+                                           name="<?php echo esc_attr( $_prefix.'schedules_time['.$key.'][end_time]' ); ?>"
+                                           value="<?php echo esc_attr( $value['end_time'] ); ?>"
+                                           placeholder="HH:MM"
+                                           data-time="<?php echo esc_attr( $time ); ?>"
+                                           autocomplete="off"
+                                           <?php if ( $option_calendar == 'auto' ) echo 'required'; ?>>
+                                </span>
+                                <input type="hidden"
+                                       name="<?php echo esc_attr( $_prefix.'schedules_time['.$key.'][book_before]' ); ?>"
+                                       value="<?php echo esc_attr( isset($value['book_before']) ? $value['book_before'] : '0' ); ?>">
+                                <button type="button" class="btn_remove_schedule remove_schedules_time">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                        <?php endif;
+                    endforeach;
+                endif; ?>
+            </div>
+        </div>
+
+        <!-- Désactivation de créneaux -->
+        <div class="vendor_field creneaux_disable_field disable_date">
+            <label class="field_label"><?php esc_html_e( 'Désactivez un créneau :', 'eventlist' ); ?></label>
+
+            <div class="creneaux_disable_form">
+                <div class="creneaux_disable_row">
+                    <span class="disable_label"><?php esc_html_e( 'Date de début', 'eventlist' ); ?></span>
+                    <input type="text"
+                           class="creneaux_input new_disable_start_date"
+                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
+                           data-format="<?php echo esc_attr( $format ); ?>"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
+                           autocomplete="off">
+                    <span class="disable_label"><?php esc_html_e( 'Date de fin', 'eventlist' ); ?></span>
+                    <input type="text"
+                           class="creneaux_input new_disable_end_date"
+                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
+                           data-format="<?php echo esc_attr( $format ); ?>"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
+                           autocomplete="off">
+                </div>
+                <div class="creneaux_disable_row">
+                    <span class="disable_label"><?php esc_html_e( 'Sélection du créneau', 'eventlist' ); ?></span>
+                    <select class="creneaux_select new_disable_schedule">
+                        <option value=""><?php esc_html_e( 'Choisissez le créneau', 'eventlist' ); ?></option>
+                        <?php if ( $schedules_time ):
+                            foreach ( $schedules_time as $key => $value ): ?>
+                                <option value="<?php echo esc_attr($key); ?>">
+                                    <?php echo esc_html($value['start_time'] . ' - ' . $value['end_time']); ?>
+                                </option>
+                            <?php endforeach;
+                        endif; ?>
+                    </select>
+                    <button type="button" class="btn_add_disable add_disable_date"><?php esc_html_e( 'Ajouter', 'eventlist' ); ?></button>
+                </div>
+            </div>
+
+            <!-- Liste des dates désactivées -->
+            <div class="creneaux_disable_list wrap_disable_date">
+                <?php if ( $disable_date ):
+                    foreach ( $disable_date as $key => $value ):
+                        if ( !empty($value['start_date']) ): ?>
+                            <div class="creneaux_disable_item item_disable_date">
+                                <span class="disable_info">
+                                    <?php esc_html_e( 'Du', 'eventlist' ); ?>
+                                    <input type="text"
+                                           class="creneaux_input start_date"
+                                           name="<?php echo esc_attr( $_prefix.'disable_date['.$key.'][start_date]' ); ?>"
+                                           value="<?php echo esc_attr( $value['start_date'] ); ?>"
+                                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
+                                           data-format="<?php echo esc_attr( $format ); ?>"
+                                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
+                                           autocomplete="off"
+                                           readonly>
+                                    <?php esc_html_e( 'au', 'eventlist' ); ?>
+                                    <input type="text"
+                                           class="creneaux_input end_date"
+                                           name="<?php echo esc_attr( $_prefix.'disable_date['.$key.'][end_date]' ); ?>"
+                                           value="<?php echo esc_attr( isset($value['end_date']) ? $value['end_date'] : '' ); ?>"
+                                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
+                                           data-format="<?php echo esc_attr( $format ); ?>"
+                                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
+                                           autocomplete="off"
+                                           readonly>
+                                </span>
+                                <?php if ( $schedules_time ): ?>
+                                    <select name="<?php echo esc_attr( $_prefix.'disable_date['.$key.'][schedules_time]' ); ?>" class="creneaux_select schedules_time">
+                                        <option value=""><?php esc_html_e( 'Tous', 'eventlist' ); ?></option>
+                                        <?php foreach ( $schedules_time as $s_key => $s_value ):
+                                            $disable_time = isset( $value['schedules_time'] ) ? $value['schedules_time'] : ''; ?>
+                                            <option value="<?php echo esc_attr($s_key); ?>" <?php selected( $s_key, $disable_time ); ?>>
+                                                <?php echo esc_html($s_value['start_time'] . ' - ' . $s_value['end_time']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                <?php endif; ?>
+                                <button type="button" class="btn_remove_disable remove_disable_date">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                        <?php endif;
+                    endforeach;
+                endif; ?>
+            </div>
+        </div>
+
+    </div>
 </div>
+
+<style>
+/* ==========================================================================
+   Créneaux Section - Design selon maquette
+   ========================================================================== */
+
+.creneaux_section {
+    padding: 0;
+}
+
+.creneaux_section .field_description {
+    color: #666;
+    font-size: 15px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Type de créneau - Checkboxes carrés oranges */
+.creneaux_type_field {
+    margin-bottom: 36px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.creneaux_type_field .field_label {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    color: #222;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.creneaux_type_options {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.creneaux_type_option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    padding: 12px 0;
+    position: relative;
+}
+
+.creneaux_type_option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.creneaux_type_option .option_checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.creneaux_type_option:hover .option_checkbox {
+    border-color: #FF6600;
+}
+
+.creneaux_type_option.active .option_checkbox,
+.creneaux_type_option input:checked + .option_checkbox {
+    background: #FF6600;
+    border-color: #FF6600;
+}
+
+.creneaux_type_option .option_label {
+    font-size: 15px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Inputs généraux */
+.creneaux_input {
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.creneaux_input:hover {
+    border-color: #bbb;
+}
+
+.creneaux_input:focus {
+    border-color: #333;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.creneaux_input::placeholder {
+    color: #aaa;
+}
+
+.creneaux_time_input {
+    width: 100px;
+    text-align: center;
+}
+
+.creneaux_interval_input {
+    width: 60px;
+    text-align: center;
+}
+
+/* Select */
+.creneaux_select {
+    height: 46px;
+    padding: 0 36px 0 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 12px center;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    transition: border-color 0.2s;
+}
+
+.creneaux_select:hover {
+    border-color: #bbb;
+}
+
+.creneaux_select:focus {
+    border-color: #333;
+    outline: none;
+}
+
+/* Boutons d'action - Orange */
+.btn_add_creneaux_manual,
+.btn_add_horaire,
+.btn_add_time_slot,
+.btn_add_monthly_rule,
+.btn_add_disable {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #FF6600;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn_add_creneaux_manual:hover,
+.btn_add_horaire:hover,
+.btn_add_time_slot:hover,
+.btn_add_monthly_rule:hover,
+.btn_add_disable:hover {
+    background: #e55b00;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+}
+
+.btn_add_creneaux_manual i {
+    font-size: 14px;
+}
+
+/* Boutons modifier/supprimer */
+.btn_edit_creneaux {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    background: #FF6600;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn_edit_creneaux:hover {
+    background: #e55b00;
+}
+
+.btn_remove_creneaux,
+.btn_remove_time_slot,
+.btn_remove_schedule,
+.btn_remove_disable {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    background: #e74c3c;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn_remove_creneaux:hover,
+.btn_remove_time_slot:hover,
+.btn_remove_schedule:hover,
+.btn_remove_disable:hover {
+    background: #c0392b;
+}
+
+/* ==========================================================================
+   Section Ponctuel - Formulaire d'ajout
+   ========================================================================== */
+
+.creneaux_add_form {
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+}
+
+.creneaux_form_row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 16px;
+}
+
+.creneaux_form_col label {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    color: #222;
+    margin-bottom: 8px;
+}
+
+.creneaux_form_col .creneaux_input {
+    width: 100%;
+}
+
+/* Liste des créneaux */
+.creneaux_list_section {
+    margin-top: 24px;
+}
+
+.creneaux_list_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.creneaux_select_all_label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.creneaux_select_all_label input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.creneaux_select_all_label .option_checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.creneaux_select_all_label:hover .option_checkbox {
+    border-color: #FF6600;
+}
+
+.creneaux_select_all_label input:checked + .option_checkbox {
+    background: #FF6600;
+    border-color: #FF6600;
+}
+
+.creneaux_filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.creneaux_filter_input {
+    width: 140px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+/* Items de créneau */
+.creneaux_list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.creneaux_item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+
+.creneaux_item:hover {
+    border-color: #ddd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.creneaux_item_select {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.creneaux_item_select input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.creneaux_item_select .option_checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    transition: all 0.15s ease;
+}
+
+.creneaux_item_select:hover .option_checkbox {
+    border-color: #FF6600;
+}
+
+.creneaux_item_select input:checked + .option_checkbox {
+    background: #FF6600;
+    border-color: #FF6600;
+}
+
+.creneaux_item_date {
+    flex: 0 0 180px;
+}
+
+.creneaux_item_date .creneaux_input {
+    width: 100%;
+    background: #f9f9f9;
+}
+
+.creneaux_item_time {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.time_label {
+    font-size: 14px;
+    color: #666;
+}
+
+.creneaux_item_actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* État vide */
+.creneaux_empty_state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    background: #fafafa;
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+}
+
+.creneaux_empty_state i {
+    font-size: 48px;
+    color: #ccc;
+    margin-bottom: 16px;
+}
+
+.creneaux_empty_state p {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px;
+}
+
+.creneaux_empty_state span {
+    font-size: 14px;
+    color: #888;
+}
+
+/* ==========================================================================
+   Section Récurrent
+   ========================================================================== */
+
+.creneaux_auto_section .field_label {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    color: #222;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Période */
+.creneaux_periode_field {
+    margin-bottom: 32px;
+}
+
+.creneaux_periode_row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.creneaux_periode_col {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.periode_label {
+    font-size: 14px;
+    color: #666;
+    white-space: nowrap;
+}
+
+.creneaux_periode_col .creneaux_input {
+    width: 160px;
+}
+
+/* Fréquence */
+.creneaux_frequence_field {
+    margin-bottom: 32px;
+}
+
+.creneaux_frequence_row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.frequence_label {
+    font-size: 14px;
+    color: #666;
+}
+
+.interval_desc {
+    display: none;
+    font-size: 14px;
+    color: #666;
+}
+
+.interval_desc.active {
+    display: inline;
+}
+
+/* Section hebdomadaire */
+.creneaux_weekly_section {
+    margin-bottom: 32px;
+    padding: 24px;
+    background: #f9f9f9;
+    border-radius: 12px;
+}
+
+.creneaux_weekly_days {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.creneaux_day_row {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 16px;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+
+.creneaux_day_checkbox {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    min-width: 120px;
+}
+
+.creneaux_day_checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.creneaux_day_checkbox .option_checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    transition: all 0.15s ease;
+}
+
+.creneaux_day_checkbox:hover .option_checkbox {
+    border-color: #FF6600;
+}
+
+.creneaux_day_checkbox input:checked + .option_checkbox {
+    background: #FF6600;
+    border-color: #FF6600;
+}
+
+.day_name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.creneaux_day_times {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.creneaux_time_slot,
+.creneaux_add_time_slot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.creneaux_add_time_slot .btn_add_time_slot {
+    padding: 10px 16px;
+    font-size: 13px;
+}
+
+/* Section mensuelle */
+.creneaux_monthly_section {
+    margin-bottom: 32px;
+}
+
+.creneaux_monthly_row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.monthly_label {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Horaires */
+.creneaux_horaire_field {
+    margin-bottom: 32px;
+}
+
+.creneaux_horaire_row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.horaire_label {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Liste des horaires programmés */
+.creneaux_schedules_section {
+    margin-bottom: 32px;
+}
+
+.wrap_schedules_time {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.creneaux_schedule_item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+.schedule_time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Désactivation de créneaux */
+.creneaux_disable_field {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid #eee;
+}
+
+.creneaux_disable_form {
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.creneaux_disable_row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.creneaux_disable_row:last-child {
+    margin-bottom: 0;
+}
+
+.disable_label {
+    font-size: 14px;
+    color: #666;
+}
+
+.creneaux_disable_list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.creneaux_disable_item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    background: #fff8f5;
+    border: 1px solid #ffe4d9;
+    border-radius: 8px;
+}
+
+.disable_info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.disable_info .creneaux_input {
+    width: 140px;
+    height: 40px;
+    background: #fff;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 992px) {
+    .creneaux_form_row {
+        grid-template-columns: 1fr;
+    }
+
+    .creneaux_periode_row,
+    .creneaux_frequence_row,
+    .creneaux_horaire_row,
+    .creneaux_monthly_row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .creneaux_periode_col {
+        width: 100%;
+    }
+
+    .creneaux_periode_col .creneaux_input {
+        flex: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .creneaux_type_options {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .creneaux_list_header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .creneaux_filter {
+        flex-wrap: wrap;
+    }
+
+    .creneaux_item {
+        flex-wrap: wrap;
+    }
+
+    .creneaux_item_date {
+        flex: 1 1 100%;
+    }
+
+    .creneaux_item_time {
+        flex: 1 1 100%;
+        flex-wrap: wrap;
+    }
+
+    .creneaux_day_row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .creneaux_day_checkbox {
+        min-width: auto;
+    }
+
+    .creneaux_time_slot,
+    .creneaux_add_time_slot {
+        flex-wrap: wrap;
+    }
+
+    .creneaux_disable_row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .creneaux_disable_item {
+        flex-wrap: wrap;
+    }
+
+    .disable_info {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+(function($) {
+    'use strict';
+
+    var CreneauxManager = {
+        calendarIndex: <?php echo !empty($calendar) ? max(array_keys($calendar)) + 1 : 0; ?>,
+        scheduleIndex: <?php echo !empty($schedules_time) ? max(array_keys($schedules_time)) + 1 : 0; ?>,
+        disableIndex: <?php echo !empty($disable_date) ? max(array_keys($disable_date)) + 1 : 0; ?>,
+
+        init: function() {
+            this.bindEvents();
+            this.updateIntervalDesc();
+            this.updateEmptyState();
+        },
+
+        bindEvents: function() {
+            var self = this;
+
+            // Changement de type (ponctuel/récurrent)
+            $('.option_calendar_radio').on('change', function() {
+                var value = $(this).val();
+
+                $('.creneaux_type_option').removeClass('active');
+                $(this).closest('.creneaux_type_option').addClass('active');
+
+                if (value === 'manual') {
+                    $('.creneaux_manual_section').slideDown(200);
+                    $('.creneaux_auto_section').slideUp(200);
+                } else {
+                    $('.creneaux_manual_section').slideUp(200);
+                    $('.creneaux_auto_section').slideDown(200);
+                }
+            });
+
+            // Changement de fréquence
+            $('#recurrence-frequency').on('change', function() {
+                var freq = $(this).val();
+
+                // Cacher toutes les sections
+                $('#weekly-selector, #monthly-selector').hide();
+
+                // Afficher la section appropriée
+                if (freq === 'weekly') {
+                    $('#weekly-selector').slideDown(200);
+                } else if (freq === 'monthly') {
+                    $('#monthly-selector').slideDown(200);
+                }
+
+                self.updateIntervalDesc();
+            });
+
+            // Changement d'intervalle
+            $('#recurrence-interval').on('input', function() {
+                self.updateIntervalDesc();
+            });
+
+            // Ajout de créneau manuel
+            $('.btn_add_creneaux_manual').on('click', function() {
+                self.addManualSlot();
+            });
+
+            // Suppression de créneau
+            $(document).on('click', '.btn_remove_creneaux, .remove_calendar', function() {
+                $(this).closest('.creneaux_item, .item_calendar').fadeOut(200, function() {
+                    $(this).remove();
+                    self.updateEmptyState();
+                });
+            });
+
+            // Édition de créneau
+            $(document).on('click', '.btn_edit_creneaux', function() {
+                var $item = $(this).closest('.creneaux_item');
+                var $inputs = $item.find('.creneaux_input');
+
+                if ($inputs.first().prop('readonly')) {
+                    $inputs.prop('readonly', false).removeClass('readonly');
+                    $(this).html('<i class="fa fa-check"></i>');
+                } else {
+                    $inputs.prop('readonly', true).addClass('readonly');
+                    $(this).html('<i class="fa fa-pencil-alt"></i>');
+                }
+            });
+
+            // Sélection checkbox jour
+            $('.creneaux_day_checkbox input[type="checkbox"]').on('change', function() {
+                var $row = $(this).closest('.creneaux_day_row');
+                if ($(this).is(':checked')) {
+                    $row.addClass('active');
+                } else {
+                    $row.removeClass('active');
+                }
+            });
+
+            // Ajout de time slot hebdomadaire
+            $(document).on('click', '.btn_add_time_slot', function() {
+                self.addTimeSlot($(this));
+            });
+
+            // Suppression de time slot
+            $(document).on('click', '.btn_remove_time_slot, .close', function() {
+                $(this).closest('.creneaux_time_slot, .ts-item').fadeOut(200, function() {
+                    $(this).remove();
+                });
+            });
+
+            // Ajout d'horaire programmé
+            $(document).on('click', '.btn_add_horaire, .add_schedules_time', function() {
+                self.addSchedule();
+            });
+
+            // Suppression d'horaire programmé
+            $(document).on('click', '.btn_remove_schedule, .remove_schedules_time', function() {
+                $(this).closest('.creneaux_schedule_item, .item_schedules_time').fadeOut(200, function() {
+                    $(this).remove();
+                });
+            });
+
+            // Ajout de date désactivée
+            $(document).on('click', '.btn_add_disable, .add_disable_date', function() {
+                self.addDisableDate();
+            });
+
+            // Suppression de date désactivée
+            $(document).on('click', '.btn_remove_disable, .remove_disable_date', function() {
+                $(this).closest('.creneaux_disable_item, .item_disable_date').fadeOut(200, function() {
+                    $(this).remove();
+                });
+            });
+
+            // Sélectionner tout
+            $('.creneaux_select_all').on('change', function() {
+                var checked = $(this).is(':checked');
+                $('.creneaux_item_checkbox').prop('checked', checked);
+            });
+
+            // Init date/time pickers si disponibles
+            this.initPickers();
+        },
+
+        addManualSlot: function() {
+            var startDate = $('.creneaux_new_start_date').val();
+            var startTime = $('.creneaux_new_start_time').val();
+            var endDate = $('.creneaux_new_end_date').val();
+            var endTime = $('.creneaux_new_end_time').val();
+
+            if (!startDate || !startTime || !endDate || !endTime) {
+                alert('<?php esc_html_e("Veuillez remplir tous les champs", "eventlist"); ?>');
+                return;
+            }
+
+            var prefix = '<?php echo $_prefix; ?>';
+            var key = this.calendarIndex++;
+
+            var html = `
+                <div class="creneaux_item item_calendar" data-key="${key}">
+                    <label class="creneaux_item_select">
+                        <input type="checkbox" class="creneaux_item_checkbox">
+                        <span class="option_checkbox"></span>
+                    </label>
+                    <input type="hidden" class="calendar_id" name="${prefix}calendar[${key}][calendar_id]" value="">
+                    <div class="creneaux_item_date">
+                        <input type="text" class="creneaux_input calendar_date" value="${startDate}" name="${prefix}calendar[${key}][date]" readonly>
+                    </div>
+                    <div class="creneaux_item_time">
+                        <span class="time_label"><?php esc_html_e("De", "eventlist"); ?></span>
+                        <input type="text" class="creneaux_input creneaux_time_input calendar_start_time" value="${startTime}" name="${prefix}calendar[${key}][start_time]" readonly>
+                        <span class="time_label"><?php esc_html_e("À", "eventlist"); ?></span>
+                        <input type="text" class="creneaux_input creneaux_time_input calendar_end_time" value="${endTime}" name="${prefix}calendar[${key}][end_time]" readonly>
+                    </div>
+                    <input type="hidden" class="calendar_end_date" value="${endDate}" name="${prefix}calendar[${key}][end_date]">
+                    <input type="hidden" name="${prefix}calendar[${key}][book_before_minutes]" value="0">
+                    <div class="creneaux_item_actions">
+                        <button type="button" class="btn_edit_creneaux" title="<?php esc_attr_e("Modifier", "eventlist"); ?>">
+                            <i class="fa fa-pencil-alt"></i>
+                        </button>
+                        <button type="button" class="btn_remove_creneaux remove_calendar" title="<?php esc_attr_e("Supprimer", "eventlist"); ?>">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            $('.creneaux_list').append(html);
+
+            // Réinitialiser le formulaire
+            $('.creneaux_new_start_date, .creneaux_new_start_time, .creneaux_new_end_date, .creneaux_new_end_time').val('');
+
+            this.updateEmptyState();
+            this.initPickers();
+        },
+
+        addTimeSlot: function($button) {
+            var $row = $button.closest('.creneaux_day_row');
+            var dayKey = $row.data('day');
+            var $addForm = $row.find('.creneaux_add_time_slot');
+            var startTime = $addForm.find('.new_ts_start').val();
+            var endTime = $addForm.find('.new_ts_end').val();
+
+            if (!startTime || !endTime) {
+                alert('<?php esc_html_e("Veuillez remplir les horaires", "eventlist"); ?>');
+                return;
+            }
+
+            var prefix = '<?php echo $_prefix; ?>';
+            var tsKey = Date.now();
+            var time = $button.data('time');
+            var placeholder = $button.data('placeholder');
+
+            var html = `
+                <div class="creneaux_time_slot ts-item" data-key="${dayKey}">
+                    <span class="time_label"><?php esc_html_e("De :", "eventlist"); ?></span>
+                    <input type="text" class="creneaux_input creneaux_time_input calendar_recurrence_ts_start" value="${startTime}" name="${prefix}ts_start[${dayKey}][${tsKey}]" placeholder="${placeholder}" data-time="${time}" autocomplete="off">
+                    <span class="time_label"><?php esc_html_e("À :", "eventlist"); ?></span>
+                    <input type="text" class="creneaux_input creneaux_time_input calendar_recurrence_ts_end" value="${endTime}" name="${prefix}ts_end[${dayKey}][${tsKey}]" placeholder="${placeholder}" data-time="${time}" autocomplete="off">
+                    <button type="button" class="btn_remove_time_slot close"><i class="fa fa-times"></i></button>
+                </div>
+            `;
+
+            $addForm.before(html);
+            $addForm.find('.new_ts_start, .new_ts_end').val('');
+
+            this.initPickers();
+        },
+
+        addSchedule: function() {
+            var startTime = $('.calendar_recurrence_start_time').val();
+            var endTime = $('.calendar_recurrence_end_time').val();
+
+            if (!startTime || !endTime) {
+                alert('<?php esc_html_e("Veuillez remplir les horaires", "eventlist"); ?>');
+                return;
+            }
+
+            var prefix = '<?php echo $_prefix; ?>';
+            var key = this.scheduleIndex++;
+            var time = '<?php echo $time; ?>';
+
+            var html = `
+                <div class="creneaux_schedule_item item_schedules_time" data-key="${key}">
+                    <span class="schedule_time">
+                        <?php esc_html_e("De :", "eventlist"); ?>
+                        <input type="text" class="creneaux_input creneaux_time_input start_time" name="${prefix}schedules_time[${key}][start_time]" value="${startTime}" placeholder="HH:MM" data-time="${time}" autocomplete="off">
+                    </span>
+                    <span class="schedule_time">
+                        <?php esc_html_e("À :", "eventlist"); ?>
+                        <input type="text" class="creneaux_input creneaux_time_input end_time" name="${prefix}schedules_time[${key}][end_time]" value="${endTime}" placeholder="HH:MM" data-time="${time}" autocomplete="off">
+                    </span>
+                    <input type="hidden" name="${prefix}schedules_time[${key}][book_before]" value="0">
+                    <button type="button" class="btn_remove_schedule remove_schedules_time"><i class="fa fa-times"></i></button>
+                </div>
+            `;
+
+            $('.wrap_schedules_time').append(html);
+            $('.calendar_recurrence_start_time, .calendar_recurrence_end_time').val('');
+
+            // Mettre à jour le select des désactivations
+            this.updateDisableSelect();
+            this.initPickers();
+        },
+
+        addDisableDate: function() {
+            var startDate = $('.new_disable_start_date').val();
+            var endDate = $('.new_disable_end_date').val();
+            var scheduleTime = $('.new_disable_schedule').val();
+
+            if (!startDate || !endDate) {
+                alert('<?php esc_html_e("Veuillez remplir les dates", "eventlist"); ?>');
+                return;
+            }
+
+            var prefix = '<?php echo $_prefix; ?>';
+            var key = this.disableIndex++;
+            var format = '<?php echo $format; ?>';
+            var firstDay = '<?php echo $first_day; ?>';
+
+            var html = `
+                <div class="creneaux_disable_item item_disable_date">
+                    <span class="disable_info">
+                        <?php esc_html_e("Du", "eventlist"); ?>
+                        <input type="text" class="creneaux_input start_date" name="${prefix}disable_date[${key}][start_date]" value="${startDate}" data-format="${format}" data-firstday="${firstDay}" autocomplete="off" readonly>
+                        <?php esc_html_e("au", "eventlist"); ?>
+                        <input type="text" class="creneaux_input end_date" name="${prefix}disable_date[${key}][end_date]" value="${endDate}" data-format="${format}" data-firstday="${firstDay}" autocomplete="off" readonly>
+                    </span>
+                    <input type="hidden" name="${prefix}disable_date[${key}][schedules_time]" value="${scheduleTime}">
+                    <button type="button" class="btn_remove_disable remove_disable_date"><i class="fa fa-times"></i></button>
+                </div>
+            `;
+
+            $('.creneaux_disable_list').append(html);
+            $('.new_disable_start_date, .new_disable_end_date').val('');
+            $('.new_disable_schedule').val('');
+        },
+
+        updateIntervalDesc: function() {
+            var freq = $('#recurrence-frequency').val();
+
+            // Cacher tous les descripteurs
+            $('.interval_desc').removeClass('active').hide();
+
+            // Afficher le bon descripteur
+            $('#interval-' + freq).addClass('active').show();
+        },
+
+        updateEmptyState: function() {
+            var hasItems = $('.creneaux_list .creneaux_item').length > 0;
+
+            if (hasItems) {
+                $('.creneaux_empty_state').hide();
+            } else {
+                $('.creneaux_empty_state').show();
+            }
+        },
+
+        updateDisableSelect: function() {
+            var $select = $('.new_disable_schedule');
+            $select.find('option:not(:first)').remove();
+
+            $('.creneaux_schedule_item').each(function() {
+                var key = $(this).data('key');
+                var startTime = $(this).find('.start_time').val();
+                var endTime = $(this).find('.end_time').val();
+
+                if (startTime && endTime) {
+                    $select.append('<option value="' + key + '">' + startTime + ' - ' + endTime + '</option>');
+                }
+            });
+        },
+
+        initPickers: function() {
+            // Initialiser les date pickers
+            if (typeof $.fn.datepicker !== 'undefined') {
+                $('.creneaux_input[data-format]').each(function() {
+                    if (!$(this).hasClass('hasDatepicker')) {
+                        var format = $(this).data('format');
+                        var firstDay = $(this).data('firstday');
+
+                        $(this).datepicker({
+                            dateFormat: format,
+                            firstDay: firstDay
+                        });
+                    }
+                });
+            }
+
+            // Initialiser les time pickers
+            if (typeof $.fn.timepicker !== 'undefined') {
+                $('.creneaux_time_input[data-time]').each(function() {
+                    if (!$(this).hasClass('hasTimepicker')) {
+                        var timeFormat = $(this).data('time');
+
+                        $(this).timepicker({
+                            timeFormat: timeFormat,
+                            interval: 15,
+                            dynamic: false,
+                            dropdown: true,
+                            scrollbar: true
+                        });
+                    }
+                });
+            }
+        }
+    };
+
+    // Initialiser au chargement
+    $(document).ready(function() {
+        CreneauxManager.init();
+    });
+
+})(jQuery);
+</script>
