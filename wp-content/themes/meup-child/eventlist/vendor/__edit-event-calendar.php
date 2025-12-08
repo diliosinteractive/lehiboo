@@ -1732,11 +1732,20 @@ $arr_recurrence_byweekno = array(
             if (typeof $.fn.timepicker !== 'undefined') {
                 $('.creneaux_time_input[data-time]').each(function() {
                     if (!$(this).hasClass('ui-timepicker-input')) {
-                        // Utiliser attr() pour garantir une chaîne de caractères
-                        var timeFormat = $(this).attr('data-time') || 'H:i';
+                        // Convertir le format 12/24 en format timepicker valide
+                        var timeValue = $(this).attr('data-time') || '24';
+                        var timeFormat;
+
+                        // el_calendar_time_format() retourne '12' ou '24'
+                        // Il faut les convertir en format timepicker valide
+                        if (timeValue === '12' || timeValue === 12) {
+                            timeFormat = 'h:i A'; // 12-hour avec AM/PM
+                        } else {
+                            timeFormat = 'H:i'; // 24-hour
+                        }
 
                         $(this).timepicker({
-                            timeFormat: String(timeFormat),
+                            timeFormat: timeFormat,
                             interval: 15,
                             dynamic: false,
                             dropdown: true,
