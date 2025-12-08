@@ -45,7 +45,6 @@ $nonce = wp_create_nonce( 'el_vendor_media_nonce' );
     <!-- Header -->
     <div class="media_manager_header">
         <div class="header_left">
-            <h2><?php esc_html_e( 'Gestionnaire de Médias', 'eventlist' ); ?></h2>
             <p class="description"><?php esc_html_e( 'Organisez vos images dans des dossiers et sous-dossiers', 'eventlist' ); ?></p>
         </div>
         <div class="header_right">
