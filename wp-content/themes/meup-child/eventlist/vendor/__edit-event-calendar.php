@@ -110,7 +110,7 @@ $arr_recurrence_byweekno = array(
 
         <!-- Formulaire d'ajout de créneau -->
         <div class="creneaux_add_form">
-            <div class="creneaux_form_row">
+            <div class="creneaux_form_grid">
                 <div class="creneaux_form_col">
                     <label><?php esc_html_e( 'Date de début', 'eventlist' ); ?> <span class="el_req">*</span></label>
                     <input type="text"
@@ -123,13 +123,11 @@ $arr_recurrence_byweekno = array(
                 <div class="creneaux_form_col">
                     <label><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?> <span class="el_req">*</span></label>
                     <input type="text"
-                           class="creneaux_input creneaux_new_start_time"
+                           class="creneaux_input creneaux_time_input creneaux_new_start_time"
                            placeholder="HH:MM"
                            data-time="<?php echo esc_attr( $time ); ?>"
                            autocomplete="off">
                 </div>
-            </div>
-            <div class="creneaux_form_row">
                 <div class="creneaux_form_col">
                     <label><?php esc_html_e( 'Date de fin', 'eventlist' ); ?> <span class="el_req">*</span></label>
                     <input type="text"
@@ -142,7 +140,7 @@ $arr_recurrence_byweekno = array(
                 <div class="creneaux_form_col">
                     <label><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?> <span class="el_req">*</span></label>
                     <input type="text"
-                           class="creneaux_input creneaux_new_end_time"
+                           class="creneaux_input creneaux_time_input creneaux_new_end_time"
                            placeholder="HH:MM"
                            data-time="<?php echo esc_attr( $time ); ?>"
                            autocomplete="off">
@@ -493,25 +491,23 @@ $arr_recurrence_byweekno = array(
 
             <div class="creneaux_disable_form">
                 <div class="creneaux_disable_row">
-                    <span class="disable_label"><?php esc_html_e( 'Date de début', 'eventlist' ); ?></span>
+                    <span class="disable_label"><?php esc_html_e( 'Du', 'eventlist' ); ?></span>
                     <input type="text"
                            class="creneaux_input new_disable_start_date"
                            placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
                            data-format="<?php echo esc_attr( $format ); ?>"
                            data-firstday="<?php echo esc_attr( $first_day ); ?>"
                            autocomplete="off">
-                    <span class="disable_label"><?php esc_html_e( 'Date de fin', 'eventlist' ); ?></span>
+                    <span class="disable_label"><?php esc_html_e( 'au', 'eventlist' ); ?></span>
                     <input type="text"
                            class="creneaux_input new_disable_end_date"
                            placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
                            data-format="<?php echo esc_attr( $format ); ?>"
                            data-firstday="<?php echo esc_attr( $first_day ); ?>"
                            autocomplete="off">
-                </div>
-                <div class="creneaux_disable_row">
-                    <span class="disable_label"><?php esc_html_e( 'Sélection du créneau', 'eventlist' ); ?></span>
+                    <span class="disable_label"><?php esc_html_e( 'Créneau', 'eventlist' ); ?></span>
                     <select class="creneaux_select new_disable_schedule">
-                        <option value=""><?php esc_html_e( 'Choisissez le créneau', 'eventlist' ); ?></option>
+                        <option value=""><?php esc_html_e( 'Tous', 'eventlist' ); ?></option>
                         <?php if ( $schedules_time ):
                             foreach ( $schedules_time as $key => $value ): ?>
                                 <option value="<?php echo esc_attr($key); ?>">
@@ -578,7 +574,7 @@ $arr_recurrence_byweekno = array(
 
 <style>
 /* ==========================================================================
-   Créneaux Section - Design selon maquette
+   Créneaux Section - Design compact et horizontal
    ========================================================================== */
 
 .creneaux_section {
@@ -587,16 +583,16 @@ $arr_recurrence_byweekno = array(
 
 .creneaux_section .field_description {
     color: #666;
-    font-size: 15px;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
     border-bottom: 1px solid #eee;
 }
 
 /* Type de créneau - Checkboxes carrés oranges */
 .creneaux_type_field {
-    margin-bottom: 36px;
-    padding-bottom: 32px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
     border-bottom: 1px solid #f0f0f0;
 }
 
@@ -605,23 +601,22 @@ $arr_recurrence_byweekno = array(
     font-weight: 600;
     font-size: 13px;
     color: #222;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .creneaux_type_options {
     display: flex;
-    gap: 40px;
-    flex-wrap: wrap;
+    gap: 32px;
 }
 
 .creneaux_type_option {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
     cursor: pointer;
-    padding: 12px 0;
+    padding: 8px 0;
     position: relative;
 }
 
@@ -633,8 +628,8 @@ $arr_recurrence_byweekno = array(
 }
 
 .creneaux_type_option .option_checkbox {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     border: 2px solid #ccc;
     border-radius: 4px;
     background: #fff;
@@ -656,17 +651,17 @@ $arr_recurrence_byweekno = array(
 }
 
 .creneaux_type_option .option_label {
-    font-size: 15px;
+    font-size: 14px;
     color: #333;
     font-weight: 500;
 }
 
 /* Inputs généraux */
 .creneaux_input {
-    height: 46px;
-    padding: 0 14px;
+    height: 42px;
+    padding: 0 12px;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 14px;
     color: #333;
     background: #fff;
@@ -688,24 +683,25 @@ $arr_recurrence_byweekno = array(
 }
 
 .creneaux_time_input {
-    width: 100px;
+    width: 90px;
     text-align: center;
+    cursor: pointer;
 }
 
 .creneaux_interval_input {
-    width: 60px;
+    width: 55px;
     text-align: center;
 }
 
 /* Select */
 .creneaux_select {
-    height: 46px;
-    padding: 0 36px 0 14px;
+    height: 42px;
+    padding: 0 32px 0 12px;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 14px;
     color: #333;
-    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 12px center;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 10px center;
     cursor: pointer;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -730,16 +726,17 @@ $arr_recurrence_byweekno = array(
 .btn_add_disable {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
+    gap: 6px;
+    padding: 10px 18px;
     background: #FF6600;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     color: #fff;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
 .btn_add_creneaux_manual:hover,
@@ -753,22 +750,22 @@ $arr_recurrence_byweekno = array(
 }
 
 .btn_add_creneaux_manual i {
-    font-size: 14px;
+    font-size: 13px;
 }
 
 /* Boutons modifier/supprimer */
 .btn_edit_creneaux {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     background: #FF6600;
     color: #fff;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 13px;
     transition: all 0.2s;
 }
 
@@ -780,17 +777,17 @@ $arr_recurrence_byweekno = array(
 .btn_remove_time_slot,
 .btn_remove_schedule,
 .btn_remove_disable {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     background: #e74c3c;
     color: #fff;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 13px;
     transition: all 0.2s;
 }
 
@@ -808,53 +805,56 @@ $arr_recurrence_byweekno = array(
 .creneaux_add_form {
     background: #f9f9f9;
     border: 1px solid #eee;
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 32px;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 20px;
 }
 
-.creneaux_form_row {
+.creneaux_form_grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 16px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
 }
 
 .creneaux_form_col label {
     display: block;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 12px;
     color: #222;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .creneaux_form_col .creneaux_input {
     width: 100%;
 }
 
+.creneaux_form_col .creneaux_time_input {
+    width: 100%;
+}
+
 /* Liste des créneaux */
 .creneaux_list_section {
-    margin-top: 24px;
+    margin-top: 16px;
 }
 
 .creneaux_list_header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
     gap: 16px;
-    margin-bottom: 16px;
-    padding-bottom: 16px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
     border-bottom: 1px solid #eee;
 }
 
 .creneaux_select_all_label {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     color: #333;
 }
 
@@ -866,8 +866,8 @@ $arr_recurrence_byweekno = array(
 }
 
 .creneaux_select_all_label .option_checkbox {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border: 2px solid #ccc;
     border-radius: 4px;
     background: #fff;
@@ -889,15 +889,15 @@ $arr_recurrence_byweekno = array(
 .creneaux_filter {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 14px;
+    gap: 8px;
+    font-size: 13px;
     color: #666;
 }
 
 .creneaux_filter_input {
-    width: 140px;
-    height: 40px;
-    padding: 0 12px;
+    width: 120px;
+    height: 36px;
+    padding: 0 10px;
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 13px;
@@ -907,17 +907,17 @@ $arr_recurrence_byweekno = array(
 .creneaux_list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .creneaux_item {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 16px;
+    gap: 12px;
+    padding: 12px 14px;
     background: #fff;
     border: 1px solid #eee;
-    border-radius: 10px;
+    border-radius: 8px;
     transition: all 0.2s;
 }
 
@@ -940,8 +940,8 @@ $arr_recurrence_byweekno = array(
 }
 
 .creneaux_item_select .option_checkbox {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border: 2px solid #ccc;
     border-radius: 4px;
     background: #fff;
@@ -958,29 +958,30 @@ $arr_recurrence_byweekno = array(
 }
 
 .creneaux_item_date {
-    flex: 0 0 180px;
+    flex: 0 0 150px;
 }
 
 .creneaux_item_date .creneaux_input {
     width: 100%;
+    height: 38px;
     background: #f9f9f9;
 }
 
 .creneaux_item_time {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex: 1;
 }
 
 .time_label {
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
 }
 
 .creneaux_item_actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
 }
 
 /* État vide */
@@ -989,33 +990,33 @@ $arr_recurrence_byweekno = array(
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 60px 20px;
+    padding: 40px 20px;
     text-align: center;
     background: #fafafa;
     border: 2px dashed #ddd;
-    border-radius: 12px;
+    border-radius: 10px;
 }
 
 .creneaux_empty_state i {
-    font-size: 48px;
+    font-size: 40px;
     color: #ccc;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .creneaux_empty_state p {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: #333;
-    margin: 0 0 8px;
+    margin: 0 0 6px;
 }
 
 .creneaux_empty_state span {
-    font-size: 14px;
+    font-size: 13px;
     color: #888;
 }
 
 /* ==========================================================================
-   Section Récurrent
+   Section Récurrent - Layout horizontal compact
    ========================================================================== */
 
 .creneaux_auto_section .field_label {
@@ -1023,59 +1024,60 @@ $arr_recurrence_byweekno = array(
     font-weight: 600;
     font-size: 13px;
     color: #222;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-/* Période */
+/* Période - Horizontal sur une ligne */
 .creneaux_periode_field {
-    margin-bottom: 32px;
+    margin-bottom: 20px;
 }
 
 .creneaux_periode_row {
     display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
 }
 
 .creneaux_periode_col {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .periode_label {
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
     white-space: nowrap;
 }
 
 .creneaux_periode_col .creneaux_input {
-    width: 160px;
+    width: 140px;
 }
 
-/* Fréquence */
+/* Fréquence - Tout sur une ligne */
 .creneaux_frequence_field {
-    margin-bottom: 32px;
+    margin-bottom: 20px;
 }
 
 .creneaux_frequence_row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .frequence_label {
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
+    white-space: nowrap;
 }
 
 .interval_desc {
     display: none;
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
+    white-space: nowrap;
 }
 
 .interval_desc.active {
@@ -1084,35 +1086,35 @@ $arr_recurrence_byweekno = array(
 
 /* Section hebdomadaire */
 .creneaux_weekly_section {
-    margin-bottom: 32px;
-    padding: 24px;
+    margin-bottom: 20px;
+    padding: 16px;
     background: #f9f9f9;
-    border-radius: 12px;
+    border-radius: 10px;
 }
 
 .creneaux_weekly_days {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-top: 16px;
+    gap: 8px;
+    margin-top: 12px;
 }
 
 .creneaux_day_row {
     display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    padding: 16px;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 14px;
     background: #fff;
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid #eee;
 }
 
 .creneaux_day_checkbox {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
-    min-width: 120px;
+    min-width: 110px;
 }
 
 .creneaux_day_checkbox input[type="checkbox"] {
@@ -1123,8 +1125,8 @@ $arr_recurrence_byweekno = array(
 }
 
 .creneaux_day_checkbox .option_checkbox {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border: 2px solid #ccc;
     border-radius: 4px;
     background: #fff;
@@ -1141,7 +1143,7 @@ $arr_recurrence_byweekno = array(
 }
 
 .day_name {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     color: #333;
 }
@@ -1149,183 +1151,175 @@ $arr_recurrence_byweekno = array(
 .creneaux_day_times {
     flex: 1;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
 }
 
 .creneaux_time_slot,
 .creneaux_add_time_slot {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .creneaux_add_time_slot .btn_add_time_slot {
-    padding: 10px 16px;
-    font-size: 13px;
+    padding: 8px 14px;
+    font-size: 12px;
 }
 
-/* Section mensuelle */
+/* Section mensuelle - Une ligne */
 .creneaux_monthly_section {
-    margin-bottom: 32px;
+    margin-bottom: 20px;
 }
 
 .creneaux_monthly_row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .monthly_label {
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
+    white-space: nowrap;
 }
 
-/* Horaires */
+/* Horaires - Tout sur une ligne avec 2 colonnes */
 .creneaux_horaire_field {
-    margin-bottom: 32px;
+    margin-bottom: 20px;
 }
 
 .creneaux_horaire_row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .horaire_label {
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
+    white-space: nowrap;
 }
 
 /* Liste des horaires programmés */
 .creneaux_schedules_section {
-    margin-bottom: 32px;
+    margin-bottom: 20px;
 }
 
 .wrap_schedules_time {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 8px;
-    margin-top: 12px;
+    margin-top: 10px;
 }
 
 .creneaux_schedule_item {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 12px 16px;
+    gap: 12px;
+    padding: 10px 14px;
     background: #fff;
     border: 1px solid #eee;
-    border-radius: 8px;
+    border-radius: 6px;
 }
 
 .schedule_time {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
+    gap: 6px;
+    font-size: 13px;
     color: #666;
 }
 
-/* Désactivation de créneaux */
+/* Désactivation de créneaux - Tout sur une ligne */
 .creneaux_disable_field {
-    margin-top: 32px;
-    padding-top: 32px;
+    margin-top: 20px;
+    padding-top: 20px;
     border-top: 1px solid #eee;
 }
 
 .creneaux_disable_form {
     background: #f9f9f9;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 16px;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
 }
 
 .creneaux_disable_row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
+    gap: 10px;
 }
 
-.creneaux_disable_row:last-child {
-    margin-bottom: 0;
+.creneaux_disable_row .creneaux_input {
+    width: 130px;
+}
+
+.creneaux_disable_row .creneaux_select {
+    min-width: 120px;
 }
 
 .disable_label {
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
+    white-space: nowrap;
 }
 
 .creneaux_disable_list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .creneaux_disable_item {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 12px 16px;
+    gap: 12px;
+    padding: 10px 14px;
     background: #fff8f5;
     border: 1px solid #ffe4d9;
-    border-radius: 8px;
+    border-radius: 6px;
 }
 
 .disable_info {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
+    gap: 6px;
+    font-size: 13px;
     color: #666;
 }
 
 .disable_info .creneaux_input {
-    width: 140px;
-    height: 40px;
+    width: 120px;
+    height: 36px;
     background: #fff;
 }
 
 /* ==========================================================================
-   Responsive
+   Responsive - Uniquement pour très petits écrans
    ========================================================================== */
 
 @media (max-width: 992px) {
-    .creneaux_form_row {
-        grid-template-columns: 1fr;
-    }
-
-    .creneaux_periode_row,
-    .creneaux_frequence_row,
-    .creneaux_horaire_row,
-    .creneaux_monthly_row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    .creneaux_periode_col {
-        width: 100%;
-    }
-
-    .creneaux_periode_col .creneaux_input {
-        flex: 1;
+    .creneaux_form_grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 768px) {
     .creneaux_type_options {
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
+    }
+
+    .creneaux_form_grid {
+        grid-template-columns: 1fr;
     }
 
     .creneaux_list_header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 12px;
     }
 
     .creneaux_filter {
@@ -1345,9 +1339,26 @@ $arr_recurrence_byweekno = array(
         flex-wrap: wrap;
     }
 
+    .creneaux_periode_row {
+        flex-wrap: wrap;
+    }
+
+    .creneaux_frequence_row {
+        flex-wrap: wrap;
+    }
+
+    .creneaux_horaire_row {
+        flex-wrap: wrap;
+    }
+
+    .creneaux_monthly_row {
+        flex-wrap: wrap;
+    }
+
     .creneaux_day_row {
         flex-direction: column;
-        gap: 12px;
+        align-items: flex-start;
+        gap: 10px;
     }
 
     .creneaux_day_checkbox {
@@ -1360,8 +1371,7 @@ $arr_recurrence_byweekno = array(
     }
 
     .creneaux_disable_row {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-wrap: wrap;
     }
 
     .creneaux_disable_item {
@@ -1370,7 +1380,6 @@ $arr_recurrence_byweekno = array(
 
     .disable_info {
         flex-wrap: wrap;
-        width: 100%;
     }
 }
 </style>
