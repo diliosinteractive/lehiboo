@@ -314,23 +314,22 @@ $arr_recurrence_byweekno = array(
 
             <div class="creneaux_weekly_days ts-weekly">
                 <?php foreach ( $days_of_the_week as $day_key => $day_name ): ?>
-                    <div class="creneaux_day_row ts_recurrence_bydays" data-day="<?php echo esc_attr($day_key); ?>">
-                        <label class="creneaux_day_checkbox">
-                            <input type="checkbox"
-                                   id="recurrence_bydays<?php echo $day_key; ?>"
-                                   name="<?php echo esc_attr( $_prefix.'recurrence_bydays[]' ); ?>"
-                                   value="<?php echo esc_attr($day_key); ?>"
-                                   <?php if ( in_array( $day_key, $recurrence_bydays ) ) echo 'checked'; ?>>
-                            <span class="option_checkbox"></span>
-                            <span class="day_name"><?php echo esc_html($day_name); ?></span>
-                        </label>
-
-                        <!-- Time slots pour ce jour -->
-                        <div class="creneaux_day_times ts-list">
+                    <div class="creneaux_day_block ts_recurrence_bydays" data-day="<?php echo esc_attr($day_key); ?>">
+                        <!-- Créneaux ajoutés pour ce jour -->
+                        <div class="creneaux_day_slots ts-list">
                             <?php if ( isset( $ts_start[$day_key] ) && is_array( $ts_start[$day_key] ) ):
                                 foreach ( $ts_start[$day_key] as $k_ts => $v_ts_start ):
                                     if ( isset( $ts_end[$day_key][$k_ts] ) && $ts_end[$day_key][$k_ts] ): ?>
-                                        <div class="creneaux_time_slot ts-item" data-key="<?php echo esc_attr($day_key); ?>">
+                                        <div class="creneaux_day_row creneaux_time_slot ts-item" data-key="<?php echo esc_attr($day_key); ?>">
+                                            <label class="creneaux_day_checkbox">
+                                                <input type="checkbox"
+                                                       name="<?php echo esc_attr( $_prefix.'recurrence_bydays[]' ); ?>"
+                                                       value="<?php echo esc_attr($day_key); ?>"
+                                                       checked
+                                                       class="slot_day_checkbox">
+                                                <span class="option_checkbox"></span>
+                                                <span class="day_name"><?php echo esc_html($day_name); ?></span>
+                                            </label>
                                             <span class="time_label"><?php esc_html_e( 'De :', 'eventlist' ); ?></span>
                                             <input type="time"
                                                    class="creneaux_input creneaux_time_native calendar_recurrence_ts_start"
@@ -350,22 +349,34 @@ $arr_recurrence_byweekno = array(
                                     <?php endif;
                                 endforeach;
                             endif; ?>
+                        </div>
 
-                            <!-- Formulaire d'ajout de time slot -->
-                            <div class="creneaux_add_time_slot">
-                                <span class="time_label"><?php esc_html_e( 'De :', 'eventlist' ); ?></span>
-                                <input type="time"
-                                       class="creneaux_input creneaux_time_native new_ts_start"
-                                       step="900">
-                                <span class="time_label"><?php esc_html_e( 'À :', 'eventlist' ); ?></span>
-                                <input type="time"
-                                       class="creneaux_input creneaux_time_native new_ts_end"
-                                       step="900">
-                                <button type="button" class="btn_add_time_slot add_time_slot"
-                                        data-key="<?php echo esc_attr($day_key); ?>">
-                                    <?php esc_html_e( 'Ajouter', 'eventlist' ); ?>
-                                </button>
-                            </div>
+                        <!-- Formulaire d'ajout (toujours visible) -->
+                        <div class="creneaux_day_row creneaux_add_time_slot">
+                            <label class="creneaux_day_checkbox">
+                                <input type="checkbox"
+                                       id="recurrence_bydays<?php echo $day_key; ?>"
+                                       name="<?php echo esc_attr( $_prefix.'recurrence_bydays[]' ); ?>"
+                                       value="<?php echo esc_attr($day_key); ?>"
+                                       <?php if ( in_array( $day_key, $recurrence_bydays ) && !isset($ts_start[$day_key]) ) echo 'checked'; ?>
+                                       class="main_day_checkbox">
+                                <span class="option_checkbox"></span>
+                                <span class="day_name"><?php echo esc_html($day_name); ?></span>
+                            </label>
+                            <span class="time_label"><?php esc_html_e( 'De :', 'eventlist' ); ?></span>
+                            <input type="time"
+                                   class="creneaux_input creneaux_time_native new_ts_start"
+                                   step="900"
+                                   placeholder="HH:MM">
+                            <span class="time_label"><?php esc_html_e( 'À :', 'eventlist' ); ?></span>
+                            <input type="time"
+                                   class="creneaux_input creneaux_time_native new_ts_end"
+                                   step="900"
+                                   placeholder="HH:MM">
+                            <button type="button" class="btn_add_time_slot add_time_slot"
+                                    data-key="<?php echo esc_attr($day_key); ?>">
+                                <?php esc_html_e( 'Ajouter', 'eventlist' ); ?>
+                            </button>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -1153,34 +1164,65 @@ $arr_recurrence_byweekno = array(
 /* Section hebdomadaire */
 .creneaux_weekly_section {
     margin-bottom: 20px;
-    padding: 16px;
-    background: #f9f9f9;
-    border-radius: 10px;
 }
 
 .creneaux_weekly_days {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0;
     margin-top: 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
+/* Bloc pour chaque jour */
+.creneaux_day_block {
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.creneaux_day_block:last-child {
+    border-bottom: none;
+}
+
+/* Container des créneaux ajoutés */
+.creneaux_day_slots {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ligne (formulaire ou créneau) */
 .creneaux_day_row {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 12px 14px;
+    gap: 12px;
+    padding: 14px 16px;
+}
+
+/* Ligne de créneau ajouté */
+.creneaux_day_row.creneaux_time_slot {
     background: #fff;
-    border-radius: 8px;
-    border: 1px solid #eee;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Formulaire d'ajout */
+.creneaux_day_row.creneaux_add_time_slot {
+    background: #fff;
+}
+
+/* Cacher la checkbox sur les créneaux ajoutés (on garde juste le nom) */
+.creneaux_time_slot .creneaux_day_checkbox .option_checkbox {
+    display: none;
 }
 
 .creneaux_day_checkbox {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     cursor: pointer;
-    min-width: 110px;
+    min-width: 130px;
+    flex-shrink: 0;
 }
 
 .creneaux_day_checkbox input[type="checkbox"] {
@@ -1191,12 +1233,13 @@ $arr_recurrence_byweekno = array(
 }
 
 .creneaux_day_checkbox .option_checkbox {
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
     border: 2px solid #ccc;
     border-radius: 4px;
     background: #fff;
     transition: all 0.15s ease;
+    flex-shrink: 0;
 }
 
 .creneaux_day_checkbox:hover .option_checkbox {
@@ -1209,29 +1252,82 @@ $arr_recurrence_byweekno = array(
 }
 
 .day_name {
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
     color: #333;
+    min-width: 80px;
 }
 
-.creneaux_day_times {
-    flex: 1;
+/* Labels De/À */
+.creneaux_day_row .time_label {
+    font-size: 14px;
+    color: #666;
+    min-width: 25px;
+}
+
+/* Inputs time */
+.creneaux_day_row .creneaux_time_native {
+    width: 130px;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.creneaux_day_row .creneaux_time_native:focus {
+    outline: none;
+    border-color: #FF6600;
+}
+
+/* Bouton Ajouter */
+.btn_add_time_slot {
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* Bouton supprimer time slot - rouge */
+.btn_remove_time_slot {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 6px;
+    background: #e74c3c;
+    color: #fff;
+    cursor: pointer;
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
     align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s;
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
-.creneaux_time_slot,
-.creneaux_add_time_slot {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.btn_remove_time_slot:hover {
+    background: #c0392b;
 }
 
-.creneaux_add_time_slot .btn_add_time_slot {
-    padding: 8px 14px;
-    font-size: 12px;
+/* Style pour jours avec créneaux */
+/* Quand il y a des créneaux, cacher la checkbox du formulaire d'ajout */
+.creneaux_day_block.has_slots .creneaux_add_time_slot .creneaux_day_checkbox {
+    visibility: hidden;
+}
+
+/* Afficher la checkbox sur le premier créneau seulement */
+.creneaux_day_block .creneaux_time_slot .creneaux_day_checkbox {
+    visibility: hidden;
+}
+
+.creneaux_day_block .creneaux_day_slots .creneaux_time_slot:first-child .creneaux_day_checkbox {
+    visibility: visible;
+}
+
+/* Garder l'espace pour aligner les inputs quand checkbox cachée */
+.creneaux_time_slot .creneaux_day_checkbox {
+    min-width: 130px;
 }
 
 /* Section mensuelle - Une ligne */
@@ -1464,6 +1560,18 @@ $arr_recurrence_byweekno = array(
             this.bindEvents();
             this.updateIntervalDesc();
             this.updateEmptyState();
+            this.initWeeklySlots();
+        },
+
+        // Initialiser les classes has_slots pour les jours avec créneaux existants
+        initWeeklySlots: function() {
+            $('.creneaux_day_block').each(function() {
+                var $block = $(this);
+                var slotsCount = $block.find('.creneaux_time_slot').length;
+                if (slotsCount > 0) {
+                    $block.addClass('has_slots');
+                }
+            });
         },
 
         // Désactive le jQuery timepicker sur nos inputs HTML5 natifs
@@ -1570,9 +1678,18 @@ $arr_recurrence_byweekno = array(
             });
 
             // Suppression de time slot
-            $(document).on('click', '.btn_remove_time_slot, .close', function() {
-                $(this).closest('.creneaux_time_slot, .ts-item').fadeOut(200, function() {
+            $(document).on('click', '.btn_remove_time_slot', function() {
+                var $slot = $(this).closest('.creneaux_time_slot, .ts-item');
+                var $dayBlock = $slot.closest('.creneaux_day_block');
+
+                $slot.fadeOut(200, function() {
                     $(this).remove();
+
+                    // Vérifier s'il reste des créneaux pour ce jour
+                    var remainingSlots = $dayBlock.find('.creneaux_time_slot').length;
+                    if (remainingSlots === 0) {
+                        $dayBlock.removeClass('has_slots');
+                    }
                 });
             });
 
@@ -1699,11 +1816,13 @@ $arr_recurrence_byweekno = array(
         },
 
         addTimeSlot: function($button) {
-            var $row = $button.closest('.creneaux_day_row');
-            var dayKey = $row.data('day');
-            var $addForm = $row.find('.creneaux_add_time_slot');
+            var dayKey = $button.data('key');
+            var $dayBlock = $button.closest('.creneaux_day_block');
+            var $addForm = $dayBlock.find('.creneaux_add_time_slot');
+            var $slotsContainer = $dayBlock.find('.creneaux_day_slots');
             var startTime = $addForm.find('.new_ts_start').val();
             var endTime = $addForm.find('.new_ts_end').val();
+            var dayName = $addForm.find('.day_name').text();
 
             if (!startTime || !endTime) {
                 alert('<?php esc_html_e("Veuillez remplir les horaires", "eventlist"); ?>');
@@ -1714,7 +1833,12 @@ $arr_recurrence_byweekno = array(
             var tsKey = Date.now();
 
             var html = `
-                <div class="creneaux_time_slot ts-item" data-key="${dayKey}">
+                <div class="creneaux_day_row creneaux_time_slot ts-item" data-key="${dayKey}">
+                    <label class="creneaux_day_checkbox">
+                        <input type="checkbox" name="${prefix}recurrence_bydays[]" value="${dayKey}" checked class="slot_day_checkbox">
+                        <span class="option_checkbox"></span>
+                        <span class="day_name">${dayName}</span>
+                    </label>
                     <span class="time_label"><?php esc_html_e("De :", "eventlist"); ?></span>
                     <input type="time" class="creneaux_input creneaux_time_native calendar_recurrence_ts_start" value="${startTime}" name="${prefix}ts_start[${dayKey}][${tsKey}]" step="900">
                     <span class="time_label"><?php esc_html_e("À :", "eventlist"); ?></span>
@@ -1723,8 +1847,15 @@ $arr_recurrence_byweekno = array(
                 </div>
             `;
 
-            $addForm.before(html);
+            $slotsContainer.append(html);
             $addForm.find('.new_ts_start, .new_ts_end').val('');
+
+            // Ajouter la classe has_slots et décocher la checkbox principale
+            $dayBlock.addClass('has_slots');
+            $addForm.find('.main_day_checkbox').prop('checked', false);
+
+            // Désactiver le timepicker jQuery sur les nouveaux éléments
+            this.disableJqueryTimepicker();
         },
 
         addSchedule: function() {
