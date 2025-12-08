@@ -1096,6 +1096,10 @@ $arr_recurrence_byweekno = array(
    Section Récurrent - Layout horizontal compact
    ========================================================================== */
 
+.creneaux_auto_section {
+    overflow: visible;
+}
+
 .creneaux_auto_section .field_label {
     display: block;
     font-weight: 600;
@@ -1159,6 +1163,11 @@ $arr_recurrence_byweekno = array(
 
 .interval_desc.active {
     display: inline;
+}
+
+/* Sections alternatives (weekly/monthly) */
+.alternate-selector {
+    overflow: visible;
 }
 
 /* Section hebdomadaire */
@@ -1333,18 +1342,41 @@ $arr_recurrence_byweekno = array(
 /* Section mensuelle - Une ligne */
 .creneaux_monthly_section {
     margin-bottom: 20px;
+    overflow: visible;
 }
 
 .creneaux_monthly_row {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
+}
+
+.creneaux_monthly_row .creneaux_select {
+    min-width: 120px;
+    max-width: 160px;
 }
 
 .monthly_label {
     font-size: 13px;
     color: #666;
     white-space: nowrap;
+}
+
+/* Confirmation de règle mensuelle */
+.monthly_rule_display {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #f0f9f0;
+    border: 1px solid #d4edda;
+    border-radius: 6px;
+    color: #155724;
+    font-size: 13px;
+}
+
+.monthly_rule_display i {
+    margin-right: 8px;
+    color: #28a745;
 }
 
 /* Horaires - Tout sur une ligne avec 2 colonnes */
@@ -1555,6 +1587,17 @@ $arr_recurrence_byweekno = array(
         scheduleIndex: <?php echo !empty($schedules_time) ? max(array_keys($schedules_time)) + 1 : 0; ?>,
         disableIndex: <?php echo !empty($disable_date) ? max(array_keys($disable_date)) + 1 : 0; ?>,
 
+        // Noms des jours de la semaine pour le lookup
+        dayNames: {
+            '0': '<?php echo esc_js(__('Dimanche', 'eventlist')); ?>',
+            '1': '<?php echo esc_js(__('Lundi', 'eventlist')); ?>',
+            '2': '<?php echo esc_js(__('Mardi', 'eventlist')); ?>',
+            '3': '<?php echo esc_js(__('Mercredi', 'eventlist')); ?>',
+            '4': '<?php echo esc_js(__('Jeudi', 'eventlist')); ?>',
+            '5': '<?php echo esc_js(__('Vendredi', 'eventlist')); ?>',
+            '6': '<?php echo esc_js(__('Samedi', 'eventlist')); ?>'
+        },
+
         init: function() {
             this.disableJqueryTimepicker();
             this.bindEvents();
@@ -1710,6 +1753,11 @@ $arr_recurrence_byweekno = array(
                 self.addDisableDate();
             });
 
+            // Ajout de règle mensuelle
+            $(document).on('click', '.btn_add_monthly_rule', function() {
+                self.addMonthlyRule();
+            });
+
             // Suppression de date désactivée
             $(document).on('click', '.btn_remove_disable, .remove_disable_date', function() {
                 $(this).closest('.creneaux_disable_item, .item_disable_date').fadeOut(200, function() {
@@ -1822,7 +1870,8 @@ $arr_recurrence_byweekno = array(
             var $slotsContainer = $dayBlock.find('.creneaux_day_slots');
             var startTime = $addForm.find('.new_ts_start').val();
             var endTime = $addForm.find('.new_ts_end').val();
-            var dayName = $addForm.find('.day_name').text();
+            // Utiliser le lookup au lieu du DOM pour éviter les problèmes de sélecteur
+            var dayName = this.dayNames[String(dayKey)] || '';
 
             if (!startTime || !endTime) {
                 alert('<?php esc_html_e("Veuillez remplir les horaires", "eventlist"); ?>');
@@ -1890,6 +1939,34 @@ $arr_recurrence_byweekno = array(
 
             // Mettre à jour le select des désactivations
             this.updateDisableSelect();
+        },
+
+        addMonthlyRule: function() {
+            var byweekno = $('#monthly-modifier').val();
+            var byday = $('#recurrence-weekday').val();
+            var byweeknoText = $('#monthly-modifier option:selected').text();
+            var bydayText = $('#recurrence-weekday option:selected').text();
+
+            if (!byweekno || !byday) {
+                alert('<?php esc_html_e("Veuillez sélectionner le jour et la semaine", "eventlist"); ?>');
+                return;
+            }
+
+            // Afficher un message de confirmation
+            var message = '<?php esc_html_e("Règle appliquée : Le", "eventlist"); ?> ' + byweeknoText + ' ' + bydayText + ' <?php esc_html_e("de chaque mois", "eventlist"); ?>';
+
+            // Afficher la section horaire si pas encore visible
+            var $horaireField = $('.creneaux_horaire_field');
+            if ($horaireField.is(':hidden')) {
+                $horaireField.slideDown(200);
+            }
+
+            // Créer ou mettre à jour l'affichage de la règle mensuelle
+            var $monthlySection = $('.creneaux_monthly_section');
+            if (!$monthlySection.find('.monthly_rule_display').length) {
+                $monthlySection.append('<div class="monthly_rule_display" style="margin-top: 10px; padding: 10px 14px; background: #f0f9f0; border: 1px solid #d4edda; border-radius: 6px; color: #155724; font-size: 13px;"><i class="fa fa-check-circle" style="margin-right: 8px;"></i><span class="rule_text"></span></div>');
+            }
+            $monthlySection.find('.monthly_rule_display .rule_text').text(message);
         },
 
         addDisableDate: function() {
