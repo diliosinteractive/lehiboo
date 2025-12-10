@@ -5310,16 +5310,21 @@ Génère une description LONGUE, engageante et persuasive pour cette activité.
 10. La description doit donner envie de réserver IMMÉDIATEMENT
 11. Reste GÉNÉRIQUE sur les détails non fournis - ne comble pas les vides avec de l'invention
 
-## FORMAT DE SORTIE HTML (TRÈS IMPORTANT) :
-- Génère la description en HTML valide pour un éditeur WYSIWYG
-- Structure avec 2 ou 3 SOUS-TITRES ACCROCHEURS en <h4> (ex: \"Une expérience inoubliable\", \"Ce qui vous attend\", \"Pourquoi participer ?\")
-- Utilise <p> pour les paragraphes (minimum 3-4 paragraphes bien développés)
-- Utilise BEAUCOUP de <strong> pour mettre en GRAS les mots-clés importants, les points forts et les bénéfices (au moins 8-10 éléments en gras dans tout le texte)
-- Tu peux utiliser <ul><li> pour lister les points forts ou ce qui est inclus
-- NE PAS inclure de balises <html>, <head>, <body> - uniquement le contenu
-- LONGUEUR OBLIGATOIRE : entre 1200 et 1800 caractères de texte (hors balises HTML)
+## FORMAT DE SORTIE - HTML UNIQUEMENT (OBLIGATOIRE) :
+INTERDIT : Markdown (**, ##, -, *, ```, etc.) - NE JAMAIS utiliser de syntaxe Markdown
+OBLIGATOIRE : HTML pur uniquement
 
-Génère UNIQUEMENT le code HTML de la description, sans commentaire ni explication.";
+Balises HTML à utiliser :
+- <h4> pour 2-3 sous-titres accrocheurs (ex: \"Une expérience inoubliable\", \"Ce qui vous attend\")
+- <p> pour les paragraphes (minimum 3-4 paragraphes)
+- <strong> pour le gras (8-10 éléments en gras minimum)
+- <ul><li> pour les listes à puces si pertinent
+- <br> pour les sauts de ligne si nécessaire
+
+NE PAS utiliser : <html>, <head>, <body>, ni aucune syntaxe Markdown
+LONGUEUR : entre 1200 et 1800 caractères de texte (hors balises HTML)
+
+RÉPONDS UNIQUEMENT avec le code HTML, sans ```html```, sans commentaire, sans explication.";
 
 		return $prompt;
 	}
