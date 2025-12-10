@@ -149,9 +149,35 @@ $is_published = (get_post_status($post_id) == 'publish');
     box-shadow: 0 4px 12px rgba(255, 96, 31, 0.3);
 }
 
+.btn_save_profile .icon-save {
+    display: block;
+}
+
+.btn_save_profile .icon-loader {
+    display: none;
+    animation: spin 1s linear infinite;
+}
+
 .btn_save_profile.loading {
-    opacity: 0.7;
+    opacity: 0.85;
     pointer-events: none;
+}
+
+.btn_save_profile.loading .icon-save {
+    display: none;
+}
+
+.btn_save_profile.loading .icon-loader {
+    display: block;
+}
+
+.btn_save_profile.loading span {
+    opacity: 0.8;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .btn_save_profile svg {
@@ -202,16 +228,23 @@ $is_published = (get_post_status($post_id) == 'publish');
                     <!-- Status Indicator -->
                     <div class="event_status_indicator <?php echo $is_published ? 'online' : 'offline'; ?>">
                         <?php if ($is_published) : ?>
-                        <!-- Check Circle Icon -->
+                        <!-- Wifi/Online Icon -->
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                            <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                            <circle cx="12" cy="20" r="1" fill="currentColor"></circle>
                         </svg>
                         <?php else : ?>
-                        <!-- Circle Off Icon -->
+                        <!-- Wifi Off Icon -->
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                            <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+                            <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+                            <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+                            <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+                            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                            <circle cx="12" cy="20" r="1" fill="currentColor"></circle>
                         </svg>
                         <?php endif; ?>
                         <span><?php echo $is_published ? __('En ligne', 'eventlist') : __('Hors ligne', 'eventlist'); ?></span>
@@ -243,8 +276,12 @@ $is_published = (get_post_status($post_id) == 'publish');
                     <!-- Save Button -->
                     <button type="button" class="btn_save_profile" id="el-btn-save">
                         <!-- Save/Check Icon -->
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="icon-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <!-- Loader Spinner -->
+                        <svg class="icon-loader" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"></circle>
                         </svg>
                         <span><?php esc_html_e('Enregistrer', 'eventlist'); ?></span>
                     </button>
