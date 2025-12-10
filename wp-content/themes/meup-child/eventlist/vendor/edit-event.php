@@ -67,6 +67,23 @@ $is_published = (get_post_status($post_id) == 'publish');
     flex-shrink: 0;
 }
 
+/* Afficher/masquer les icônes selon l'état */
+.event_status_indicator .icon-online {
+    display: none;
+}
+
+.event_status_indicator .icon-offline {
+    display: block;
+}
+
+.event_status_indicator.online .icon-online {
+    display: block;
+}
+
+.event_status_indicator.online .icon-offline {
+    display: none;
+}
+
 /* Preview Button */
 .btn_preview_profile {
     display: inline-flex !important;
@@ -227,17 +244,15 @@ $is_published = (get_post_status($post_id) == 'publish');
                 <div class="sticky_bar_right">
                     <!-- Status Indicator -->
                     <div class="event_status_indicator <?php echo $is_published ? 'online' : 'offline'; ?>">
-                        <?php if ($is_published) : ?>
                         <!-- Wifi/Online Icon -->
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="icon-online" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
                             <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
                             <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
                             <circle cx="12" cy="20" r="1" fill="currentColor"></circle>
                         </svg>
-                        <?php else : ?>
                         <!-- Wifi Off Icon -->
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="icon-offline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="1" y1="1" x2="23" y2="23"></line>
                             <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
                             <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
@@ -246,7 +261,6 @@ $is_published = (get_post_status($post_id) == 'publish');
                             <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
                             <circle cx="12" cy="20" r="1" fill="currentColor"></circle>
                         </svg>
-                        <?php endif; ?>
                         <span><?php echo $is_published ? __('En ligne', 'eventlist') : __('Hors ligne', 'eventlist'); ?></span>
                     </div>
 
