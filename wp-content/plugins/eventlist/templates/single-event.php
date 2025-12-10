@@ -70,7 +70,8 @@
 						.el-password-icon img {
 							width: 100%;
 							height: 100%;
-							object-fit: contain;
+							object-fit: cover;
+							border-radius: 50%;
 						}
 
 						.el-password-title {
@@ -132,7 +133,6 @@
 
 						.el-password-form-wrapper .post-password-form input[type="submit"] {
 							width: 100%;
-							padding: 16px 32px;
 							background: #FF601F;
 							color: #fff;
 							border: none;
