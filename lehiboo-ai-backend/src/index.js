@@ -10,6 +10,7 @@ import rateLimit from 'express-rate-limit';
 import config from './config/index.js';
 import logger from './utils/logger.js';
 import chatRoutes from './routes/chat.js';
+import mobileRoutes from './routes/mobile.js';
 import { testOpenAIConnection } from './services/ai-service-v2.js';
 import weatherService from './services/weather-service.js';
 
@@ -61,17 +62,26 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/', chatRoutes);
+app.use('/mobile', mobileRoutes);
 
 // Route racine
 app.get('/', (req, res) => {
   res.json({
     name: 'Le Hiboo AI Backend',
-    version: '1.0.0',
+    version: '1.1.0',
     status: 'running',
     endpoints: {
-      chat: 'POST /chat',
-      health: 'GET /health',
-      status: 'GET /status',
+      web: {
+        chat: 'POST /chat',
+        health: 'GET /health',
+        status: 'GET /status'
+      },
+      mobile: {
+        chat: 'POST /mobile/chat',
+        search: 'POST /mobile/search',
+        categories: 'GET /mobile/categories',
+        cities: 'GET /mobile/cities'
+      }
     },
   });
 });
