@@ -60,6 +60,10 @@ class EL_Coorganisateurs {
      * Initialise les composants
      */
     private function init() {
+        // Initialiser les classes avec leurs noms de table
+        EL_Partnership::init();
+        EL_Event_Coorganisation::init();
+
         // Hook pour supprimer les co-orgs quand un événement est supprimé
         add_action( 'before_delete_post', array( $this, 'delete_event_coorganisations' ) );
 

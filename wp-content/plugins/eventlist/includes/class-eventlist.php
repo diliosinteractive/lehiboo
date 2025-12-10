@@ -163,6 +163,7 @@ final class EventList{
 
 		// Co-organisateurs Module
 		require_once EL_PLUGIN_INC . 'coorganisateurs/class-el-coorganisateurs.php';
+		EL_Coorganisateurs::get_instance();
 
 		// Vendor Media Manager
 		require_once EL_PLUGIN_INC . 'install/class-el-install-media-folders.php';

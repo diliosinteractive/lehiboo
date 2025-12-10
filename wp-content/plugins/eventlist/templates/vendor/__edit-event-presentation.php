@@ -196,65 +196,49 @@ jQuery(document).ready(function($) {
         var data = {};
 
         // Title
-        data.title = $('input[name="title_event"]').val() || '';
+        data.title = $('input[name="name_event"]').val() || '';
 
         // Category - get selected text
         var $categorySelect = $('select[name="event_cat"]');
         data.category = $categorySelect.find('option:selected').text() || '';
 
-        // Event Types - get all selected values as text
+        // Event Types (event_tag taxonomy)
         var eventTypes = [];
-        $('select[name="event_type[]"] option:selected, select[name="ova_mb_event_event_type[]"] option:selected').each(function() {
-            if ($(this).text()) eventTypes.push($(this).text());
-        });
-        // Also check for Select2 or tagify style
-        $('.event_type_wrapper .select2-selection__choice, .event_type_tags .tagify__tag').each(function() {
-            var text = $(this).text().replace('×', '').trim();
-            if (text) eventTypes.push(text);
+        $('select[name="event_tag[]"] option:selected').each(function() {
+            var text = $(this).text().trim();
+            if (text && text !== '--- Sélectionner ---') eventTypes.push(text);
         });
         data.event_types = eventTypes.join(', ');
 
-        // Target Audience
+        // Target Audience (event_public taxonomy)
         var targetAudience = [];
-        $('select[name="event_target[]"] option:selected, select[name="ova_mb_event_event_target[]"] option:selected').each(function() {
-            if ($(this).text()) targetAudience.push($(this).text());
-        });
-        $('.event_target_wrapper .select2-selection__choice').each(function() {
-            var text = $(this).text().replace('×', '').trim();
-            if (text) targetAudience.push(text);
+        $('select[name="event_public[]"] option:selected').each(function() {
+            var text = $(this).text().trim();
+            if (text && text !== '--- Sélectionner ---') targetAudience.push(text);
         });
         data.target_audience = targetAudience.join(', ');
 
-        // Themes
+        // Themes (event_thematique taxonomy)
         var themes = [];
-        $('select[name="event_theme[]"] option:selected, select[name="ova_mb_event_event_theme[]"] option:selected').each(function() {
-            if ($(this).text()) themes.push($(this).text());
-        });
-        $('.event_theme_wrapper .select2-selection__choice').each(function() {
-            var text = $(this).text().replace('×', '').trim();
-            if (text) themes.push(text);
+        $('select[name="event_thematique[]"] option:selected').each(function() {
+            var text = $(this).text().trim();
+            if (text && text !== '--- Sélectionner ---') themes.push(text);
         });
         data.themes = themes.join(', ');
 
-        // Events/Occasions
+        // Events/Occasions (event_special taxonomy)
         var events = [];
-        $('select[name="event_occasion[]"] option:selected, select[name="ova_mb_event_event_occasion[]"] option:selected').each(function() {
-            if ($(this).text()) events.push($(this).text());
-        });
-        $('.event_occasion_wrapper .select2-selection__choice').each(function() {
-            var text = $(this).text().replace('×', '').trim();
-            if (text) events.push(text);
+        $('select[name="event_special[]"] option:selected').each(function() {
+            var text = $(this).text().trim();
+            if (text && text !== '--- Sélectionner ---') events.push(text);
         });
         data.events = events.join(', ');
 
-        // Emotions
+        // Emotions (event_emotion taxonomy)
         var emotions = [];
-        $('select[name="event_emotion[]"] option:selected, select[name="ova_mb_event_event_emotion[]"] option:selected').each(function() {
-            if ($(this).text()) emotions.push($(this).text());
-        });
-        $('.event_emotion_wrapper .select2-selection__choice').each(function() {
-            var text = $(this).text().replace('×', '').trim();
-            if (text) emotions.push(text);
+        $('select[name="event_emotion[]"] option:selected').each(function() {
+            var text = $(this).text().trim();
+            if (text && text !== '--- Sélectionner ---') emotions.push(text);
         });
         data.emotions = emotions.join(', ');
 
