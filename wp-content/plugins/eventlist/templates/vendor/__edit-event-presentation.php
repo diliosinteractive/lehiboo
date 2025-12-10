@@ -283,13 +283,14 @@ jQuery(document).ready(function($) {
     }
 
     /**
-     * Insert content into TinyMCE editor
+     * Insert HTML content into TinyMCE editor
      */
     function insertIntoEditor(content) {
         // Try TinyMCE first
         if (typeof tinymce !== 'undefined' && tinymce.get('content_event')) {
             var editor = tinymce.get('content_event');
-            editor.setContent('<p>' + content.replace(/\n/g, '</p><p>') + '</p>');
+            // Content is already HTML formatted by the AI
+            editor.setContent(content);
             editor.fire('change');
         } else {
             // Fallback to textarea
@@ -326,11 +327,11 @@ jQuery(document).ready(function($) {
 
         // AJAX call
         $.ajax({
-            url: el_ajax_var.url,
+            url: ajax_object.ajax_url,
             type: 'POST',
             data: {
                 action: 'el_generate_ai_description',
-                nonce: el_ajax_var.nonce,
+                nonce: ajax_object.nonce,
                 title: formData.title,
                 category: formData.category,
                 event_types: formData.event_types,

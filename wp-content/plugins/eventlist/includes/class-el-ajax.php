@@ -5275,7 +5275,7 @@ if( !class_exists( 'El_Ajax' ) ){
 		}
 
 		$prompt = "Tu es un rédacteur expert en marketing d'activités et événements culturels/loisirs.
-Génère une description engageante et persuasive (entre 400 et 600 caractères maximum) pour cette activité.
+Génère une description engageante et persuasive pour cette activité.
 
 ## Informations de l'activité :
 - Nom : {$data['title']}
@@ -5301,7 +5301,16 @@ Génère une description engageante et persuasive (entre 400 et 600 caractères 
 8. Écris en français courant, sans jargon marketing excessif
 9. La description doit donner envie de réserver IMMÉDIATEMENT
 
-Génère UNIQUEMENT la description, sans titre ni commentaire.";
+## FORMAT DE SORTIE (TRÈS IMPORTANT) :
+- Génère la description en HTML valide pour un éditeur WYSIWYG
+- Utilise des balises <p> pour les paragraphes
+- Tu peux utiliser <strong> pour les éléments importants
+- Tu peux utiliser <ul><li> pour des listes si pertinent
+- Tu peux utiliser <h3> ou <h4> pour des sous-titres si la description est longue
+- NE PAS inclure de balises <html>, <head>, <body> - uniquement le contenu
+- Vise environ 500 à 800 caractères de texte (hors balises HTML)
+
+Génère UNIQUEMENT le code HTML de la description, sans commentaire ni explication.";
 
 		return $prompt;
 	}
@@ -5320,7 +5329,7 @@ Génère UNIQUEMENT la description, sans titre ni commentaire.";
 					'content' => $prompt
 				)
 			),
-			'max_tokens'  => 300,
+			'max_tokens'  => 600,
 			'temperature' => 0.7,
 		);
 
