@@ -24,10 +24,29 @@ app.set('trust proxy', 1);
 // Middleware de sécurité
 app.use(helmet());
 
-// CORS
+// CORS - Autoriser mobile et WordPress
 app.use(
   cors({
-    origin: config.wordpress.url || '*',
+    origin: (origin, callback) => {
+      // Autoriser les requêtes sans origin (apps mobile, Postman, curl)
+      if (!origin) {
+        return callback(null, true);
+      }
+      // Autoriser WordPress
+      if (config.wordpress.url && origin === config.wordpress.url) {
+        return callback(null, true);
+      }
+      // Autoriser localhost pour dev
+      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        return callback(null, true);
+      }
+      // Autoriser tous les sous-domaines lehiboo
+      if (origin.includes('lehiboo')) {
+        return callback(null, true);
+      }
+      // Autoriser par défaut (apps mobile n'envoient pas d'origin)
+      callback(null, true);
+    },
     credentials: true,
   })
 );

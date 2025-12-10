@@ -4,7 +4,7 @@
 
 import { generateMobileResponse } from '../services/ai-service-mobile.js';
 import logger from '../utils/logger.js';
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 
 /**
  * POST /mobile/chat
@@ -14,7 +14,7 @@ export async function handleMobileChat(req, res) {
   try {
     const {
       message,
-      conversationId = uuidv4(),
+      conversationId = crypto.randomUUID(),
       userContext = {},
       history = []
     } = req.body;
