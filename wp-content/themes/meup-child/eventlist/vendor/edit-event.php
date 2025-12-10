@@ -316,7 +316,6 @@ $is_published = (get_post_status($post_id) == 'publish');
                     </div>
                     <div class="profile_user_info">
                         <h3><?php echo esc_html($event_title); ?></h3>
-                        <span class="event-status-badge"><?php echo get_post_status($post_id); ?></span>
                     </div>
                 </div>
 
@@ -326,13 +325,6 @@ $is_published = (get_post_status($post_id) == 'publish');
                             <a href="#section_general">
                                 <i class="icon_document_alt"></i>
                                 <span><?php esc_html_e('Informations générales', 'eventlist'); ?></span>
-                                <i class="icon_check_alt2 status-icon"></i>
-                            </a>
-                        </li>
-                        <li class="profile_tab_item">
-                            <a href="#section_presentation">
-                                <i class="icon_image"></i>
-                                <span><?php esc_html_e('Présentation', 'eventlist'); ?></span>
                                 <i class="icon_check_alt2 status-icon"></i>
                             </a>
                         </li>
@@ -354,6 +346,13 @@ $is_published = (get_post_status($post_id) == 'publish');
                             <a href="#section_ticket">
                                 <i class="icon_ticket"></i>
                                 <span><?php esc_html_e('Billetterie', 'eventlist'); ?></span>
+                                <i class="icon_check_alt2 status-icon"></i>
+                            </a>
+                        </li>
+                        <li class="profile_tab_item">
+                            <a href="#section_presentation">
+                                <i class="icon_image"></i>
+                                <span><?php esc_html_e('Présentation', 'eventlist'); ?></span>
                                 <i class="icon_check_alt2 status-icon"></i>
                             </a>
                         </li>
@@ -390,10 +389,6 @@ $is_published = (get_post_status($post_id) == 'publish');
                             <?php echo el_get_template( 'vendor/__edit-event-general.php' ); ?>
                         </div>
 
-                        <div id="section_presentation" class="event_section tab-contents active-section">
-                            <?php echo el_get_template( 'vendor/__edit-event-presentation.php' ); ?>
-                        </div>
-
                         <div id="section_localisation" class="event_section tab-contents active-section">
                             <?php echo el_get_template( 'vendor/__edit-event-localisation.php' ); ?>
                         </div>
@@ -404,6 +399,10 @@ $is_published = (get_post_status($post_id) == 'publish');
 
                         <div id="section_ticket" class="event_section tab-contents active-section">
                             <?php echo el_get_template( 'vendor/__edit-event-ticket.php' ); ?>
+                        </div>
+
+                        <div id="section_presentation" class="event_section tab-contents active-section">
+                            <?php echo el_get_template( 'vendor/__edit-event-presentation.php' ); ?>
                         </div>
 
                         <div id="section_publication" class="event_section tab-contents active-section">

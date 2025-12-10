@@ -71,7 +71,6 @@ $event_img_url = $event_img_id ? wp_get_attachment_image_url($event_img_id, 'thu
                     </div>
                     <div class="profile_user_info">
                         <h3><?php echo esc_html($event_title); ?></h3>
-                        <span class="event-status-badge"><?php echo get_post_status($post_id); ?></span>
                     </div>
                 </div>
 

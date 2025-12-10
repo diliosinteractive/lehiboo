@@ -56,58 +56,66 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
     </div>
 
     <hr class="el_separator">
+
+    <div class="el_row el_images_row">
+
         <!-- Image Feature -->
-    <div class="image_feature vendor_field">
-        <label>
-            <?php esc_html_e( 'Image de présentation', 'eventlist' ); ?>
-            <span class="el_req">*</span>
-        </label>
-        <p class="field_hint"><?php esc_html_e( 'Taille recommandée: 1920x739px', 'eventlist' ); ?></p>
+        <div class="el_col_6 image_feature vendor_field">
+            <label>
+                <?php esc_html_e( 'Image de présentation', 'eventlist' ); ?>
+                <span class="el_req">*</span>
+            </label>
+            <p class="field_hint"><?php esc_html_e( 'Taille recommandée: 1080x1920px (format portrait 9/16)', 'eventlist' ); ?></p>
 
-        <?php
-        $thumbnail_id = get_post_thumbnail_id( $post_id );
-        $thumbnail_url = get_the_post_thumbnail_url($post_id, 'medium_large');
-        ?>
-        <div class="featured_image_zone <?php echo $thumbnail_url ? 'has_image' : ''; ?>">
-            <!-- Zone de dépôt / sélection -->
-            <div class="featured_dropzone btn_pick_featured_image">
-                <div class="dropzone_inner">
-                    <i class="fa fa-cloud-upload-alt"></i>
-                    <p><?php esc_html_e( "Cliquez ou glissez une image ici", 'eventlist' ); ?></p>
-                    <span><?php esc_html_e( "JPG, PNG, WebP - Taille recommandée: 1920x739px", 'eventlist' ); ?></span>
+            <?php
+            $thumbnail_id = get_post_thumbnail_id( $post_id );
+            $thumbnail_url = get_the_post_thumbnail_url($post_id, 'medium_large');
+            ?>
+            <div class="featured_image_zone featured_image_portrait <?php echo $thumbnail_url ? 'has_image' : ''; ?>">
+                <!-- Zone de dépôt / sélection -->
+                <div class="featured_dropzone btn_pick_featured_image">
+                    <div class="dropzone_inner">
+                        <i class="fa fa-cloud-upload-alt"></i>
+                        <p><?php esc_html_e( "Cliquez ou glissez une image ici", 'eventlist' ); ?></p>
+                        <span><?php esc_html_e( "JPG, PNG, WebP - Format portrait 9/16", 'eventlist' ); ?></span>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Aperçu de l'image -->
-            <div class="featured_image_preview">
-                <?php if ( $thumbnail_url ) { ?>
-                    <img class="image-preview" src="<?php echo esc_url( $thumbnail_url ); ?>" alt="#">
-                <?php } ?>
-                <div class="featured_preview_overlay">
-                    <button type="button" class="btn_change_featured btn_pick_featured_image" title="<?php esc_attr_e( 'Changer', 'eventlist' ); ?>">
-                        <i class="fa fa-sync-alt"></i> <?php esc_html_e( 'Changer', 'eventlist' ); ?>
-                    </button>
-                    <button type="button" class="btn_remove_featured" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
-                        <i class="fa fa-trash-alt"></i>
-                    </button>
+                <!-- Aperçu de l'image -->
+                <div class="featured_image_preview">
+                    <?php if ( $thumbnail_url ) { ?>
+                        <img class="image-preview" src="<?php echo esc_url( $thumbnail_url ); ?>" alt="#">
+                    <?php } ?>
+                    <div class="featured_preview_overlay">
+                        <button type="button" class="btn_change_featured btn_pick_featured_image" title="<?php esc_attr_e( 'Changer', 'eventlist' ); ?>">
+                            <i class="fa fa-sync-alt"></i> <?php esc_html_e( 'Changer', 'eventlist' ); ?>
+                        </button>
+                        <button type="button" class="btn_remove_featured" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
+                            <i class="fa fa-trash-alt"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <input type="hidden" name="img_thumbnail" class="img_thumbnail" id="img_thumbnail" value="<?php echo esc_attr( $thumbnail_id ); ?>">
+                <input type="hidden" name="img_thumbnail" class="img_thumbnail" id="img_thumbnail" value="<?php echo esc_attr( $thumbnail_id ); ?>">
+            </div>
         </div>
+
+        <!-- Séparation verticale -->
+        <div class="el_col_separator"></div>
+
+        <!-- Gallery -->
+        <div id="mb_gallery" class="el_col_6 vendor_field">
+            <label>
+                <?php esc_html_e( 'Image Galerie', 'eventlist' ); ?>
+            </label>
+            <p class="field_hint"><?php esc_html_e( 'Taille recommandée: 710x480px', 'eventlist' ); ?></p>
+            
+            <?php echo el_get_template( '/vendor/__edit-event-gallery.php', array('post_id' => $post_id) ); ?>
+        </div>
+
     </div>
 
-    <hr class="el_separator">
 
-    <!-- Gallery -->
-    <div id="mb_gallery" class="vendor_field">
-        <label>
-            <?php esc_html_e( 'Image Galerie', 'eventlist' ); ?>
-        </label>
-        <p class="field_hint"><?php esc_html_e( 'Taille recommandée: 710x480px', 'eventlist' ); ?></p>
-        
-        <?php echo el_get_template( '/vendor/__edit-event-gallery.php', array('post_id' => $post_id) ); ?>
-    </div>
 
     <hr class="el_separator">
 
