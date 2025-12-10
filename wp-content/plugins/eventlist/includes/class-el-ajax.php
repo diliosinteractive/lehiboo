@@ -5275,7 +5275,7 @@ if( !class_exists( 'El_Ajax' ) ){
 		}
 
 		$prompt = "Tu es un rédacteur expert en marketing d'activités et événements culturels/loisirs.
-Génère une description engageante et persuasive pour cette activité.
+Génère une description LONGUE, engageante et persuasive pour cette activité.
 
 ## Informations de l'activité :
 - Nom : {$data['title']}
@@ -5290,7 +5290,14 @@ Génère une description engageante et persuasive pour cette activité.
 - Tarifs : {$data['prices']}
 - Services : {$data['services']}
 
-## Consignes strictes :
+## RÈGLE ABSOLUE - NE JAMAIS INVENTER :
+- Utilise UNIQUEMENT les informations fournies ci-dessus
+- N'invente JAMAIS de lieu, ville, adresse, quartier ou région
+- N'invente JAMAIS de détails sur l'activité qui ne sont pas mentionnés
+- Si un champ est vide ou non renseigné, NE LE MENTIONNE PAS du tout
+- NE JAMAIS supposer ou deviner des informations manquantes
+
+## Consignes de rédaction :
 1. {$audience_context}
 2. Mets en avant les bénéfices concrets pour les participants
 3. Si des émotions sont spécifiées ({$data['emotions']}), utilise-les pour créer de l'engagement émotionnel
@@ -5298,17 +5305,19 @@ Génère une description engageante et persuasive pour cette activité.
 5. Utilise des verbes d'action pour créer du dynamisme
 6. Ne répète PAS le nom de l'activité au début de la description
 7. Ne mentionne PAS les prix dans la description
-8. Écris en français courant, sans jargon marketing excessif
-9. La description doit donner envie de réserver IMMÉDIATEMENT
+8. Ne mentionne PAS le lieu/ville dans la description (sauf si vraiment pertinent et fourni)
+9. Écris en français courant, sans jargon marketing excessif
+10. La description doit donner envie de réserver IMMÉDIATEMENT
+11. Reste GÉNÉRIQUE sur les détails non fournis - ne comble pas les vides avec de l'invention
 
-## FORMAT DE SORTIE (TRÈS IMPORTANT) :
+## FORMAT DE SORTIE HTML (TRÈS IMPORTANT) :
 - Génère la description en HTML valide pour un éditeur WYSIWYG
-- Utilise des balises <p> pour les paragraphes
-- Tu peux utiliser <strong> pour les éléments importants
-- Tu peux utiliser <ul><li> pour des listes si pertinent
-- Tu peux utiliser <h3> ou <h4> pour des sous-titres si la description est longue
+- Structure avec 2 ou 3 SOUS-TITRES ACCROCHEURS en <h4> (ex: \"Une expérience inoubliable\", \"Ce qui vous attend\", \"Pourquoi participer ?\")
+- Utilise <p> pour les paragraphes (minimum 3-4 paragraphes bien développés)
+- Utilise BEAUCOUP de <strong> pour mettre en GRAS les mots-clés importants, les points forts et les bénéfices (au moins 8-10 éléments en gras dans tout le texte)
+- Tu peux utiliser <ul><li> pour lister les points forts ou ce qui est inclus
 - NE PAS inclure de balises <html>, <head>, <body> - uniquement le contenu
-- Vise environ 500 à 800 caractères de texte (hors balises HTML)
+- LONGUEUR OBLIGATOIRE : entre 1200 et 1800 caractères de texte (hors balises HTML)
 
 Génère UNIQUEMENT le code HTML de la description, sans commentaire ni explication.";
 
@@ -5329,12 +5338,12 @@ Génère UNIQUEMENT le code HTML de la description, sans commentaire ni explicat
 					'content' => $prompt
 				)
 			),
-			'max_tokens'  => 600,
+			'max_tokens'  => 1200,
 			'temperature' => 0.7,
 		);
 
 		$response = wp_remote_post( 'https://api.openai.com/v1/chat/completions', array(
-			'timeout' => 30,
+			'timeout' => 60,
 			'headers' => array(
 				'Authorization' => 'Bearer ' . $api_key,
 				'Content-Type'  => 'application/json',
