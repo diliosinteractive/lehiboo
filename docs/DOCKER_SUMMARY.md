@@ -176,7 +176,7 @@ DEFAULT_MODEL=anthropic/claude-3.5-sonnet
    - Variables: Charger `.env.production`
 
 3. **Reverse Proxy** :
-   - Sous-domaine: `ai.lehiboo.dilios.me`
+   - Sous-domaine: `preprod.lehiboo.com/api-planner/`
    - Proxy vers: `http://localhost:3000`
    - SSL: Let's Encrypt
 
@@ -261,24 +261,24 @@ nano /var/www/vhosts/lehiboo.dilios.me/lehiboo-ai-backend/.env.production
 ### 4. Configuration Reverse Proxy (10 min)
 
 **Dans Plesk** :
-1. Créer sous-domaine `ai.lehiboo.dilios.me`
+1. Créer sous-domaine `preprod.lehiboo.com/api-planner/`
 2. Activer SSL Let's Encrypt
 3. Configurer reverse proxy → `http://localhost:3000`
 
 ### 5. Configuration WordPress (2 min)
 
 **WP Admin** → Le Hiboo → Assistant IA :
-- URL Backend: `https://ai.lehiboo.dilios.me`
+- URL Backend: `https://preprod.lehiboo.com/api-planner/`
 - Clé API: (même que `.env.production`)
 
 ### 6. Vérification (2 min)
 
 ```bash
 # Health check
-curl https://ai.lehiboo.dilios.me/health
+curl https://preprod.lehiboo.com/api-planner/health
 
 # Test chat
-curl -X POST https://ai.lehiboo.dilios.me/chat \
+curl -X POST https://preprod.lehiboo.com/api-planner/chat \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer votre-api-key" \
   -d '{"message":"Bonjour","conversationId":"test"}'
@@ -361,13 +361,13 @@ nginx -t
 
 ```bash
 # Vérifier URL dans WordPress
-# Doit être: https://ai.lehiboo.dilios.me (avec HTTPS)
+# Doit être: https://preprod.lehiboo.com/api-planner/ (avec HTTPS)
 
 # Vérifier API Key
 # Doit être identique dans .env.production et WordPress
 
 # Test manuel
-curl https://ai.lehiboo.dilios.me/health
+curl https://preprod.lehiboo.com/api-planner/health
 ```
 
 ---

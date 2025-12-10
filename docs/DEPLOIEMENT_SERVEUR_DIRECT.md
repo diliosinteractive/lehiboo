@@ -325,7 +325,7 @@ Réponse:
    http://localhost:3000
 
 🌐 Si reverse proxy configuré, accessible via:
-   https://ai.lehiboo.dilios.me
+   https://preprod.lehiboo.com/api-planner/
 ```
 
 **Parfait ! Le backend tourne maintenant.** ✅
@@ -336,7 +336,7 @@ Réponse:
 
 Le backend est accessible sur `http://localhost:3000` **depuis le serveur**.
 
-Pour le rendre accessible depuis Internet via `https://ai.lehiboo.dilios.me` :
+Pour le rendre accessible depuis Internet via `https://preprod.lehiboo.com/api-planner/` :
 
 #### 6.1 Créer le Sous-Domaine
 
@@ -350,7 +350,7 @@ Pour le rendre accessible depuis Internet via `https://ai.lehiboo.dilios.me` :
 
 #### 6.2 Configurer le Proxy Nginx
 
-1. Cliquer sur le sous-domaine `ai.lehiboo.dilios.me`
+1. Cliquer sur le sous-domaine `preprod.lehiboo.com/api-planner/`
 2. **Paramètres Apache & nginx**
 3. Descendre jusqu'à **Directives nginx supplémentaires**
 4. Coller :
@@ -382,7 +382,7 @@ location / {
 
 #### 6.3 Activer SSL/TLS
 
-1. Toujours sur `ai.lehiboo.dilios.me`
+1. Toujours sur `preprod.lehiboo.com/api-planner/`
 2. **SSL/TLS**
 3. Cocher **Certificat Let's Encrypt**
 4. **Installer** ou **Renouveler**
@@ -404,7 +404,7 @@ systemctl reload nginx
 
 ```bash
 # Depuis votre machine locale (nouveau terminal)
-curl https://ai.lehiboo.dilios.me/health
+curl https://preprod.lehiboo.com/api-planner/health
 ```
 
 **Résultat attendu** :
@@ -426,7 +426,7 @@ curl https://ai.lehiboo.dilios.me/health
 2. **Le Hiboo** → **Assistant IA** → **Paramètres**
 3. Remplir :
    - ✅ **Activer l'assistant IA**
-   - **URL Backend** : `https://ai.lehiboo.dilios.me`
+   - **URL Backend** : `https://preprod.lehiboo.com/api-planner/`
    - **Clé API** : Copier la valeur de `API_KEY` depuis `.env.production`
 4. **Sauvegarder**
 
@@ -447,7 +447,7 @@ curl https://ai.lehiboo.dilios.me/health
 Votre backend Le Hiboo AI est maintenant :
 - ✅ Déployé sur votre serveur Plesk
 - ✅ Tournant dans un container Docker
-- ✅ Accessible via `https://ai.lehiboo.dilios.me`
+- ✅ Accessible via `https://preprod.lehiboo.com/api-planner/`
 - ✅ Connecté à WordPress
 - ✅ Prêt à recevoir des utilisateurs
 
@@ -497,7 +497,7 @@ docker-compose ps
 
 ### Erreur 502 Bad Gateway
 
-**Symptôme** : `https://ai.lehiboo.dilios.me` renvoie une erreur 502
+**Symptôme** : `https://preprod.lehiboo.com/api-planner/` renvoie une erreur 502
 
 **Vérifications** :
 
@@ -534,11 +534,11 @@ docker-compose logs
 ### WordPress ne Connecte Pas
 
 **Vérifier** :
-1. URL dans WordPress : `https://ai.lehiboo.dilios.me` (avec HTTPS, sans slash final)
+1. URL dans WordPress : `https://preprod.lehiboo.com/api-planner/` (avec HTTPS, sans slash final)
 2. Clé API : Identique dans `.env.production` et WordPress
 3. Test manuel :
    ```bash
-   curl https://ai.lehiboo.dilios.me/health
+   curl https://preprod.lehiboo.com/api-planner/health
    ```
 
 ---
@@ -562,7 +562,7 @@ docker-compose logs
 - [ ] Reverse proxy configuré
 - [ ] SSL Let's Encrypt activé
 - [ ] Nginx rechargé
-- [ ] Test externe OK : `curl https://ai.lehiboo.dilios.me/health`
+- [ ] Test externe OK : `curl https://preprod.lehiboo.com/api-planner/health`
 - [ ] WordPress configuré
 - [ ] Test frontend OK (chat répond)
 

@@ -79,9 +79,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
+// Routes - Support direct et via proxy /api-planner
 app.use('/', chatRoutes);
 app.use('/mobile', mobileRoutes);
+
+// Routes avec prefix pour proxy Plesk (preprod.lehiboo.com/api-planner/*)
+app.use('/api-planner', chatRoutes);
+app.use('/api-planner/mobile', mobileRoutes);
 
 // Route racine
 app.get('/', (req, res) => {

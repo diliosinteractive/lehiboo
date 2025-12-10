@@ -142,14 +142,14 @@ docker-compose logs -f
 **Plesk → Domaines → lehiboo.dilios.me → Sous-domaines**
 
 - Nom : `ai`
-- Document root : `/var/www/vhosts/lehiboo.dilios.me/ai.lehiboo.dilios.me`
+- Document root : `/var/www/vhosts/lehiboo.dilios.me/preprod.lehiboo.com/api-planner/`
 
 ### 2. Activer SSL
 
 **Plesk → SSL/TLS → Let's Encrypt**
 
 - ✅ Sécuriser le domaine wildcard (*.lehiboo.dilios.me)
-- ✅ Ou certificat spécifique pour ai.lehiboo.dilios.me
+- ✅ Ou certificat spécifique pour preprod.lehiboo.com/api-planner/
 
 ### 3. Configurer Reverse Proxy
 
@@ -173,10 +173,10 @@ location / {
 
 ```bash
 # Health check public
-curl https://ai.lehiboo.dilios.me/health
+curl https://preprod.lehiboo.com/api-planner/health
 
 # Test chat
-curl -X POST https://ai.lehiboo.dilios.me/chat \
+curl -X POST https://preprod.lehiboo.com/api-planner/chat \
   -H "Content-Type: application/json" \
   -H "x-api-key: votre-api-key" \
   -d '{
@@ -192,7 +192,7 @@ curl -X POST https://ai.lehiboo.dilios.me/chat \
 ```
 ┌─────────────────────────────────────────────────┐
 │  Plesk Nginx Reverse Proxy                      │
-│  https://ai.lehiboo.dilios.me                   │
+│  https://preprod.lehiboo.com/api-planner/                   │
 │  SSL: Let's Encrypt                             │
 └────────────┬────────────────────────────────────┘
              │ Port 443 → 3004
@@ -457,7 +457,7 @@ Une fois le backend V2 déployé en Docker :
 
 1. **Configurer WordPress** :
    - WP Admin → Le Hiboo → Assistant IA
-   - URL Backend : `https://ai.lehiboo.dilios.me`
+   - URL Backend : `https://preprod.lehiboo.com/api-planner/`
    - API Key : (même que `.env.production`)
 
 2. **Tester depuis WordPress** :

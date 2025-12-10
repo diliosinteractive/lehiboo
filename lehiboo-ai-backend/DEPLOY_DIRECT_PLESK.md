@@ -200,7 +200,7 @@ Réponse:
 
 Le backend tourne maintenant sur `http://localhost:3000` **sur le serveur**.
 
-Pour le rendre accessible depuis Internet via `https://ai.lehiboo.dilios.me` :
+Pour le rendre accessible depuis Internet via `https://preprod.lehiboo.com/api-planner/` :
 
 #### Dans l'Interface Plesk :
 
@@ -209,7 +209,7 @@ Pour le rendre accessible depuis Internet via `https://ai.lehiboo.dilios.me` :
    - Domaine parent : `lehiboo.dilios.me`
    - Document root : `/var/www/vhosts/lehiboo.dilios.me/ai` (n'a pas d'importance)
 
-2. **Cliquez sur le sous-domaine** `ai.lehiboo.dilios.me`
+2. **Cliquez sur le sous-domaine** `preprod.lehiboo.com/api-planner/`
 
 3. **Paramètres Apache & nginx** → **Directives nginx supplémentaires**
 
@@ -251,7 +251,7 @@ Pour le rendre accessible depuis Internet via `https://ai.lehiboo.dilios.me` :
 
 ```bash
 # Depuis votre machine locale ou n'importe où
-curl https://ai.lehiboo.dilios.me/health
+curl https://preprod.lehiboo.com/api-planner/health
 ```
 
 **Résultat attendu** :
@@ -266,7 +266,7 @@ curl https://ai.lehiboo.dilios.me/health
 #### Test 2 : Chat Endpoint
 
 ```bash
-curl -X POST https://ai.lehiboo.dilios.me/chat \
+curl -X POST https://preprod.lehiboo.com/api-planner/chat \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer votre-cle-api" \
   -d '{
@@ -284,7 +284,7 @@ curl -X POST https://ai.lehiboo.dilios.me/chat \
 
 2. **Remplir** :
    - ✅ **Activer l'assistant IA**
-   - **URL Backend** : `https://ai.lehiboo.dilios.me`
+   - **URL Backend** : `https://preprod.lehiboo.com/api-planner/`
    - **Clé API** : `votre-cle-api` (même que dans .env.production)
 
 3. **Sauvegarder**
@@ -401,7 +401,7 @@ docker-compose logs
 
 ### 502 Bad Gateway
 
-**Symptôme** : Erreur 502 en accédant à `https://ai.lehiboo.dilios.me`
+**Symptôme** : Erreur 502 en accédant à `https://preprod.lehiboo.com/api-planner/`
 
 **Solutions** :
 ```bash
@@ -491,7 +491,7 @@ tail -f /var/www/vhosts/lehiboo.dilios.me/lehiboo-ai-backend/logs/error.log
 - [ ] Health check OK : `curl http://localhost:3000/health`
 - [ ] Reverse proxy configuré dans Plesk
 - [ ] SSL Let's Encrypt activé
-- [ ] Health check externe OK : `curl https://ai.lehiboo.dilios.me/health`
+- [ ] Health check externe OK : `curl https://preprod.lehiboo.com/api-planner/health`
 - [ ] WordPress configuré
 - [ ] Test frontend → backend → IA OK
 
@@ -517,7 +517,7 @@ tail -f /var/www/vhosts/lehiboo.dilios.me/lehiboo-ai-backend/logs/error.log
 
 Le backend tourne maintenant sur votre serveur Plesk avec Docker.
 
-**URL Backend** : `https://ai.lehiboo.dilios.me`
+**URL Backend** : `https://preprod.lehiboo.com/api-planner/`
 **Container** : `lehiboo-ai-backend`
 **Logs** : `docker-compose logs -f`
 

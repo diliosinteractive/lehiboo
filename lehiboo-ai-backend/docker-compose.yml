@@ -88,7 +88,7 @@ services:
 
       # Configuration Traefik (si Plesk utilise Traefik)
       - "traefik.enable=true"
-      - "traefik.http.routers.lehiboo-ai.rule=Host(`ai.lehiboo.dilios.me`)"
+      - "traefik.http.routers.lehiboo-ai.rule=Host(`preprod.lehiboo.com/api-planner/`)"
       - "traefik.http.routers.lehiboo-ai.entrypoints=websecure"
       - "traefik.http.routers.lehiboo-ai.tls.certresolver=letsencrypt"
       - "traefik.http.services.lehiboo-ai.loadbalancer.server.port=3000"

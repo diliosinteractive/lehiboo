@@ -60,7 +60,7 @@ Confirmez avec `y` quand demandé.
 
 **Dans Plesk** :
 
-1. **Domaines** → Créer sous-domaine `ai.lehiboo.dilios.me`
+1. **Domaines** → Créer sous-domaine `preprod.lehiboo.com/api-planner/`
 
 2. **Paramètres nginx** → Ajouter :
    ```nginx
@@ -87,7 +87,7 @@ Confirmez avec `y` quand demandé.
 
 ```bash
 # Test
-curl https://ai.lehiboo.dilios.me/health
+curl https://preprod.lehiboo.com/api-planner/health
 ```
 
 **Résultat attendu** :
@@ -100,7 +100,7 @@ curl https://ai.lehiboo.dilios.me/health
 ## 🎯 Configuration WordPress
 
 **WP Admin** → Le Hiboo → Assistant IA :
-- URL Backend : `https://ai.lehiboo.dilios.me`
+- URL Backend : `https://preprod.lehiboo.com/api-planner/`
 - Clé API : (même que dans .env.production)
 
 **Tester** : Ouvrir le chat sur le site → Envoyer un message → L'IA répond ! 🎉

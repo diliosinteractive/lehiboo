@@ -38,7 +38,7 @@ ssh user@votre-serveur.com
 - [x] Plesk Obsidian 18.0.40+ (avec Docker support)
 - [x] Extension Docker activée
 - [x] Extension Proxy activée (pour reverse proxy)
-- [x] Domaine/sous-domaine configuré (ex: `ai.lehiboo.dilios.me`)
+- [x] Domaine/sous-domaine configuré (ex: `preprod.lehiboo.com/api-planner/`)
 
 ---
 
@@ -253,7 +253,7 @@ docker-compose logs -f
 1. **Extension Proxy** : Allez dans `Extensions` → `Docker Proxy`
 2. **Installer** : Installez si ce n'est pas fait
 3. **Créer une règle** :
-   - **Domaine** : `ai.lehiboo.dilios.me`
+   - **Domaine** : `preprod.lehiboo.com/api-planner/`
    - **Port** : `3000`
    - **Container** : `lehiboo-ai-backend`
    - **SSL** : ✅ Activer (Let's Encrypt)
@@ -269,7 +269,7 @@ docker-compose logs -f
 
 #### Configurer le Reverse Proxy
 
-1. **Hébergement** : Cliquez sur le sous-domaine `ai.lehiboo.dilios.me`
+1. **Hébergement** : Cliquez sur le sous-domaine `preprod.lehiboo.com/api-planner/`
 2. **Paramètres Apache & nginx** : Cliquez sur `Paramètres Apache & nginx`
 3. **Directives nginx supplémentaires** :
 
@@ -350,7 +350,7 @@ docker exec lehiboo-ai-backend curl http://localhost:3000/health
 
 ```bash
 # Depuis votre machine locale
-curl https://ai.lehiboo.dilios.me/health
+curl https://preprod.lehiboo.com/api-planner/health
 
 # Devrait retourner :
 # {"status":"ok","timestamp":"2025-10-28T...","version":"1.0.0"}
@@ -359,7 +359,7 @@ curl https://ai.lehiboo.dilios.me/health
 ### 3. Tester le Chat Endpoint
 
 ```bash
-curl -X POST https://ai.lehiboo.dilios.me/chat \
+curl -X POST https://preprod.lehiboo.com/api-planner/chat \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer votre-api-key" \
   -d '{
@@ -372,7 +372,7 @@ curl -X POST https://ai.lehiboo.dilios.me/chat \
 ### 4. Configurer WordPress
 
 1. **WP Admin** : Allez dans `Le Hiboo → Assistant IA → Paramètres`
-2. **URL Backend** : `https://ai.lehiboo.dilios.me`
+2. **URL Backend** : `https://preprod.lehiboo.com/api-planner/`
 3. **Clé API** : `votre-api-key` (même que dans .env.production)
 4. **Sauvegarder**
 
@@ -467,7 +467,7 @@ docker logs lehiboo-ai-backend
 
 ### Reverse Proxy 502 Bad Gateway
 
-**Symptôme** : Erreur 502 en accédant à `ai.lehiboo.dilios.me`
+**Symptôme** : Erreur 502 en accédant à `preprod.lehiboo.com/api-planner/`
 
 **Solutions** :
 ```bash
@@ -495,10 +495,10 @@ tail -f /var/log/nginx/error.log
 **Solutions** :
 ```bash
 # Renouveler le certificat Let's Encrypt
-plesk bin extension --exec letsencrypt cli.php -d ai.lehiboo.dilios.me -m renew
+plesk bin extension --exec letsencrypt cli.php -d preprod.lehiboo.com/api-planner/ -m renew
 
 # Ou via interface Plesk :
-# Domaines → ai.lehiboo.dilios.me → SSL/TLS → Renouveler
+# Domaines → preprod.lehiboo.com/api-planner/ → SSL/TLS → Renouveler
 ```
 
 ### WordPress ne Peut Pas Connecter
@@ -506,11 +506,11 @@ plesk bin extension --exec letsencrypt cli.php -d ai.lehiboo.dilios.me -m renew
 **Symptôme** : WordPress affiche "Backend non disponible"
 
 **Solutions** :
-1. **Vérifier URL** : `https://ai.lehiboo.dilios.me` (avec HTTPS)
+1. **Vérifier URL** : `https://preprod.lehiboo.com/api-planner/` (avec HTTPS)
 2. **Vérifier API Key** : Doit être identique dans .env et WordPress
 3. **Tester manuellement** :
    ```bash
-   curl https://ai.lehiboo.dilios.me/health
+   curl https://preprod.lehiboo.com/api-planner/health
    ```
 4. **Vérifier CORS** : Le backend autorise le domaine WordPress
 
