@@ -1851,10 +1851,9 @@ if( !class_exists( 'El_Ajax' ) ){
 			$event_status 	= isset( $post_data['event_status'] ) ? sanitize_text_field( $post_data['event_status'] ) : 'publish';
 			$time_zone 		= isset( $post_data_sanitize[$_prefix.'time_zone'] ) ? $post_data_sanitize[$_prefix.'time_zone'] : '';
 
-			if ( $event_status === 'publish' ) {
-				$event_password = '';
-			}
-
+			// V1 Le Hiboo - Ne pas vider le mot de passe si explicitement fourni
+			// Le nouveau template envoie directement publish/private avec un mot de passe
+			// L'ancien template envoyait "protected" qu'on convertissait en publish
 			if ( $event_status === 'protected' ) {
 				$event_status = 'publish';
 			}

@@ -7,6 +7,13 @@
 
 /* Ajoutez vos correctifs CSS ici */
 
+/* --- DÉSACTIVER LE STICKY MENU SUR LES PAGES VENDOR --- */
+body.is-vendor-page .ovamenu_shrink_mobile.active_fixed,
+body.is-vendor-page .ovamenu_shrink.active_fixed {
+    position: relative !important;
+    top: auto !important;
+}
+
 /* --- FORMULAIRE VENDOR / PRESENTATION STYLE AIRBNB --- */
 
 /* 1. Labels & Typographie */

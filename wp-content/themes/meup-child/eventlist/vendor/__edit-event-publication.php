@@ -172,8 +172,9 @@ $el_restau   = get_post_meta( $post_id, $_prefix.'el_restau', true );
         </div>
     </div>
 
-    <!-- Champ caché pour synchroniser avec le formulaire principal -->
+    <!-- Champs cachés pour synchroniser avec le formulaire principal -->
     <input type="hidden" name="event_password" id="event_password_hidden" value="<?php echo esc_attr( $event_password ); ?>">
+    <input type="hidden" name="event_status" id="event_status_hidden" value="<?php echo esc_attr( $is_online ? ($visibility === 'private' || $visibility === 'private_protected' ? 'private' : 'publish') : 'draft' ); ?>">
 </div>
 
 <!-- Services & Accessibilité -->
@@ -773,8 +774,9 @@ jQuery(document).ready(function($) {
                 }
             }
 
-            // Mettre à jour le champ caché du formulaire principal
+            // Mettre à jour les champs cachés du formulaire principal
             $('#publish_event_input').val(status);
+            $('#event_status_hidden').val(status);
 
             // Mettre à jour le badge de statut dans la sidebar
             $('.event-status-badge').text(status);

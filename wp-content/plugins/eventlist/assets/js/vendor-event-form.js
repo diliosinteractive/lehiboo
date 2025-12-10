@@ -430,6 +430,24 @@ jQuery(document).ready(function ($) {
             }
         }
 
+        // V1 Le Hiboo - Gérer explicitement les checkboxes Services & Accessibilité
+        // (les checkboxes non cochées ne sont pas incluses dans serializeArray)
+        var serviceCheckboxes = [
+            'ova_mb_event_el_handicap',
+            'ova_mb_event_el_animal',
+            'ova_mb_event_el_baby',
+            'ova_mb_event_el_wifi',
+            'ova_mb_event_el_parking',
+            'ova_mb_event_el_restau'
+        ];
+        serviceCheckboxes.forEach(function(checkboxName) {
+            var cleanKey = checkboxName.replace(/^ova_mb_event_/, '');
+            var $checkbox = $form.find('input[name="' + checkboxName + '"]');
+            if ($checkbox.length) {
+                metaData[cleanKey] = $checkbox.is(':checked') ? 'yes' : '';
+            }
+        });
+
         // Send AJAX request
         $.ajax({
             url: ajax_object.ajax_url,
