@@ -228,6 +228,9 @@ if( !class_exists( 'El_Ajax' ) ){
 
 				'el_download_invoice',
 				'el_download_tickets',
+
+				// V1 Le Hiboo - AI Description Generator
+				'el_generate_ai_description',
 			);
 
 			foreach($arr_ajax as $val){
@@ -5191,6 +5194,163 @@ if( !class_exists( 'El_Ajax' ) ){
 		} else {
 			wp_send_json_error( array( 'message' => esc_html__( 'Erreur lors de la suppression', 'eventlist' ) ) );
 		}
+	}
+
+	/**
+	 * V1 Le Hiboo - Generate AI Description using OpenAI
+	 * Generates an engaging activity description based on form data
+	 */
+	public function el_generate_ai_description() {
+		// Verify nonce
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'el_nonce' ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Session expirée, veuillez rafraîchir la page.', 'eventlist' ) ) );
+		}
+
+		// Check user is logged in
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Vous devez être connecté.', 'eventlist' ) ) );
+		}
+
+		// Get OpenAI API Key from options or constant
+		$api_key = defined( 'OPENAI_API_KEY' ) ? OPENAI_API_KEY : get_option( 'lehiboo_openai_api_key', '' );
+
+		if ( empty( $api_key ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Clé API OpenAI non configurée.', 'eventlist' ) ) );
+		}
+
+		// Collect form data
+		$data = array(
+			'title'           => isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '',
+			'category'        => isset( $_POST['category'] ) ? sanitize_text_field( $_POST['category'] ) : '',
+			'event_types'     => isset( $_POST['event_types'] ) ? sanitize_text_field( $_POST['event_types'] ) : '',
+			'target_audience' => isset( $_POST['target_audience'] ) ? sanitize_text_field( $_POST['target_audience'] ) : '',
+			'themes'          => isset( $_POST['themes'] ) ? sanitize_text_field( $_POST['themes'] ) : '',
+			'events'          => isset( $_POST['events'] ) ? sanitize_text_field( $_POST['events'] ) : '',
+			'emotions'        => isset( $_POST['emotions'] ) ? sanitize_text_field( $_POST['emotions'] ) : '',
+			'location'        => isset( $_POST['location'] ) ? sanitize_text_field( $_POST['location'] ) : '',
+			'dates'           => isset( $_POST['dates'] ) ? sanitize_text_field( $_POST['dates'] ) : '',
+			'prices'          => isset( $_POST['prices'] ) ? sanitize_text_field( $_POST['prices'] ) : '',
+			'services'        => isset( $_POST['services'] ) ? sanitize_text_field( $_POST['services'] ) : '',
+		);
+
+		// Validate minimum required data
+		if ( empty( $data['title'] ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Veuillez renseigner au moins le nom de l\'activité.', 'eventlist' ) ) );
+		}
+
+		// Build the prompt
+		$prompt = $this->build_ai_description_prompt( $data );
+
+		// Call OpenAI API
+		$response = $this->call_openai_api( $api_key, $prompt );
+
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error( array( 'message' => $response->get_error_message() ) );
+		}
+
+		wp_send_json_success( array(
+			'description' => $response,
+			'message'     => esc_html__( 'Description générée avec succès !', 'eventlist' )
+		) );
+	}
+
+	/**
+	 * Build the AI prompt for description generation
+	 */
+	private function build_ai_description_prompt( $data ) {
+		// Determine audience context
+		$audience_context = '';
+		$audience = strtolower( $data['target_audience'] );
+
+		if ( strpos( $audience, 'famille' ) !== false || strpos( $audience, 'enfant' ) !== false ) {
+			$audience_context = "C'est une activité familiale. Mets en avant les bénéfices pour les enfants ET les parents. Utilise un ton chaleureux et rassurant pour les familles.";
+		} elseif ( strpos( $audience, 'adulte' ) !== false && strpos( $audience, 'enfant' ) === false ) {
+			$audience_context = "C'est une activité pour adultes. Utilise un ton mature et engageant.";
+		} elseif ( strpos( $audience, 'adolescent' ) !== false || strpos( $audience, 'ado' ) !== false ) {
+			$audience_context = "C'est une activité pour adolescents. Utilise un ton dynamique et moderne.";
+		} elseif ( strpos( $audience, 'senior' ) !== false ) {
+			$audience_context = "C'est une activité pour seniors. Utilise un ton respectueux et bienveillant.";
+		} else {
+			$audience_context = "Adapte le ton au public visé : {$data['target_audience']}.";
+		}
+
+		$prompt = "Tu es un rédacteur expert en marketing d'activités et événements culturels/loisirs.
+Génère une description engageante et persuasive (entre 400 et 600 caractères maximum) pour cette activité.
+
+## Informations de l'activité :
+- Nom : {$data['title']}
+- Catégorie : {$data['category']}
+- Type d'événement : {$data['event_types']}
+- Public visé : {$data['target_audience']}
+- Thématiques : {$data['themes']}
+- Événements/Occasions : {$data['events']}
+- Émotions recherchées : {$data['emotions']}
+- Lieu : {$data['location']}
+- Dates : {$data['dates']}
+- Tarifs : {$data['prices']}
+- Services : {$data['services']}
+
+## Consignes strictes :
+1. {$audience_context}
+2. Mets en avant les bénéfices concrets pour les participants
+3. Si des émotions sont spécifiées ({$data['emotions']}), utilise-les pour créer de l'engagement émotionnel
+4. Sois chaleureux et professionnel
+5. Utilise des verbes d'action pour créer du dynamisme
+6. Ne répète PAS le nom de l'activité au début de la description
+7. Ne mentionne PAS les prix dans la description
+8. Écris en français courant, sans jargon marketing excessif
+9. La description doit donner envie de réserver IMMÉDIATEMENT
+
+Génère UNIQUEMENT la description, sans titre ni commentaire.";
+
+		return $prompt;
+	}
+
+	/**
+	 * Call OpenAI API to generate description
+	 */
+	private function call_openai_api( $api_key, $prompt ) {
+		$model = defined( 'OPENAI_MODEL' ) ? OPENAI_MODEL : 'gpt-4o';
+
+		$body = array(
+			'model'       => $model,
+			'messages'    => array(
+				array(
+					'role'    => 'user',
+					'content' => $prompt
+				)
+			),
+			'max_tokens'  => 300,
+			'temperature' => 0.7,
+		);
+
+		$response = wp_remote_post( 'https://api.openai.com/v1/chat/completions', array(
+			'timeout' => 30,
+			'headers' => array(
+				'Authorization' => 'Bearer ' . $api_key,
+				'Content-Type'  => 'application/json',
+			),
+			'body' => wp_json_encode( $body ),
+		) );
+
+		if ( is_wp_error( $response ) ) {
+			return new WP_Error( 'api_error', esc_html__( 'Erreur de connexion à l\'API OpenAI.', 'eventlist' ) );
+		}
+
+		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_body = wp_remote_retrieve_body( $response );
+		$result = json_decode( $response_body, true );
+
+		if ( $response_code !== 200 ) {
+			$error_message = isset( $result['error']['message'] ) ? $result['error']['message'] : esc_html__( 'Erreur inconnue', 'eventlist' );
+			return new WP_Error( 'api_error', 'OpenAI: ' . $error_message );
+		}
+
+		if ( ! isset( $result['choices'][0]['message']['content'] ) ) {
+			return new WP_Error( 'api_error', esc_html__( 'Réponse invalide de l\'API.', 'eventlist' ) );
+		}
+
+		return trim( $result['choices'][0]['message']['content'] );
 	}
 }
 

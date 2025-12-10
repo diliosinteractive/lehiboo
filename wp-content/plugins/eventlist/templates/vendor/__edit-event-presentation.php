@@ -29,6 +29,22 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
         <p class="field_hint">
             <?php esc_html_e( "Pour garantir une description complète et percutante, nous vous conseillons vivement d'atteindre un minimum de 500 caractères. Plus votre description sera détaillée, plus elle sera efficace.", 'eventlist' ); ?>
         </p>
+
+        <!-- V1 Le Hiboo - AI Description Generator Button -->
+        <div class="el_ai_generator_wrapper">
+            <button type="button" id="el-generate-ai-description" class="el_ai_generate_btn">
+                <svg class="ai-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                </svg>
+                <svg class="ai-loader" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"/>
+                </svg>
+                <span class="btn-text"><?php esc_html_e( 'Générer avec l\'IA', 'eventlist' ); ?></span>
+                <span class="btn-loading-text"><?php esc_html_e( 'Génération...', 'eventlist' ); ?></span>
+            </button>
+            <span class="el_ai_hint"><?php esc_html_e( 'Remplissez d\'abord les informations générales pour une meilleure génération', 'eventlist' ); ?></span>
+        </div>
+
         <?php
         // V1 Le Hiboo - WYSIWYG amélioré avec plus d'options
         $settings_editor = array(
@@ -164,3 +180,205 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
     </div>
 
 </div>
+
+<!-- V1 Le Hiboo - AI Description Generator Script -->
+<script>
+jQuery(document).ready(function($) {
+    'use strict';
+
+    var $generateBtn = $('#el-generate-ai-description');
+    var isGenerating = false;
+
+    /**
+     * Collect form data from all sections
+     */
+    function collectFormData() {
+        var data = {};
+
+        // Title
+        data.title = $('input[name="title_event"]').val() || '';
+
+        // Category - get selected text
+        var $categorySelect = $('select[name="event_cat"]');
+        data.category = $categorySelect.find('option:selected').text() || '';
+
+        // Event Types - get all selected values as text
+        var eventTypes = [];
+        $('select[name="event_type[]"] option:selected, select[name="ova_mb_event_event_type[]"] option:selected').each(function() {
+            if ($(this).text()) eventTypes.push($(this).text());
+        });
+        // Also check for Select2 or tagify style
+        $('.event_type_wrapper .select2-selection__choice, .event_type_tags .tagify__tag').each(function() {
+            var text = $(this).text().replace('×', '').trim();
+            if (text) eventTypes.push(text);
+        });
+        data.event_types = eventTypes.join(', ');
+
+        // Target Audience
+        var targetAudience = [];
+        $('select[name="event_target[]"] option:selected, select[name="ova_mb_event_event_target[]"] option:selected').each(function() {
+            if ($(this).text()) targetAudience.push($(this).text());
+        });
+        $('.event_target_wrapper .select2-selection__choice').each(function() {
+            var text = $(this).text().replace('×', '').trim();
+            if (text) targetAudience.push(text);
+        });
+        data.target_audience = targetAudience.join(', ');
+
+        // Themes
+        var themes = [];
+        $('select[name="event_theme[]"] option:selected, select[name="ova_mb_event_event_theme[]"] option:selected').each(function() {
+            if ($(this).text()) themes.push($(this).text());
+        });
+        $('.event_theme_wrapper .select2-selection__choice').each(function() {
+            var text = $(this).text().replace('×', '').trim();
+            if (text) themes.push(text);
+        });
+        data.themes = themes.join(', ');
+
+        // Events/Occasions
+        var events = [];
+        $('select[name="event_occasion[]"] option:selected, select[name="ova_mb_event_event_occasion[]"] option:selected').each(function() {
+            if ($(this).text()) events.push($(this).text());
+        });
+        $('.event_occasion_wrapper .select2-selection__choice').each(function() {
+            var text = $(this).text().replace('×', '').trim();
+            if (text) events.push(text);
+        });
+        data.events = events.join(', ');
+
+        // Emotions
+        var emotions = [];
+        $('select[name="event_emotion[]"] option:selected, select[name="ova_mb_event_event_emotion[]"] option:selected').each(function() {
+            if ($(this).text()) emotions.push($(this).text());
+        });
+        $('.event_emotion_wrapper .select2-selection__choice').each(function() {
+            var text = $(this).text().replace('×', '').trim();
+            if (text) emotions.push(text);
+        });
+        data.emotions = emotions.join(', ');
+
+        // Location
+        var locationParts = [];
+        var address = $('input[name="ova_mb_event_map_address"]').val() || $('input[name="map_address"]').val();
+        var city = $('input[name="ova_mb_event_map_city"]').val() || $('input[name="map_city"]').val();
+        if (address) locationParts.push(address);
+        if (city) locationParts.push(city);
+        data.location = locationParts.join(', ');
+
+        // Dates - simplified
+        var dates = [];
+        $('.calendar_item, .schedule-item').each(function() {
+            var date = $(this).find('input[type="date"], .date-display').first().val() || $(this).find('.date-display').text();
+            if (date) dates.push(date);
+        });
+        data.dates = dates.slice(0, 3).join(', ') + (dates.length > 3 ? '...' : '');
+
+        // Prices
+        var prices = [];
+        $('.ticket_item, .ticket-row').each(function() {
+            var name = $(this).find('input[name*="name_ticket"]').val() || $(this).find('.ticket-name').text();
+            var price = $(this).find('input[name*="price_ticket"]').val() || $(this).find('.ticket-price').text();
+            if (name && price) {
+                prices.push(name + ': ' + price + '€');
+            }
+        });
+        data.prices = prices.slice(0, 3).join(', ');
+
+        // Services
+        var services = [];
+        if ($('input[name*="el_handicap"]:checked').length) services.push('Accessible handicap');
+        if ($('input[name*="el_animal"]:checked').length) services.push('Animaux acceptés');
+        if ($('input[name*="el_baby"]:checked').length) services.push('Adapté aux bébés');
+        if ($('input[name*="el_wifi"]:checked').length) services.push('Wifi gratuit');
+        if ($('input[name*="el_parking"]:checked').length) services.push('Parking');
+        if ($('input[name*="el_restau"]:checked').length) services.push('Restauration');
+        data.services = services.join(', ');
+
+        return data;
+    }
+
+    /**
+     * Insert content into TinyMCE editor
+     */
+    function insertIntoEditor(content) {
+        // Try TinyMCE first
+        if (typeof tinymce !== 'undefined' && tinymce.get('content_event')) {
+            var editor = tinymce.get('content_event');
+            editor.setContent('<p>' + content.replace(/\n/g, '</p><p>') + '</p>');
+            editor.fire('change');
+        } else {
+            // Fallback to textarea
+            $('#content_event').val(content);
+        }
+
+        // Trigger character count update
+        setTimeout(function() {
+            if (typeof window.updateDescCharCount === 'function') {
+                window.updateDescCharCount();
+            }
+        }, 100);
+    }
+
+    /**
+     * Handle AI generation button click
+     */
+    $generateBtn.on('click', function(e) {
+        e.preventDefault();
+
+        if (isGenerating) return;
+
+        var formData = collectFormData();
+
+        // Validate minimum data
+        if (!formData.title) {
+            alert('<?php echo esc_js( __( "Veuillez d'abord renseigner le nom de l'activité dans les Informations générales.", "eventlist" ) ); ?>');
+            return;
+        }
+
+        // Start loading state
+        isGenerating = true;
+        $generateBtn.addClass('loading');
+
+        // AJAX call
+        $.ajax({
+            url: el_ajax_var.url,
+            type: 'POST',
+            data: {
+                action: 'el_generate_ai_description',
+                nonce: el_ajax_var.nonce,
+                title: formData.title,
+                category: formData.category,
+                event_types: formData.event_types,
+                target_audience: formData.target_audience,
+                themes: formData.themes,
+                events: formData.events,
+                emotions: formData.emotions,
+                location: formData.location,
+                dates: formData.dates,
+                prices: formData.prices,
+                services: formData.services
+            },
+            success: function(response) {
+                if (response.success) {
+                    insertIntoEditor(response.data.description);
+                    // Show success feedback
+                    $generateBtn.addClass('success');
+                    setTimeout(function() {
+                        $generateBtn.removeClass('success');
+                    }, 2000);
+                } else {
+                    alert(response.data.message || '<?php echo esc_js( __( "Erreur lors de la génération", "eventlist" ) ); ?>');
+                }
+            },
+            error: function() {
+                alert('<?php echo esc_js( __( "Erreur de connexion. Veuillez réessayer.", "eventlist" ) ); ?>');
+            },
+            complete: function() {
+                isGenerating = false;
+                $generateBtn.removeClass('loading');
+            }
+        });
+    });
+});
+</script>

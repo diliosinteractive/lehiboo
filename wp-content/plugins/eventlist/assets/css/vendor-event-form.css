@@ -105,7 +105,7 @@
     font-size: 12px;
     margin-bottom: 8px;
     color: #484848;
-    text-transform: uppercase;
+    text-transform: none;
     letter-spacing: 0.04em;
 }
 
@@ -833,7 +833,7 @@
     font-size: 12px;
     margin-bottom: 6px;
     color: #222222;
-    text-transform: uppercase;
+    text-transform: none;
     letter-spacing: 0.5px;
     line-height: 1.4;
 }

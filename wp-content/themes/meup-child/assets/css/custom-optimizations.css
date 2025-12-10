@@ -275,3 +275,110 @@ body.is-vendor-page .ovamenu_shrink.active_fixed {
         margin: 0 auto;
     }
 }
+
+/* --- BOUTON GENERATION IA DESCRIPTION --- */
+
+.el_ai_generator_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+}
+
+.el_ai_generate_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #FF601F 0%, #ff8c4a 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 96, 31, 0.25);
+}
+
+.el_ai_generate_btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 96, 31, 0.35);
+    background: linear-gradient(135deg, #e5561c 0%, #ff7a35 100%);
+}
+
+.el_ai_generate_btn:active {
+    transform: translateY(0);
+}
+
+.el_ai_generate_btn .ai-icon {
+    display: block;
+}
+
+.el_ai_generate_btn .ai-loader {
+    display: none;
+    animation: spin-ai 1s linear infinite;
+}
+
+.el_ai_generate_btn .btn-text {
+    display: inline;
+}
+
+.el_ai_generate_btn .btn-loading-text {
+    display: none;
+}
+
+/* Loading State */
+.el_ai_generate_btn.loading {
+    pointer-events: none;
+    opacity: 0.9;
+    background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+    box-shadow: none;
+}
+
+.el_ai_generate_btn.loading .ai-icon {
+    display: none;
+}
+
+.el_ai_generate_btn.loading .ai-loader {
+    display: block;
+}
+
+.el_ai_generate_btn.loading .btn-text {
+    display: none;
+}
+
+.el_ai_generate_btn.loading .btn-loading-text {
+    display: inline;
+}
+
+/* Success State */
+.el_ai_generate_btn.success {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+@keyframes spin-ai {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.el_ai_hint {
+    font-size: 12px;
+    color: #64748b;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .el_ai_generator_wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .el_ai_generate_btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
