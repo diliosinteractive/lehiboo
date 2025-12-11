@@ -390,12 +390,18 @@ class Lehiboo_Events_API {
         $group_size_max = intval(get_post_meta($event_id, 'event_group_size_max', true));
         $indoor = get_post_meta($event_id, 'event_indoor', true) === '1';
 
-        // Catégories
+        // Catégories (vérifier que ce n'est pas un WP_Error)
         $categories = wp_get_post_terms($event_id, 'event_category', array('fields' => 'slugs'));
+        if (is_wp_error($categories)) {
+            $categories = array();
+        }
         $category = !empty($categories) ? $categories[0] : 'multi';
 
-        // Tags
+        // Tags (vérifier que ce n'est pas un WP_Error)
         $tags = wp_get_post_terms($event_id, 'event_tag', array('fields' => 'names'));
+        if (is_wp_error($tags)) {
+            $tags = array();
+        }
 
         // Image
         $image_url = get_the_post_thumbnail_url($event_id, 'large');
