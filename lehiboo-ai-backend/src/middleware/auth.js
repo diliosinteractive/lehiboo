@@ -6,10 +6,19 @@ import config from '../config/index.js';
 import logger from '../utils/logger.js';
 
 /**
- * Vérifier l'API key dans les headers
+ * Verifier l'API key dans les headers
+ * Accepte: X-API-Key ou Authorization: Bearer xxx
  */
 export const validateApiKey = (req, res, next) => {
-  const apiKey = req.headers['authorization']?.replace('Bearer ', '');
+  // Chercher la cle dans X-API-Key ou Authorization Bearer
+  let apiKey = req.headers['x-api-key'];
+
+  if (!apiKey) {
+    const authHeader = req.headers['authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      apiKey = authHeader.replace('Bearer ', '');
+    }
+  }
 
   if (!apiKey) {
     logger.warn('API request without API key', {
@@ -18,7 +27,7 @@ export const validateApiKey = (req, res, next) => {
     });
     return res.status(401).json({
       success: false,
-      error: 'API key required',
+      error: 'API key required. Use X-API-Key header or Authorization: Bearer <key>',
     });
   }
 

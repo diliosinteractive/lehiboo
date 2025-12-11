@@ -329,8 +329,10 @@ final class LeHiboo_Mobile_API {
             update_option('lma_rate_limit_enabled', isset($_POST['lma_rate_limit_enabled']) ? 'yes' : 'no');
             update_option('lma_log_requests', isset($_POST['lma_log_requests']) ? 'yes' : 'no');
             update_option('lma_cors_origins', sanitize_text_field($_POST['lma_cors_origins']));
+            update_option('lma_ai_backend_url', esc_url_raw($_POST['lma_ai_backend_url']));
+            update_option('lma_ai_backend_api_key', sanitize_text_field($_POST['lma_ai_backend_api_key']));
 
-            echo '<div class="notice notice-success"><p>Paramètres enregistrés.</p></div>';
+            echo '<div class="notice notice-success"><p>Parametres enregistres.</p></div>';
         }
 
         // Regenerate JWT secret
@@ -343,6 +345,8 @@ final class LeHiboo_Mobile_API {
         $rate_limit = get_option('lma_rate_limit_enabled', 'yes');
         $log_requests = get_option('lma_log_requests', 'no');
         $cors_origins = get_option('lma_cors_origins', '*');
+        $ai_backend_url = get_option('lma_ai_backend_url', 'https://preprod.lehiboo.com/api-planner');
+        $ai_backend_api_key = get_option('lma_ai_backend_api_key', '');
 
         ?>
         <div class="wrap">
@@ -391,6 +395,24 @@ final class LeHiboo_Mobile_API {
                         </tr>
                     </table>
 
+                    <h3 style="margin-top: 30px;">Configuration Backend AI (Petit Boo)</h3>
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row">URL Backend AI</th>
+                            <td>
+                                <input type="url" name="lma_ai_backend_url" value="<?php echo esc_attr($ai_backend_url); ?>" class="regular-text">
+                                <p class="description">URL du serveur AI (ex: https://preprod.lehiboo.com/api-planner)</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Cle API Backend AI</th>
+                            <td>
+                                <input type="text" name="lma_ai_backend_api_key" value="<?php echo esc_attr($ai_backend_api_key); ?>" class="regular-text" placeholder="lhb_xxx...">
+                                <p class="description">Cle API pour authentifier les requetes vers le backend AI. Doit correspondre a API_KEY dans le .env du backend.</p>
+                            </td>
+                        </tr>
+                    </table>
+
                     <p class="submit">
                         <input type="submit" name="lma_save_settings" class="button-primary" value="Enregistrer">
                         <input type="submit" name="lma_regenerate_secret" class="button-secondary" value="Régénérer la clé JWT" onclick="return confirm('Attention: Cela invalidera tous les tokens existants. Continuer?');">
@@ -431,9 +453,10 @@ final class LeHiboo_Mobile_API {
                         <tr><td colspan="4"><strong>Authentification</strong></td></tr>
                         <tr><td>POST</td><td>/auth/register</td><td>Inscription client</td><td>-</td></tr>
                         <tr><td>POST</td><td>/auth/login</td><td>Connexion</td><td>-</td></tr>
-                        <tr><td>POST</td><td>/auth/refresh</td><td>Rafraîchir token</td><td>-</td></tr>
-                        <tr><td>POST</td><td>/auth/forgot-password</td><td>Mot de passe oublié</td><td>-</td></tr>
-                        <tr><td>POST</td><td>/auth/logout</td><td>Déconnexion</td><td>JWT</td></tr>
+                        <tr><td>POST</td><td>/auth/refresh</td><td>Rafraichir token</td><td>-</td></tr>
+                        <tr><td>POST</td><td>/auth/forgot-password</td><td>Mot de passe oublie</td><td>-</td></tr>
+                        <tr><td>POST</td><td>/auth/logout</td><td>Deconnexion</td><td>JWT</td></tr>
+                        <tr><td>GET</td><td>/auth/ai-token</td><td>Token API Backend AI</td><td>JWT</td></tr>
 
                         <tr><td colspan="4"><strong>Événements</strong></td></tr>
                         <tr><td>GET</td><td>/events</td><td>Liste des événements</td><td>-</td></tr>

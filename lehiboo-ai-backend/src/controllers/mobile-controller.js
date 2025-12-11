@@ -3,6 +3,7 @@
  */
 
 import { generateMobileResponse } from '../services/ai-service-mobile.js';
+import weatherService from '../services/weather-service.js';
 import logger from '../utils/logger.js';
 import crypto from 'crypto';
 
@@ -167,9 +168,107 @@ export async function handleMobileCities(req, res) {
   });
 }
 
+/**
+ * GET /mobile/weather
+ * Météo actuelle pour une ville
+ */
+export async function handleMobileWeather(req, res) {
+  try {
+    const { city = 'Valenciennes' } = req.query;
+
+    logger.info('Mobile weather request', { city });
+
+    const weather = await weatherService.getCurrentWeather(city);
+
+    if (!weather) {
+      return res.status(404).json({
+        success: false,
+        error: 'Impossible de récupérer la météo'
+      });
+    }
+
+    // Analyser la météo pour des recommandations
+    const analysis = weatherService.analyzeWeather(weather);
+
+    return res.json({
+      success: true,
+      city: weather.location,
+      current: {
+        temperature: weather.temperature,
+        description: weather.description,
+        icon: weather.icon,
+        wind: weather.wind,
+        precipitation: weather.precipitation
+      },
+      alert: analysis.type !== 'perfect' ? {
+        type: analysis.type,
+        icon: analysis.icon,
+        message: analysis.message,
+        recommendIndoor: analysis.recommendIndoor
+      } : null,
+      timestamp: weather.timestamp
+    });
+
+  } catch (error) {
+    logger.error('Mobile weather error', { error: error.message });
+
+    return res.status(500).json({
+      success: false,
+      error: 'Erreur météo'
+    });
+  }
+}
+
+/**
+ * GET /mobile/weather/forecast
+ * Prévisions météo sur plusieurs jours
+ */
+export async function handleMobileWeatherForecast(req, res) {
+  try {
+    const { city = 'Valenciennes', days = 7 } = req.query;
+
+    logger.info('Mobile weather forecast request', { city, days });
+
+    const forecast = await weatherService.getForecast(city, parseInt(days));
+
+    if (!forecast) {
+      return res.status(404).json({
+        success: false,
+        error: 'Impossible de récupérer les prévisions'
+      });
+    }
+
+    // Formater les prévisions pour le mobile
+    const dailyForecast = forecast.daily.time.map((date, i) => ({
+      date,
+      tempMax: forecast.daily.temperature_2m_max[i],
+      tempMin: forecast.daily.temperature_2m_min[i],
+      precipitation: forecast.daily.precipitation_sum[i],
+      description: weatherService.getWeatherDescription(forecast.daily.weathercode[i]),
+      icon: weatherService.getWeatherIcon(forecast.daily.weathercode[i])
+    }));
+
+    return res.json({
+      success: true,
+      city: forecast.location,
+      forecast: dailyForecast
+    });
+
+  } catch (error) {
+    logger.error('Mobile weather forecast error', { error: error.message });
+
+    return res.status(500).json({
+      success: false,
+      error: 'Erreur prévisions météo'
+    });
+  }
+}
+
 export default {
   handleMobileChat,
   handleMobileSearch,
   handleMobileCategories,
-  handleMobileCities
+  handleMobileCities,
+  handleMobileWeather,
+  handleMobileWeatherForecast
 };

@@ -7,7 +7,9 @@ import {
   handleMobileChat,
   handleMobileSearch,
   handleMobileCategories,
-  handleMobileCities
+  handleMobileCities,
+  handleMobileWeather,
+  handleMobileWeatherForecast
 } from '../controllers/mobile-controller.js';
 import { validateApiKey } from '../middleware/auth.js';
 
@@ -50,11 +52,23 @@ router.post('/search', validateApiKey, handleMobileSearch);
 /**
  * GET /mobile/categories - Liste des catégories
  */
-router.get('/categories', handleMobileCategories);
+router.get('/categories', validateApiKey, handleMobileCategories);
 
 /**
  * GET /mobile/cities - Villes suggérées
  */
-router.get('/cities', handleMobileCities);
+router.get('/cities', validateApiKey, handleMobileCities);
+
+/**
+ * GET /mobile/weather - Météo actuelle
+ * Query params: city (default: Valenciennes)
+ */
+router.get('/weather', validateApiKey, handleMobileWeather);
+
+/**
+ * GET /mobile/weather/forecast - Prévisions météo
+ * Query params: city, days (default: 7)
+ */
+router.get('/weather/forecast', validateApiKey, handleMobileWeatherForecast);
 
 export default router;

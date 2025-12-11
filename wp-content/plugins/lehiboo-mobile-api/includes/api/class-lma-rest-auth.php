@@ -62,6 +62,13 @@ class LMA_REST_Auth {
             'callback' => array($this, 'logout'),
             'permission_callback' => array('LMA_JWT_Handler', 'authenticate'),
         ));
+
+        // AI Backend Token - pour obtenir la cle API du backend AI
+        register_rest_route($this->namespace, '/auth/ai-token', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_ai_token'),
+            'permission_callback' => array('LMA_JWT_Handler', 'authenticate'),
+        ));
     }
 
     /**
@@ -370,6 +377,44 @@ class LMA_REST_Auth {
 
         return LMA_Response::success(array(
             'message' => __('Déconnexion réussie', 'lehiboo-mobile-api'),
+        ));
+    }
+
+    /**
+     * Get AI Backend Token
+     * Retourne la cle API pour acceder au backend AI (Petit Boo)
+     */
+    public function get_ai_token($request) {
+        $user = wp_get_current_user();
+
+        if (!$user || !$user->ID) {
+            return LMA_Response::error(
+                'unauthorized',
+                __('Authentification requise', 'lehiboo-mobile-api'),
+                401
+            );
+        }
+
+        // Recuperer la cle API stockee dans les options
+        $api_key = get_option('lma_ai_backend_api_key', '');
+
+        if (empty($api_key)) {
+            return LMA_Response::error(
+                'api_key_not_configured',
+                __('La cle API du backend AI n\'est pas configuree', 'lehiboo-mobile-api'),
+                500
+            );
+        }
+
+        return LMA_Response::success(array(
+            'api_key' => $api_key,
+            'backend_url' => get_option('lma_ai_backend_url', 'https://preprod.lehiboo.com/api-planner'),
+            'expires_in' => 86400, // 24h (informatif, la cle n'expire pas vraiment)
+            'user' => array(
+                'id' => $user->ID,
+                'email' => $user->user_email,
+                'display_name' => $user->display_name,
+            ),
         ));
     }
 

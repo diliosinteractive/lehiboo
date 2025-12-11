@@ -441,6 +441,49 @@ class Lehiboo_AI_Assistant {
             },
             'permission_callback' => '__return_true',
         ));
+
+        // Mobile auth token endpoint (authenticated users only)
+        register_rest_route('lehiboo/v1', '/mobile/token', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_mobile_token'),
+            'permission_callback' => 'is_user_logged_in',
+        ));
+    }
+
+    /**
+     * Get mobile API token for authenticated users
+     */
+    public function get_mobile_token($request) {
+        $user = wp_get_current_user();
+
+        // Get the API key for the backend
+        $api_key = get_option('lehiboo_ai_api_key');
+
+        if (empty($api_key)) {
+            return new WP_Error(
+                'no_api_key',
+                __('API non configurée', 'lehiboo-ai-assistant'),
+                array('status' => 503)
+            );
+        }
+
+        // Return token with user info
+        return rest_ensure_response(array(
+            'success' => true,
+            'token' => $api_key,
+            'user' => array(
+                'id' => $user->ID,
+                'email' => $user->user_email,
+                'name' => $user->display_name,
+            ),
+            'endpoints' => array(
+                'chat' => '/api-planner/mobile/chat',
+                'search' => '/api-planner/mobile/search',
+                'weather' => '/api-planner/mobile/weather',
+                'categories' => '/api-planner/mobile/categories',
+                'cities' => '/api-planner/mobile/cities',
+            ),
+        ));
     }
 
     /**
