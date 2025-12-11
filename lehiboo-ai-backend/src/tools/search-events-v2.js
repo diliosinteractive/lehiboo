@@ -318,7 +318,7 @@ export async function searchEventsV2(input) {
     // Preparer params pour WordPress (alignes avec l'API)
     const searchParams = {
       keyword: filters.keyword,
-      city: filters.city,
+      city: filters.city,  // Sera null si anyLocation=true
       anyLocation: filters.anyLocation || undefined,
       radius: filters.radius,
       lat: filters.lat,
@@ -337,9 +337,11 @@ export async function searchEventsV2(input) {
       sortBy: filters.sortBy
     };
 
-    // Nettoyer les undefined
+    // Nettoyer les undefined ET null (WordPress n'accepte pas null pour city)
     Object.keys(searchParams).forEach(key => {
-      if (searchParams[key] === undefined) delete searchParams[key];
+      if (searchParams[key] === undefined || searchParams[key] === null) {
+        delete searchParams[key];
+      }
     });
 
     logger.info('Searching events v2', { filters, searchParams });
