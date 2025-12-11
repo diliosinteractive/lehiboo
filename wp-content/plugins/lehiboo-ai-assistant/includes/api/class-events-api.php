@@ -96,7 +96,9 @@ class Lehiboo_Events_API {
 
     private function get_search_params_schema() {
         return array(
+            'keyword' => array('type' => 'string', 'description' => 'Recherche dans titre et contenu (Hybrid Search)'),
             'city' => array('type' => 'string', 'description' => 'Ville de recherche'),
+            'anyLocation' => array('type' => 'boolean', 'default' => false, 'description' => 'Ignorer le filtre de localisation (partout)'),
             'radius' => array('type' => 'integer', 'default' => 30, 'description' => 'Rayon en km'),
             'lat' => array('type' => 'number', 'description' => 'Latitude utilisateur'),
             'lng' => array('type' => 'number', 'description' => 'Longitude utilisateur'),
@@ -111,7 +113,8 @@ class Lehiboo_Events_API {
             'outdoor' => array('type' => 'boolean'),
             'familyFriendly' => array('type' => 'boolean'),
             'limit' => array('type' => 'integer', 'default' => 20),
-            'sortBy' => array('type' => 'string', 'enum' => array('relevance', 'price', 'date', 'distance', 'rating'), 'default' => 'relevance')
+            'sortBy' => array('type' => 'string', 'enum' => array('relevance', 'price', 'date', 'distance', 'rating'), 'default' => 'relevance'),
+            'shuffle' => array('type' => 'boolean', 'default' => true, 'description' => 'Melanger les resultats a score egal')
         );
     }
 
@@ -158,8 +161,14 @@ class Lehiboo_Events_API {
             'tax_query' => array('relation' => 'AND')
         );
 
-        // === FILTRE PAR VILLE/ADRESSE ===
-        if (!empty($params['city'])) {
+        // === HYBRID SEARCH: Recherche par mot-cle dans titre et contenu ===
+        if (!empty($params['keyword'])) {
+            $args['s'] = sanitize_text_field($params['keyword']);
+        }
+
+        // === FILTRE PAR VILLE/ADRESSE (sauf si anyLocation=true) ===
+        $any_location = !empty($params['anyLocation']) && $params['anyLocation'];
+        if (!$any_location && !empty($params['city'])) {
             $city = sanitize_text_field($params['city']);
             $args['meta_query'][] = array(
                 'relation' => 'OR',
@@ -282,12 +291,21 @@ class Lehiboo_Events_API {
             }
         }
 
+        // === SHUFFLE: Melanger les resultats pour plus de diversite ===
+        // Par defaut active (shuffle=true), desactivable si shuffle=false
+        $should_shuffle = !isset($params['shuffle']) || $params['shuffle'] !== false;
+        if ($should_shuffle && count($events) > 1) {
+            shuffle($events);
+        }
+
         return new WP_REST_Response(array(
             'success' => true,
             'events' => $events,
             'totalFound' => count($events),
             'query' => array(
-                'city' => $params['city'] ?? null,
+                'keyword' => $params['keyword'] ?? null,
+                'city' => $any_location ? null : ($params['city'] ?? null),
+                'anyLocation' => $any_location,
                 'category' => $params['category'] ?? null,
                 'thematique' => $params['thematique'] ?? null,
                 'maxPrice' => $params['maxPrice'] ?? null,
@@ -295,7 +313,8 @@ class Lehiboo_Events_API {
                 'dateRange' => array(
                     'start' => $params['startDate'] ?? null,
                     'end' => $params['endDate'] ?? null
-                )
+                ),
+                'shuffled' => $should_shuffle
             )
         ), 200);
     }

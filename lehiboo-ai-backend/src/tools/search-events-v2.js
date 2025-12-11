@@ -34,8 +34,12 @@ const DEFAULTS = {
  * Schema Zod SIMPLIFIE - tout est optionnel
  */
 export const searchEventsSchemaV2 = z.object({
+  // HYBRID SEARCH: Recherche par mot-cle dans titre et contenu
+  keyword: z.string().optional(),
+
   // Filtres de base (tous optionnels)
   city: z.string().optional(),
+  anyLocation: z.boolean().optional(), // true = ignorer le filtre ville (recherche partout)
   radius: z.number().min(5).max(100).optional(),
 
   // Coordonnees GPS (pour calcul distance)
@@ -284,8 +288,13 @@ export async function searchEventsV2(input) {
     // Valider et appliquer les defaults
     const validated = searchEventsSchemaV2.parse(input);
 
+    // Si anyLocation=true, on ne met pas de ville par defaut
+    const useAnyLocation = validated.anyLocation === true;
+
     const filters = {
-      city: validated.city || DEFAULTS.city,
+      keyword: validated.keyword,
+      city: useAnyLocation ? null : (validated.city || DEFAULTS.city),
+      anyLocation: useAnyLocation,
       radius: validated.radius || DEFAULTS.radius,
       lat: validated.lat,
       lng: validated.lng,
@@ -308,7 +317,9 @@ export async function searchEventsV2(input) {
 
     // Preparer params pour WordPress (alignes avec l'API)
     const searchParams = {
+      keyword: filters.keyword,
       city: filters.city,
+      anyLocation: filters.anyLocation || undefined,
       radius: filters.radius,
       lat: filters.lat,
       lng: filters.lng,
@@ -355,10 +366,11 @@ export async function searchEventsV2(input) {
 
     // Message de resultat
     let message = '';
+    const locationInfo = filters.anyLocation ? 'dans les Hauts-de-France' : `a ${filters.city}`;
     if (eventsWithScores.length === 0) {
-      message = `Pas d'activite trouvee a ${filters.city}. Essaie d'elargir ta recherche !`;
+      message = `Pas d'activite trouvee ${locationInfo}. Essaie d'elargir ta recherche !`;
     } else {
-      message = `${eventsWithScores.length} activite${eventsWithScores.length > 1 ? 's' : ''} trouvee${eventsWithScores.length > 1 ? 's' : ''} a ${filters.city}`;
+      message = `${eventsWithScores.length} activite${eventsWithScores.length > 1 ? 's' : ''} trouvee${eventsWithScores.length > 1 ? 's' : ''} ${locationInfo}`;
     }
 
     return {
@@ -367,7 +379,9 @@ export async function searchEventsV2(input) {
       totalFound: apiResponse.totalFound || eventsWithScores.length,
       // Params bruts pour le front (mapping direct vers filtres)
       searchParams: {
+        keyword: filters.keyword || null,
         city: filters.city,
+        anyLocation: filters.anyLocation || false,
         radius: filters.radius,
         category: filters.category || null,
         thematique: filters.thematique || null,
@@ -385,7 +399,9 @@ export async function searchEventsV2(input) {
       },
       // Info lisible pour debug/display
       filtersUsed: {
-        city: filters.city,
+        keyword: filters.keyword || null,
+        city: filters.anyLocation ? 'partout' : filters.city,
+        anyLocation: filters.anyLocation || false,
         radius: filters.radius,
         dates: `${dateRange.startDate} → ${dateRange.endDate}`,
         category: filters.category || null,
@@ -435,11 +451,13 @@ export const searchEventsToolV2 = {
 UTILISE CE TOOL DES QUE POSSIBLE - n'attends pas d'avoir toutes les infos !
 
 PARAMETRES DISPONIBLES:
+- keyword: Recherche par nom/mot-cle dans le TITRE (ex: "Escape Game", "Laser Game")
 - city: Ville (defaut: Valenciennes)
+- anyLocation: true pour chercher PARTOUT (ignore le filtre ville). Utilise si "pas a X", "partout", "n'importe ou"
 - radius: Rayon en km (defaut: 30)
 - category: Slug categorie (sport, culture, gastronomie, nature, detente)
 - thematique: Slug thematique LeHiboo specifique
-- tags: Mots-cles libres ["escape game", "spa", etc.]
+- tags: Mots-cles pour filtrer par taxonomie ["spa", "randonnee", etc.]
 - dates: today, tomorrow, thisWeekend, nextWeekend, thisWeek, nextWeek, thisMonth, flexible
 - maxPrice: Budget max en euros
 - freeOnly: true pour uniquement gratuit
@@ -448,14 +466,23 @@ PARAMETRES DISPONIBLES:
 - limit: Nombre de resultats (defaut: 10, max: 50) - NE PAS SPECIFIER sauf demande explicite
 - sortBy: relevance, price, date, distance
 
-IMPORTANT: Ne passe PAS le parametre "limit" sauf si l'utilisateur demande explicitement un nombre precis de resultats. Le defaut de 10 est optimal pour le carrousel.
+IMPORTANT - RECHERCHE PAR NOM:
+Quand l'utilisateur cherche une activite par son nom (ex: "Escape Game", "Laser Game"), utilise le parametre "keyword" pour chercher dans le TITRE.
+Le parametre "tags" sert a filtrer par taxonomie, pas pour la recherche textuelle.
+
+IMPORTANT - SUPPRESSION DE FILTRES:
+- Si l'utilisateur dit "pas a Lille", "partout", "n'importe ou", "toute la region" → utilise { anyLocation: true }
+- Cela SUPPRIME le filtre de ville par defaut
 
 EXEMPLES:
-1. "escape game a Lille" → { city: "Lille", tags: ["escape game"] }
-2. "sortie en couple ce weekend" → { groupType: "couple", dates: "thisWeekend" }
-3. "resto pas cher" → { category: "gastronomie", maxPrice: 30 }
-4. "activite gratuite en famille" → { freeOnly: true, familyFriendly: true }
-5. "quoi faire ?" → {} (utilise les valeurs par defaut)`,
+1. "escape game a Lille" → { city: "Lille", keyword: "escape game" }
+2. "escape game" (sans ville) → { keyword: "escape game" } (cherche a Valenciennes par defaut)
+3. "escape game partout" → { keyword: "escape game", anyLocation: true }
+4. "pas a Lille" → { anyLocation: true }
+5. "sortie en couple ce weekend" → { groupType: "couple", dates: "thisWeekend" }
+6. "resto pas cher" → { category: "gastronomie", maxPrice: 30 }
+7. "activite gratuite en famille" → { freeOnly: true, familyFriendly: true }
+8. "quoi faire ?" → {} (utilise les valeurs par defaut)`,
   parameters: searchEventsSchemaV2,
   execute: searchEventsV2
 };
