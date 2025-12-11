@@ -219,18 +219,36 @@ export async function generateMobileResponse(message, context = {}) {
  * Formater un evenement pour l'affichage mobile
  */
 function formatEventForMobile(event) {
+  // Extraire l'excerpt depuis excerpt ou description
+  const excerpt = event.excerpt || event.description;
+  const shortDesc = excerpt?.substring(0, 150) + (excerpt?.length > 150 ? '...' : '') || '';
+
   return {
     id: event.id,
     title: event.title,
-    description: event.description?.substring(0, 150) + (event.description?.length > 150 ? '...' : ''),
-    image: event.image || event.thumbnail,
+    description: shortDesc,
+    // Images: WordPress retourne imageUrl/thumbnailUrl
+    image: event.imageUrl || event.thumbnailUrl || event.image || event.thumbnail,
+    thumbnail: event.thumbnailUrl || event.imageUrl || event.thumbnail || event.image,
+    // Prix
     price: event.price,
-    priceLabel: event.price === 0 ? 'Gratuit' : `${event.price}€`,
-    location: event.location?.city || event.venue,
-    date: event.dateLabel || event.date,
+    priceLabel: event.priceDisplay || (event.price === 0 ? 'Gratuit' : `${event.price}€`),
+    // Location: objet ou string
+    location: typeof event.location === 'object'
+      ? event.location
+      : { city: event.location || event.venue },
+    // Dates
+    date: event.dates?.display || event.dateLabel || event.date,
+    startDate: event.dates?.start || null,
+    endDate: event.dates?.end || null,
+    // Catégorie et thématiques
     category: event.category,
+    thematiques: event.thematiques || [],
+    tags: event.tags || [],
+    // Score
     matchScore: event.matchScore,
     matchReasons: event.matchReasons?.slice(0, 2) || [],
+    // URLs
     url: event.url,
     bookingUrl: event.bookingUrl
   };
