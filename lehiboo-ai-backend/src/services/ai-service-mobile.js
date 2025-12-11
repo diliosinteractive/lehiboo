@@ -95,29 +95,68 @@ export async function generateMobileResponse(message, context = {}) {
     let searchParams = null;
     let searchFilters = null;
 
-    logger.info('Tool results received', {
+    // Debug complet de la structure result
+    logger.info('AI SDK result structure', {
       hasToolResults: !!result.toolResults,
       toolResultsCount: result.toolResults?.length || 0,
-      toolCalls: result.toolCalls?.map(tc => ({ name: tc.toolName, args: tc.args }))
+      hasToolCalls: !!result.toolCalls,
+      toolCallsCount: result.toolCalls?.length || 0,
+      hasSteps: !!result.steps,
+      stepsCount: result.steps?.length || 0,
+      textLength: result.text?.length || 0
     });
 
-    if (result.toolResults && result.toolResults.length > 0) {
+    // Log les tool calls
+    if (result.toolCalls?.length > 0) {
+      logger.info('Tool calls made', {
+        calls: result.toolCalls.map(tc => ({
+          name: tc.toolName,
+          args: tc.args
+        }))
+      });
+    }
+
+    // Extraire les tool results depuis les steps (AI SDK v3+)
+    if (result.steps && result.steps.length > 0) {
+      for (const step of result.steps) {
+        if (step.toolResults && step.toolResults.length > 0) {
+          for (const tr of step.toolResults) {
+            logger.info('Step tool result', {
+              toolName: tr.toolName,
+              resultKeys: Object.keys(tr.result || {}),
+              success: tr.result?.success,
+              eventsCount: tr.result?.events?.length || 0
+            });
+
+            if (tr.toolName === 'searchEvents' && tr.result?.success) {
+              events = tr.result.events || [];
+              searchParams = tr.result.searchParams;
+              searchFilters = tr.result.filtersUsed;
+              logger.info('Events extracted from step', { count: events.length });
+            }
+          }
+        }
+      }
+    }
+
+    // Fallback: extraire depuis toolResults direct (anciennes versions)
+    if (events.length === 0 && result.toolResults && result.toolResults.length > 0) {
       for (const tr of result.toolResults) {
-        logger.info('Processing tool result', {
+        logger.info('Direct tool result', {
           toolName: tr.toolName,
+          resultKeys: Object.keys(tr.result || {}),
           success: tr.result?.success,
           eventsCount: tr.result?.events?.length || 0,
-          error: tr.result?.error,
-          message: tr.result?.message
+          error: tr.result?.error
         });
 
         if (tr.toolName === 'searchEvents') {
           if (tr.result?.success) {
             events = tr.result.events || [];
-            searchParams = tr.result.searchParams;  // Params bruts pour le front
-            searchFilters = tr.result.filtersUsed;  // Info lisible
+            searchParams = tr.result.searchParams;
+            searchFilters = tr.result.filtersUsed;
+            logger.info('Events extracted from toolResults', { count: events.length });
           } else {
-            // Log l'erreur mais continue
             logger.error('searchEvents tool failed', {
               error: tr.result?.error,
               message: tr.result?.message
@@ -126,6 +165,12 @@ export async function generateMobileResponse(message, context = {}) {
         }
       }
     }
+
+    logger.info('Final extraction result', {
+      eventsCount: events.length,
+      hasSearchParams: !!searchParams,
+      hasSearchFilters: !!searchFilters
+    });
 
     // Nettoyer le texte de reponse
     let responseText = result.text || '';
