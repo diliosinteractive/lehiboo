@@ -67,8 +67,8 @@ export const searchEventsSchemaV2 = z.object({
   outdoor: z.boolean().optional(),
   familyFriendly: z.boolean().optional(),
 
-  // Tri et limite
-  limit: z.number().min(1).max(20).optional(),
+  // Tri et limite (max 50 pour carrousel)
+  limit: z.number().min(1).max(50).optional(),
   sortBy: z.enum(['relevance', 'price', 'rating', 'distance', 'date']).optional()
 });
 
@@ -445,7 +445,10 @@ PARAMETRES DISPONIBLES:
 - freeOnly: true pour uniquement gratuit
 - indoor/outdoor: true/false
 - familyFriendly: true pour famille
+- limit: Nombre de resultats (defaut: 10, max: 50) - NE PAS SPECIFIER sauf demande explicite
 - sortBy: relevance, price, date, distance
+
+IMPORTANT: Ne passe PAS le parametre "limit" sauf si l'utilisateur demande explicitement un nombre precis de resultats. Le defaut de 10 est optimal pour le carrousel.
 
 EXEMPLES:
 1. "escape game a Lille" → { city: "Lille", tags: ["escape game"] }

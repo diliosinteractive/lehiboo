@@ -75,4 +75,4 @@ familyFriendly: boolean (adapte aux familles)
 sortBy: "relevance" | "price" | "date" | "distance"
 ```
 
-Tous les parametres sont optionnels. Passe seulement ceux que tu connais.
+IMPORTANT: Ne passe JAMAIS le parametre "limit". Le systeme retourne automatiquement 10 resultats pour remplir le carrousel. Passe seulement les parametres que tu connais.
