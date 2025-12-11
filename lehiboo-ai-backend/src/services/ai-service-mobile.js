@@ -1,11 +1,11 @@
 /**
- * Service IA Mobile - Version simplifiée pour Flutter
+ * Service IA Mobile v2 - Version simplifiee
  *
- * Différences avec v2:
- * - Prompt plus naturel et conversationnel
- * - Pas de tool calls obligatoires
- * - Pas de quick chips systématiques
- * - Recherche possible avec moins d'infos (3 minimum au lieu de 6)
+ * Changements majeurs:
+ * - L'IA lance searchEvents rapidement (pas besoin de collecter 6 infos)
+ * - Valeurs par defaut intelligentes
+ * - Plus de collectUserProfile obligatoire
+ * - Prompt plus concis et naturel
  */
 
 import { openai } from '@ai-sdk/openai';
@@ -16,155 +16,118 @@ import { fileURLToPath } from 'url';
 import config from '../config/index.js';
 import logger from '../utils/logger.js';
 
-// Import des tools
-import { collectUserProfileTool } from '../tools/collect-user-profile.js';
-import { searchEventsTool } from '../tools/search-events.js';
+// Import du nouveau tool simplifie
+import { searchEventsToolV2 } from '../tools/search-events-v2.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 /**
- * Charger le system prompt mobile
+ * Charger le system prompt mobile v2
  */
 async function loadMobilePrompt() {
   try {
-    const promptPath = join(__dirname, '../prompts/system-prompt-mobile.md');
+    const promptPath = join(__dirname, '../prompts/system-prompt-mobile-v2.md');
     const content = await readFile(promptPath, 'utf-8');
-    logger.info('Mobile system prompt loaded', { length: content.length });
+    logger.info('Mobile system prompt v2 loaded', { length: content.length });
     return content;
   } catch (error) {
-    logger.error('Failed to load mobile prompt', { error: error.message });
-    throw new Error('Mobile system prompt not found');
+    logger.error('Failed to load mobile prompt v2', { error: error.message });
+    throw new Error('Mobile system prompt v2 not found');
   }
 }
 
 /**
  * Construire les messages pour l'IA
+ * Simplifie: on passe juste l'historique et le message
  */
-function buildMessages(currentMessage, history = [], userContext = {}) {
+function buildMessages(currentMessage, history = []) {
   const messages = [];
 
-  // Historique limité aux 8 derniers messages
-  const recentHistory = history.slice(-8);
+  // Historique limite aux 10 derniers messages
+  const recentHistory = history.slice(-10);
   recentHistory.forEach(msg => {
     messages.push({ role: msg.role, content: msg.content });
   });
 
-  // Ajouter contexte utilisateur de manière discrète (pas visible dans la réponse)
-  let userMessage = currentMessage;
+  // Message actuel
+  messages.push({ role: 'user', content: currentMessage });
 
-  if (userContext && Object.keys(userContext).length > 0) {
-    const contextParts = [];
-    if (userContext.groupType) contextParts.push(`groupe: ${userContext.groupType}`);
-    if (userContext.activityType) contextParts.push(`activité: ${userContext.activityType}`);
-    if (userContext.location?.city) contextParts.push(`ville: ${userContext.location.city}`);
-    if (userContext.dates?.type) contextParts.push(`dates: ${userContext.dates.type}`);
-    if (userContext.budgetMax) contextParts.push(`budget: ${userContext.budgetMax}€`);
-    if (userContext.age) contextParts.push(`âge: ${userContext.age}`);
-
-    if (contextParts.length > 0) {
-      userMessage = `[Contexte déjà collecté: ${contextParts.join(', ')}]\n\n${currentMessage}`;
-    }
-  }
-
-  messages.push({ role: 'user', content: userMessage });
   return messages;
 }
 
 /**
- * Vérifier si on peut lancer une recherche (minimum 3 infos)
- */
-function canSearch(userContext) {
-  const hasGroup = !!userContext.groupType;
-  const hasLocation = !!(userContext.location?.city);
-  const hasDates = !!(userContext.dates?.type);
-
-  // Minimum: groupe + (location OU dates)
-  return hasGroup && (hasLocation || hasDates);
-}
-
-/**
- * Générer une réponse IA pour mobile
+ * Generer une reponse IA pour mobile
  */
 export async function generateMobileResponse(message, context = {}) {
   try {
-    logger.info('Mobile AI request', {
+    logger.info('Mobile AI request v2', {
       conversationId: context.conversationId,
       messageLength: message.length,
       historyLength: context.history?.length || 0
     });
 
     const systemPrompt = await loadMobilePrompt();
-    const messages = buildMessages(message, context.history, context.userContext);
+    const messages = buildMessages(message, context.history);
 
-    // Tools disponibles
+    // Un seul tool: searchEvents (simplifie)
     const tools = {
-      collectUserProfile: {
-        description: 'Enregistre les infos utilisateur extraites du message. Ne pas appeler si aucune nouvelle info.',
-        parameters: collectUserProfileTool.parameters,
-        execute: async (input) => {
-          return collectUserProfileTool.execute(input, context.userContext || {});
-        }
-      },
       searchEvents: {
-        description: 'Cherche des activités. Appeler dès que tu as: groupe + (ville OU dates).',
-        parameters: searchEventsTool.parameters,
-        execute: searchEventsTool.execute
+        description: searchEventsToolV2.description,
+        parameters: searchEventsToolV2.parameters,
+        execute: searchEventsToolV2.execute
       }
     };
 
-    // Appel IA - PAS de toolChoice forcé, l'IA décide
+    // Appel IA - temperature plus basse pour etre plus fiable
     const result = await generateText({
       model: openai(config.openai.defaultModel),
       system: systemPrompt,
       messages,
       tools,
-      temperature: 0.8, // Un peu plus créatif
-      maxTokens: 1500,
+      temperature: 0.7,
+      maxTokens: 800, // Reponses plus courtes
       maxSteps: 3
     });
 
-    // Extraire userContext des tool results
-    let extractedUserContext = { ...context.userContext };
+    // Extraire les events des tool results
     let events = [];
+    let searchFilters = null;
 
     if (result.toolResults && result.toolResults.length > 0) {
       for (const tr of result.toolResults) {
-        if (tr.toolName === 'collectUserProfile' && tr.result?.success) {
-          extractedUserContext = { ...extractedUserContext, ...tr.result.updatedProfile };
-        }
         if (tr.toolName === 'searchEvents' && tr.result?.success) {
           events = tr.result.events || [];
+          searchFilters = tr.result.filtersUsed;
         }
       }
     }
 
-    // Nettoyer le texte de réponse
+    // Nettoyer le texte de reponse
     let responseText = result.text || '';
 
-    // Supprimer les artifacts JSON/markdown si présents
+    // Supprimer artifacts techniques
     responseText = responseText
       .replace(/```json[\s\S]*?```/g, '')
-      .replace(/\[Quick Chips:[^\]]*\]/gi, '')
-      .replace(/\[Contexte[^\]]*\]/gi, '')
+      .replace(/\[.*?\]/g, '') // Supprime les [tags] techniques
+      .replace(/\{[\s\S]*?\}/g, '') // Supprime les JSON inline
       .trim();
 
-    // Si pas de texte mais des events, générer un message
+    // Si pas de texte mais des events, generer un message simple
     if (!responseText && events.length > 0) {
-      responseText = `J'ai trouvé ${events.length} activité${events.length > 1 ? 's' : ''} pour toi !`;
+      responseText = `J'ai trouve ${events.length} activite${events.length > 1 ? 's' : ''} !`;
     }
 
-    // Si toujours pas de texte, fallback
+    // Si pas de texte du tout, fallback
     if (!responseText) {
-      responseText = generateFallback(extractedUserContext);
+      responseText = "Dis-moi ce que tu cherches !";
     }
 
     return {
       success: true,
       message: responseText,
-      userContext: extractedUserContext,
       events: events.map(e => formatEventForMobile(e)),
-      canSearch: canSearch(extractedUserContext),
+      searchFilters,
       usage: {
         model: config.openai.defaultModel,
         tokens: result.usage?.totalTokens || 0
@@ -172,18 +135,18 @@ export async function generateMobileResponse(message, context = {}) {
     };
 
   } catch (error) {
-    logger.error('Mobile AI error', { error: error.message, stack: error.stack });
+    logger.error('Mobile AI error v2', { error: error.message, stack: error.stack });
 
     if (error.message?.includes('rate limit')) {
-      throw new Error('Trop de requêtes, patiente quelques secondes.');
+      throw new Error('Trop de requetes, patiente quelques secondes.');
     }
 
-    throw new Error('Oups, un problème est survenu. Réessaie !');
+    throw new Error('Oups, un probleme est survenu. Reessaie !');
   }
 }
 
 /**
- * Formater un événement pour l'affichage mobile
+ * Formater un evenement pour l'affichage mobile
  */
 function formatEventForMobile(event) {
   return {
@@ -201,28 +164,6 @@ function formatEventForMobile(event) {
     url: event.url,
     bookingUrl: event.bookingUrl
   };
-}
-
-/**
- * Message de fallback si l'IA ne répond pas
- */
-function generateFallback(userContext) {
-  if (!userContext.groupType) {
-    return "C'est pour qui cette sortie ?";
-  }
-  if (!userContext.activityType) {
-    return "Tu cherches quel type d'activité ?";
-  }
-  if (!userContext.location?.city && !userContext.dates?.type) {
-    return "C'est pour où et quand ?";
-  }
-  if (!userContext.location?.city) {
-    return "Dans quelle ville ?";
-  }
-  if (!userContext.dates?.type) {
-    return "C'est pour quand ?";
-  }
-  return "Dis-moi ce que tu cherches !";
 }
 
 export default { generateMobileResponse };

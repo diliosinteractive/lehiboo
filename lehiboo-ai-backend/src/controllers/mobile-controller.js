@@ -43,8 +43,8 @@ export async function handleMobileChat(req, res) {
       success: true,
       conversationId,
       message: response.message,
-      userContext: response.userContext,
       events: response.events || [],
+      searchFilters: response.searchFilters,
       history: updatedHistory,
       usage: response.usage
     });
@@ -66,34 +66,33 @@ export async function handleMobileChat(req, res) {
 export async function handleMobileSearch(req, res) {
   try {
     const {
-      groupType = 'solo',
+      groupType,
       activityType,
-      city = 'Valenciennes',
-      radius = 20,
-      dates = 'flexible',
+      city,
+      radius,
+      dates,
       budgetMax,
+      freeOnly,
+      tags,
       limit = 10
     } = req.body;
 
-    logger.info('Mobile search request', { city, activityType, dates });
+    logger.info('Mobile search request', { city, activityType, dates, tags });
 
-    // Import dynamique du tool de recherche
-    const { searchEvents } = await import('../tools/search-events.js');
+    // Import du nouveau tool de recherche
+    const { searchEventsV2 } = await import('../tools/search-events-v2.js');
 
-    // Construire le profil utilisateur
-    const userProfile = {
+    // Appel direct avec les params (le tool gere les defaults)
+    const result = await searchEventsV2({
+      city,
+      radius,
       groupType,
-      age: 30, // Défaut
-      location: { city, radius },
-      dates: { type: dates },
-      activityType: activityType || 'multi',
-      budgetMax: budgetMax || 999
-    };
-
-    const result = await searchEvents({
-      userProfile,
-      limit,
-      sortBy: 'relevance'
+      activityType,
+      dates,
+      budgetMax,
+      freeOnly,
+      tags,
+      limit
     });
 
     if (!result.success) {
@@ -120,7 +119,7 @@ export async function handleMobileSearch(req, res) {
         url: e.url
       })),
       total: result.totalFound,
-      filters: { city, activityType, dates, budgetMax }
+      filtersUsed: result.filtersUsed
     });
 
   } catch (error) {
