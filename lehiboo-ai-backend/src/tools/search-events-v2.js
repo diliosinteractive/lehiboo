@@ -159,7 +159,12 @@ function convertDatesToRange(datesType, specificDate) {
 async function callWordPressAPI(searchParams) {
   const url = `${config.wordpress.apiUrl}/lehiboo/v1/events/search`;
 
-  logger.info('Calling WordPress Events API v2', { url, params: searchParams });
+  logger.info('Calling WordPress Events API v2', {
+    url,
+    params: searchParams,
+    hasApiKey: !!config.wordpress.apiKey,
+    apiKeyPrefix: config.wordpress.apiKey?.substring(0, 10) + '...'
+  });
 
   try {
     const response = await fetch(url, {
@@ -171,13 +176,30 @@ async function callWordPressAPI(searchParams) {
       body: JSON.stringify(searchParams)
     });
 
+    const responseText = await response.text();
+
     if (!response.ok) {
-      throw new Error(`WordPress API returned ${response.status}: ${response.statusText}`);
+      logger.error('WordPress API error response', {
+        status: response.status,
+        statusText: response.statusText,
+        body: responseText
+      });
+      throw new Error(`WordPress API returned ${response.status}: ${responseText}`);
     }
 
-    return await response.json();
+    const data = JSON.parse(responseText);
+    logger.info('WordPress API success', {
+      eventsCount: data.events?.length || 0,
+      totalFound: data.totalFound
+    });
+
+    return data;
   } catch (error) {
-    logger.error('WordPress API call failed', { error: error.message, url });
+    logger.error('WordPress API call failed', {
+      error: error.message,
+      url,
+      stack: error.stack
+    });
     throw error;
   }
 }

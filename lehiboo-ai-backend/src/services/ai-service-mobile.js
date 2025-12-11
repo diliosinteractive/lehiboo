@@ -94,11 +94,33 @@ export async function generateMobileResponse(message, context = {}) {
     let events = [];
     let searchFilters = null;
 
+    logger.info('Tool results received', {
+      hasToolResults: !!result.toolResults,
+      toolResultsCount: result.toolResults?.length || 0,
+      toolCalls: result.toolCalls?.map(tc => ({ name: tc.toolName, args: tc.args }))
+    });
+
     if (result.toolResults && result.toolResults.length > 0) {
       for (const tr of result.toolResults) {
-        if (tr.toolName === 'searchEvents' && tr.result?.success) {
-          events = tr.result.events || [];
-          searchFilters = tr.result.filtersUsed;
+        logger.info('Processing tool result', {
+          toolName: tr.toolName,
+          success: tr.result?.success,
+          eventsCount: tr.result?.events?.length || 0,
+          error: tr.result?.error,
+          message: tr.result?.message
+        });
+
+        if (tr.toolName === 'searchEvents') {
+          if (tr.result?.success) {
+            events = tr.result.events || [];
+            searchFilters = tr.result.filtersUsed;
+          } else {
+            // Log l'erreur mais continue
+            logger.error('searchEvents tool failed', {
+              error: tr.result?.error,
+              message: tr.result?.message
+            });
+          }
         }
       }
     }
