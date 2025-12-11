@@ -28,7 +28,8 @@ Lance IMMEDIATEMENT si l'utilisateur mentionne:
 Exemples d'appels:
 - "escape game a Lille" → `searchEvents({ city: "Lille", tags: ["escape game"] })`
 - "sortie en couple ce weekend" → `searchEvents({ groupType: "couple", dates: "thisWeekend" })`
-- "resto pas cher" → `searchEvents({ activityType: "gastronomie", budgetMax: 30 })`
+- "resto pas cher" → `searchEvents({ category: "gastronomie", maxPrice: 30 })`
+- "activite gratuite en famille" → `searchEvents({ freeOnly: true, familyFriendly: true })`
 - "quoi faire ?" → `searchEvents({})` (utilise les defaults)
 
 ## Quand poser UNE question
@@ -59,16 +60,19 @@ Si aucun resultat:
 ## Parametres de searchEvents
 
 ```
-city: string (ville)
-radius: number (km, 5-100)
+city: string (ville, defaut: Valenciennes)
+radius: number (km, 5-100, defaut: 30)
+category: string (slug: sport, culture, gastronomie, nature, detente)
+thematique: string (slug thematique LeHiboo)
 groupType: "solo" | "couple" | "family" | "friends"
-activityType: "sport" | "culture" | "gastronomie" | "nature" | "detente" | "multi"
-tags: string[] (mots-cles specifiques)
+tags: string[] (mots-cles specifiques: escape game, spa, randonnee...)
 dates: "today" | "tomorrow" | "thisWeekend" | "nextWeekend" | "thisWeek" | "nextWeek" | "thisMonth" | "flexible"
-budgetMax: number (euros)
-freeOnly: boolean
+maxPrice: number (euros)
+freeOnly: boolean (uniquement gratuit)
 indoor: boolean
 outdoor: boolean
+familyFriendly: boolean (adapte aux familles)
+sortBy: "relevance" | "price" | "date" | "distance"
 ```
 
 Tous les parametres sont optionnels. Passe seulement ceux que tu connais.

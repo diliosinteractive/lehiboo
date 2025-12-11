@@ -2,11 +2,55 @@
 /**
  * Le Hiboo AI Assistant - Events API
  *
- * Endpoint REST API pour recherche d'événements
- * Utilisé par le backend Node.js pour les tools IA
+ * API REST pour recherche d'activites
+ * Utilisee par le backend Node.js (Petit Boo) pour les tools IA
+ *
+ * DOCUMENTATION POUR L'IA:
+ * =======================
+ *
+ * POST /wp-json/lehiboo/v1/events/search
+ *
+ * PARAMETRES DE RECHERCHE:
+ * - city (string): Ville - cherche dans l'adresse complete
+ * - radius (int): Rayon en km autour des coordonnees (necessite lat/lng)
+ * - lat/lng (float): Coordonnees GPS de l'utilisateur pour calcul distance
+ * - category (string): Slug de categorie (sport, culture, gastronomie, nature, detente)
+ * - thematique (string): Slug de thematique LeHiboo
+ * - tags (array): Mots-cles a chercher
+ * - maxPrice (float): Prix maximum strict
+ * - freeOnly (bool): Uniquement gratuit
+ * - startDate/endDate (string): Plage de dates YYYY-MM-DD
+ * - indoor/outdoor (bool): Interieur/Exterieur
+ * - familyFriendly (bool): Adapte aux familles
+ * - limit (int): Nombre de resultats (defaut 20)
+ * - sortBy (string): relevance|price|date|distance|rating
+ *
+ * REPONSE:
+ * {
+ *   success: true,
+ *   events: [...],
+ *   totalFound: X,
+ *   query: { filtres appliques }
+ * }
+ *
+ * CHAMPS D'UN EVENEMENT:
+ * - id, title, description, excerpt
+ * - price (float), priceDisplay (string "Gratuit" ou "XX€")
+ * - location: { city, address, venue, lat, lng, distance_km }
+ * - dates: { start, end, display, duration }
+ * - category: { slug, name }
+ * - thematiques: [{ slug, name }]
+ * - tags: [string]
+ * - imageUrl, thumbnailUrl
+ * - url (lien vers la fiche)
+ * - availability: { status, spotsRemaining }
+ * - organizer: { name, verified }
+ * - rating: { average, count } ou null
+ * - restrictions: { ageMin, familyFriendly }
+ * - environment: { indoor, outdoor }
  *
  * @package LehibooAIAssistant
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 if (!defined('ABSPATH')) {
@@ -15,23 +59,14 @@ if (!defined('ABSPATH')) {
 
 class Lehiboo_Events_API {
 
-    /**
-     * Namespace pour l'API
-     */
     const NAMESPACE = 'lehiboo/v1';
+    const META_PREFIX = 'ova_mb_event_';
 
-    /**
-     * Constructor
-     */
     public function __construct() {
         add_action('rest_api_init', array($this, 'register_routes'));
     }
 
-    /**
-     * Enregistre les routes REST API
-     */
     public function register_routes() {
-        // POST /wp-json/lehiboo/v1/events/search
         register_rest_route(self::NAMESPACE, '/events/search', array(
             'methods' => 'POST',
             'callback' => array($this, 'search_events'),
@@ -39,7 +74,6 @@ class Lehiboo_Events_API {
             'args' => $this->get_search_params_schema()
         ));
 
-        // GET /wp-json/lehiboo/v1/events/{id}
         register_rest_route(self::NAMESPACE, '/events/(?P<id>\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_event'),
@@ -47,292 +81,217 @@ class Lehiboo_Events_API {
             'args' => array(
                 'id' => array(
                     'required' => true,
-                    'type' => 'integer',
-                    'description' => 'ID de l\'événement'
+                    'type' => 'integer'
                 )
             )
         ));
+
+        // Endpoint pour lister les categories/thematiques (utile pour l'IA)
+        register_rest_route(self::NAMESPACE, '/events/filters', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_filters'),
+            'permission_callback' => array($this, 'check_api_key')
+        ));
     }
 
-    /**
-     * Schema des paramètres de recherche
-     */
     private function get_search_params_schema() {
         return array(
-            'city' => array(
-                'required' => true,
-                'type' => 'string',
-                'description' => 'Ville de recherche'
-            ),
-            'radius' => array(
-                'required' => false,
-                'type' => 'integer',
-                'default' => 20,
-                'description' => 'Rayon de recherche en km'
-            ),
-            'startDate' => array(
-                'required' => false,
-                'type' => 'string',
-                'format' => 'date',
-                'description' => 'Date de début (YYYY-MM-DD)'
-            ),
-            'endDate' => array(
-                'required' => false,
-                'type' => 'string',
-                'format' => 'date',
-                'description' => 'Date de fin (YYYY-MM-DD)'
-            ),
-            'maxPrice' => array(
-                'required' => false,
-                'type' => 'number',
-                'description' => 'Prix maximum (STRICT)'
-            ),
-            'minPrice' => array(
-                'required' => false,
-                'type' => 'number',
-                'description' => 'Prix minimum'
-            ),
-            'category' => array(
-                'required' => false,
-                'type' => 'string',
-                'enum' => array('sport', 'culture', 'gastronomie', 'nature', 'detente'),
-                'description' => 'Catégorie d\'activité'
-            ),
-            'minAge' => array(
-                'required' => false,
-                'type' => 'integer',
-                'description' => 'Âge minimum de l\'utilisateur (pour filtrage restrictions)'
-            ),
-            'indoor' => array(
-                'required' => false,
-                'type' => 'boolean',
-                'description' => 'Filtrer activités indoor'
-            ),
-            'tags' => array(
-                'required' => false,
-                'type' => 'array',
-                'items' => array('type' => 'string'),
-                'description' => 'Tags pour affiner'
-            ),
-            'limit' => array(
-                'required' => false,
-                'type' => 'integer',
-                'default' => 5,
-                'description' => 'Nombre de résultats'
-            ),
-            'sortBy' => array(
-                'required' => false,
-                'type' => 'string',
-                'enum' => array('relevance', 'price', 'rating', 'distance'),
-                'default' => 'relevance',
-                'description' => 'Tri des résultats'
-            )
+            'city' => array('type' => 'string', 'description' => 'Ville de recherche'),
+            'radius' => array('type' => 'integer', 'default' => 30, 'description' => 'Rayon en km'),
+            'lat' => array('type' => 'number', 'description' => 'Latitude utilisateur'),
+            'lng' => array('type' => 'number', 'description' => 'Longitude utilisateur'),
+            'category' => array('type' => 'string', 'description' => 'Slug categorie'),
+            'thematique' => array('type' => 'string', 'description' => 'Slug thematique'),
+            'tags' => array('type' => 'array', 'items' => array('type' => 'string')),
+            'maxPrice' => array('type' => 'number'),
+            'freeOnly' => array('type' => 'boolean', 'default' => false),
+            'startDate' => array('type' => 'string', 'format' => 'date'),
+            'endDate' => array('type' => 'string', 'format' => 'date'),
+            'indoor' => array('type' => 'boolean'),
+            'outdoor' => array('type' => 'boolean'),
+            'familyFriendly' => array('type' => 'boolean'),
+            'limit' => array('type' => 'integer', 'default' => 20),
+            'sortBy' => array('type' => 'string', 'enum' => array('relevance', 'price', 'date', 'distance', 'rating'), 'default' => 'relevance')
         );
     }
 
-    /**
-     * Vérifie la clé API
-     */
     public function check_api_key($request) {
         $auth_header = $request->get_header('authorization');
 
-        // DEBUG: Log tous les headers reçus
-        error_log('[Lehiboo Events API] Authorization header: ' . var_export($auth_header, true));
-        error_log('[Lehiboo Events API] All headers: ' . json_encode($request->get_headers()));
-
         if (empty($auth_header)) {
-            error_log('[Lehiboo Events API] ERROR: Authorization header missing');
             return new WP_Error('no_auth', 'Authorization header missing', array('status' => 401));
         }
 
-        // Format attendu: "Bearer sk-xxxxx"
         $parts = explode(' ', $auth_header);
         if (count($parts) !== 2 || $parts[0] !== 'Bearer') {
-            error_log('[Lehiboo Events API] ERROR: Invalid authorization format. Parts: ' . json_encode($parts));
             return new WP_Error('invalid_auth', 'Invalid authorization format', array('status' => 401));
         }
 
         $provided_key = $parts[1];
         $stored_key = get_option('lehiboo_ai_api_key');
 
-        // DEBUG: Compare les clés (masquer pour sécurité en prod)
-        error_log('[Lehiboo Events API] Provided key (first 20 chars): ' . substr($provided_key, 0, 20) . '...');
-        error_log('[Lehiboo Events API] Stored key (first 20 chars): ' . substr($stored_key, 0, 20) . '...');
-        error_log('[Lehiboo Events API] Keys match: ' . ($provided_key === $stored_key ? 'YES' : 'NO'));
-
         if (empty($stored_key)) {
-            // Pas de clé configurée = accès autorisé en dev
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('[Lehiboo Events API] No stored key but WP_DEBUG=true, allowing access');
                 return true;
             }
-            error_log('[Lehiboo Events API] ERROR: No key configured');
             return new WP_Error('no_key_configured', 'API key not configured', array('status' => 500));
         }
 
         if ($provided_key !== $stored_key) {
-            error_log('[Lehiboo Events API] ERROR: Invalid API key - keys do not match');
             return new WP_Error('invalid_key', 'Invalid API key', array('status' => 403));
         }
 
-        error_log('[Lehiboo Events API] ✅ API key validation successful');
         return true;
     }
 
     /**
-     * Endpoint principal: Recherche d'événements
+     * Recherche d'evenements
      */
     public function search_events($request) {
         $params = $request->get_json_params();
 
-        // Construire la query WordPress
         $args = array(
             'post_type' => 'event',
             'post_status' => 'publish',
-            'posts_per_page' => isset($params['limit']) ? intval($params['limit']) : 20,
+            'posts_per_page' => isset($params['limit']) ? min(intval($params['limit']), 50) : 20,
             'meta_query' => array('relation' => 'AND'),
             'tax_query' => array('relation' => 'AND')
         );
 
-        // Filtre par ville - cherche dans TOUS les champs d'adresse
+        // === FILTRE PAR VILLE/ADRESSE ===
         if (!empty($params['city'])) {
+            $city = sanitize_text_field($params['city']);
             $args['meta_query'][] = array(
                 'relation' => 'OR',
-                array(
-                    'key' => 'ova_mb_event_map_address',
-                    'value' => $params['city'],
-                    'compare' => 'LIKE'
-                ),
-                array(
-                    'key' => 'ova_mb_event_address',
-                    'value' => $params['city'],
-                    'compare' => 'LIKE'
-                ),
-                array(
-                    'key' => 'ova_mb_event_map_name',
-                    'value' => $params['city'],
-                    'compare' => 'LIKE'
-                )
+                array('key' => self::META_PREFIX . 'map_address', 'value' => $city, 'compare' => 'LIKE'),
+                array('key' => self::META_PREFIX . 'address', 'value' => $city, 'compare' => 'LIKE'),
+                array('key' => self::META_PREFIX . 'map_name', 'value' => $city, 'compare' => 'LIKE')
             );
         }
 
-        // Filtre par prix MAX (STRICT!) - OvaTheme utilise ova_mb_event_min_price
-        if (isset($params['maxPrice'])) {
+        // === FILTRE PAR PRIX ===
+        if (!empty($params['freeOnly']) && $params['freeOnly']) {
             $args['meta_query'][] = array(
-                'key' => 'ova_mb_event_min_price',
+                'relation' => 'OR',
+                array('key' => self::META_PREFIX . 'min_price', 'value' => 0, 'type' => 'NUMERIC', 'compare' => '='),
+                array('key' => self::META_PREFIX . 'min_price', 'compare' => 'NOT EXISTS')
+            );
+        } elseif (isset($params['maxPrice'])) {
+            $args['meta_query'][] = array(
+                'key' => self::META_PREFIX . 'min_price',
                 'value' => floatval($params['maxPrice']),
                 'type' => 'NUMERIC',
                 'compare' => '<='
             );
         }
 
-        // Filtre par prix MIN
-        if (isset($params['minPrice'])) {
-            $args['meta_query'][] = array(
-                'key' => 'ova_mb_event_min_price',
-                'value' => floatval($params['minPrice']),
-                'type' => 'NUMERIC',
-                'compare' => '>='
-            );
-        }
-
-        // Filtre par dates (OvaTheme utilise timestamps: ova_mb_event_start_date_str / ova_mb_event_end_date_str)
+        // === FILTRE PAR DATES ===
         if (!empty($params['startDate'])) {
-            // Convertir la date en timestamp pour comparaison
-            $start_timestamp = strtotime($params['startDate']);
+            $start_ts = strtotime($params['startDate']);
             $args['meta_query'][] = array(
-                'key' => 'ova_mb_event_end_date_str',
-                'value' => $start_timestamp,
+                'key' => self::META_PREFIX . 'end_date_str',
+                'value' => $start_ts,
                 'type' => 'NUMERIC',
                 'compare' => '>='
             );
         }
 
         if (!empty($params['endDate'])) {
-            // Convertir la date en timestamp pour comparaison
-            $end_timestamp = strtotime($params['endDate'] . ' 23:59:59');
+            $end_ts = strtotime($params['endDate'] . ' 23:59:59');
             $args['meta_query'][] = array(
-                'key' => 'ova_mb_event_start_date_str',
-                'value' => $end_timestamp,
+                'key' => self::META_PREFIX . 'start_date_str',
+                'value' => $end_ts,
                 'type' => 'NUMERIC',
                 'compare' => '<='
             );
         }
 
-        // Filtre par catégorie
+        // === FILTRE PAR CATEGORIE ===
         if (!empty($params['category'])) {
             $args['tax_query'][] = array(
-                'taxonomy' => 'event_category',
+                'taxonomy' => 'event_cat',
                 'field' => 'slug',
-                'terms' => $params['category']
+                'terms' => sanitize_title($params['category'])
             );
         }
 
-        // Filtre par âge minimum (restrictions d'âge)
-        if (isset($params['minAge'])) {
-            $args['meta_query'][] = array(
-                'relation' => 'OR',
-                array(
-                    'key' => 'event_min_age',
-                    'compare' => 'NOT EXISTS' // Pas de restriction
-                ),
-                array(
-                    'key' => 'event_min_age',
-                    'value' => intval($params['minAge']),
-                    'type' => 'NUMERIC',
-                    'compare' => '<='
-                )
+        // === FILTRE PAR THEMATIQUE (LeHiboo) ===
+        if (!empty($params['thematique'])) {
+            $args['tax_query'][] = array(
+                'taxonomy' => 'event_thematique',
+                'field' => 'slug',
+                'terms' => sanitize_title($params['thematique'])
             );
         }
 
-        // Filtre indoor/outdoor
-        if (isset($params['indoor'])) {
-            $args['meta_query'][] = array(
-                'key' => 'event_indoor',
-                'value' => $params['indoor'] ? '1' : '0',
-                'compare' => '='
+        // === FILTRE PAR TAGS ===
+        if (!empty($params['tags']) && is_array($params['tags'])) {
+            $args['tax_query'][] = array(
+                'taxonomy' => 'event_tag',
+                'field' => 'name',
+                'terms' => array_map('sanitize_text_field', $params['tags']),
+                'operator' => 'IN'
             );
         }
 
-        // Tri (OvaTheme meta fields)
-        if (isset($params['sortBy'])) {
-            switch ($params['sortBy']) {
-                case 'price':
-                    $args['meta_key'] = 'ova_mb_event_min_price';
-                    $args['orderby'] = 'meta_value_num';
-                    $args['order'] = 'ASC';
-                    break;
-                case 'rating':
-                    // Rating peut ne pas exister avec OvaTheme, on garde le tri par défaut
-                    $args['orderby'] = 'date';
-                    $args['order'] = 'DESC';
-                    break;
-                case 'date':
-                    $args['meta_key'] = 'ova_mb_event_start_date_str';
-                    $args['orderby'] = 'meta_value_num';
-                    $args['order'] = 'ASC';
-                    break;
-                // 'relevance' et 'distance' gérés côté backend
+        // === TRI ===
+        switch ($params['sortBy'] ?? 'relevance') {
+            case 'price':
+                $args['meta_key'] = self::META_PREFIX . 'min_price';
+                $args['orderby'] = 'meta_value_num';
+                $args['order'] = 'ASC';
+                break;
+            case 'date':
+                $args['meta_key'] = self::META_PREFIX . 'start_date_str';
+                $args['orderby'] = 'meta_value_num';
+                $args['order'] = 'ASC';
+                break;
+            default:
+                $args['orderby'] = 'date';
+                $args['order'] = 'DESC';
+        }
+
+        // Executer la query
+        $query = new WP_Query($args);
+        $events = array();
+        $user_lat = isset($params['lat']) ? floatval($params['lat']) : null;
+        $user_lng = isset($params['lng']) ? floatval($params['lng']) : null;
+
+        foreach ($query->posts as $post) {
+            $event = $this->format_event($post, $user_lat, $user_lng);
+            if ($event) {
+                $events[] = $event;
             }
         }
 
-        // Exécuter la query
-        $query = new WP_Query($args);
-        $events = array();
+        // Filtrage par rayon si coordonnees fournies
+        if ($user_lat && $user_lng && !empty($params['radius'])) {
+            $radius = intval($params['radius']);
+            $events = array_filter($events, function($e) use ($radius) {
+                return !isset($e['location']['distance_km']) || $e['location']['distance_km'] <= $radius;
+            });
+            $events = array_values($events);
 
-        foreach ($query->posts as $post) {
-            $events[] = $this->format_event($post);
+            // Tri par distance si demande
+            if (($params['sortBy'] ?? '') === 'distance') {
+                usort($events, function($a, $b) {
+                    $da = $a['location']['distance_km'] ?? 9999;
+                    $db = $b['location']['distance_km'] ?? 9999;
+                    return $da <=> $db;
+                });
+            }
         }
 
-        // Réponse
         return new WP_REST_Response(array(
             'success' => true,
             'events' => $events,
-            'totalFound' => $query->found_posts,
+            'totalFound' => count($events),
             'query' => array(
                 'city' => $params['city'] ?? null,
-                'maxPrice' => $params['maxPrice'] ?? null,
                 'category' => $params['category'] ?? null,
+                'thematique' => $params['thematique'] ?? null,
+                'maxPrice' => $params['maxPrice'] ?? null,
+                'freeOnly' => $params['freeOnly'] ?? false,
                 'dateRange' => array(
                     'start' => $params['startDate'] ?? null,
                     'end' => $params['endDate'] ?? null
@@ -342,7 +301,7 @@ class Lehiboo_Events_API {
     }
 
     /**
-     * Endpoint: Récupérer un événement par ID
+     * Detail d'un evenement
      */
     public function get_event($request) {
         $event_id = $request->get_param('id');
@@ -354,104 +313,222 @@ class Lehiboo_Events_API {
 
         return new WP_REST_Response(array(
             'success' => true,
-            'event' => $this->format_event($post)
+            'event' => $this->format_event_detail($post)
         ), 200);
     }
 
     /**
-     * Formate un événement pour l'API
-     * Compatible avec OvaTheme Events (préfixe ova_mb_event_*)
+     * Liste des filtres disponibles (pour l'IA)
      */
-    private function format_event($post) {
-        $event_id = $post->ID;
+    public function get_filters($request) {
+        $categories = get_terms(array('taxonomy' => 'event_cat', 'hide_empty' => true));
+        $thematiques = get_terms(array('taxonomy' => 'event_thematique', 'hide_empty' => true));
 
-        // Récupérer meta fields OvaTheme
-        $price = floatval(get_post_meta($event_id, 'ova_mb_event_min_price', true));
-        $map_address = get_post_meta($event_id, 'ova_mb_event_map_address', true); // "Paris, France"
-        $address = get_post_meta($event_id, 'ova_mb_event_address', true);
-        $start_timestamp = intval(get_post_meta($event_id, 'ova_mb_event_start_date_str', true));
-        $end_timestamp = intval(get_post_meta($event_id, 'ova_mb_event_end_date_str', true));
+        return new WP_REST_Response(array(
+            'success' => true,
+            'categories' => array_map(function($t) {
+                return array('slug' => $t->slug, 'name' => $t->name, 'count' => $t->count);
+            }, is_array($categories) ? $categories : array()),
+            'thematiques' => array_map(function($t) {
+                return array('slug' => $t->slug, 'name' => $t->name, 'count' => $t->count);
+            }, is_array($thematiques) ? $thematiques : array()),
+            'cities' => $this->get_available_cities()
+        ), 200);
+    }
 
-        // Extraire la ville du map_address (ex: "Paris, France" → "Paris")
-        $city = '';
-        if (!empty($map_address)) {
+    /**
+     * Recuperer les villes disponibles
+     */
+    private function get_available_cities() {
+        global $wpdb;
+
+        $results = $wpdb->get_col($wpdb->prepare(
+            "SELECT DISTINCT meta_value FROM {$wpdb->postmeta}
+             WHERE meta_key = %s AND meta_value != ''
+             ORDER BY meta_value",
+            self::META_PREFIX . 'map_name'
+        ));
+
+        return array_filter(array_unique($results));
+    }
+
+    /**
+     * Formater un evenement pour la liste
+     */
+    private function format_event($post, $user_lat = null, $user_lng = null) {
+        $id = $post->ID;
+
+        // Location
+        $map_address = get_post_meta($id, self::META_PREFIX . 'map_address', true);
+        $address = get_post_meta($id, self::META_PREFIX . 'address', true);
+        $map_name = get_post_meta($id, self::META_PREFIX . 'map_name', true);
+        $lat = floatval(get_post_meta($id, self::META_PREFIX . 'map_lat', true));
+        $lng = floatval(get_post_meta($id, self::META_PREFIX . 'map_lng', true));
+
+        // Extraire la ville
+        $city = $map_name;
+        if (!$city && $map_address) {
             $parts = explode(',', $map_address);
             $city = trim($parts[0]);
         }
 
-        // Convertir timestamps en dates ISO
-        $start_date = $start_timestamp ? date('Y-m-d', $start_timestamp) : '';
-        $end_date = $end_timestamp ? date('Y-m-d', $end_timestamp) : '';
+        // Calcul distance
+        $distance_km = null;
+        if ($user_lat && $user_lng && $lat && $lng) {
+            $distance_km = $this->calculate_distance($user_lat, $user_lng, $lat, $lng);
+        }
 
-        // Calculer durée si possible
-        $duration = '';
-        if ($start_timestamp && $end_timestamp) {
-            $hours = round(($end_timestamp - $start_timestamp) / 3600, 1);
+        // Prix
+        $price = floatval(get_post_meta($id, self::META_PREFIX . 'min_price', true));
+        $price_display = $price == 0 ? 'Gratuit' : sprintf('%d€', $price);
+
+        // Dates
+        $start_ts = intval(get_post_meta($id, self::META_PREFIX . 'start_date_str', true));
+        $end_ts = intval(get_post_meta($id, self::META_PREFIX . 'end_date_str', true));
+        $start_date = $start_ts ? date('Y-m-d', $start_ts) : '';
+        $end_date = $end_ts ? date('Y-m-d', $end_ts) : $start_date;
+
+        // Duree
+        $duration = null;
+        if ($start_ts && $end_ts && $end_ts > $start_ts) {
+            $hours = round(($end_ts - $start_ts) / 3600, 1);
             $duration = $hours . 'h';
         }
 
-        // Coordonnées GPS
-        $lat = floatval(get_post_meta($event_id, 'ova_mb_event_map_lat', true));
-        $lng = floatval(get_post_meta($event_id, 'ova_mb_event_map_lng', true));
-
-        // Champs optionnels (peuvent ne pas exister avec OvaTheme)
-        $rating = floatval(get_post_meta($event_id, 'event_rating', true));
-        $reviews = intval(get_post_meta($event_id, 'event_reviews_count', true));
-        $min_age = intval(get_post_meta($event_id, 'event_min_age', true));
-        $max_age = intval(get_post_meta($event_id, 'event_max_age', true));
-        $group_size_min = intval(get_post_meta($event_id, 'event_group_size_min', true));
-        $group_size_max = intval(get_post_meta($event_id, 'event_group_size_max', true));
-        $indoor = get_post_meta($event_id, 'event_indoor', true) === '1';
-
-        // Catégories (vérifier que ce n'est pas un WP_Error)
-        $categories = wp_get_post_terms($event_id, 'event_category', array('fields' => 'slugs'));
-        if (is_wp_error($categories)) {
-            $categories = array();
+        // Categorie
+        $categories = wp_get_post_terms($id, 'event_cat', array('fields' => 'all'));
+        $category = null;
+        if (!is_wp_error($categories) && !empty($categories)) {
+            $cat = $categories[0];
+            $category = array('slug' => $cat->slug, 'name' => $cat->name);
         }
-        $category = !empty($categories) ? $categories[0] : 'multi';
 
-        // Tags (vérifier que ce n'est pas un WP_Error)
-        $tags = wp_get_post_terms($event_id, 'event_tag', array('fields' => 'names'));
-        if (is_wp_error($tags)) {
-            $tags = array();
+        // Thematiques
+        $thematiques_terms = wp_get_post_terms($id, 'event_thematique', array('fields' => 'all'));
+        $thematiques = array();
+        if (!is_wp_error($thematiques_terms)) {
+            foreach ($thematiques_terms as $t) {
+                $thematiques[] = array('slug' => $t->slug, 'name' => $t->name);
+            }
         }
+
+        // Tags
+        $tags_terms = wp_get_post_terms($id, 'event_tag', array('fields' => 'names'));
+        $tags = is_wp_error($tags_terms) ? array() : $tags_terms;
 
         // Image
-        $image_url = get_the_post_thumbnail_url($event_id, 'large');
+        $image_url = get_the_post_thumbnail_url($id, 'large');
+        $thumbnail_url = get_the_post_thumbnail_url($id, 'medium');
 
-        // Formater l'événement
+        // Venue
+        $venues = get_post_meta($id, self::META_PREFIX . 'venue', true);
+        $venue_name = '';
+        if (is_array($venues) && !empty($venues)) {
+            $venue_name = $venues[0];
+        } elseif (is_string($venues)) {
+            $venue_name = $venues;
+        }
+
         return array(
-            'id' => (string)$event_id,
+            'id' => (string)$id,
             'title' => $post->post_title,
-            'description' => wp_trim_words($post->post_content, 30),
+            'excerpt' => wp_trim_words(strip_tags($post->post_content), 25),
             'price' => $price,
-            'currency' => 'EUR',
+            'priceDisplay' => $price_display,
             'location' => array(
                 'city' => $city,
                 'address' => $address ?: $map_address,
-                'coordinates' => ($lat && $lng) ? array($lat, $lng) : null,
-                'distance' => null // Calculé côté backend si coordonnées fournies
+                'venue' => $venue_name,
+                'lat' => $lat ?: null,
+                'lng' => $lng ?: null,
+                'distance_km' => $distance_km
             ),
-            'dates' => array_filter(array($start_date, $end_date)),
-            'duration' => $duration ?: null,
+            'dates' => array(
+                'start' => $start_date,
+                'end' => $end_date,
+                'display' => $this->format_date_display($start_date),
+                'duration' => $duration
+            ),
             'category' => $category,
+            'thematiques' => $thematiques,
             'tags' => $tags,
-            'rating' => $rating > 0 ? $rating : null,
-            'reviews' => $reviews,
             'imageUrl' => $image_url ?: null,
-            'bookingUrl' => get_permalink($event_id),
-            'ageRestriction' => array(
-                'min' => $min_age > 0 ? $min_age : null,
-                'max' => $max_age > 0 ? $max_age : null
-            ),
-            'groupSize' => array(
-                'min' => $group_size_min > 0 ? $group_size_min : 1,
-                'max' => $group_size_max > 0 ? $group_size_max : null
-            ),
-            'indoor' => $indoor
+            'thumbnailUrl' => $thumbnail_url ?: null,
+            'url' => get_permalink($id)
         );
+    }
+
+    /**
+     * Formater un evenement detail complet
+     */
+    private function format_event_detail($post) {
+        $event = $this->format_event($post);
+
+        $id = $post->ID;
+
+        // Description complete
+        $event['description'] = apply_filters('the_content', $post->post_content);
+
+        // Galerie
+        $gallery_ids = get_post_meta($id, self::META_PREFIX . 'gallery', true);
+        $event['gallery'] = array();
+        if (is_array($gallery_ids)) {
+            foreach ($gallery_ids as $img_id) {
+                $url = wp_get_attachment_image_url($img_id, 'large');
+                if ($url) $event['gallery'][] = $url;
+            }
+        }
+
+        // Restrictions
+        $event['restrictions'] = array(
+            'ageMin' => intval(get_post_meta($id, self::META_PREFIX . 'min_age', true)) ?: null,
+            'ageMax' => intval(get_post_meta($id, self::META_PREFIX . 'max_age', true)) ?: null,
+            'familyFriendly' => (bool)get_post_meta($id, self::META_PREFIX . 'family_friendly', true)
+        );
+
+        // Environment
+        $event['environment'] = array(
+            'indoor' => (bool)get_post_meta($id, self::META_PREFIX . 'indoor', true),
+            'outdoor' => (bool)get_post_meta($id, self::META_PREFIX . 'outdoor', true)
+        );
+
+        // Organisateur
+        $author = get_user_by('ID', $post->post_author);
+        $event['organizer'] = $author ? array(
+            'name' => $author->display_name,
+            'verified' => (bool)get_user_meta($author->ID, 'verified', true)
+        ) : null;
+
+        return $event;
+    }
+
+    /**
+     * Formater une date pour affichage
+     */
+    private function format_date_display($date) {
+        if (!$date) return '';
+        $ts = strtotime($date);
+        return date_i18n('D j M Y', $ts);
+    }
+
+    /**
+     * Calcul distance Haversine
+     */
+    private function calculate_distance($lat1, $lng1, $lat2, $lng2) {
+        $earth_radius = 6371;
+        $lat1 = deg2rad($lat1);
+        $lat2 = deg2rad($lat2);
+        $lng1 = deg2rad($lng1);
+        $lng2 = deg2rad($lng2);
+
+        $dlat = $lat2 - $lat1;
+        $dlng = $lng2 - $lng1;
+
+        $a = sin($dlat/2) * sin($dlat/2) + cos($lat1) * cos($lat2) * sin($dlng/2) * sin($dlng/2);
+        $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+
+        return round($earth_radius * $c, 1);
     }
 }
 
-// Initialiser l'API
 new Lehiboo_Events_API();
