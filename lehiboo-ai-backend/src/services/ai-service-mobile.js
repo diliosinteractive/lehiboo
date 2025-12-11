@@ -92,6 +92,7 @@ export async function generateMobileResponse(message, context = {}) {
 
     // Extraire les events des tool results
     let events = [];
+    let searchParams = null;
     let searchFilters = null;
 
     logger.info('Tool results received', {
@@ -113,7 +114,8 @@ export async function generateMobileResponse(message, context = {}) {
         if (tr.toolName === 'searchEvents') {
           if (tr.result?.success) {
             events = tr.result.events || [];
-            searchFilters = tr.result.filtersUsed;
+            searchParams = tr.result.searchParams;  // Params bruts pour le front
+            searchFilters = tr.result.filtersUsed;  // Info lisible
           } else {
             // Log l'erreur mais continue
             logger.error('searchEvents tool failed', {
@@ -149,7 +151,8 @@ export async function generateMobileResponse(message, context = {}) {
       success: true,
       message: responseText,
       events: events.map(e => formatEventForMobile(e)),
-      searchFilters,
+      searchParams,   // Params bruts pour mapping front
+      searchFilters,  // Info lisible pour debug
       usage: {
         model: config.openai.defaultModel,
         tokens: result.usage?.totalTokens || 0

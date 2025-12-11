@@ -365,6 +365,25 @@ export async function searchEventsV2(input) {
       success: true,
       events: eventsWithScores,
       totalFound: apiResponse.totalFound || eventsWithScores.length,
+      // Params bruts pour le front (mapping direct vers filtres)
+      searchParams: {
+        city: filters.city,
+        radius: filters.radius,
+        category: filters.category || null,
+        thematique: filters.thematique || null,
+        tags: filters.tags.length > 0 ? filters.tags : null,
+        dates: filters.dates,  // Enum: today, tomorrow, thisWeekend, etc.
+        startDate: dateRange.startDate,
+        endDate: dateRange.endDate,
+        maxPrice: filters.maxPrice === DEFAULTS.maxPrice ? null : filters.maxPrice,
+        freeOnly: filters.freeOnly || false,
+        indoor: filters.indoor || null,
+        outdoor: filters.outdoor || null,
+        familyFriendly: filters.familyFriendly || null,
+        groupType: filters.groupType || null,
+        sortBy: filters.sortBy
+      },
+      // Info lisible pour debug/display
       filtersUsed: {
         city: filters.city,
         radius: filters.radius,

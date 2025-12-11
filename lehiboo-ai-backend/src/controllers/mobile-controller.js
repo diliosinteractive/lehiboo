@@ -44,7 +44,8 @@ export async function handleMobileChat(req, res) {
       conversationId,
       message: response.message,
       events: response.events || [],
-      searchFilters: response.searchFilters,
+      searchParams: response.searchParams || null,  // Params bruts pour mapping front
+      searchFilters: response.searchFilters,        // Info lisible
       history: updatedHistory,
       usage: response.usage
     });
@@ -119,7 +120,8 @@ export async function handleMobileSearch(req, res) {
         url: e.url
       })),
       total: result.totalFound,
-      filtersUsed: result.filtersUsed
+      searchParams: result.searchParams,  // Params bruts pour mapping front
+      filtersUsed: result.filtersUsed     // Info lisible
     });
 
   } catch (error) {
