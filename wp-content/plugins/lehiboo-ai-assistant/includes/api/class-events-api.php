@@ -189,17 +189,30 @@ class Lehiboo_Events_API {
         $args = array(
             'post_type' => 'event',
             'post_status' => 'publish',
-            'posts_per_page' => isset($params['limit']) ? intval($params['limit']) : 5,
+            'posts_per_page' => isset($params['limit']) ? intval($params['limit']) : 20,
             'meta_query' => array('relation' => 'AND'),
             'tax_query' => array('relation' => 'AND')
         );
 
-        // Filtre par ville (OvaTheme utilise ova_mb_event_map_address)
+        // Filtre par ville - cherche dans TOUS les champs d'adresse
         if (!empty($params['city'])) {
             $args['meta_query'][] = array(
-                'key' => 'ova_mb_event_map_address',
-                'value' => $params['city'],
-                'compare' => 'LIKE'
+                'relation' => 'OR',
+                array(
+                    'key' => 'ova_mb_event_map_address',
+                    'value' => $params['city'],
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => 'ova_mb_event_address',
+                    'value' => $params['city'],
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => 'ova_mb_event_map_name',
+                    'value' => $params['city'],
+                    'compare' => 'LIKE'
+                )
             );
         }
 
