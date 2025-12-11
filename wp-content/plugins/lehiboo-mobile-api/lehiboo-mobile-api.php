@@ -331,6 +331,7 @@ final class LeHiboo_Mobile_API {
             update_option('lma_cors_origins', sanitize_text_field($_POST['lma_cors_origins']));
             update_option('lma_ai_backend_url', esc_url_raw($_POST['lma_ai_backend_url']));
             update_option('lma_ai_backend_api_key', sanitize_text_field($_POST['lma_ai_backend_api_key']));
+            update_option('lehiboo_ai_api_key', sanitize_text_field($_POST['lehiboo_ai_api_key']));
 
             echo '<div class="notice notice-success"><p>Parametres enregistres.</p></div>';
         }
@@ -347,6 +348,7 @@ final class LeHiboo_Mobile_API {
         $cors_origins = get_option('lma_cors_origins', '*');
         $ai_backend_url = get_option('lma_ai_backend_url', 'https://preprod.lehiboo.com/api-planner');
         $ai_backend_api_key = get_option('lma_ai_backend_api_key', '');
+        $lehiboo_ai_api_key = get_option('lehiboo_ai_api_key', '');
 
         ?>
         <div class="wrap">
@@ -408,7 +410,15 @@ final class LeHiboo_Mobile_API {
                             <th scope="row">Cle API Backend AI</th>
                             <td>
                                 <input type="text" name="lma_ai_backend_api_key" value="<?php echo esc_attr($ai_backend_api_key); ?>" class="regular-text" placeholder="lhb_xxx...">
-                                <p class="description">Cle API pour authentifier les requetes vers le backend AI. Doit correspondre a API_KEY dans le .env du backend.</p>
+                                <p class="description">Cle API pour authentifier les requetes <strong>vers</strong> le backend AI (WordPress → Node.js). Doit correspondre a <code>API_KEY</code> dans le .env du backend.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Cle API Events (interne)</th>
+                            <td>
+                                <input type="text" name="lehiboo_ai_api_key" value="<?php echo esc_attr($lehiboo_ai_api_key); ?>" class="regular-text" placeholder="Generer une cle...">
+                                <button type="button" class="button" onclick="document.querySelector('input[name=lehiboo_ai_api_key]').value = '<?php echo wp_generate_password(64, false); ?>';">Generer</button>
+                                <p class="description">Cle API pour authentifier les requetes <strong>depuis</strong> le backend AI (Node.js → WordPress). Doit correspondre a <code>WORDPRESS_API_KEY</code> dans le .env du backend.</p>
                             </td>
                         </tr>
                     </table>
