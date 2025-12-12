@@ -39,13 +39,32 @@ export async function handleMobileChat(req, res) {
     // Sauvegarder les messages si userId est fourni
     if (userId) {
       // Sauvegarder le message utilisateur
-      chatStorage.saveMessage(userId, conversationId, 'user', message);
+      await chatStorage.saveMessage(userId, conversationId, 'user', message);
 
-      // Sauvegarder la réponse assistant avec les métadonnées
-      chatStorage.saveMessage(userId, conversationId, 'assistant', response.message, {
-        events: response.events?.map(e => ({ id: e.id, title: e.title })) || [],
-        hasSearchResults: (response.events?.length || 0) > 0
+      // Préparer les événements avec détails complets pour l'historique
+      const eventsForHistory = response.events?.map(e => ({
+        id: e.id,
+        title: e.title,
+        image: e.image || e.imageUrl || e.thumbnail,
+        price: e.price,
+        priceLabel: e.priceDisplay || (e.price === 0 ? 'Gratuit' : `${e.price}€`),
+        location: typeof e.location === 'object' ? e.location : { city: e.location || e.venue },
+        date: e.dates?.display || e.dateLabel || e.date,
+        category: e.category,
+        url: e.url
+      })) || [];
+
+      // Sauvegarder la réponse assistant avec les métadonnées complètes
+      const assistantMessage = await chatStorage.saveMessage(userId, conversationId, 'assistant', response.message, {
+        events: eventsForHistory,
+        hasSearchResults: eventsForHistory.length > 0,
+        searchParams: response.searchParams || null
       });
+
+      // Sauvegarder les impressions d'événements pour analytics (PostgreSQL only)
+      if (assistantMessage && response.events?.length > 0) {
+        await chatStorage.saveEventImpressions(userId, conversationId, assistantMessage.id, response.events);
+      }
     }
 
     // Mettre à jour l'historique (pour le contexte de la conversation en cours)
@@ -304,7 +323,7 @@ export async function handleMobileChatHistory(req, res) {
 
     logger.info('Chat history request', { userId, conversationId, limit });
 
-    const messages = chatStorage.getHistory(userId, {
+    const messages = await chatStorage.getHistory(userId, {
       limit,
       conversationId
     });
@@ -312,13 +331,29 @@ export async function handleMobileChatHistory(req, res) {
     return res.json({
       success: true,
       data: {
-        history: messages.map(m => ({
-          id: m.id,
-          role: m.role,
-          content: m.content,
-          timestamp: m.timestamp,
-          conversationId: m.conversationId
-        })),
+        history: messages.map(m => {
+          const msg = {
+            id: m.id,
+            role: m.role,
+            content: m.content,
+            timestamp: m.timestamp || m.created_at,
+            conversationId: m.conversationId || m.conversation_id
+          };
+
+          // Inclure les événements pour les messages assistant
+          if (m.role === 'assistant') {
+            // PostgreSQL: metadata est un objet, JSON: peut être dans les props directes
+            const metadata = m.metadata || {};
+            if (metadata.events && metadata.events.length > 0) {
+              msg.events = metadata.events;
+            }
+            if (metadata.hasSearchResults !== undefined) {
+              msg.hasSearchResults = metadata.hasSearchResults;
+            }
+          }
+
+          return msg;
+        }),
         total: messages.length
       }
     });
@@ -350,16 +385,16 @@ export async function handleMobileChatConversations(req, res) {
 
     logger.info('Chat conversations request', { userId });
 
-    const conversations = chatStorage.getConversations(userId);
+    const conversations = await chatStorage.getConversations(userId);
 
     return res.json({
       success: true,
       data: {
         conversations: conversations.map(c => ({
           id: c.id,
-          messageCount: c.messageCount,
-          startedAt: c.startedAt,
-          lastMessageAt: c.lastMessageAt
+          messageCount: c.messageCount || c.message_count,
+          startedAt: c.startedAt || c.started_at,
+          lastMessageAt: c.lastMessageAt || c.last_message_at
         }))
       }
     });
@@ -395,10 +430,10 @@ export async function handleMobileChatClear(req, res) {
     let success;
     if (conversationId) {
       // Supprimer une conversation spécifique
-      success = chatStorage.deleteConversation(userId, conversationId);
+      success = await chatStorage.deleteConversation(userId, conversationId);
     } else {
       // Supprimer tout l'historique
-      success = chatStorage.clearHistory(userId);
+      success = await chatStorage.clearHistory(userId);
     }
 
     return res.json({
