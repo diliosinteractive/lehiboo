@@ -92,6 +92,9 @@ final class LeHiboo_Mobile_API {
         // JWT Handler
         require_once LMA_PLUGIN_DIR . 'includes/auth/class-lma-jwt-handler.php';
 
+        // OTP Handler
+        require_once LMA_PLUGIN_DIR . 'includes/auth/class-lma-otp-handler.php';
+
         // Security & Helpers
         require_once LMA_PLUGIN_DIR . 'includes/security/class-lma-security.php';
         require_once LMA_PLUGIN_DIR . 'includes/security/class-lma-rate-limiter.php';
@@ -138,6 +141,9 @@ final class LeHiboo_Mobile_API {
         if (is_admin()) {
             add_action('admin_menu', array($this, 'add_admin_menu'));
         }
+
+        // Cron job for OTP cleanup
+        add_action('lma_cleanup_expired_otp', array('LMA_OTP_Handler', 'cleanup_expired_otp'));
     }
 
     /**
@@ -150,6 +156,11 @@ final class LeHiboo_Mobile_API {
         // Set default options
         $this->set_default_options();
 
+        // Schedule OTP cleanup cron
+        if (!wp_next_scheduled('lma_cleanup_expired_otp')) {
+            wp_schedule_event(time(), 'hourly', 'lma_cleanup_expired_otp');
+        }
+
         // Flush rewrite rules
         flush_rewrite_rules();
     }
@@ -158,6 +169,12 @@ final class LeHiboo_Mobile_API {
      * Plugin deactivation
      */
     public function deactivate() {
+        // Unschedule OTP cleanup cron
+        $timestamp = wp_next_scheduled('lma_cleanup_expired_otp');
+        if ($timestamp) {
+            wp_unschedule_event($timestamp, 'lma_cleanup_expired_otp');
+        }
+
         flush_rewrite_rules();
     }
 
@@ -218,10 +235,26 @@ final class LeHiboo_Mobile_API {
             KEY created_at (created_at)
         ) $charset_collate;";
 
+        // OTP verification table
+        $table_otp = $wpdb->prefix . 'lma_user_otp';
+        $sql_otp = "CREATE TABLE IF NOT EXISTS $table_otp (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            user_id bigint(20) NOT NULL,
+            otp_code varchar(6) NOT NULL,
+            expires_at datetime NOT NULL,
+            attempts int DEFAULT 0,
+            blocked_until datetime DEFAULT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY user_id (user_id),
+            KEY expires_at (expires_at)
+        ) $charset_collate;";
+
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql_tokens);
         dbDelta($sql_rate);
         dbDelta($sql_logs);
+        dbDelta($sql_otp);
     }
 
     /**
@@ -249,6 +282,29 @@ final class LeHiboo_Mobile_API {
     public function init() {
         // Load text domain
         load_plugin_textdomain('lehiboo-mobile-api', false, dirname(LMA_PLUGIN_BASENAME) . '/languages');
+
+        // Check for plugin updates and run migrations
+        $this->maybe_upgrade();
+    }
+
+    /**
+     * Check if plugin needs upgrade and run migrations
+     */
+    private function maybe_upgrade() {
+        $installed_version = get_option('lma_version', '1.0.0');
+
+        if (version_compare($installed_version, LMA_VERSION, '<')) {
+            // Run database migrations
+            $this->create_tables();
+
+            // Schedule OTP cleanup cron if not already scheduled
+            if (!wp_next_scheduled('lma_cleanup_expired_otp')) {
+                wp_schedule_event(time(), 'hourly', 'lma_cleanup_expired_otp');
+            }
+
+            // Update version
+            update_option('lma_version', LMA_VERSION);
+        }
     }
 
     /**
@@ -461,7 +517,9 @@ final class LeHiboo_Mobile_API {
                     </thead>
                     <tbody>
                         <tr><td colspan="4"><strong>Authentification</strong></td></tr>
-                        <tr><td>POST</td><td>/auth/register</td><td>Inscription client</td><td>-</td></tr>
+                        <tr><td>POST</td><td>/auth/register</td><td>Inscription (retourne pending_verification)</td><td>-</td></tr>
+                        <tr><td>POST</td><td>/auth/verify-otp</td><td>Verifier code OTP email</td><td>-</td></tr>
+                        <tr><td>POST</td><td>/auth/resend-otp</td><td>Renvoyer code OTP</td><td>-</td></tr>
                         <tr><td>POST</td><td>/auth/login</td><td>Connexion</td><td>-</td></tr>
                         <tr><td>POST</td><td>/auth/refresh</td><td>Rafraichir token</td><td>-</td></tr>
                         <tr><td>POST</td><td>/auth/forgot-password</td><td>Mot de passe oublie</td><td>-</td></tr>

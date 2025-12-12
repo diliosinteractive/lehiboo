@@ -17,9 +17,11 @@ class LMA_Rate_Limiter {
      * [endpoint_pattern => [limit, window_seconds]]
      */
     private static $limits = array(
-        'auth/register' => array(5, 3600),      // 5 per hour
+        'auth/register' => array(5, 3600),       // 5 per hour
         'auth/login' => array(10, 900),          // 10 per 15 min
         'auth/forgot-password' => array(3, 3600), // 3 per hour
+        'auth/verify-otp' => array(10, 900),     // 10 per 15 min
+        'auth/resend-otp' => array(3, 3600),     // 3 per hour
         'partner/scan' => array(60, 60),         // 60 per minute
         'bookings' => array(10, 60),             // 10 per minute
         'default' => array(60, 60),              // 60 per minute
