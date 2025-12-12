@@ -264,7 +264,7 @@ class LMA_REST_Auth {
             );
         }
 
-        // Check if email is verified
+        // Check if email is verified (for users who registered but never verified)
         if (!LMA_OTP_Handler::is_user_verified($user->ID)) {
             // Generate new OTP and send email
             $otp = LMA_OTP_Handler::create_otp($user->ID);
@@ -273,32 +273,33 @@ class LMA_REST_Auth {
                 LMA_OTP_Handler::send_otp_email($user->ID, $otp);
             }
 
-            return LMA_Response::error(
-                'email_not_verified',
-                __('Votre email n\'est pas vérifié. Un nouveau code de vérification a été envoyé.', 'lehiboo-mobile-api'),
-                403,
-                array(
-                    'pending_verification' => true,
-                    'user_id' => (string) $user->ID,
-                    'email' => $user->user_email,
-                )
-            );
+            return LMA_Response::success(array(
+                'requires_otp' => true,
+                'otp_type' => 'email_verification',
+                'user_id' => (string) $user->ID,
+                'email' => $user->user_email,
+                'message' => __('Votre email n\'est pas vérifié. Un code de vérification a été envoyé.', 'lehiboo-mobile-api'),
+            ));
         }
 
-        // Generate tokens
-        $tokens = LMA_JWT_Handler::generate_tokens($user, $request->get_header('User-Agent'));
+        // 2FA: Generate OTP for login verification
+        $otp = LMA_OTP_Handler::create_otp($user->ID);
 
-        $response_data = array(
-            'user' => $this->format_user($user),
-            'tokens' => $tokens,
-        );
-
-        // Add partner info if applicable
-        if (in_array('el_event_manager', (array) $user->roles)) {
-            $response_data['partner_info'] = $this->get_partner_info($user);
+        if (is_wp_error($otp)) {
+            return LMA_Response::from_error($otp);
         }
 
-        return LMA_Response::success($response_data);
+        // Send OTP email
+        LMA_OTP_Handler::send_otp_email($user->ID, $otp);
+
+        // Return requires_otp response (no tokens yet)
+        return LMA_Response::success(array(
+            'requires_otp' => true,
+            'otp_type' => 'login_2fa',
+            'user_id' => (string) $user->ID,
+            'email' => $user->user_email,
+            'message' => __('Un code de vérification a été envoyé à votre email', 'lehiboo-mobile-api'),
+        ));
     }
 
     /**
@@ -520,6 +521,7 @@ class LMA_REST_Auth {
 
     /**
      * Verify OTP code
+     * Works for both email verification (new users) and login 2FA (existing users)
      */
     public function verify_otp($request) {
         // Rate limit
@@ -560,14 +562,8 @@ class LMA_REST_Auth {
             );
         }
 
-        // Check if already verified
-        if (LMA_OTP_Handler::is_user_verified($user_id)) {
-            return LMA_Response::error(
-                'user_already_verified',
-                __('Ce compte est déjà vérifié', 'lehiboo-mobile-api'),
-                400
-            );
-        }
+        // Check if user needs email verification
+        $needs_email_verification = !LMA_OTP_Handler::is_user_verified($user_id);
 
         // Verify OTP
         $verification = LMA_OTP_Handler::verify_otp($user_id, $otp);
@@ -576,20 +572,30 @@ class LMA_REST_Auth {
             return LMA_Response::from_error($verification);
         }
 
-        // Mark user as verified
-        LMA_OTP_Handler::mark_user_verified($user_id);
+        // If user was pending email verification, mark them as verified
+        if ($needs_email_verification) {
+            LMA_OTP_Handler::mark_user_verified($user_id);
+        }
 
-        // Generate tokens now that user is verified
+        // Generate tokens
         $tokens = LMA_JWT_Handler::generate_tokens($user, $request->get_header('User-Agent'));
 
-        return LMA_Response::success(array(
+        $response_data = array(
             'user' => $this->format_user($user),
             'tokens' => $tokens,
-        ));
+        );
+
+        // Add partner info if applicable
+        if (in_array('el_event_manager', (array) $user->roles)) {
+            $response_data['partner_info'] = $this->get_partner_info($user);
+        }
+
+        return LMA_Response::success($response_data);
     }
 
     /**
      * Resend OTP code
+     * Works for both email verification and login 2FA
      */
     public function resend_otp($request) {
         // Rate limit - more restrictive
@@ -629,16 +635,7 @@ class LMA_REST_Auth {
             );
         }
 
-        // Check if already verified
-        if (LMA_OTP_Handler::is_user_verified($user_id)) {
-            return LMA_Response::error(
-                'user_already_verified',
-                __('Ce compte est déjà vérifié', 'lehiboo-mobile-api'),
-                400
-            );
-        }
-
-        // Generate new OTP
+        // Generate new OTP (works for both email verification and login 2FA)
         $otp = LMA_OTP_Handler::create_otp($user_id);
 
         if (is_wp_error($otp)) {
