@@ -1,331 +1,179 @@
 /**
  * Chat Storage Service
- * Stockage persistant des messages de chat (JSON file)
+ * Wrapper qui utilise PostgreSQL si disponible, sinon fallback JSON
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, accessSync, constants } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import crypto from 'crypto';
+import * as pgStorage from './chat-storage-pg.js';
+import * as jsonStorage from './chat-storage-json.js';
 import logger from '../utils/logger.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Chemin du fichier de stockage - configurable via env ou fallback
-function getDataDir() {
-  // 1. Variable d'environnement explicite
-  if (process.env.CHAT_STORAGE_DIR) {
-    return process.env.CHAT_STORAGE_DIR;
-  }
-
-  // 2. Dossier data dans le projet (dev local)
-  const projectDataDir = join(__dirname, '../../data');
-
-  // 3. Vérifier si on peut écrire dans le dossier parent
-  try {
-    const parentDir = join(__dirname, '../..');
-    accessSync(parentDir, constants.W_OK);
-    return projectDataDir;
-  } catch {
-    // 4. Fallback sur /tmp pour Docker/environnements restreints
-    logger.warn('Cannot write to project dir, using /tmp for chat storage');
-    return '/tmp/lehiboo-chat-data';
-  }
-}
-
-const DATA_DIR = getDataDir();
-const STORAGE_FILE = join(DATA_DIR, 'chat-history.json');
-
-// Cache en mémoire pour les performances
-let cache = null;
-let persistenceEnabled = true;
+let usePostgres = false;
 
 /**
- * Initialiser le storage
+ * Initialiser le storage (appelé au démarrage)
  */
-function initStorage() {
-  // Créer le dossier data s'il n'existe pas
-  try {
-    if (!existsSync(DATA_DIR)) {
-      mkdirSync(DATA_DIR, { recursive: true });
-      logger.info('Created data directory', { path: DATA_DIR });
-    }
-  } catch (error) {
-    logger.error('Cannot create data directory, running in-memory only', {
-      path: DATA_DIR,
-      error: error.message
-    });
-    persistenceEnabled = false;
-    cache = { users: {}, version: 1 };
-    return;
-  }
+export async function initStorage() {
+  // Essayer PostgreSQL d'abord
+  const pgConnected = await pgStorage.initDatabase();
 
-  // Charger les données existantes ou créer un fichier vide
-  if (existsSync(STORAGE_FILE)) {
-    try {
-      const data = readFileSync(STORAGE_FILE, 'utf-8');
-      cache = JSON.parse(data);
-      logger.info('Chat history loaded', {
-        path: STORAGE_FILE,
-        usersCount: Object.keys(cache.users || {}).length,
-        totalMessages: Object.values(cache.users || {}).reduce((sum, u) => sum + (u.messages?.length || 0), 0)
-      });
-    } catch (error) {
-      logger.error('Failed to load chat history, creating new', { error: error.message });
-      cache = { users: {}, version: 1 };
-    }
+  if (pgConnected) {
+    usePostgres = true;
+    logger.info('Using PostgreSQL for chat storage');
   } else {
-    cache = { users: {}, version: 1 };
-    saveStorage();
-    logger.info('Created new chat history file', { path: STORAGE_FILE });
-  }
-}
-
-/**
- * Sauvegarder le storage sur disque
- */
-function saveStorage() {
-  if (!persistenceEnabled) {
-    return; // Mode in-memory uniquement
+    usePostgres = false;
+    jsonStorage.initStorage();
+    logger.info('Using JSON file for chat storage (PostgreSQL unavailable)');
   }
 
-  try {
-    writeFileSync(STORAGE_FILE, JSON.stringify(cache, null, 2));
-  } catch (error) {
-    logger.error('Failed to save chat history', { error: error.message });
-  }
-}
-
-/**
- * Obtenir ou créer un utilisateur
- */
-function getOrCreateUser(userId) {
-  if (!cache) initStorage();
-
-  if (!cache.users[userId]) {
-    cache.users[userId] = {
-      id: userId,
-      messages: [],
-      conversations: {},
-      createdAt: new Date().toISOString(),
-      lastActivity: new Date().toISOString()
-    };
-    saveStorage();
-  }
-
-  return cache.users[userId];
+  return usePostgres;
 }
 
 /**
  * Sauvegarder un message
- *
- * @param {string} userId - ID de l'utilisateur
- * @param {string} conversationId - ID de la conversation
- * @param {string} role - 'user' ou 'assistant'
- * @param {string} content - Contenu du message
- * @param {Object} metadata - Métadonnées optionnelles (events, searchParams, etc.)
- * @returns {Object} Le message sauvegardé
  */
 export function saveMessage(userId, conversationId, role, content, metadata = {}) {
-  if (!cache) initStorage();
-
-  const user = getOrCreateUser(userId);
-
-  const message = {
-    id: `msg_${crypto.randomUUID().substring(0, 8)}`,
-    conversationId,
-    role,
-    content,
-    timestamp: new Date().toISOString(),
-    ...metadata
-  };
-
-  // Ajouter aux messages de l'utilisateur
-  user.messages.push(message);
-
-  // Tracker la conversation
-  if (!user.conversations[conversationId]) {
-    user.conversations[conversationId] = {
-      id: conversationId,
-      startedAt: new Date().toISOString(),
-      messageCount: 0
-    };
+  if (usePostgres) {
+    return pgStorage.saveMessage(userId, conversationId, role, content, metadata);
   }
-  user.conversations[conversationId].messageCount++;
-  user.conversations[conversationId].lastMessageAt = new Date().toISOString();
-
-  // Mettre à jour lastActivity
-  user.lastActivity = new Date().toISOString();
-
-  // Limiter à 500 messages par utilisateur (FIFO)
-  if (user.messages.length > 500) {
-    user.messages = user.messages.slice(-500);
-  }
-
-  saveStorage();
-
-  logger.info('Message saved', {
-    userId,
-    conversationId,
-    messageId: message.id,
-    role,
-    totalMessages: user.messages.length
-  });
-
-  return message;
+  return jsonStorage.saveMessage(userId, conversationId, role, content, metadata);
 }
 
 /**
- * Récupérer l'historique d'un utilisateur
- *
- * @param {string} userId - ID de l'utilisateur
- * @param {Object} options - Options de filtrage
- * @param {number} options.limit - Nombre max de messages (défaut: 50)
- * @param {string} options.conversationId - Filtrer par conversation
- * @param {string} options.before - Messages avant cette date ISO
- * @returns {Array} Liste des messages
+ * Sauvegarder les impressions d'activités (PostgreSQL only)
+ */
+export function saveEventImpressions(userId, conversationId, messageId, events) {
+  if (usePostgres) {
+    return pgStorage.saveEventImpressions(userId, conversationId, messageId, events);
+  }
+  // JSON storage doesn't support detailed event impressions
+  return Promise.resolve();
+}
+
+/**
+ * Marquer un événement comme cliqué (PostgreSQL only)
+ */
+export function markEventClicked(userId, eventId, conversationId = null) {
+  if (usePostgres) {
+    return pgStorage.markEventClicked(userId, eventId, conversationId);
+  }
+  return Promise.resolve(false);
+}
+
+/**
+ * Récupérer l'historique
  */
 export function getHistory(userId, options = {}) {
-  if (!cache) initStorage();
-
-  const { limit = 50, conversationId, before } = options;
-
-  const user = cache.users[userId];
-
-  if (!user || !user.messages.length) {
-    return [];
+  if (usePostgres) {
+    return pgStorage.getHistory(userId, options);
   }
-
-  let messages = [...user.messages];
-
-  // Filtrer par conversation
-  if (conversationId) {
-    messages = messages.filter(m => m.conversationId === conversationId);
-  }
-
-  // Filtrer par date
-  if (before) {
-    messages = messages.filter(m => new Date(m.timestamp) < new Date(before));
-  }
-
-  // Trier par date décroissante et limiter
-  messages = messages
-    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-    .slice(0, limit);
-
-  // Remettre dans l'ordre chronologique
-  messages.reverse();
-
-  logger.info('History retrieved', {
-    userId,
-    conversationId,
-    count: messages.length,
-    limit
-  });
-
-  return messages;
+  return jsonStorage.getHistory(userId, options);
 }
 
 /**
- * Récupérer les conversations d'un utilisateur
- *
- * @param {string} userId - ID de l'utilisateur
- * @returns {Array} Liste des conversations
+ * Récupérer les conversations
  */
 export function getConversations(userId) {
-  if (!cache) initStorage();
-
-  const user = cache.users[userId];
-
-  if (!user || !user.conversations) {
-    return [];
+  if (usePostgres) {
+    return pgStorage.getConversations(userId);
   }
-
-  return Object.values(user.conversations)
-    .sort((a, b) => new Date(b.lastMessageAt || b.startedAt) - new Date(a.lastMessageAt || a.startedAt));
+  return jsonStorage.getConversations(userId);
 }
 
 /**
  * Supprimer une conversation
- *
- * @param {string} userId - ID de l'utilisateur
- * @param {string} conversationId - ID de la conversation
- * @returns {boolean} Succès
  */
 export function deleteConversation(userId, conversationId) {
-  if (!cache) initStorage();
-
-  const user = cache.users[userId];
-
-  if (!user) {
-    return false;
+  if (usePostgres) {
+    return pgStorage.deleteConversation(userId, conversationId);
   }
-
-  // Supprimer les messages
-  user.messages = user.messages.filter(m => m.conversationId !== conversationId);
-
-  // Supprimer la conversation
-  delete user.conversations[conversationId];
-
-  saveStorage();
-
-  logger.info('Conversation deleted', { userId, conversationId });
-
-  return true;
+  return jsonStorage.deleteConversation(userId, conversationId);
 }
 
 /**
- * Effacer tout l'historique d'un utilisateur
- *
- * @param {string} userId - ID de l'utilisateur
- * @returns {boolean} Succès
+ * Effacer l'historique
  */
 export function clearHistory(userId) {
-  if (!cache) initStorage();
-
-  if (cache.users[userId]) {
-    cache.users[userId].messages = [];
-    cache.users[userId].conversations = {};
-    saveStorage();
-    logger.info('History cleared', { userId });
-    return true;
+  if (usePostgres) {
+    return pgStorage.clearHistory(userId);
   }
-
-  return false;
+  return jsonStorage.clearHistory(userId);
 }
 
 /**
- * Obtenir les stats d'un utilisateur
- *
- * @param {string} userId - ID de l'utilisateur
- * @returns {Object} Statistiques
+ * Stats utilisateur
  */
 export function getUserStats(userId) {
-  if (!cache) initStorage();
-
-  const user = cache.users[userId];
-
-  if (!user) {
-    return null;
+  if (usePostgres) {
+    return pgStorage.getUserStats(userId);
   }
-
-  return {
-    totalMessages: user.messages.length,
-    totalConversations: Object.keys(user.conversations).length,
-    firstActivity: user.createdAt,
-    lastActivity: user.lastActivity
-  };
+  return jsonStorage.getUserStats(userId);
 }
 
-// Initialiser au chargement du module
-initStorage();
+/**
+ * Profil utilisateur (PostgreSQL only)
+ */
+export function getUserProfile(userId) {
+  if (usePostgres) {
+    return pgStorage.getUserProfile(userId);
+  }
+  return Promise.resolve(null);
+}
+
+export function updateUserProfile(userId, preferences = {}, insights = {}) {
+  if (usePostgres) {
+    return pgStorage.updateUserProfile(userId, preferences, insights);
+  }
+  return Promise.resolve(false);
+}
+
+/**
+ * Logger une recherche (PostgreSQL only)
+ */
+export function logSearch(userId, conversationId, searchParams, resultsCount, responseTimeMs) {
+  if (usePostgres) {
+    return pgStorage.logSearch(userId, conversationId, searchParams, resultsCount, responseTimeMs);
+  }
+  return Promise.resolve();
+}
+
+/**
+ * Analytics (PostgreSQL only)
+ */
+export function getPopularEvents(limit = 20) {
+  if (usePostgres) {
+    return pgStorage.getPopularEvents(limit);
+  }
+  return Promise.resolve([]);
+}
+
+export function getCategoryPerformance() {
+  if (usePostgres) {
+    return pgStorage.getCategoryPerformance();
+  }
+  return Promise.resolve([]);
+}
+
+/**
+ * Vérifier si PostgreSQL est utilisé
+ */
+export function isUsingPostgres() {
+  return usePostgres;
+}
 
 export default {
+  initStorage,
   saveMessage,
+  saveEventImpressions,
+  markEventClicked,
   getHistory,
   getConversations,
   deleteConversation,
   clearHistory,
-  getUserStats
+  getUserStats,
+  getUserProfile,
+  updateUserProfile,
+  logSearch,
+  getPopularEvents,
+  getCategoryPerformance,
+  isUsingPostgres
 };

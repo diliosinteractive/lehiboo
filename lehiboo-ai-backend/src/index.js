@@ -13,6 +13,7 @@ import chatRoutes from './routes/chat.js';
 import mobileRoutes from './routes/mobile.js';
 import { testOpenAIConnection } from './services/ai-service-v2.js';
 import weatherService from './services/weather-service.js';
+import chatStorage from './services/chat-storage.js';
 
 // Créer l'application Express
 const app = express();
@@ -134,6 +135,11 @@ app.use((err, req, res, next) => {
 // Démarrer le serveur
 async function startServer() {
   try {
+    // Initialiser le storage (PostgreSQL ou JSON fallback)
+    logger.info('Initializing chat storage...');
+    const usingPostgres = await chatStorage.initStorage();
+    logger.info(usingPostgres ? '✅ PostgreSQL storage ready' : '⚠️  Using JSON file storage (PostgreSQL unavailable)');
+
     // Tester la connexion OpenAI
     logger.info('Testing OpenAI connection...');
     const openaiOk = await testOpenAIConnection();

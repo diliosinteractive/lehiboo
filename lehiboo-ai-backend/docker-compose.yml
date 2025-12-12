@@ -7,6 +7,30 @@ version: '3.8'
 
 services:
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # PostgreSQL Database
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  postgres:
+    image: postgres:16-alpine
+    container_name: lehiboo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-lehiboo}
+      POSTGRES_USER: ${POSTGRES_USER:-lehiboo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lehiboo_secret_2024}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5433:5432"  # Port externe 5433 pour éviter conflit
+    networks:
+      - lehiboo-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lehiboo} -d ${POSTGRES_DB:-lehiboo}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   # Backend Node.js
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   backend:
@@ -16,6 +40,9 @@ services:
     image: lehiboo-ai-backend:1.0.0
     container_name: lehiboo-ai-backend
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
 
     # Port mapping
     # Format: HOST:CONTAINER
@@ -47,6 +74,9 @@ services:
       # Rate Limiting
       RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-60000}
       RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-20}
+
+      # PostgreSQL
+      DATABASE_URL: postgres://${POSTGRES_USER:-lehiboo}:${POSTGRES_PASSWORD:-lehiboo_secret_2024}@postgres:5432/${POSTGRES_DB:-lehiboo}
 
     # Fichier .env (recommandé pour sécurité)
     # Créez un fichier .env.production avec vos vraies valeurs
@@ -105,4 +135,6 @@ networks:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 volumes:
   logs:
+    driver: local
+  postgres_data:
     driver: local
