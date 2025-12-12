@@ -41,8 +41,8 @@ services:
       WORDPRESS_URL: ${WORDPRESS_URL:-https://lehiboo.dilios.me}
       WORDPRESS_API_URL: ${WORDPRESS_API_URL:-https://lehiboo.dilios.me/wp-json}
 
-      # OpenAI
-      DEFAULT_MODEL: ${DEFAULT_MODEL:-gpt-4o}
+      # OpenAI (gpt-4o-mini ~16x moins cher)
+      DEFAULT_MODEL: ${DEFAULT_MODEL:-gpt-4o-mini}
 
       # Rate Limiting
       RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-60000}
