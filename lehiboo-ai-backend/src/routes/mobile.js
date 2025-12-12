@@ -9,7 +9,10 @@ import {
   handleMobileCategories,
   handleMobileCities,
   handleMobileWeather,
-  handleMobileWeatherForecast
+  handleMobileWeatherForecast,
+  handleMobileChatHistory,
+  handleMobileChatConversations,
+  handleMobileChatClear
 } from '../controllers/mobile-controller.js';
 import { validateApiKey } from '../middleware/auth.js';
 
@@ -70,5 +73,23 @@ router.get('/weather', validateApiKey, handleMobileWeather);
  * Query params: city, days (default: 7)
  */
 router.get('/weather/forecast', validateApiKey, handleMobileWeatherForecast);
+
+/**
+ * GET /mobile/chat/history - Historique des messages
+ * Query params: userId (requis), conversationId (optionnel), limit (default: 50)
+ */
+router.get('/chat/history', validateApiKey, handleMobileChatHistory);
+
+/**
+ * GET /mobile/chat/conversations - Liste des conversations d'un utilisateur
+ * Query params: userId (requis)
+ */
+router.get('/chat/conversations', validateApiKey, handleMobileChatConversations);
+
+/**
+ * DELETE /mobile/chat/history - Supprimer l'historique
+ * Query params: userId (requis), conversationId (optionnel - si absent, supprime tout)
+ */
+router.delete('/chat/history', validateApiKey, handleMobileChatClear);
 
 export default router;

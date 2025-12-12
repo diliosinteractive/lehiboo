@@ -4,12 +4,14 @@
 
 import { generateMobileResponse } from '../services/ai-service-mobile.js';
 import weatherService from '../services/weather-service.js';
+import chatStorage from '../services/chat-storage.js';
 import logger from '../utils/logger.js';
 import crypto from 'crypto';
 
 /**
  * POST /mobile/chat
  * Endpoint principal de chat pour l'app mobile
+ * Sauvegarde automatiquement les messages si userId est fourni
  */
 export async function handleMobileChat(req, res) {
   try {
@@ -17,11 +19,13 @@ export async function handleMobileChat(req, res) {
       message,
       conversationId = crypto.randomUUID(),
       userContext = {},
-      history = []
+      history = [],
+      userId = null  // ID utilisateur WordPress pour persistence
     } = req.body;
 
     logger.info('Mobile chat request', {
       conversationId,
+      userId,
       messagePreview: message?.substring(0, 50)
     });
 
@@ -32,7 +36,19 @@ export async function handleMobileChat(req, res) {
       history
     });
 
-    // Mettre à jour l'historique
+    // Sauvegarder les messages si userId est fourni
+    if (userId) {
+      // Sauvegarder le message utilisateur
+      chatStorage.saveMessage(userId, conversationId, 'user', message);
+
+      // Sauvegarder la réponse assistant avec les métadonnées
+      chatStorage.saveMessage(userId, conversationId, 'assistant', response.message, {
+        events: response.events?.map(e => ({ id: e.id, title: e.title })) || [],
+        hasSearchResults: (response.events?.length || 0) > 0
+      });
+    }
+
+    // Mettre à jour l'historique (pour le contexte de la conversation en cours)
     const updatedHistory = [
       ...history.slice(-18), // Garder les 18 derniers + 2 nouveaux = 20 max
       { role: 'user', content: message, timestamp: new Date().toISOString() },
@@ -44,8 +60,8 @@ export async function handleMobileChat(req, res) {
       conversationId,
       message: response.message,
       events: response.events || [],
-      searchParams: response.searchParams || null,  // Params bruts pour mapping front
-      searchFilters: response.searchFilters,        // Info lisible
+      searchParams: response.searchParams || null,
+      searchFilters: response.searchFilters,
       history: updatedHistory,
       usage: response.usage
     });
@@ -269,11 +285,147 @@ export async function handleMobileWeatherForecast(req, res) {
   }
 }
 
+/**
+ * GET /mobile/chat/history
+ * Récupère l'historique de chat d'un utilisateur
+ */
+export async function handleMobileChatHistory(req, res) {
+  try {
+    const userId = req.query.userId || req.query.user_id;
+    const conversationId = req.query.conversationId || req.query.conversation_id;
+    const limit = parseInt(req.query.limit) || 50;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'userId requis'
+      });
+    }
+
+    logger.info('Chat history request', { userId, conversationId, limit });
+
+    const messages = chatStorage.getHistory(userId, {
+      limit,
+      conversationId
+    });
+
+    return res.json({
+      success: true,
+      data: {
+        history: messages.map(m => ({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          timestamp: m.timestamp,
+          conversationId: m.conversationId
+        })),
+        total: messages.length
+      }
+    });
+
+  } catch (error) {
+    logger.error('Chat history error', { error: error.message });
+
+    return res.status(500).json({
+      success: false,
+      error: 'Erreur lors de la récupération de l\'historique'
+    });
+  }
+}
+
+/**
+ * GET /mobile/chat/conversations
+ * Liste les conversations d'un utilisateur
+ */
+export async function handleMobileChatConversations(req, res) {
+  try {
+    const userId = req.query.userId || req.query.user_id;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'userId requis'
+      });
+    }
+
+    logger.info('Chat conversations request', { userId });
+
+    const conversations = chatStorage.getConversations(userId);
+
+    return res.json({
+      success: true,
+      data: {
+        conversations: conversations.map(c => ({
+          id: c.id,
+          messageCount: c.messageCount,
+          startedAt: c.startedAt,
+          lastMessageAt: c.lastMessageAt
+        }))
+      }
+    });
+
+  } catch (error) {
+    logger.error('Chat conversations error', { error: error.message });
+
+    return res.status(500).json({
+      success: false,
+      error: 'Erreur lors de la récupération des conversations'
+    });
+  }
+}
+
+/**
+ * DELETE /mobile/chat/history
+ * Efface l'historique d'un utilisateur
+ */
+export async function handleMobileChatClear(req, res) {
+  try {
+    const userId = req.query.userId || req.query.user_id;
+    const conversationId = req.query.conversationId || req.query.conversation_id;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'userId requis'
+      });
+    }
+
+    logger.info('Chat clear request', { userId, conversationId });
+
+    let success;
+    if (conversationId) {
+      // Supprimer une conversation spécifique
+      success = chatStorage.deleteConversation(userId, conversationId);
+    } else {
+      // Supprimer tout l'historique
+      success = chatStorage.clearHistory(userId);
+    }
+
+    return res.json({
+      success,
+      message: conversationId
+        ? 'Conversation supprimée'
+        : 'Historique effacé'
+    });
+
+  } catch (error) {
+    logger.error('Chat clear error', { error: error.message });
+
+    return res.status(500).json({
+      success: false,
+      error: 'Erreur lors de la suppression'
+    });
+  }
+}
+
 export default {
   handleMobileChat,
   handleMobileSearch,
   handleMobileCategories,
   handleMobileCities,
   handleMobileWeather,
-  handleMobileWeatherForecast
+  handleMobileWeatherForecast,
+  handleMobileChatHistory,
+  handleMobileChatConversations,
+  handleMobileChatClear
 };
