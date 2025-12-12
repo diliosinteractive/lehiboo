@@ -1,5 +1,3 @@
-version: '3.8'
-
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Le Hiboo AI Backend - Docker Compose
 # Configuration pour Plesk Docker Proxy
@@ -8,6 +6,7 @@ version: '3.8'
 services:
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   # PostgreSQL Database
+  # Accessible uniquement via le réseau Docker interne
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   postgres:
     image: postgres:16-alpine
@@ -20,8 +19,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
-    ports:
-      - "5433:5432"  # Port externe 5433 pour éviter conflit
+    # Pas de port exposé - accès interne uniquement via lehiboo-network
     networks:
       - lehiboo-network
     healthcheck:
