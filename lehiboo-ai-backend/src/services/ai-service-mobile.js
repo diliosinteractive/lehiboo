@@ -1,11 +1,14 @@
 /**
- * Service IA Mobile v2 - Version simplifiee
+ * Service IA Mobile v3 - Smart Context & Token Optimization
  *
- * Changements majeurs:
- * - L'IA lance searchEvents rapidement (pas besoin de collecter 6 infos)
- * - Valeurs par defaut intelligentes
- * - Plus de collectUserProfile obligatoire
- * - Prompt plus concis et naturel
+ * Architecture:
+ * - user_context: Mémoire long terme (préférences, profil) - PERSISTANT
+ * - history: 4 derniers messages - ÉPHÉMÈRE (sliding window)
+ *
+ * Le LLM:
+ * 1. Lit user_context pour personnaliser
+ * 2. Détecte nouvelles préférences dans les messages
+ * 3. Retourne user_context mis à jour
  */
 
 import { openai } from '@ai-sdk/openai';
@@ -16,8 +19,10 @@ import { fileURLToPath } from 'url';
 import config from '../config/index.js';
 import logger from '../utils/logger.js';
 
-// Import du nouveau tool simplifie
+// Import des tools
 import { searchEventsToolV2 } from '../tools/search-events-v2.js';
+import { updateUserPreferencesTool } from '../tools/update-user-preferences.js';
+import { getProfileSummary, mergeUserContext, createEmptyUserContext } from '../tools/user-profile-schema.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -38,55 +43,85 @@ async function loadMobilePrompt() {
 }
 
 /**
- * Construire les messages pour l'IA
- * OPTIMISÉ: Historique réduit à 4 messages (économise tokens)
+ * Construire les messages pour l'IA avec Smart Context
+ *
+ * @param {string} currentMessage - Message actuel
+ * @param {Array} history - Historique (sliding window, 4 max)
+ * @param {Object} userContext - Contexte utilisateur persistant
  */
-function buildMessages(currentMessage, history = []) {
+function buildMessages(currentMessage, history = [], userContext = null) {
   const messages = [];
 
-  // OPTIMISATION: Réduire l'historique à 4 messages
+  // OPTIMISATION: Historique limité à 4 messages (sliding window)
   const recentHistory = history.slice(-4);
   recentHistory.forEach(msg => {
     messages.push({ role: msg.role, content: msg.content });
   });
 
-  // Message actuel
-  messages.push({ role: 'user', content: currentMessage });
+  // Construire le message avec le contexte smart
+  let enrichedMessage = currentMessage;
+
+  // Ajouter le résumé du profil si disponible (économise tokens vs JSON complet)
+  if (userContext) {
+    const profileSummary = getProfileSummary(userContext);
+    if (profileSummary) {
+      enrichedMessage = `[Profil: ${profileSummary}]\n${currentMessage}`;
+    }
+  }
+
+  messages.push({ role: 'user', content: enrichedMessage });
 
   return messages;
 }
 
 /**
- * Generer une reponse IA pour mobile
+ * Generer une reponse IA pour mobile avec Smart Context
+ *
+ * @param {string} message - Message utilisateur
+ * @param {Object} context - Contexte contenant history et user_context
+ * @returns {Object} Réponse avec message, events, et user_context mis à jour
  */
 export async function generateMobileResponse(message, context = {}) {
   try {
-    logger.info('Mobile AI request v2', {
+    // Initialiser ou récupérer le user_context
+    let userContext = context.user_context || createEmptyUserContext(context.userId);
+
+    logger.info('Mobile AI request v3', {
       conversationId: context.conversationId,
       messageLength: message.length,
-      historyLength: context.history?.length || 0
+      historyLength: context.history?.length || 0,
+      hasUserContext: !!context.user_context,
+      preferencesCount: userContext.preferences?.likes?.length || 0
     });
 
     const systemPrompt = await loadMobilePrompt();
-    const messages = buildMessages(message, context.history);
+    const messages = buildMessages(message, context.history, userContext);
 
-    // Un seul tool: searchEvents (simplifie)
+    // Tools disponibles: searchEvents + updatePreferences
     const tools = {
       searchEvents: {
         description: searchEventsToolV2.description,
         parameters: searchEventsToolV2.parameters,
         execute: searchEventsToolV2.execute
+      },
+      updateUserPreferences: {
+        description: updateUserPreferencesTool.description,
+        parameters: updateUserPreferencesTool.parameters,
+        execute: async (input) => {
+          // Passer les préférences existantes pour merge
+          return updateUserPreferencesTool.execute(input, userContext.preferences || {});
+        }
       }
     };
 
-    // Appel IA - temperature plus basse pour etre plus fiable
+    // Appel IA
     const result = await generateText({
       model: openai(config.openai.defaultModel),
       system: systemPrompt,
       messages,
       tools,
       temperature: 0.7,
-      maxTokens: 800, // Reponses plus courtes
+      maxTokens: 800,
       maxSteps: 3
     });
 
@@ -166,10 +201,63 @@ export async function generateMobileResponse(message, context = {}) {
       }
     }
 
+    // Extraire les mises à jour de préférences depuis les tool results
+    let updatedPreferences = null;
+    const allToolResults = [
+      ...(result.toolResults || []),
+      ...(result.steps?.flatMap(s => s.toolResults || []) || [])
+    ];
+
+    for (const tr of allToolResults) {
+      if (tr.toolName === 'updateUserPreferences' && tr.result?.success) {
+        updatedPreferences = tr.result.updatedPreferences;
+        logger.info('Preferences updated by AI', {
+          changes: tr.result.changes
+        });
+      }
+    }
+
+    // Mettre à jour le userContext si des préférences ont changé
+    if (updatedPreferences) {
+      userContext = mergeUserContext(userContext, {
+        preferences: updatedPreferences,
+        insights: {
+          lastInteraction: new Date().toISOString()
+        }
+      });
+    }
+
+    // Mettre à jour les insights (recherche effectuée)
+    if (events.length > 0 && searchParams) {
+      userContext.insights = {
+        ...userContext.insights,
+        totalSearches: (userContext.insights?.totalSearches || 0) + 1,
+        lastInteraction: new Date().toISOString(),
+        recentSearches: [
+          {
+            query: message.substring(0, 50),
+            category: searchParams.activityType,
+            city: searchParams.location?.city,
+            date: new Date().toISOString()
+          },
+          ...(userContext.insights?.recentSearches || [])
+        ].slice(0, 10)
+      };
+
+      // Mettre à jour topCategories
+      if (searchParams.activityType) {
+        userContext.insights.topCategories = {
+          ...userContext.insights.topCategories,
+          [searchParams.activityType]: (userContext.insights.topCategories?.[searchParams.activityType] || 0) + 1
+        };
+      }
+    }
+
     logger.info('Final extraction result', {
       eventsCount: events.length,
       hasSearchParams: !!searchParams,
-      hasSearchFilters: !!searchFilters
+      hasSearchFilters: !!searchFilters,
+      preferencesUpdated: !!updatedPreferences
     });
 
     // Nettoyer le texte de reponse
@@ -196,8 +284,10 @@ export async function generateMobileResponse(message, context = {}) {
       success: true,
       message: responseText,
       events: events.map(e => formatEventForMobile(e)),
-      searchParams,   // Params bruts pour mapping front
-      searchFilters,  // Info lisible pour debug
+      searchParams,
+      searchFilters,
+      // IMPORTANT: Retourner le user_context mis à jour pour persistence côté mobile
+      user_context: userContext,
       usage: {
         model: config.openai.defaultModel,
         tokens: result.usage?.totalTokens || 0
@@ -205,7 +295,7 @@ export async function generateMobileResponse(message, context = {}) {
     };
 
   } catch (error) {
-    logger.error('Mobile AI error v2', { error: error.message, stack: error.stack });
+    logger.error('Mobile AI error v3', { error: error.message, stack: error.stack });
 
     if (error.message?.includes('rate limit')) {
       throw new Error('Trop de requetes, patiente quelques secondes.');

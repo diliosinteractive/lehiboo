@@ -115,6 +115,7 @@ final class LeHiboo_Mobile_API {
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-categories.php';
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-partner.php';
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-posts.php';
+        require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-user-profile.php';
 
         // Initialize taxonomy image support
         new LMA_Taxonomy_Image();
@@ -327,6 +328,7 @@ final class LeHiboo_Mobile_API {
             new LMA_REST_Categories(),
             new LMA_REST_Partner(),
             new LMA_REST_Posts(),
+            new LMA_REST_User_Profile(),
         );
 
         foreach ($controllers as $controller) {
