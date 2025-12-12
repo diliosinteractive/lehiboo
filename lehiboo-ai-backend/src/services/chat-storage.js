@@ -1,9 +1,9 @@
 /**
  * Chat Storage Service
- * Stockage persistant des messages de chat avec SQLite
+ * Stockage persistant des messages de chat (JSON file)
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, accessSync, constants } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
@@ -12,21 +12,53 @@ import logger from '../utils/logger.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Chemin du fichier de stockage
-const DATA_DIR = join(__dirname, '../../data');
+// Chemin du fichier de stockage - configurable via env ou fallback
+function getDataDir() {
+  // 1. Variable d'environnement explicite
+  if (process.env.CHAT_STORAGE_DIR) {
+    return process.env.CHAT_STORAGE_DIR;
+  }
+
+  // 2. Dossier data dans le projet (dev local)
+  const projectDataDir = join(__dirname, '../../data');
+
+  // 3. Vérifier si on peut écrire dans le dossier parent
+  try {
+    const parentDir = join(__dirname, '../..');
+    accessSync(parentDir, constants.W_OK);
+    return projectDataDir;
+  } catch {
+    // 4. Fallback sur /tmp pour Docker/environnements restreints
+    logger.warn('Cannot write to project dir, using /tmp for chat storage');
+    return '/tmp/lehiboo-chat-data';
+  }
+}
+
+const DATA_DIR = getDataDir();
 const STORAGE_FILE = join(DATA_DIR, 'chat-history.json');
 
 // Cache en mémoire pour les performances
 let cache = null;
+let persistenceEnabled = true;
 
 /**
  * Initialiser le storage
  */
 function initStorage() {
   // Créer le dossier data s'il n'existe pas
-  if (!existsSync(DATA_DIR)) {
-    mkdirSync(DATA_DIR, { recursive: true });
-    logger.info('Created data directory', { path: DATA_DIR });
+  try {
+    if (!existsSync(DATA_DIR)) {
+      mkdirSync(DATA_DIR, { recursive: true });
+      logger.info('Created data directory', { path: DATA_DIR });
+    }
+  } catch (error) {
+    logger.error('Cannot create data directory, running in-memory only', {
+      path: DATA_DIR,
+      error: error.message
+    });
+    persistenceEnabled = false;
+    cache = { users: {}, version: 1 };
+    return;
   }
 
   // Charger les données existantes ou créer un fichier vide
@@ -35,6 +67,7 @@ function initStorage() {
       const data = readFileSync(STORAGE_FILE, 'utf-8');
       cache = JSON.parse(data);
       logger.info('Chat history loaded', {
+        path: STORAGE_FILE,
         usersCount: Object.keys(cache.users || {}).length,
         totalMessages: Object.values(cache.users || {}).reduce((sum, u) => sum + (u.messages?.length || 0), 0)
       });
@@ -45,7 +78,7 @@ function initStorage() {
   } else {
     cache = { users: {}, version: 1 };
     saveStorage();
-    logger.info('Created new chat history file');
+    logger.info('Created new chat history file', { path: STORAGE_FILE });
   }
 }
 
@@ -53,6 +86,10 @@ function initStorage() {
  * Sauvegarder le storage sur disque
  */
 function saveStorage() {
+  if (!persistenceEnabled) {
+    return; // Mode in-memory uniquement
+  }
+
   try {
     writeFileSync(STORAGE_FILE, JSON.stringify(cache, null, 2));
   } catch (error) {
