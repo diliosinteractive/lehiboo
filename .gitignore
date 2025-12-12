@@ -213,3 +213,9 @@ sandbox/
 
 # Theme
 !wp-content/themes/meup-child/**
+
+
+docs/
+.vscode
+.claude
+.idea
