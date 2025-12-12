@@ -39,13 +39,13 @@ async function loadMobilePrompt() {
 
 /**
  * Construire les messages pour l'IA
- * Simplifie: on passe juste l'historique et le message
+ * OPTIMISÉ: Historique réduit à 4 messages (économise tokens)
  */
 function buildMessages(currentMessage, history = []) {
   const messages = [];
 
-  // Historique limite aux 10 derniers messages
-  const recentHistory = history.slice(-10);
+  // OPTIMISATION: Réduire l'historique à 4 messages
+  const recentHistory = history.slice(-4);
   recentHistory.forEach(msg => {
     messages.push({ role: msg.role, content: msg.content });
   });

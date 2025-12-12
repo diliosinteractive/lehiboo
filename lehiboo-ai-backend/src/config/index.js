@@ -16,7 +16,8 @@ const config = {
   // OpenAI
   openai: {
     apiKey: process.env.OPENAI_API_KEY || '',
-    defaultModel: process.env.DEFAULT_MODEL || 'gpt-4o',
+    // gpt-4o-mini is ~16x cheaper than gpt-4o and sufficient for this use case
+    defaultModel: process.env.DEFAULT_MODEL || 'gpt-4o-mini',
   },
 
   // WordPress

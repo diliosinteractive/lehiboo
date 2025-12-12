@@ -53,12 +53,14 @@ async function loadSystemPromptV6() {
 
 /**
  * Construire l'historique de conversation avec userContext
+ * OPTIMISÉ: Historique réduit à 4 messages (suffisant pour 6 questions)
+ * OPTIMISÉ: Context compact (seulement les clés, pas les valeurs complètes)
  */
 function buildMessages(currentMessage, conversationHistory = [], userContext = {}) {
   const messages = [];
 
-  // Ajouter l'historique existant (limité aux 10 derniers messages)
-  const MAX_HISTORY = 10;
+  // OPTIMISATION: Réduire l'historique à 4 messages (économise ~500 tokens/requête)
+  const MAX_HISTORY = 4;
   const recentHistory = conversationHistory.slice(-MAX_HISTORY);
 
   recentHistory.forEach(msg => {
@@ -68,23 +70,17 @@ function buildMessages(currentMessage, conversationHistory = [], userContext = {
     });
   });
 
-  // Ajouter le message actuel avec le contexte utilisateur
+  // OPTIMISATION: Context compact - juste indiquer ce qui est déjà collecté
   let userMessage = currentMessage;
 
-  // Si on a un userContext, l'injecter dans le message pour que l'IA sache ce qui a déjà été collecté
   if (userContext && Object.keys(userContext).length > 0) {
-    const contextInfo = Object.entries(userContext)
-      .filter(([key, value]) => value !== undefined && value !== null)
-      .map(([key, value]) => {
-        if (typeof value === 'object') {
-          return `${key}: ${JSON.stringify(value)}`;
-        }
-        return `${key}: ${value}`;
-      })
-      .join(', ');
+    // Format compact: juste les clés remplies (économise ~100 tokens)
+    const filledKeys = Object.keys(userContext).filter(k =>
+      userContext[k] !== undefined && userContext[k] !== null
+    );
 
-    if (contextInfo) {
-      userMessage = `[CONTEXT: ${contextInfo}]\n\n${currentMessage}`;
+    if (filledKeys.length > 0) {
+      userMessage = `[Déjà collecté: ${filledKeys.join(', ')}]\n${currentMessage}`;
     }
   }
 
