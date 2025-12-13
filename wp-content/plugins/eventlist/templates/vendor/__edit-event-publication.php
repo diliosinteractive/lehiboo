@@ -4,8 +4,9 @@ $post_id = isset( $_REQUEST['id'] ) ? sanitize_text_field( $_REQUEST['id'] ) : '
 $_prefix = OVA_METABOX_EVENT;
 
 $the_post 		= get_post( $post_id );
-$event_password = $the_post->post_password;
-$event_status 	= $the_post->post_status ?? 'publish';
+$event_password = $the_post->post_password ?? '';
+// Nouvelle fiche = "pending" (Hors ligne) par défaut
+$event_status 	= $the_post->post_status ?? 'pending';
 
 if ( ! empty( $event_password ) && $event_status === 'publish' ) {
 	$event_status = 'protected';

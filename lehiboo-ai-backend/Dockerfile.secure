@@ -1,0 +1,98 @@
+# ============================================================
+# Le Hiboo AI Backend - Dockerfile SECURISE
+# Image durcie pour production post-incident
+# ============================================================
+
+# ============================================================
+# Stage 1: Builder
+# ============================================================
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copier uniquement les fichiers de dependances
+COPY package*.json ./
+
+# Installation des dependances production uniquement
+# Utilise npm install car package-lock.json n'est pas toujours present
+RUN npm install --omit=dev --ignore-scripts && \
+    npm cache clean --force
+
+# ============================================================
+# Stage 2: Security Scanner (optionnel)
+# ============================================================
+FROM aquasec/trivy:latest AS scanner
+
+COPY --from=builder /app/node_modules /scan/node_modules
+
+# Scanner les vulnerabilites
+RUN trivy fs --exit-code 0 --no-progress --severity HIGH,CRITICAL /scan || true
+
+# ============================================================
+# Stage 3: Production - Image minimale et securisee
+# ============================================================
+FROM node:18-alpine
+
+# Metadonnees
+LABEL maintainer="Le Hiboo <dev@lehiboo.com>"
+LABEL description="Le Hiboo AI Backend - Hardened Production Image"
+LABEL version="1.1.0-secure"
+LABEL security.hardened="true"
+
+# Variables d'environnement de securite
+ENV NODE_ENV=production \
+    NODE_OPTIONS="--max-old-space-size=200" \
+    NPM_CONFIG_LOGLEVEL=error
+
+# Installer uniquement les outils necessaires
+RUN apk add --no-cache \
+    dumb-init \
+    && rm -rf /var/cache/apk/*
+
+# Creer un utilisateur non-root avec UID/GID fixes
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S -u 1001 -G nodejs nodejs
+
+# Creer les repertoires necessaires
+WORKDIR /app
+
+RUN mkdir -p /app/logs && \
+    chown -R nodejs:nodejs /app
+
+# Copier les node_modules depuis le builder
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
+
+# Copier le code source
+COPY --chown=nodejs:nodejs src ./src
+COPY --chown=nodejs:nodejs package.json ./
+
+# Supprimer les fichiers inutiles et dangereux
+RUN find /app/node_modules -name "*.md" -delete 2>/dev/null || true && \
+    find /app/node_modules -name "*.txt" -delete 2>/dev/null || true && \
+    find /app/node_modules -name "Makefile" -delete 2>/dev/null || true && \
+    find /app/node_modules -name "*.gyp" -delete 2>/dev/null || true && \
+    find /app/node_modules -type d -name "test" -exec rm -rf {} + 2>/dev/null || true && \
+    find /app/node_modules -type d -name "tests" -exec rm -rf {} + 2>/dev/null || true && \
+    find /app/node_modules -type d -name "example" -exec rm -rf {} + 2>/dev/null || true && \
+    find /app/node_modules -type d -name "examples" -exec rm -rf {} + 2>/dev/null || true
+
+# Permissions strictes
+RUN chmod -R 500 /app/src && \
+    chmod -R 500 /app/node_modules && \
+    chmod 700 /app/logs
+
+# Passer a l'utilisateur non-root
+USER nodejs
+
+# Exposer le port
+EXPOSE 3000
+
+# Healthcheck
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
+    CMD node -e "const http = require('http'); const options = {hostname: 'localhost', port: 3000, path: '/health', timeout: 3000}; const req = http.request(options, (res) => {process.exit(res.statusCode === 200 ? 0 : 1)}); req.on('error', () => process.exit(1)); req.end();"
+
+# Utiliser dumb-init pour gestion des signaux
+ENTRYPOINT ["dumb-init", "--"]
+
+# Commande de demarrage
+CMD ["node", "src/index.js"]

@@ -24,6 +24,7 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
     <div class="vendor_field">
         <label class="ova_desc" for="content_event">
             <?php esc_html_e( 'Description', 'eventlist' ); ?>
+            <span class="el_req">*</span>
         </label>
 
         <p class="field_hint">

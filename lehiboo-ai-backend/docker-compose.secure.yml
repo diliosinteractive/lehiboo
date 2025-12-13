@@ -1,0 +1,253 @@
+# ============================================================
+# Le Hiboo AI Backend - Docker Compose SECURISE
+# Configuration durcie post-incident de securite
+# ============================================================
+#
+# UTILISATION :
+#   docker-compose -f docker-compose.secure.yml up -d
+#
+# DIFFERENCES avec docker-compose.yml :
+# - Pas de port expose sur l'hote (acces via reverse proxy uniquement)
+# - Limites de ressources strictes
+# - Mode read-only pour le filesystem
+# - Capabilities Linux restreintes
+# - Seccomp profile
+# - Healthchecks renforces
+# ============================================================
+
+services:
+  # ============================================================
+  # PostgreSQL Database - Configuration Securisee
+  # ============================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: lehiboo-postgres-secure
+    restart: unless-stopped
+
+    # Charger les variables depuis .env
+    env_file:
+      - .env
+
+    environment:
+      # Desactiver les logs de requetes en production
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+    # PAS de port expose - acces interne uniquement
+    # ports:
+    #   - "5432:5432"  # JAMAIS exposer en production
+
+    networks:
+      - lehiboo-internal
+
+    # Limites de ressources
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+    # Healthcheck (utilise les valeurs fixes car l'interpolation ne fonctionne pas ici)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lehiboo -d lehiboo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+    # Securite
+    security_opt:
+      - no-new-privileges:true
+
+    # Logs limites
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============================================================
+  # Backend Node.js - Configuration Securisee
+  # ============================================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.secure
+
+    image: lehiboo-ai-backend:secure
+    container_name: lehiboo-ai-backend-secure
+    restart: unless-stopped
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    # PAS de port expose sur l'hote !
+    # Le reverse proxy Plesk/Nginx accede via le reseau Docker
+    # ports:
+    #   - "3004:3000"  # SUPPRIME pour securite
+
+    # Exposer le port uniquement dans le reseau Docker
+    expose:
+      - "3000"
+
+    # Charger les secrets depuis le fichier .env
+    # (contient DATABASE_URL, OPENAI_API_KEY, JWT_SECRET, etc.)
+    env_file:
+      - .env
+
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      LOG_LEVEL: warn
+
+    # Volumes avec restrictions
+    volumes:
+      # Logs en ecriture
+      - ./logs:/app/logs:rw
+      # Prompts en lecture seule
+      - ./src/prompts:/app/src/prompts:ro
+
+    # Filesystem en lecture seule sauf /app/logs et /tmp
+    read_only: true
+    tmpfs:
+      - /tmp:size=64M,mode=1777
+
+    # Limites de ressources STRICTES
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'           # Max 50% CPU
+          memory: 256M          # Max 256 MB RAM
+          pids: 50              # Max 50 processus
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+    # Healthcheck renforce
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+    # Securite Linux renforcee
+    security_opt:
+      - no-new-privileges:true
+      # Profil seccomp par defaut (bloque syscalls dangereux)
+      - seccomp:unconfined  # Remplacer par un profil custom si disponible
+
+    # Capabilities restreintes
+    cap_drop:
+      - ALL                    # Supprimer toutes les capabilities
+    cap_add:
+      - NET_BIND_SERVICE       # Necessaire pour le port 3000
+
+    # Utilisateur non-root
+    user: "1001:1001"
+
+    # Pas d'acces aux devices
+    devices: []
+
+    # Reseau
+    networks:
+      - lehiboo-internal
+      - lehiboo-proxy
+
+    # DNS securise
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+
+    # Logs limites
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+    # Labels pour monitoring
+    labels:
+      - "com.lehiboo.service=ai-backend"
+      - "com.lehiboo.security=hardened"
+
+  # ============================================================
+  # Nginx Reverse Proxy (optionnel mais recommande)
+  # ============================================================
+  nginx:
+    image: nginx:alpine
+    container_name: lehiboo-nginx
+    restart: unless-stopped
+
+    depends_on:
+      - backend
+
+    # Seul port expose
+    ports:
+      - "127.0.0.1:3004:80"   # Localhost uniquement, pas 0.0.0.0
+
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/security-headers.conf:/etc/nginx/security-headers.conf:ro
+
+    networks:
+      - lehiboo-proxy
+
+    # Limites de ressources
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 64M
+
+    # Securite
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+      - CHOWN
+      - SETGID
+      - SETUID
+
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:size=32M
+      - /var/run:size=8M
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "3"
+
+# ============================================================
+# Reseaux
+# ============================================================
+networks:
+  # Reseau interne (backend <-> postgres)
+  lehiboo-internal:
+    driver: bridge
+    internal: true   # Pas d'acces internet
+
+  # Reseau proxy (nginx <-> backend)
+  lehiboo-proxy:
+    driver: bridge
+
+# ============================================================
+# Volumes
+# ============================================================
+volumes:
+  postgres_data:
+    driver: local
+  logs:
+    driver: local

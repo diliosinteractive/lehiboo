@@ -1503,15 +1503,8 @@ if( !class_exists( 'El_Ajax' ) ){
 				$check = $check_create_event['status'];
 			}
 
-			$publish = EL()->options->role->get('publish_event', '1') ;
-
-			if($publish =='1'){
-
-				$publish = "publish";
-			}else{
-
-				$publish = "pending";
-			}
+			// Événement dupliqué = toujours "Hors ligne" par défaut
+			$publish = "pending";
 			if( !verify_current_user_post( $post_id )) return false;
 
 			$member_account_id = EL()->options->general->get( 'myaccount_page_id', '' );
@@ -1601,7 +1594,10 @@ if( !class_exists( 'El_Ajax' ) ){
 	                if ( ! el_is_administrator() ) {
 	                	$id_membership = EL_Package::get_id_membership_by_current_user();
 	                }
-	                update_post_meta( $post_id, OVA_METABOX_EVENT.'membership_id', $id_membership );
+	                update_post_meta( $new_post_id, OVA_METABOX_EVENT.'membership_id', $id_membership );
+
+	                // Forcer "Hors ligne" pour l'événement dupliqué
+	                update_post_meta( $new_post_id, OVA_METABOX_EVENT.'event_active', 0 );
 
 	                /**
 	                 * Elementor compatibility fixes
@@ -2578,11 +2574,13 @@ if( !class_exists( 'El_Ajax' ) ){
 				}
 
 
-				/* Tags */
+				/* Tags (Type d'événement) - Single or array */
 				if( ! empty( $event_tag ) ){
 					// Convert term IDs to integers
 					if (is_array($event_tag)) {
 						$event_tag = array_map('intval', $event_tag);
+					} else {
+						$event_tag = intval($event_tag);
 					}
 					wp_set_post_terms( $post_id, $event_tag , 'event_tag' );
 				}
@@ -2687,12 +2685,10 @@ if( !class_exists( 'El_Ajax' ) ){
 					}
 				}
 
-				if( ! el_can_publish_event() ){
-					$event_status = 'pending';
-					$post_data_sanitize[$_prefix.'event_active']   = 0;
-				}else{
-					$post_data_sanitize[$_prefix.'event_active']   = 1;
-				}
+				// Nouvelle fiche = toujours "Hors ligne" par défaut
+				// L'utilisateur devra explicitement la mettre "En ligne"
+				$event_status = 'pending';
+				$post_data_sanitize[$_prefix.'event_active'] = 0;
 				
 				$event_arr = array(
 					'post_author' 	=> $current_user,
@@ -2718,7 +2714,7 @@ if( !class_exists( 'El_Ajax' ) ){
 					}
 				}
 
-				// Tags
+				// Tags (Type d'événement) - Already converted to int earlier
 				if( !empty( $event_tag ) ){
 					wp_set_post_terms( $new_post_id, $event_tag , 'event_tag' );
 				}

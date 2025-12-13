@@ -8,18 +8,20 @@ $the_post = get_post( $post_id );
 $event_password = $the_post->post_password ?? '';
 $post_status = $the_post->post_status ?? 'draft';
 
-// Déterminer la visibilité
-// public = publish sans password
-// public_protected = publish avec password
-// private = private sans password
-// private_protected = private avec password
+// Déterminer la visibilité (comment l'événement sera visible QUAND il sera en ligne)
+// public = référencé sans password
+// public_protected = référencé avec password
+// private = non référencé (accessible via lien)
+// private_protected = non référencé avec password
+// Par défaut = public (quand l'utilisateur mettra en ligne, ce sera public)
 $visibility = 'public';
-if ( $post_status === 'private' && ! empty( $event_password ) ) {
+
+if ( $post_status === 'publish' && ! empty( $event_password ) ) {
+    $visibility = 'public_protected';
+} elseif ( $post_status === 'private' && ! empty( $event_password ) ) {
     $visibility = 'private_protected';
 } elseif ( $post_status === 'private' ) {
     $visibility = 'private';
-} elseif ( ! empty( $event_password ) ) {
-    $visibility = 'public_protected';
 }
 
 // Statut en ligne / hors ligne
@@ -829,9 +831,10 @@ jQuery(document).ready(function($) {
         $(this).closest('.service_item').addClass('selected');
     });
 
-    // Synchroniser le mot de passe et le statut au chargement
+    // Synchroniser le mot de passe, le statut et le bouton au chargement
     PublicationManager.syncPassword();
     PublicationManager.updateEventStatus();
+    PublicationManager.updateHeaderButton();
 
     // Scroll vers la section publication si hash présent
     if (window.location.hash === '#section_publication') {

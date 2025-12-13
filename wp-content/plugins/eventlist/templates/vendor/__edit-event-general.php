@@ -48,6 +48,7 @@ if (!is_array($co_organizers)) $co_organizers = array();
     <div class="vendor_field">
         <label for="name_event">
             <?php esc_html_e( 'Nom de l\'activité', 'eventlist' ); ?>
+            <span class="el_req">*</span>
         </label>
         <input type="text" id="name_event" name="name_event" value="<?php echo esc_attr( $post_title ); ?>" placeholder="<?php esc_html_e( 'Saisir le titre', 'eventlist' ); ?>" required>
     </div>
@@ -79,14 +80,15 @@ if (!is_array($co_organizers)) $co_organizers = array();
             <div class="vendor_field">
                 <label for="event_tag">
                     <?php esc_html_e( 'Type d\'événement', 'eventlist' ); ?>
-                    <span class="el_req">*</span>
                 </label>
-                <select name="event_tag[]" id="event_tag" class="selectpicker" multiple>
+                <select name="event_tag" id="event_tag" class="selectpicker">
+                    <option value=""><?php esc_html_e( '--- Sélectionner ---', 'eventlist' ); ?></option>
                     <?php
                     $terms = get_terms(array('taxonomy' => 'event_tag', 'hide_empty' => false));
                     if (!is_wp_error($terms)) {
+                        $selected_tag = !empty($selected_tags) ? $selected_tags[0] : '';
                         foreach ($terms as $term) {
-                            $selected = in_array($term->term_id, $selected_tags) ? 'selected' : '';
+                            $selected = ($term->term_id == $selected_tag) ? 'selected' : '';
                             echo '<option value="' . esc_attr($term->term_id) . '" ' . $selected . '>' . esc_html($term->name) . '</option>';
                         }
                     }
@@ -102,9 +104,8 @@ if (!is_array($co_organizers)) $co_organizers = array();
             <div class="vendor_field">
                 <label for="event_public">
                     <?php esc_html_e( 'Public visé', 'eventlist' ); ?>
-                    <span class="el_req">*</span>
                 </label>
-                <select name="event_public[]" id="event_public" class="selectpicker" multiple>
+                <select name="event_public[]" id="event_public" class="selectpicker" multiple data-placeholder="<?php esc_attr_e( 'Sélection multiple possible', 'eventlist' ); ?>" data-live-search="true">
                     <?php
                     $publics = get_terms(array('taxonomy' => 'event_public', 'hide_empty' => false, 'parent' => 0));
                     if (!is_wp_error($publics)) {
@@ -328,10 +329,17 @@ if (!is_array($co_organizers)) $co_organizers = array();
 <script>
 jQuery(document).ready(function($) {
     // Initialize Select2 for all selectpickers
-    $('.selectpicker').select2({
-        width: '100%',
-        placeholder: "<?php esc_html_e('Sélectionnez...', 'eventlist'); ?>",
-        allowClear: true
+    $('.selectpicker').each(function() {
+        var $this = $(this);
+        var placeholder = $this.data('placeholder') || "<?php esc_html_e('Sélectionnez...', 'eventlist'); ?>";
+        var liveSearch = $this.data('live-search') || false;
+
+        $this.select2({
+            width: '100%',
+            placeholder: placeholder,
+            allowClear: true,
+            minimumResultsForSearch: liveSearch ? 0 : Infinity
+        });
     });
 
     // Ajouter un co-organisateur
