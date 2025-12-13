@@ -207,6 +207,15 @@ class EL_Vendor {
 			}
 			break;
 
+			// V1 Le Hiboo - Page Activités archivées
+			case 'archived':
+			if( el_is_vendor() ){
+				$template = apply_filters( 'el_shortcode_archived_template', 'vendor/archived.php' );
+			}else{
+				$template = apply_filters( 'el_shortcode_myaccount_template_profile', 'vendor/profile.php' );
+			}
+			break;
+
 
 		}
 

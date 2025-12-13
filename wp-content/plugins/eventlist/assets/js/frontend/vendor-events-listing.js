@@ -114,22 +114,26 @@ jQuery(document).ready(function($) {
             // Pas d'interactions -> on peut supprimer
             $message.html('Êtes-vous certain de vouloir supprimer la fiche "<strong>' + eventTitle + '</strong>" ?');
             $confirmBtn.data('action', 'delete');
+            $confirmBtn.text('Oui, supprimer');
             $confirmBtn.show();
         } else if (hasInteractions && isOnline) {
-            // Interactions + en ligne -> proposer mise hors ligne
-            $message.html('Cette page a des interactions avec des utilisateurs. Vous ne pouvez pas la supprimer. Par contre, vous pouvez la mettre hors ligne.<br><br>Souhaitez-vous mettre l\'activité "<strong>' + eventTitle + '</strong>" hors ligne ?');
-            $confirmBtn.data('action', 'offline');
+            // Interactions + en ligne -> proposer archivage
+            $message.html('Cette activité a des interactions avec des utilisateurs (vues, réservations...). Elle ne peut pas être supprimée définitivement.<br><br>Souhaitez-vous <strong>archiver</strong> l\'activité "<strong>' + eventTitle + '</strong>" ?<br><small style="color: #64748b;">L\'activité sera retirée de vos listes mais conservée dans vos archives. Vous pourrez la restaurer à tout moment.</small>');
+            $confirmBtn.data('action', 'archive');
+            $confirmBtn.text('Oui, archiver');
             $confirmBtn.show();
         } else {
-            // Interactions + déjà hors ligne -> juste info
-            $message.html('Cette page a des interactions avec des utilisateurs. Vous ne pouvez pas la supprimer.');
-            $confirmBtn.hide();
+            // Interactions + déjà hors ligne -> proposer archivage aussi
+            $message.html('Cette activité a des interactions avec des utilisateurs (vues, réservations...). Elle ne peut pas être supprimée définitivement.<br><br>Souhaitez-vous <strong>archiver</strong> l\'activité "<strong>' + eventTitle + '</strong>" ?<br><small style="color: #64748b;">L\'activité sera retirée de vos listes mais conservée dans vos archives. Vous pourrez la restaurer à tout moment.</small>');
+            $confirmBtn.data('action', 'archive');
+            $confirmBtn.text('Oui, archiver');
+            $confirmBtn.show();
         }
 
         $modal.fadeIn(200);
     });
 
-    // Confirmer l'action de suppression/mise hors ligne
+    // Confirmer l'action de suppression/archivage
     $(document).on('click', '.btn-modal-confirm', function() {
         if (!currentDeleteData) return;
 
@@ -142,6 +146,9 @@ jQuery(document).ready(function($) {
         } else if (action === 'offline') {
             // Mettre hors ligne (pending)
             setEventOffline(currentDeleteData.postId, currentDeleteData.$row);
+        } else if (action === 'archive') {
+            // Archiver l'événement
+            archiveEvent(currentDeleteData.postId, currentDeleteData.$row);
         }
 
         $modal.fadeOut(200);
@@ -239,6 +246,50 @@ jQuery(document).ready(function($) {
                     ToastNotification.error('Erreur lors de la mise hors ligne.');
                 } else {
                     alert('Erreur lors de la mise hors ligne.');
+                }
+            }
+        });
+    }
+
+    // Fonction pour archiver un événement
+    function archiveEvent(postId, $row) {
+        var nonce = $('#el_archive_post_nonce_' + postId).val();
+
+        $.ajax({
+            url: ajax_object.ajax_url,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'el_archive_post',
+                data: {
+                    post_id: postId,
+                    nonce: nonce
+                }
+            },
+            success: function(response) {
+                if (response.success === true || (response.data && response.data.status === 'success')) {
+                    // Retirer la ligne du tableau avec animation
+                    $row.fadeOut(300, function() {
+                        $(this).remove();
+                    });
+
+                    if (typeof ToastNotification !== 'undefined') {
+                        ToastNotification.success('Activité archivée avec succès !');
+                    }
+                } else {
+                    var errorMessage = (response.data && response.data.message) ? response.data.message : 'Erreur lors de l\'archivage.';
+                    if (typeof ToastNotification !== 'undefined') {
+                        ToastNotification.error(errorMessage);
+                    } else {
+                        alert(errorMessage);
+                    }
+                }
+            },
+            error: function() {
+                if (typeof ToastNotification !== 'undefined') {
+                    ToastNotification.error('Erreur lors de l\'archivage.');
+                } else {
+                    alert('Erreur lors de l\'archivage.');
                 }
             }
         });

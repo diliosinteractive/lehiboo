@@ -291,6 +291,7 @@ $analytics = new EL_Analytics();
 				</button>
 				<?php wp_nonce_field( 'el_delete_post_nonce', 'el_delete_post_nonce_' . $post_id ); ?>
 				<?php wp_nonce_field( 'el_pending_post_nonce', 'el_pending_post_nonce_' . $post_id ); ?>
+				<?php wp_nonce_field( 'el_archive_post_nonce', 'el_archive_post_nonce_' . $post_id ); ?>
 			</div>
 		</td>
 

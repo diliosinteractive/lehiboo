@@ -58,6 +58,19 @@ $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_tic
                     </li>
                 <?php } ?>
 
+                <?php
+                // Afficher "Activités archivées" seulement s'il y en a
+                $archived_count = function_exists( 'lehiboo_count_archived_events' ) ? lehiboo_count_archived_events() : 0;
+                if ( $archived_count > 0 ) : ?>
+                    <li class="menu_vendor_archived <?php if ($vendor == 'archived') echo esc_attr('active');  ?>">
+                        <a href="<?php echo add_query_arg( array( 'vendor' => 'archived'), get_myaccount_page() ); ?>">
+                            <i class="icon_archive_alt"></i>
+                            <?php esc_html_e( 'Activités archivées', 'eventlist' ); ?>
+                            <span class="nav_count"><?php echo esc_html( $archived_count ); ?></span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
                 <?php if( apply_filters( 'el_manage_vendor_show_create_event', true ) ){ ?>
                     <li class="menu_vendor_create_event <?php if ($vendor == 'create-event') echo esc_attr('active');  ?>">
                         <a href="<?php echo add_query_arg( array( 'vendor' => 'create-event'), get_myaccount_page() ); ?>">

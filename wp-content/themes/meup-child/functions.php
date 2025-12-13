@@ -1842,3 +1842,171 @@ function lehiboo_maybe_flush_rewrite_rules() {
 		flush_rewrite_rules( false ); // false = soft flush (plus rapide)
 	}
 }
+
+// ========================================
+// ARCHIVAGE DES ACTIVITÉS
+// ========================================
+
+/**
+ * Enregistrer le statut 'archived' pour les événements
+ */
+add_action( 'init', 'lehiboo_register_archived_status' );
+function lehiboo_register_archived_status() {
+	register_post_status( 'archived', array(
+		'label'                     => _x( 'Archivé', 'post status', 'eventlist' ),
+		'public'                    => false,
+		'private'                   => true,
+		'exclude_from_search'       => true,
+		'show_in_admin_all_list'    => true,
+		'show_in_admin_status_list' => true,
+		'label_count'               => _n_noop( 'Archivé <span class="count">(%s)</span>', 'Archivés <span class="count">(%s)</span>', 'eventlist' ),
+	) );
+}
+
+/**
+ * AJAX: Archiver une activité
+ */
+add_action( 'wp_ajax_el_archive_post', 'lehiboo_ajax_archive_post' );
+function lehiboo_ajax_archive_post() {
+	if ( ! isset( $_POST['data'] ) ) {
+		wp_send_json_error( array( 'message' => esc_html__( 'Données manquantes', 'eventlist' ) ) );
+		return;
+	}
+
+	$post_data = $_POST['data'];
+
+	if ( ! isset( $post_data['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $post_data['nonce'] ), 'el_archive_post_nonce' ) ) {
+		wp_send_json_error( array( 'message' => esc_html__( 'Erreur de sécurité', 'eventlist' ) ) );
+		return;
+	}
+
+	$post_id = isset( $post_data['post_id'] ) ? intval( $post_data['post_id'] ) : 0;
+
+	if ( empty( $post_id ) ) {
+		wp_send_json_error( array( 'message' => esc_html__( 'ID de l\'événement manquant', 'eventlist' ) ) );
+		return;
+	}
+
+	// Vérifier que l'utilisateur est bien l'auteur
+	if ( ! function_exists( 'verify_current_user_post' ) || ! verify_current_user_post( $post_id ) ) {
+		wp_send_json_error( array( 'message' => esc_html__( 'Vous n\'avez pas les droits pour archiver cet événement', 'eventlist' ) ) );
+		return;
+	}
+
+	// Sauvegarder l'ancien statut pour pouvoir restaurer
+	$old_status = get_post_status( $post_id );
+	update_post_meta( $post_id, '_archived_from_status', $old_status );
+	update_post_meta( $post_id, '_archived_date', current_time( 'mysql' ) );
+
+	// Mettre à jour le statut
+	$result = wp_update_post( array(
+		'ID'          => $post_id,
+		'post_status' => 'archived',
+	) );
+
+	if ( $result && ! is_wp_error( $result ) ) {
+		wp_send_json_success( array(
+			'status'  => 'success',
+			'message' => esc_html__( 'Activité archivée avec succès', 'eventlist' ),
+		) );
+	} else {
+		wp_send_json_error( array( 'message' => esc_html__( 'Erreur lors de l\'archivage', 'eventlist' ) ) );
+	}
+}
+
+/**
+ * AJAX: Restaurer une activité archivée
+ */
+add_action( 'wp_ajax_el_restore_post', 'lehiboo_ajax_restore_post' );
+function lehiboo_ajax_restore_post() {
+	if ( ! isset( $_POST['data'] ) ) {
+		wp_send_json_error( array( 'message' => esc_html__( 'Données manquantes', 'eventlist' ) ) );
+		return;
+	}
+
+	$post_data = $_POST['data'];
+
+	if ( ! isset( $post_data['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $post_data['nonce'] ), 'el_restore_post_nonce' ) ) {
+		wp_send_json_error( array( 'message' => esc_html__( 'Erreur de sécurité', 'eventlist' ) ) );
+		return;
+	}
+
+	$post_id = isset( $post_data['post_id'] ) ? intval( $post_data['post_id'] ) : 0;
+
+	if ( empty( $post_id ) ) {
+		wp_send_json_error( array( 'message' => esc_html__( 'ID de l\'événement manquant', 'eventlist' ) ) );
+		return;
+	}
+
+	// Vérifier que l'utilisateur est bien l'auteur
+	if ( ! function_exists( 'verify_current_user_post' ) || ! verify_current_user_post( $post_id ) ) {
+		wp_send_json_error( array( 'message' => esc_html__( 'Vous n\'avez pas les droits pour restaurer cet événement', 'eventlist' ) ) );
+		return;
+	}
+
+	// Récupérer l'ancien statut ou utiliser 'pending' par défaut
+	$restore_to_status = get_post_meta( $post_id, '_archived_from_status', true );
+	if ( empty( $restore_to_status ) || $restore_to_status === 'archived' ) {
+		$restore_to_status = 'pending'; // Par défaut, restaurer en hors ligne
+	}
+
+	// Mettre à jour le statut
+	$result = wp_update_post( array(
+		'ID'          => $post_id,
+		'post_status' => $restore_to_status,
+	) );
+
+	if ( $result && ! is_wp_error( $result ) ) {
+		// Nettoyer les métadonnées d'archivage
+		delete_post_meta( $post_id, '_archived_from_status' );
+		delete_post_meta( $post_id, '_archived_date' );
+
+		wp_send_json_success( array(
+			'status'  => 'success',
+			'message' => esc_html__( 'Activité restaurée avec succès', 'eventlist' ),
+		) );
+	} else {
+		wp_send_json_error( array( 'message' => esc_html__( 'Erreur lors de la restauration', 'eventlist' ) ) );
+	}
+}
+
+/**
+ * Récupérer les activités archivées d'un utilisateur
+ */
+function lehiboo_get_archived_events( $user_id = null, $paged = 1 ) {
+	if ( ! $user_id ) {
+		$user_id = get_current_user_id();
+	}
+
+	$args = array(
+		'post_type'      => 'event',
+		'post_status'    => 'archived',
+		'author'         => $user_id,
+		'posts_per_page' => 10,
+		'paged'          => $paged,
+		'orderby'        => 'modified',
+		'order'          => 'DESC',
+	);
+
+	return new WP_Query( $args );
+}
+
+/**
+ * Compter les activités archivées d'un utilisateur
+ */
+function lehiboo_count_archived_events( $user_id = null ) {
+	if ( ! $user_id ) {
+		$user_id = get_current_user_id();
+	}
+
+	$args = array(
+		'post_type'      => 'event',
+		'post_status'    => 'archived',
+		'author'         => $user_id,
+		'posts_per_page' => -1,
+		'fields'         => 'ids',
+	);
+
+	$query = new WP_Query( $args );
+	return $query->found_posts;
+}
