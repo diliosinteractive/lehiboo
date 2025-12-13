@@ -1406,26 +1406,44 @@ if( !class_exists( 'El_Ajax' ) ){
 			wp_die();
 		}
 
-		/* Pending post */
+		/* Pending post - Mettre un événement hors ligne */
 		public static function el_pending_post() {
 
+			if( !isset( $_POST['data'] ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Données manquantes', 'eventlist' ) ) );
+				return;
+			}
+
 			$post_data = $_POST['data'];
-			
-			if( !isset( $_POST['data'] ) ) wp_die();
 
-			if( !isset( $post_data['el_pending_post_nonce'] ) || !wp_verify_nonce( sanitize_text_field( $post_data['el_pending_post_nonce'] ), 'el_pending_post_nonce' ) ) return ;
-			
-			$post_id = isset( $post_data['post_id'] ) ? sanitize_text_field( $post_data['post_id'] ) : '';
+			if( !isset( $post_data['el_pending_post_nonce'] ) || !wp_verify_nonce( sanitize_text_field( $post_data['el_pending_post_nonce'] ), 'el_pending_post_nonce' ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Erreur de sécurité', 'eventlist' ) ) );
+				return;
+			}
 
-			if( !verify_current_user_post( $post_id ) || !el_can_edit_event() ) return false;
+			$post_id = isset( $post_data['post_id'] ) ? intval( $post_data['post_id'] ) : 0;
+
+			if( empty( $post_id ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'ID de l\'événement manquant', 'eventlist' ) ) );
+				return;
+			}
+
+			if( !verify_current_user_post( $post_id ) || !el_can_edit_event() ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Vous n\'avez pas les droits pour modifier cet événement', 'eventlist' ) ) );
+				return;
+			}
 
 			$my_post = array(
 				'ID'          => $post_id,
 				'post_status' => 'pending',
 			);
-			wp_update_post( $my_post );
+			$result = wp_update_post( $my_post );
 
-			return true;
+			if ( $result && !is_wp_error( $result ) ) {
+				wp_send_json_success( array( 'status' => 'success' ) );
+			} else {
+				wp_send_json_error( array( 'message' => esc_html__( 'Erreur lors de la mise hors ligne', 'eventlist' ) ) );
+			}
 		}
 
 		/* Pending post */
@@ -1621,20 +1639,33 @@ if( !class_exists( 'El_Ajax' ) ){
 			return true;
 		}
 
-		/* Publish post */
+		/* Publish post - Mettre un événement en ligne */
 		public static function el_publish_post() {
+
+			if( !isset( $_POST['data'] ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Données manquantes', 'eventlist' ) ) );
+				return;
+			}
 
 			$post_data = $_POST['data'];
 			$_prefix = OVA_METABOX_EVENT;
-			
-			if( !isset( $_POST['data'] ) ) wp_die();
 
-			if( !isset( $post_data['el_publish_post_nonce'] ) || !wp_verify_nonce( sanitize_text_field( $post_data['el_publish_post_nonce'] ), 'el_publish_post_nonce' ) ) return ;
-			
-			$post_id = isset( $post_data['post_id'] ) ? sanitize_text_field( $post_data['post_id'] ) : '';
-			
+			if( !isset( $post_data['el_publish_post_nonce'] ) || !wp_verify_nonce( sanitize_text_field( $post_data['el_publish_post_nonce'] ), 'el_publish_post_nonce' ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Erreur de sécurité', 'eventlist' ) ) );
+				return;
+			}
 
-			if( !verify_current_user_post( $post_id ) ) return false;
+			$post_id = isset( $post_data['post_id'] ) ? intval( $post_data['post_id'] ) : 0;
+
+			if( empty( $post_id ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'ID de l\'événement manquant', 'eventlist' ) ) );
+				return;
+			}
+
+			if( !verify_current_user_post( $post_id ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Vous n\'avez pas les droits pour modifier cet événement', 'eventlist' ) ) );
+				return;
+			}
 
 			if ( el_can_publish_event() ) {
 
@@ -1642,7 +1673,7 @@ if( !class_exists( 'El_Ajax' ) ){
 					'ID'          => $post_id,
 					'post_status' => 'publish',
 				);
-				wp_update_post( $my_post );
+				$result = wp_update_post( $my_post );
 
 				update_post_meta( $post_id, $_prefix.'event_active', '1' );
 
@@ -1651,12 +1682,12 @@ if( !class_exists( 'El_Ajax' ) ){
 				$event_active = get_post_meta( $post_id, $_prefix.'event_active', true );
 
 				switch ( $event_active ) {
-					case '1': 
+					case '1':
 					$my_post = array(
 						'ID'          => $post_id,
 						'post_status' => 'publish',
 					);
-					wp_update_post( $my_post );
+					$result = wp_update_post( $my_post );
 					break;
 
 					default:
@@ -1664,11 +1695,16 @@ if( !class_exists( 'El_Ajax' ) ){
 						'ID'          => $post_id,
 						'post_status' => 'pending',
 					);
-					wp_update_post( $my_post );
+					$result = wp_update_post( $my_post );
 					break;
 				}
 			}
-			return true;
+
+			if ( isset( $result ) && $result && !is_wp_error( $result ) ) {
+				wp_send_json_success( array( 'status' => 'success' ) );
+			} else {
+				wp_send_json_error( array( 'message' => esc_html__( 'Erreur lors de la mise en ligne', 'eventlist' ) ) );
+			}
 		}
 
 		/* Delete post */

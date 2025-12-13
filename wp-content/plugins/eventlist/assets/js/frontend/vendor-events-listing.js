@@ -210,7 +210,8 @@ jQuery(document).ready(function($) {
                 }
             },
             success: function(response) {
-                if (response === true || response.status === 'success') {
+                // Support ancien format (true) et nouveau format (wp_send_json_success)
+                if (response === true || response.success === true || (response.data && response.data.status === 'success')) {
                     // Mettre à jour le badge de statut
                     var $badge = $row.find('.status-badge');
                     $badge.removeClass('status-online').addClass('status-offline');
@@ -224,10 +225,12 @@ jQuery(document).ready(function($) {
                         ToastNotification.success('Événement mis hors ligne !');
                     }
                 } else {
+                    // Récupérer le message d'erreur du serveur
+                    var errorMessage = (response.data && response.data.message) ? response.data.message : 'Erreur lors de la mise hors ligne.';
                     if (typeof ToastNotification !== 'undefined') {
-                        ToastNotification.error('Erreur lors de la mise hors ligne.');
+                        ToastNotification.error(errorMessage);
                     } else {
-                        alert('Erreur lors de la mise hors ligne.');
+                        alert(errorMessage);
                     }
                 }
             },
