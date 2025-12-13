@@ -1810,3 +1810,35 @@ function lehiboo_get_viewed_activities() {
 }
 add_action( 'wp_ajax_get_viewed_activities', 'lehiboo_get_viewed_activities' );
 add_action( 'wp_ajax_nopriv_get_viewed_activities', 'lehiboo_get_viewed_activities' );
+
+// ========================================
+// FIX: Régénérer les rewrite rules après changement de statut d'événement
+// ========================================
+/**
+ * Marquer que les rewrite rules doivent être regénérées après un changement de statut d'événement
+ * Cela évite les erreurs 404 après création/modification d'événement
+ */
+add_action( 'transition_post_status', 'lehiboo_schedule_rewrite_flush_on_event_status_change', 10, 3 );
+function lehiboo_schedule_rewrite_flush_on_event_status_change( $new_status, $old_status, $post ) {
+	// Seulement pour les événements
+	if ( $post->post_type !== 'event' ) {
+		return;
+	}
+
+	// Si le statut a changé
+	if ( $new_status !== $old_status ) {
+		// Marquer pour flush au prochain chargement de page
+		set_transient( 'lehiboo_flush_rewrite_rules', true, 60 );
+	}
+}
+
+/**
+ * Effectuer le flush des rewrite rules si nécessaire
+ */
+add_action( 'init', 'lehiboo_maybe_flush_rewrite_rules', 999 );
+function lehiboo_maybe_flush_rewrite_rules() {
+	if ( get_transient( 'lehiboo_flush_rewrite_rules' ) ) {
+		delete_transient( 'lehiboo_flush_rewrite_rules' );
+		flush_rewrite_rules( false ); // false = soft flush (plus rapide)
+	}
+}

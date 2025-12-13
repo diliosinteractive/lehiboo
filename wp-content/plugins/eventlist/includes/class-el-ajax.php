@@ -1432,18 +1432,28 @@ if( !class_exists( 'El_Ajax' ) ){
 		public static function el_trash_post() {
 
 			$post_data = $_POST['data'];
-			
-			if( !isset( $_POST['data'] ) ) wp_die();
 
-			if( !isset( $post_data['el_trash_post_nonce'] ) || !wp_verify_nonce( sanitize_text_field( $post_data['el_trash_post_nonce'] ), 'el_trash_post_nonce' ) ) return ;
+			if( !isset( $_POST['data'] ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Données manquantes', 'eventlist' ) ) );
+			}
+
+			if( !isset( $post_data['el_trash_post_nonce'] ) || !wp_verify_nonce( sanitize_text_field( $post_data['el_trash_post_nonce'] ), 'el_trash_post_nonce' ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Erreur de sécurité', 'eventlist' ) ) );
+			}
 
 			$post_id = isset( $post_data['post_id'] ) ? sanitize_text_field( $post_data['post_id'] ) : '';
 
-			if( !verify_current_user_post( $post_id ) || !el_can_edit_event() ) return false;
+			if( !verify_current_user_post( $post_id ) || !el_can_edit_event() ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Vous n\'avez pas les droits pour supprimer cet événement', 'eventlist' ) ) );
+			}
 
-			wp_trash_post( $post_id );
+			$result = wp_trash_post( $post_id );
 
-			return true;
+			if ( $result ) {
+				wp_send_json_success( array( 'status' => 'success' ) );
+			} else {
+				wp_send_json_error( array( 'message' => esc_html__( 'Erreur lors de la suppression', 'eventlist' ) ) );
+			}
 		}
 
 		/* duplicate post */

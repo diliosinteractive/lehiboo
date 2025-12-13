@@ -164,7 +164,8 @@ jQuery(document).ready(function($) {
                 }
             },
             success: function(response) {
-                if (response === true || response.status === 'success') {
+                // Support ancien format (true) et nouveau format (wp_send_json_success)
+                if (response === true || response.success === true || (response.data && response.data.status === 'success')) {
                     // Supprimer la ligne du tableau
                     $row.fadeOut(300, function() {
                         $(this).remove();
@@ -174,10 +175,12 @@ jQuery(document).ready(function($) {
                         ToastNotification.success('Événement supprimé avec succès !');
                     }
                 } else {
+                    // Récupérer le message d'erreur du serveur
+                    var errorMessage = (response.data && response.data.message) ? response.data.message : 'Erreur lors de la suppression.';
                     if (typeof ToastNotification !== 'undefined') {
-                        ToastNotification.error('Erreur lors de la suppression.');
+                        ToastNotification.error(errorMessage);
                     } else {
-                        alert('Erreur lors de la suppression.');
+                        alert(errorMessage);
                     }
                 }
             },
