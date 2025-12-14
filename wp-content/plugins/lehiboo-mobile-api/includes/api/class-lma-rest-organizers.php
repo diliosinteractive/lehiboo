@@ -47,8 +47,11 @@ class LMA_REST_Organizers {
             );
         }
 
-        // Vérifier que c'est bien un vendor/partenaire
-        if (!in_array('el_event_vendor', $user->roles) && !in_array('administrator', $user->roles)) {
+        // Vérifier que c'est bien un vendor/partenaire OU qu'il a publié des événements
+        $is_vendor = in_array('el_event_vendor', $user->roles) || in_array('administrator', $user->roles);
+        $has_events = count_user_posts($organizer_id, 'event', true) > 0;
+
+        if (!$is_vendor && !$has_events) {
             return LMA_Response::error(
                 'not_an_organizer',
                 __('Cet utilisateur n\'est pas un organisateur', 'lehiboo-mobile-api'),
