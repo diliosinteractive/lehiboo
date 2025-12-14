@@ -116,6 +116,7 @@ final class LeHiboo_Mobile_API {
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-partner.php';
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-posts.php';
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-user-profile.php';
+        require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-organizers.php';
 
         // Initialize taxonomy image support
         new LMA_Taxonomy_Image();
@@ -329,6 +330,7 @@ final class LeHiboo_Mobile_API {
             new LMA_REST_Partner(),
             new LMA_REST_Posts(),
             new LMA_REST_User_Profile(),
+            new LMA_REST_Organizers(),
         );
 
         foreach ($controllers as $controller) {
@@ -547,6 +549,10 @@ final class LeHiboo_Mobile_API {
                         <tr><td>GET</td><td>/partner/events</td><td>Mes événements</td><td>JWT (partner)</td></tr>
                         <tr><td>POST</td><td>/partner/scan</td><td>Scanner ticket</td><td>JWT (partner)</td></tr>
                         <tr><td>GET</td><td>/partner/stats</td><td>Statistiques</td><td>JWT (partner)</td></tr>
+
+                        <tr><td colspan="4"><strong>Organisateurs (Public)</strong></td></tr>
+                        <tr><td>GET</td><td>/organizers/{id}</td><td>Profil organisateur</td><td>-</td></tr>
+                        <tr><td>GET</td><td>/organizers/{id}/events</td><td>Événements de l'organisateur</td><td>-</td></tr>
                     </tbody>
                 </table>
             </div>
