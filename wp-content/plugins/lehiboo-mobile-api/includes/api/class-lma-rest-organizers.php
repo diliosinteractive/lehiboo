@@ -361,12 +361,26 @@ class LMA_REST_Organizers {
             $city = get_post_meta($event->ID, $meta_prefix . 'city', true);
             $venue = get_post_meta($event->ID, $meta_prefix . 'venue', true);
 
+            // Image
+            $thumbnail_id = get_post_thumbnail_id($event->ID);
+            $featured_image = null;
+            if ($thumbnail_id) {
+                $featured_image = array(
+                    'id' => $thumbnail_id,
+                    'thumbnail' => get_the_post_thumbnail_url($event->ID, 'thumbnail'),
+                    'medium' => get_the_post_thumbnail_url($event->ID, 'medium'),
+                    'large' => get_the_post_thumbnail_url($event->ID, 'large'),
+                    'full' => get_the_post_thumbnail_url($event->ID, 'full'),
+                );
+            }
+
             $events[] = array(
                 'id' => $event->ID,
                 'title' => $event->post_title,
                 'slug' => $event->post_name,
                 'excerpt' => wp_trim_words(strip_tags($event->post_content), 20),
                 'thumbnail' => get_the_post_thumbnail_url($event->ID, 'medium'),
+                'featured_image' => $featured_image,
                 'category' => $category,
                 'dates' => array(
                     'start' => $start_date ? date('Y-m-d', $start_date) : null,
