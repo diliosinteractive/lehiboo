@@ -61,8 +61,10 @@ class LMA_REST_Docs {
     public function get_swagger_ui() {
         $spec_url = rest_url('lehiboo/v2/docs/openapi.json');
 
-        $html = <<<HTML
-<!DOCTYPE html>
+        // Serve HTML directly
+        header('Content-Type: text/html; charset=UTF-8');
+
+        echo '<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -83,8 +85,8 @@ class LMA_REST_Docs {
     <script>
         window.onload = function() {
             SwaggerUIBundle({
-                url: "{$spec_url}",
-                dom_id: '#swagger-ui',
+                url: "' . esc_url($spec_url) . '",
+                dom_id: "#swagger-ui",
                 deepLinking: true,
                 presets: [
                     SwaggerUIBundle.presets.apis,
@@ -102,12 +104,8 @@ class LMA_REST_Docs {
         };
     </script>
 </body>
-</html>
-HTML;
+</html>';
 
-        // Return HTML response
-        return new WP_REST_Response($html, 200, array(
-            'Content-Type' => 'text/html; charset=UTF-8',
-        ));
+        exit;
     }
 }
