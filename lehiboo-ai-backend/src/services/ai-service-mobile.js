@@ -14,8 +14,9 @@ import { fileURLToPath } from 'url';
 import config from '../config/index.js';
 import logger from '../utils/logger.js';
 
-// Import du tool searchEvents
+// Import des tools
 import { searchEventsToolV2 } from '../tools/search-events-v2.js';
+import { updateUserContextTool, executeUpdateUserContext } from '../tools/update-user-context.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -59,21 +60,49 @@ function buildMessages(currentMessage, history = []) {
  */
 export async function generateMobileResponse(message, context = {}) {
   try {
+    const userContext = context.userContext || {};
+
     logger.info('Mobile AI request', {
       conversationId: context.conversationId,
       messageLength: message.length,
-      historyLength: context.history?.length || 0
+      historyLength: context.history?.length || 0,
+      userContextKeys: Object.keys(userContext).filter(k => !k.startsWith('_'))
     });
 
-    const systemPrompt = await loadMobilePrompt();
+    let systemPrompt = await loadMobilePrompt();
+
+    // Injecter le contexte utilisateur existant dans le prompt
+    if (Object.keys(userContext).filter(k => !k.startsWith('_')).length > 0) {
+      const contextInfo = Object.entries(userContext)
+        .filter(([k, v]) => !k.startsWith('_') && v !== undefined && v !== null)
+        .map(([k, v]) => `- ${k}: ${JSON.stringify(v)}`)
+        .join('\n');
+
+      systemPrompt = `${systemPrompt}\n\n## Contexte utilisateur connu\n\nTu te souviens de ces infos sur l'utilisateur:\n${contextInfo}\n\nUtilise ces infos pour personnaliser tes reponses (ex: "Salut ${userContext.first_name || 'toi'} !").`;
+    }
+
     const messages = buildMessages(message, context.history);
 
-    // Tool searchEvents
+    // Variable pour stocker le contexte mis a jour
+    let updatedUserContext = { ...userContext };
+
+    // Tools avec contexte utilisateur
     const tools = {
       searchEvents: {
         description: searchEventsToolV2.description,
         parameters: searchEventsToolV2.parameters,
         execute: searchEventsToolV2.execute
+      },
+      updateUserContext: {
+        description: updateUserContextTool.description,
+        parameters: updateUserContextTool.parameters,
+        execute: async (params) => {
+          const result = await executeUpdateUserContext(params, updatedUserContext);
+          if (result.success) {
+            updatedUserContext = result.context;
+          }
+          return result;
+        }
       }
     };
 
@@ -196,6 +225,7 @@ export async function generateMobileResponse(message, context = {}) {
       events: events.map(e => formatEventForMobile(e)),
       searchParams,
       searchFilters,
+      userContext: updatedUserContext,
       usage: {
         model: config.openai.defaultModel,
         tokens: result.usage?.totalTokens || 0

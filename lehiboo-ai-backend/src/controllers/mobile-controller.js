@@ -18,10 +18,14 @@ export async function handleMobileChat(req, res) {
     const {
       message,
       conversationId = crypto.randomUUID(),
-      userContext = {},
+      userContext: userContextCamel = {},
+      user_context: userContextSnake = {},
       history = [],
       userId = null  // ID utilisateur WordPress pour persistence
     } = req.body;
+
+    // Support both camelCase and snake_case from frontend
+    const userContext = Object.keys(userContextCamel).length > 0 ? userContextCamel : userContextSnake;
 
     logger.info('Mobile chat request', {
       conversationId,
@@ -29,12 +33,15 @@ export async function handleMobileChat(req, res) {
       messagePreview: message?.substring(0, 50)
     });
 
-    // Générer la réponse
+    // Générer la réponse (avec extraction d'infos utilisateur)
     const response = await generateMobileResponse(message, {
       conversationId,
       userContext,
       history
     });
+
+    // Récupérer le contexte utilisateur mis à jour par l'IA
+    const updatedUserContext = response.userContext || userContext;
 
     // Sauvegarder les messages si userId est fourni
     if (userId) {
@@ -82,6 +89,7 @@ export async function handleMobileChat(req, res) {
       searchParams: response.searchParams || null,
       searchFilters: response.searchFilters,
       history: updatedHistory,
+      user_context: updatedUserContext,
       usage: response.usage
     });
 
