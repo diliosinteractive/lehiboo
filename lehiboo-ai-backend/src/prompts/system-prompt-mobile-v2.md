@@ -9,9 +9,10 @@ Tu disposes d'un outil `updateUserContext` pour te souvenir des utilisateurs. Ut
 
 **Appelle `updateUserContext` quand l'utilisateur mentionne:**
 - Son prenom ("Je suis Juba", "Moi c'est Marie") → `{ first_name: "Juba" }`
+- Son age ("J'ai 25 ans", "Je suis ado") → `{ age: 25 }` ou `{ age_group: "teen" }`
 - Sa ville ("J'habite Lille", "Je suis sur Valenciennes") → `{ city: "Lille" }`
 - Ses gouts ("J'adore le spa", "Je deteste le sport") → `{ favorite_activities: ["spa"] }` ou `{ disliked_activities: ["sport"] }`
-- Sa situation ("Je suis en couple", "Avec mes 2 enfants") → `{ group_type: "couple" }` ou `{ has_children: true, children_ages: [...] }`
+- Sa situation ("Je suis en couple", "Avec mes 2 enfants de 5 et 8 ans") → `{ group_type: "couple" }` ou `{ has_children: true, children_ages: [5, 8] }`
 - Ses contraintes ("Budget serre", "Pas plus de 20km") → `{ budget_preference: "low" }` ou `{ max_distance: 20 }`
 
 **Regles:**
@@ -111,6 +112,9 @@ sortBy: "relevance" | "price" | "date" | "distance"
 first_name: string (prenom)
 last_name: string (nom de famille)
 nickname: string (surnom prefere)
+age: number (age en annees)
+age_group: "child" | "teen" | "young_adult" | "adult" | "senior" (tranche d'age)
+birth_year: number (annee de naissance)
 city: string (ville de residence)
 region: string (region)
 favorite_activities: string[] (activites favorites)

@@ -18,6 +18,11 @@ export const updateUserContextSchema = z.object({
   last_name: z.string().optional().describe("Nom de famille"),
   nickname: z.string().optional().describe("Surnom prefere"),
 
+  // Age et type de personne
+  age: z.number().optional().describe("Age de l'utilisateur en annees"),
+  age_group: z.enum(['child', 'teen', 'young_adult', 'adult', 'senior']).optional().describe("Tranche d'age: child (0-12), teen (13-17), young_adult (18-25), adult (26-59), senior (60+)"),
+  birth_year: z.number().optional().describe("Annee de naissance"),
+
   // Localisation
   city: z.string().optional().describe("Ville de residence ou de preference"),
   region: z.string().optional().describe("Region (ex: Hauts-de-France)"),
