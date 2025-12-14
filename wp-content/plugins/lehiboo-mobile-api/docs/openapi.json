@@ -1,0 +1,795 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "LeHiboo Mobile API",
+    "description": "API REST pour l'application mobile LeHiboo (Flutter)",
+    "version": "2.0.0",
+    "contact": {
+      "name": "LeHiboo",
+      "url": "https://lehiboo.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://preprod.lehiboo.com/wp-json/lehiboo/v2",
+      "description": "Preprod"
+    },
+    {
+      "url": "https://lehiboo.com/wp-json/lehiboo/v2",
+      "description": "Production"
+    }
+  ],
+  "tags": [
+    {"name": "Auth", "description": "Authentification"},
+    {"name": "Events", "description": "Événements"},
+    {"name": "Organizers", "description": "Organisateurs"},
+    {"name": "Bookings", "description": "Réservations"},
+    {"name": "Tickets", "description": "Billets"},
+    {"name": "User", "description": "Utilisateur"},
+    {"name": "Categories", "description": "Catégories"},
+    {"name": "Partner", "description": "Espace Partenaire"}
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Inscription",
+        "description": "Créer un nouveau compte utilisateur",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "first_name", "last_name"],
+                "properties": {
+                  "email": {"type": "string", "format": "email"},
+                  "password": {"type": "string", "minLength": 8},
+                  "first_name": {"type": "string"},
+                  "last_name": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inscription réussie, vérification OTP requise",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AuthPendingResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/verify-otp": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Vérifier OTP",
+        "description": "Valider le code OTP reçu par email",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "otp"],
+                "properties": {
+                  "email": {"type": "string", "format": "email"},
+                  "otp": {"type": "string", "pattern": "^[0-9]{6}$"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP validé",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AuthTokenResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Connexion",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {"type": "string", "format": "email"},
+                  "password": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Connexion réussie",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AuthTokenResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Rafraîchir le token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["refresh_token"],
+                "properties": {
+                  "refresh_token": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Nouveaux tokens",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AuthTokenResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Déconnexion",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {"description": "Déconnecté"}
+        }
+      }
+    },
+    "/events": {
+      "get": {
+        "tags": ["Events"],
+        "summary": "Liste des événements",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "default": 10}},
+          {"name": "category", "in": "query", "schema": {"type": "string"}, "description": "Slug ou ID catégorie"},
+          {"name": "city", "in": "query", "schema": {"type": "string"}},
+          {"name": "date_from", "in": "query", "schema": {"type": "string", "format": "date"}},
+          {"name": "date_to", "in": "query", "schema": {"type": "string", "format": "date"}},
+          {"name": "price_max", "in": "query", "schema": {"type": "number"}},
+          {"name": "free_only", "in": "query", "schema": {"type": "boolean"}},
+          {"name": "search", "in": "query", "schema": {"type": "string"}},
+          {"name": "lat", "in": "query", "schema": {"type": "number"}, "description": "Latitude pour tri par distance"},
+          {"name": "lng", "in": "query", "schema": {"type": "number"}, "description": "Longitude"},
+          {"name": "radius", "in": "query", "schema": {"type": "number"}, "description": "Rayon en km"},
+          {"name": "orderby", "in": "query", "schema": {"type": "string", "enum": ["date", "price", "distance"]}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des événements",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/EventListResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events/{id}": {
+      "get": {
+        "tags": ["Events"],
+        "summary": "Détail d'un événement",
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Détail événement",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/EventDetailResponse"}
+              }
+            }
+          },
+          "404": {"description": "Événement introuvable"}
+        }
+      }
+    },
+    "/events/{id}/availability": {
+      "get": {
+        "tags": ["Events"],
+        "summary": "Disponibilités d'un événement",
+        "description": "Récupère les créneaux horaires et billets disponibles",
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}},
+          {"name": "date", "in": "query", "schema": {"type": "string", "format": "date"}, "description": "Filtrer par date"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Disponibilités",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AvailabilityResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organizers/{id}": {
+      "get": {
+        "tags": ["Organizers"],
+        "summary": "Profil d'un organisateur",
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Profil organisateur",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/OrganizerResponse"}
+              }
+            }
+          },
+          "404": {"description": "Organisateur introuvable"}
+        }
+      }
+    },
+    "/organizers/{id}/events": {
+      "get": {
+        "tags": ["Organizers"],
+        "summary": "Événements d'un organisateur",
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}},
+          {"name": "status", "in": "query", "schema": {"type": "string", "enum": ["upcoming", "past"], "default": "upcoming"}},
+          {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "default": 10}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste événements",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/OrganizerEventsResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Liste des catégories",
+        "responses": {
+          "200": {
+            "description": "Catégories",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/CategoriesResponse"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bookings": {
+      "post": {
+        "tags": ["Bookings"],
+        "summary": "Créer une réservation",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/BookingRequest"}
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Réservation créée"}
+        }
+      }
+    },
+    "/me/bookings": {
+      "get": {
+        "tags": ["Bookings"],
+        "summary": "Mes réservations",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"name": "status", "in": "query", "schema": {"type": "string", "enum": ["upcoming", "past", "cancelled"]}}
+        ],
+        "responses": {
+          "200": {"description": "Liste des réservations"}
+        }
+      }
+    },
+    "/me/tickets": {
+      "get": {
+        "tags": ["Tickets"],
+        "summary": "Mes billets",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {"description": "Liste des billets"}
+        }
+      }
+    },
+    "/me/tickets/{id}": {
+      "get": {
+        "tags": ["Tickets"],
+        "summary": "Détail d'un billet",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": {"description": "Détail billet avec QR code"}
+        }
+      }
+    },
+    "/me/favorites": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Mes favoris",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {"description": "Liste des favoris"}
+        }
+      },
+      "post": {
+        "tags": ["User"],
+        "summary": "Ajouter/retirer un favori",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["event_id"],
+                "properties": {
+                  "event_id": {"type": "integer"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Favori mis à jour"}
+        }
+      }
+    },
+    "/partner/events": {
+      "get": {
+        "tags": ["Partner"],
+        "summary": "Mes événements (organisateur)",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {"description": "Liste événements"}
+        }
+      }
+    },
+    "/partner/scan": {
+      "post": {
+        "tags": ["Partner"],
+        "summary": "Scanner un billet",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["qr_code"],
+                "properties": {
+                  "qr_code": {"type": "string"},
+                  "event_id": {"type": "integer"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Billet validé"}
+        }
+      }
+    },
+    "/partner/stats": {
+      "get": {
+        "tags": ["Partner"],
+        "summary": "Statistiques partenaire",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {"description": "Statistiques"}
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean", "example": true},
+          "data": {"type": "object"}
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean", "example": false},
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {"type": "string"},
+              "message": {"type": "string"}
+            }
+          }
+        }
+      },
+      "AuthPendingResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {"type": "string", "example": "pending_verification"},
+              "email": {"type": "string"}
+            }
+          }
+        }
+      },
+      "AuthTokenResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "data": {
+            "type": "object",
+            "properties": {
+              "access_token": {"type": "string"},
+              "refresh_token": {"type": "string"},
+              "expires_in": {"type": "integer"},
+              "user": {"$ref": "#/components/schemas/User"}
+            }
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "email": {"type": "string"},
+          "first_name": {"type": "string"},
+          "last_name": {"type": "string"},
+          "display_name": {"type": "string"},
+          "avatar": {"type": "string"},
+          "role": {"type": "string"}
+        }
+      },
+      "EventListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "data": {
+            "type": "object",
+            "properties": {
+              "events": {
+                "type": "array",
+                "items": {"$ref": "#/components/schemas/EventSummary"}
+              },
+              "pagination": {"$ref": "#/components/schemas/Pagination"}
+            }
+          }
+        }
+      },
+      "EventSummary": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "title": {"type": "string"},
+          "slug": {"type": "string"},
+          "excerpt": {"type": "string"},
+          "featured_image": {"$ref": "#/components/schemas/ImageSizes"},
+          "category": {"$ref": "#/components/schemas/Category"},
+          "dates": {"$ref": "#/components/schemas/DateInfo"},
+          "location": {"$ref": "#/components/schemas/LocationInfo"},
+          "pricing": {"$ref": "#/components/schemas/PricingInfo"},
+          "is_favorite": {"type": "boolean"}
+        }
+      },
+      "EventDetailResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "data": {
+            "allOf": [
+              {"$ref": "#/components/schemas/EventSummary"},
+              {
+                "type": "object",
+                "properties": {
+                  "content": {"type": "string"},
+                  "gallery": {"type": "array", "items": {"$ref": "#/components/schemas/ImageSizes"}},
+                  "organizer": {"$ref": "#/components/schemas/OrganizerSummary"},
+                  "tickets": {"type": "array", "items": {"$ref": "#/components/schemas/Ticket"}},
+                  "calendar": {"type": "object"},
+                  "practical_info": {"type": "object"}
+                }
+              }
+            ]
+          }
+        }
+      },
+      "AvailabilityResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "data": {
+            "type": "object",
+            "properties": {
+              "event_id": {"type": "integer"},
+              "calendar_type": {"type": "string", "enum": ["manual", "auto"]},
+              "slots": {
+                "type": "array",
+                "items": {"$ref": "#/components/schemas/Slot"}
+              },
+              "tickets": {
+                "type": "array",
+                "items": {"$ref": "#/components/schemas/Ticket"}
+              },
+              "recurrence": {"$ref": "#/components/schemas/Recurrence"},
+              "booking_settings": {"$ref": "#/components/schemas/BookingSettings"}
+            }
+          }
+        }
+      },
+      "Slot": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "date": {"type": "string", "format": "date"},
+          "start_time": {"type": "string", "example": "14:00"},
+          "end_time": {"type": "string", "example": "16:00"},
+          "spots_total": {"type": "integer", "nullable": true},
+          "spots_remaining": {"type": "integer", "nullable": true},
+          "is_available": {"type": "boolean"}
+        }
+      },
+      "Ticket": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "price": {"type": "number"},
+          "currency": {"type": "string", "example": "EUR"},
+          "description": {"type": "string"},
+          "min_per_booking": {"type": "integer"},
+          "max_per_booking": {"type": "integer"},
+          "quantity_total": {"type": "integer", "nullable": true},
+          "quantity_remaining": {"type": "integer", "nullable": true},
+          "available": {"type": "boolean"},
+          "person_types": {
+            "type": "array",
+            "items": {"$ref": "#/components/schemas/PersonType"}
+          }
+        }
+      },
+      "PersonType": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "price": {"type": "number"},
+          "min": {"type": "integer"},
+          "max": {"type": "integer"}
+        }
+      },
+      "Recurrence": {
+        "type": "object",
+        "nullable": true,
+        "properties": {
+          "frequency": {"type": "string", "example": "weekly"},
+          "days": {"type": "array", "items": {"type": "string"}, "example": ["monday", "wednesday"]},
+          "start_date": {"type": "string", "format": "date"},
+          "end_date": {"type": "string", "format": "date"},
+          "default_start_time": {"type": "string"},
+          "default_end_time": {"type": "string"}
+        }
+      },
+      "BookingSettings": {
+        "type": "object",
+        "properties": {
+          "book_before_minutes": {"type": "integer"},
+          "max_tickets_per_booking": {"type": "integer"},
+          "requires_approval": {"type": "boolean"}
+        }
+      },
+      "OrganizerResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "data": {"$ref": "#/components/schemas/Organizer"}
+        }
+      },
+      "Organizer": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "logo": {"type": "string"},
+          "logo_sizes": {"$ref": "#/components/schemas/ImageSizes"},
+          "cover_image": {"type": "string"},
+          "verified": {"type": "boolean"},
+          "contact": {
+            "type": "object",
+            "properties": {
+              "phone": {"type": "string"},
+              "email": {"type": "string"},
+              "website": {"type": "string"}
+            }
+          },
+          "location": {"$ref": "#/components/schemas/LocationInfo"},
+          "social_links": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {"type": "string"},
+                "url": {"type": "string"}
+              }
+            }
+          },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "total_events": {"type": "integer"}
+            }
+          },
+          "categories": {"type": "array", "items": {"$ref": "#/components/schemas/Category"}},
+          "partnerships": {"type": "array", "items": {"$ref": "#/components/schemas/OrganizerSummary"}}
+        }
+      },
+      "OrganizerSummary": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "name": {"type": "string"},
+          "logo": {"type": "string"}
+        }
+      },
+      "OrganizerEventsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "data": {
+            "type": "object",
+            "properties": {
+              "events": {"type": "array", "items": {"$ref": "#/components/schemas/EventSummary"}},
+              "pagination": {"$ref": "#/components/schemas/Pagination"}
+            }
+          }
+        }
+      },
+      "CategoriesResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "data": {
+            "type": "array",
+            "items": {"$ref": "#/components/schemas/Category"}
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "name": {"type": "string"},
+          "slug": {"type": "string"},
+          "count": {"type": "integer"},
+          "image": {"type": "string"}
+        }
+      },
+      "ImageSizes": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "thumbnail": {"type": "string"},
+          "medium": {"type": "string"},
+          "large": {"type": "string"},
+          "full": {"type": "string"}
+        }
+      },
+      "DateInfo": {
+        "type": "object",
+        "properties": {
+          "start": {"type": "string", "format": "date"},
+          "end": {"type": "string", "format": "date"},
+          "display": {"type": "string"}
+        }
+      },
+      "LocationInfo": {
+        "type": "object",
+        "properties": {
+          "address": {"type": "string"},
+          "city": {"type": "string"},
+          "postcode": {"type": "string"},
+          "country": {"type": "string"},
+          "lat": {"type": "number"},
+          "lng": {"type": "number"},
+          "distance_km": {"type": "number"}
+        }
+      },
+      "PricingInfo": {
+        "type": "object",
+        "properties": {
+          "price": {"type": "number"},
+          "is_free": {"type": "boolean"},
+          "display": {"type": "string"}
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "current_page": {"type": "integer"},
+          "per_page": {"type": "integer"},
+          "total_items": {"type": "integer"},
+          "total_pages": {"type": "integer"},
+          "has_next": {"type": "boolean"},
+          "has_prev": {"type": "boolean"}
+        }
+      },
+      "BookingRequest": {
+        "type": "object",
+        "required": ["event_id", "date", "tickets"],
+        "properties": {
+          "event_id": {"type": "integer"},
+          "date": {"type": "string", "format": "date"},
+          "time": {"type": "string"},
+          "tickets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ticket_id": {"type": "string"},
+                "quantity": {"type": "integer"}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
