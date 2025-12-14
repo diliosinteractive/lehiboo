@@ -56,10 +56,20 @@ class LMA_Event_Formatter {
         $data['description'] = apply_filters('the_content', $event->post_content);
         $data['gallery'] = self::get_gallery($event);
         $data['thematiques'] = self::get_thematiques($event);
+        $data['event_type'] = self::get_event_type($event);
+        $data['target_audience'] = self::get_target_audience($event);
         $data['full_location'] = self::get_full_location($event, $meta_prefix);
         $data['restrictions'] = self::get_restrictions($event, $meta_prefix);
         $data['environment'] = self::get_environment($event, $meta_prefix);
         $data['ticket_types'] = self::get_ticket_types($event, $meta_prefix);
+        $data['tickets'] = self::get_tickets_full($event, $meta_prefix);
+        $data['time_slots'] = self::get_time_slots($event, $meta_prefix);
+        $data['calendar'] = self::get_calendar($event, $meta_prefix);
+        $data['recurrence'] = self::get_recurrence($event, $meta_prefix);
+        $data['extra_services'] = self::get_extra_services($event, $meta_prefix);
+        $data['coupons'] = self::get_coupons($event, $meta_prefix);
+        $data['seat_config'] = self::get_seat_config($event, $meta_prefix);
+        $data['external_booking'] = self::get_external_booking($event, $meta_prefix);
         $data['organizer'] = self::get_organizer_detail($event);
         $data['reviews'] = self::get_reviews($event);
         $data['similar_events'] = self::get_similar_events($event);
@@ -139,6 +149,43 @@ class LMA_Event_Formatter {
      */
     private static function get_thematiques($event) {
         $terms = wp_get_post_terms($event->ID, 'event_thematique');
+
+        if (empty($terms) || is_wp_error($terms)) {
+            return array();
+        }
+
+        return array_map(function($term) {
+            return array(
+                'id' => $term->term_id,
+                'name' => $term->name,
+                'slug' => $term->slug,
+            );
+        }, $terms);
+    }
+
+    /**
+     * Get event type (Type d'événement - event_tag taxonomy)
+     */
+    private static function get_event_type($event) {
+        $terms = wp_get_post_terms($event->ID, 'event_tag', array('number' => 1));
+
+        if (empty($terms) || is_wp_error($terms)) {
+            return null;
+        }
+
+        $term = $terms[0];
+        return array(
+            'id' => $term->term_id,
+            'name' => $term->name,
+            'slug' => $term->slug,
+        );
+    }
+
+    /**
+     * Get target audience (Public visé - event_public taxonomy)
+     */
+    private static function get_target_audience($event) {
+        $terms = wp_get_post_terms($event->ID, 'event_public');
 
         if (empty($terms) || is_wp_error($terms)) {
             return array();
@@ -589,5 +636,340 @@ class LMA_Event_Formatter {
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
         return round($earth_radius * $c, 1);
+    }
+
+    /**
+     * Get full tickets information
+     */
+    private static function get_tickets_full($event, $prefix) {
+        $tickets = get_post_meta($event->ID, $prefix . 'ticket', true);
+
+        if (empty($tickets) || !is_array($tickets)) {
+            return array();
+        }
+
+        return array_map(function($ticket) {
+            return array(
+                'id' => isset($ticket['ticket_id']) ? $ticket['ticket_id'] : null,
+                'name' => isset($ticket['name_ticket']) ? $ticket['name_ticket'] : '',
+                'price' => isset($ticket['price_ticket']) ? floatval($ticket['price_ticket']) : 0,
+                'description' => isset($ticket['desc_ticket']) ? $ticket['desc_ticket'] : '',
+                'private_description' => isset($ticket['private_desc_ticket']) ? $ticket['private_desc_ticket'] : '',
+                'quantity' => isset($ticket['qty_ticket']) ? absint($ticket['qty_ticket']) : 0,
+                'max_per_booking' => isset($ticket['max_qty_ticket']) ? absint($ticket['max_qty_ticket']) : 0,
+                'min_per_booking' => isset($ticket['min_qty_ticket']) ? absint($ticket['min_qty_ticket']) : 0,
+                'setup_seat' => isset($ticket['setup_seat']) ? $ticket['setup_seat'] : 'no',
+                'setup_mode' => isset($ticket['setup_mode']) ? $ticket['setup_mode'] : 'manual',
+                'seat_list' => isset($ticket['seat_list']) ? $ticket['seat_list'] : '',
+                'seat_code_setup' => isset($ticket['seat_code_setup']) ? $ticket['seat_code_setup'] : array(),
+                'person_types' => isset($ticket['person_type']) ? $ticket['person_type'] : array(),
+            );
+        }, $tickets);
+    }
+
+    /**
+     * Get time slots (créneaux horaires)
+     */
+    private static function get_time_slots($event, $prefix) {
+        $option_calendar = get_post_meta($event->ID, $prefix . 'option_calendar', true);
+        $schedules_time = get_post_meta($event->ID, $prefix . 'schedules_time', true);
+        $ts_start = get_post_meta($event->ID, $prefix . 'ts_start', true);
+        $ts_end = get_post_meta($event->ID, $prefix . 'ts_end', true);
+
+        $slots = array(
+            'calendar_type' => $option_calendar ?: 'manual',
+            'schedules' => array(),
+            'weekly_slots' => array(),
+        );
+
+        // Schedules time (créneaux programmés)
+        if (!empty($schedules_time) && is_array($schedules_time)) {
+            foreach ($schedules_time as $schedule) {
+                $slots['schedules'][] = array(
+                    'start_time' => isset($schedule['start_time']) ? $schedule['start_time'] : '',
+                    'end_time' => isset($schedule['end_time']) ? $schedule['end_time'] : '',
+                    'book_before' => isset($schedule['book_before']) ? absint($schedule['book_before']) : 0,
+                );
+            }
+        }
+
+        // Time slots by day of week (pour récurrence weekly)
+        if (!empty($ts_start) && is_array($ts_start)) {
+            $days_names = array('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday');
+            foreach ($ts_start as $day_index => $times) {
+                if (!empty($times) && is_array($times)) {
+                    $day_name = isset($days_names[$day_index]) ? $days_names[$day_index] : $day_index;
+                    $slots['weekly_slots'][$day_name] = array();
+                    foreach ($times as $slot_index => $start_time) {
+                        $end_time = isset($ts_end[$day_index][$slot_index]) ? $ts_end[$day_index][$slot_index] : '';
+                        if ($start_time && $end_time) {
+                            $slots['weekly_slots'][$day_name][] = array(
+                                'start_time' => $start_time,
+                                'end_time' => $end_time,
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        return $slots;
+    }
+
+    /**
+     * Get calendar dates
+     */
+    private static function get_calendar($event, $prefix) {
+        $option_calendar = get_post_meta($event->ID, $prefix . 'option_calendar', true);
+        $calendar_manual = get_post_meta($event->ID, $prefix . 'calendar', true);
+        $calendar_recurrence = get_post_meta($event->ID, $prefix . 'calendar_recurrence', true);
+        $disable_date = get_post_meta($event->ID, $prefix . 'disable_date', true);
+        $disable_date_time_slot = get_post_meta($event->ID, $prefix . 'disable_date_time_slot', true);
+
+        $result = array(
+            'type' => $option_calendar ?: 'manual',
+            'dates' => array(),
+            'disabled_dates' => array(),
+            'disabled_time_slots' => array(),
+        );
+
+        // Manual calendar dates
+        if ($option_calendar === 'manual' && !empty($calendar_manual) && is_array($calendar_manual)) {
+            foreach ($calendar_manual as $cal) {
+                if (empty($cal['date'])) continue;
+                $result['dates'][] = array(
+                    'id' => isset($cal['calendar_id']) ? $cal['calendar_id'] : null,
+                    'date' => $cal['date'],
+                    'end_date' => isset($cal['end_date']) ? $cal['end_date'] : $cal['date'],
+                    'start_time' => isset($cal['start_time']) ? $cal['start_time'] : '',
+                    'end_time' => isset($cal['end_time']) ? $cal['end_time'] : '',
+                    'book_before' => isset($cal['book_before']) ? absint($cal['book_before']) : 0,
+                );
+            }
+        }
+
+        // Recurrence calendar (auto-generated dates)
+        if ($option_calendar === 'auto' && !empty($calendar_recurrence) && is_array($calendar_recurrence)) {
+            foreach ($calendar_recurrence as $cal) {
+                if (empty($cal['date'])) continue;
+                $result['dates'][] = array(
+                    'id' => isset($cal['calendar_id']) ? $cal['calendar_id'] : null,
+                    'date' => $cal['date'],
+                    'start_time' => isset($cal['start_time']) ? $cal['start_time'] : '',
+                    'end_time' => isset($cal['end_time']) ? $cal['end_time'] : '',
+                    'book_before' => isset($cal['book_before']) ? absint($cal['book_before']) : 0,
+                );
+            }
+        }
+
+        // Disabled dates
+        if (!empty($disable_date) && is_array($disable_date)) {
+            foreach ($disable_date as $disabled) {
+                if (empty($disabled['start_date']) && empty($disabled['end_date'])) continue;
+                $result['disabled_dates'][] = array(
+                    'start_date' => isset($disabled['start_date']) ? $disabled['start_date'] : '',
+                    'end_date' => isset($disabled['end_date']) ? $disabled['end_date'] : '',
+                    'schedules_time' => isset($disabled['schedules_time']) ? $disabled['schedules_time'] : '',
+                );
+            }
+        }
+
+        // Disabled time slots
+        if (!empty($disable_date_time_slot) && is_array($disable_date_time_slot)) {
+            foreach ($disable_date_time_slot as $disabled) {
+                $result['disabled_time_slots'][] = array(
+                    'start_date' => isset($disabled['start_date']) ? $disabled['start_date'] : '',
+                    'end_date' => isset($disabled['end_date']) ? $disabled['end_date'] : '',
+                    'start_time' => isset($disabled['start_time']) ? $disabled['start_time'] : '',
+                    'end_time' => isset($disabled['end_time']) ? $disabled['end_time'] : '',
+                );
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get recurrence settings
+     */
+    private static function get_recurrence($event, $prefix) {
+        $option_calendar = get_post_meta($event->ID, $prefix . 'option_calendar', true);
+
+        if ($option_calendar !== 'auto') {
+            return null;
+        }
+
+        $days_map = array(
+            '0' => 'sunday',
+            '1' => 'monday',
+            '2' => 'tuesday',
+            '3' => 'wednesday',
+            '4' => 'thursday',
+            '5' => 'friday',
+            '6' => 'saturday',
+        );
+
+        $bydays = get_post_meta($event->ID, $prefix . 'recurrence_bydays', true);
+        $bydays_names = array();
+        if (!empty($bydays) && is_array($bydays)) {
+            foreach ($bydays as $day) {
+                if (isset($days_map[$day])) {
+                    $bydays_names[] = $days_map[$day];
+                }
+            }
+        }
+
+        return array(
+            'frequency' => get_post_meta($event->ID, $prefix . 'recurrence_frequency', true) ?: 'daily',
+            'interval' => absint(get_post_meta($event->ID, $prefix . 'recurrence_interval', true)) ?: 1,
+            'by_days' => $bydays_names,
+            'by_week_no' => get_post_meta($event->ID, $prefix . 'recurrence_byweekno', true) ?: null,
+            'by_day' => get_post_meta($event->ID, $prefix . 'recurrence_byday', true) ?: null,
+            'start_date' => get_post_meta($event->ID, $prefix . 'calendar_start_date', true) ?: null,
+            'end_date' => get_post_meta($event->ID, $prefix . 'calendar_end_date', true) ?: null,
+            'default_start_time' => get_post_meta($event->ID, $prefix . 'calendar_recurrence_start_time', true) ?: null,
+            'default_end_time' => get_post_meta($event->ID, $prefix . 'calendar_recurrence_end_time', true) ?: null,
+            'book_before_minutes' => absint(get_post_meta($event->ID, $prefix . 'calendar_recurrence_book_before', true)) ?: 0,
+        );
+    }
+
+    /**
+     * Get extra services
+     */
+    private static function get_extra_services($event, $prefix) {
+        $services = get_post_meta($event->ID, $prefix . 'extra_service', true);
+
+        if (empty($services) || !is_array($services)) {
+            return array();
+        }
+
+        return array_map(function($service) {
+            return array(
+                'id' => isset($service['id']) ? $service['id'] : null,
+                'name' => isset($service['name']) ? $service['name'] : '',
+                'price' => isset($service['price']) ? floatval($service['price']) : 0,
+                'quantity' => isset($service['qty']) ? absint($service['qty']) : 0,
+                'max_quantity' => isset($service['max_qty']) ? absint($service['max_qty']) : 0,
+                'description' => isset($service['desc']) ? $service['desc'] : '',
+            );
+        }, $services);
+    }
+
+    /**
+     * Get coupons
+     */
+    private static function get_coupons($event, $prefix) {
+        $coupons = get_post_meta($event->ID, $prefix . 'coupon', true);
+
+        if (empty($coupons) || !is_array($coupons)) {
+            return array();
+        }
+
+        return array_map(function($coupon) {
+            return array(
+                'id' => isset($coupon['coupon_id']) ? $coupon['coupon_id'] : null,
+                'code' => isset($coupon['code']) ? $coupon['code'] : '',
+                'type' => isset($coupon['type']) ? $coupon['type'] : 'fixed', // fixed or percent
+                'value' => isset($coupon['value']) ? floatval($coupon['value']) : 0,
+                'min_order' => isset($coupon['min_order']) ? floatval($coupon['min_order']) : 0,
+                'max_uses' => isset($coupon['max_uses']) ? absint($coupon['max_uses']) : 0,
+                'uses_count' => isset($coupon['uses_count']) ? absint($coupon['uses_count']) : 0,
+                'start_date' => isset($coupon['start_date']) ? $coupon['start_date'] : null,
+                'end_date' => isset($coupon['end_date']) ? $coupon['end_date'] : null,
+            );
+        }, $coupons);
+    }
+
+    /**
+     * Get seat configuration
+     */
+    private static function get_seat_config($event, $prefix) {
+        $seat_option = get_post_meta($event->ID, $prefix . 'seat_option', true);
+        $ticket_map = get_post_meta($event->ID, $prefix . 'ticket_map', true);
+
+        $config = array(
+            'type' => $seat_option ?: 'none', // none, simple, map
+            'map_image' => null,
+            'seats' => array(),
+            'areas' => array(),
+            'description' => null,
+        );
+
+        if ($seat_option !== 'map' || empty($ticket_map)) {
+            return $config;
+        }
+
+        // Map image
+        if (!empty($ticket_map['map_image'])) {
+            $config['map_image'] = wp_get_attachment_image_url($ticket_map['map_image'], 'large');
+        }
+
+        // Description
+        if (!empty($ticket_map['private_desc_ticket_map'])) {
+            $config['description'] = $ticket_map['private_desc_ticket_map'];
+        }
+
+        // Seats
+        if (!empty($ticket_map['seat']) && is_array($ticket_map['seat'])) {
+            foreach ($ticket_map['seat'] as $seat) {
+                if (empty($seat['id'])) continue;
+                $config['seats'][] = array(
+                    'id' => $seat['id'],
+                    'name' => isset($seat['name']) ? $seat['name'] : $seat['id'],
+                    'price' => isset($seat['price']) ? floatval($seat['price']) : 0,
+                    'person_prices' => isset($seat['person_price']) ? json_decode($seat['person_price'], true) : null,
+                    'position_x' => isset($seat['position_x']) ? floatval($seat['position_x']) : 0,
+                    'position_y' => isset($seat['position_y']) ? floatval($seat['position_y']) : 0,
+                    'status' => isset($seat['status']) ? $seat['status'] : 'available',
+                );
+            }
+        }
+
+        // Areas
+        if (!empty($ticket_map['area']) && is_array($ticket_map['area'])) {
+            foreach ($ticket_map['area'] as $area) {
+                $config['areas'][] = array(
+                    'id' => isset($area['id']) ? $area['id'] : null,
+                    'name' => isset($area['name']) ? $area['name'] : '',
+                    'price' => isset($area['price']) ? floatval($area['price']) : 0,
+                    'person_prices' => isset($area['person_price']) ? json_decode($area['person_price'], true) : null,
+                    'capacity' => isset($area['capacity']) ? absint($area['capacity']) : 0,
+                    'color' => isset($area['color']) ? $area['color'] : null,
+                );
+            }
+        }
+
+        // Seat descriptions/legend
+        if (!empty($ticket_map['desc_seat']) && is_array($ticket_map['desc_seat'])) {
+            $config['legend'] = array();
+            foreach ($ticket_map['desc_seat'] as $desc) {
+                if (empty($desc['map_type_seat'])) continue;
+                $config['legend'][] = array(
+                    'type' => $desc['map_type_seat'],
+                    'price' => isset($desc['map_price_type_seat']) ? floatval($desc['map_price_type_seat']) : 0,
+                    'color' => isset($desc['map_color_type_seat']) ? $desc['map_color_type_seat'] : null,
+                );
+            }
+        }
+
+        return $config;
+    }
+
+    /**
+     * Get external booking info
+     */
+    private static function get_external_booking($event, $prefix) {
+        $ticket_link = get_post_meta($event->ID, $prefix . 'ticket_link', true);
+
+        if ($ticket_link !== 'ticket_external_link') {
+            return null;
+        }
+
+        return array(
+            'enabled' => true,
+            'url' => get_post_meta($event->ID, $prefix . 'ticket_external_link', true) ?: null,
+            'price' => floatval(get_post_meta($event->ID, $prefix . 'ticket_external_link_price', true)) ?: null,
+            'button_text' => get_post_meta($event->ID, $prefix . 'ticket_external_link_text', true) ?: 'Réserver',
+        );
     }
 }
