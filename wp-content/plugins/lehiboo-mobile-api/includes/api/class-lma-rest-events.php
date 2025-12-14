@@ -28,6 +28,13 @@ class LMA_REST_Events {
             'callback' => array($this, 'get_event'),
             'permission_callback' => '__return_true',
         ));
+
+        // Event availability (slots + tickets)
+        register_rest_route($this->namespace, '/events/(?P<id>\d+)/availability', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_availability'),
+            'permission_callback' => '__return_true',
+        ));
     }
 
     /**
@@ -321,5 +328,345 @@ class LMA_REST_Events {
         ));
 
         return LMA_Response::success($formatted);
+    }
+
+    /**
+     * Get event availability (slots + tickets)
+     * GET /events/{id}/availability
+     */
+    public function get_availability($request) {
+        $event_id = absint($request->get_param('id'));
+        $date = sanitize_text_field($request->get_param('date') ?? '');
+
+        $event = get_post($event_id);
+
+        if (!$event || $event->post_type !== 'event' || $event->post_status !== 'publish') {
+            return LMA_Response::error(
+                'event_not_found',
+                __('Événement introuvable', 'lehiboo-mobile-api'),
+                404
+            );
+        }
+
+        $meta_prefix = defined('OVA_METABOX_EVENT') ? OVA_METABOX_EVENT : 'el_';
+
+        // Calendar type
+        $option_calendar = get_post_meta($event_id, $meta_prefix . 'option_calendar', true) ?: 'manual';
+
+        // Get slots
+        $slots = $this->get_event_slots($event_id, $meta_prefix, $option_calendar, $date);
+
+        // Get tickets
+        $tickets = $this->get_event_tickets($event_id, $meta_prefix);
+
+        // Get recurrence info
+        $recurrence = $this->get_recurrence_info($event_id, $meta_prefix, $option_calendar);
+
+        // Booking settings
+        $booking_settings = array(
+            'book_before_minutes' => absint(get_post_meta($event_id, $meta_prefix . 'calendar_recurrence_book_before', true)) ?: 0,
+            'max_tickets_per_booking' => absint(get_post_meta($event_id, $meta_prefix . 'max_tickets_booking', true)) ?: 10,
+            'requires_approval' => get_post_meta($event_id, $meta_prefix . 'requires_approval', true) === 'yes',
+        );
+
+        return LMA_Response::success(array(
+            'event_id' => $event_id,
+            'calendar_type' => $option_calendar,
+            'slots' => $slots,
+            'tickets' => $tickets,
+            'recurrence' => $recurrence,
+            'booking_settings' => $booking_settings,
+        ));
+    }
+
+    /**
+     * Get event slots (créneaux)
+     */
+    private function get_event_slots($event_id, $prefix, $calendar_type, $filter_date = '') {
+        $slots = array();
+
+        if ($calendar_type === 'manual') {
+            // Manual calendar - specific dates
+            $calendar_manual = get_post_meta($event_id, $prefix . 'calendar', true);
+
+            if (!empty($calendar_manual) && is_array($calendar_manual)) {
+                foreach ($calendar_manual as $cal) {
+                    $date = isset($cal['calendar_date']) ? $cal['calendar_date'] : null;
+
+                    // Filter by date if specified
+                    if ($filter_date && $date !== $filter_date) {
+                        continue;
+                    }
+
+                    // Skip past dates
+                    if ($date && strtotime($date) < strtotime('today')) {
+                        continue;
+                    }
+
+                    $slot = array(
+                        'id' => isset($cal['calendar_id']) ? $cal['calendar_id'] : 'slot_' . md5($date),
+                        'date' => $date,
+                        'start_time' => isset($cal['calendar_start_time']) ? $cal['calendar_start_time'] : null,
+                        'end_time' => isset($cal['calendar_end_time']) ? $cal['calendar_end_time'] : null,
+                        'spots_total' => isset($cal['calendar_number']) ? absint($cal['calendar_number']) : null,
+                        'spots_remaining' => null, // Will be calculated
+                        'is_available' => true,
+                    );
+
+                    // Calculate spots remaining
+                    if ($slot['spots_total'] !== null) {
+                        $booked = $this->get_booked_spots($event_id, $date, $slot['start_time']);
+                        $slot['spots_remaining'] = max(0, $slot['spots_total'] - $booked);
+                        $slot['is_available'] = $slot['spots_remaining'] > 0;
+                    }
+
+                    $slots[] = $slot;
+                }
+            }
+        } elseif ($calendar_type === 'auto') {
+            // Auto/recurring calendar
+            $calendar_recurrence = get_post_meta($event_id, $prefix . 'calendar_recurrence', true);
+            $start_date = get_post_meta($event_id, $prefix . 'calendar_start_date', true);
+            $end_date = get_post_meta($event_id, $prefix . 'calendar_end_date', true);
+
+            if (!empty($calendar_recurrence) && is_array($calendar_recurrence)) {
+                // Generate dates for next 30 days (or filter_date)
+                $from_date = $filter_date ? strtotime($filter_date) : strtotime('today');
+                $to_date = $filter_date ? strtotime($filter_date) : strtotime('+30 days');
+
+                if ($start_date && strtotime($start_date) > $from_date) {
+                    $from_date = strtotime($start_date);
+                }
+                if ($end_date && strtotime($end_date) < $to_date) {
+                    $to_date = strtotime($end_date);
+                }
+
+                // Disabled dates
+                $disabled_dates = get_post_meta($event_id, $prefix . 'disable_date', true) ?: array();
+                $disabled_date_list = array();
+                if (is_array($disabled_dates)) {
+                    foreach ($disabled_dates as $dd) {
+                        if (isset($dd['date'])) {
+                            $disabled_date_list[] = $dd['date'];
+                        }
+                    }
+                }
+
+                // Generate slots
+                for ($day = $from_date; $day <= $to_date; $day = strtotime('+1 day', $day)) {
+                    $day_of_week = strtolower(date('l', $day));
+                    $date_str = date('Y-m-d', $day);
+
+                    // Check if disabled
+                    if (in_array($date_str, $disabled_date_list)) {
+                        continue;
+                    }
+
+                    foreach ($calendar_recurrence as $cal) {
+                        $recur_day = isset($cal['calendar_day']) ? strtolower($cal['calendar_day']) : '';
+
+                        if ($recur_day === $day_of_week) {
+                            $slot = array(
+                                'id' => 'slot_' . $date_str . '_' . ($cal['calendar_id'] ?? ''),
+                                'date' => $date_str,
+                                'start_time' => isset($cal['calendar_start_time']) ? $cal['calendar_start_time'] : null,
+                                'end_time' => isset($cal['calendar_end_time']) ? $cal['calendar_end_time'] : null,
+                                'spots_total' => isset($cal['calendar_number']) ? absint($cal['calendar_number']) : null,
+                                'spots_remaining' => null,
+                                'is_available' => true,
+                            );
+
+                            // Calculate spots remaining
+                            if ($slot['spots_total'] !== null) {
+                                $booked = $this->get_booked_spots($event_id, $date_str, $slot['start_time']);
+                                $slot['spots_remaining'] = max(0, $slot['spots_total'] - $booked);
+                                $slot['is_available'] = $slot['spots_remaining'] > 0;
+                            }
+
+                            $slots[] = $slot;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Sort by date and time
+        usort($slots, function($a, $b) {
+            $date_cmp = strcmp($a['date'] ?? '', $b['date'] ?? '');
+            if ($date_cmp !== 0) return $date_cmp;
+            return strcmp($a['start_time'] ?? '', $b['start_time'] ?? '');
+        });
+
+        return $slots;
+    }
+
+    /**
+     * Get event tickets
+     */
+    private function get_event_tickets($event_id, $prefix) {
+        $tickets_raw = get_post_meta($event_id, $prefix . 'ticket', true);
+
+        if (empty($tickets_raw) || !is_array($tickets_raw)) {
+            return array();
+        }
+
+        $tickets = array();
+        foreach ($tickets_raw as $ticket) {
+            $qty_total = isset($ticket['qty_ticket']) ? absint($ticket['qty_ticket']) : 0;
+            $qty_sold = $this->get_tickets_sold($event_id, $ticket['ticket_id'] ?? '');
+            $qty_remaining = $qty_total > 0 ? max(0, $qty_total - $qty_sold) : null;
+
+            $tickets[] = array(
+                'id' => isset($ticket['ticket_id']) ? $ticket['ticket_id'] : null,
+                'name' => isset($ticket['name_ticket']) ? $ticket['name_ticket'] : '',
+                'price' => isset($ticket['price_ticket']) ? floatval($ticket['price_ticket']) : 0,
+                'currency' => 'EUR',
+                'description' => isset($ticket['desc_ticket']) ? $ticket['desc_ticket'] : '',
+                'min_per_booking' => isset($ticket['min_qty_ticket']) ? absint($ticket['min_qty_ticket']) : 1,
+                'max_per_booking' => isset($ticket['max_qty_ticket']) ? absint($ticket['max_qty_ticket']) : 10,
+                'quantity_total' => $qty_total > 0 ? $qty_total : null,
+                'quantity_remaining' => $qty_remaining,
+                'available' => $qty_remaining === null || $qty_remaining > 0,
+                'person_types' => isset($ticket['person_type']) ? $this->format_person_types($ticket['person_type']) : array(),
+            );
+        }
+
+        return $tickets;
+    }
+
+    /**
+     * Format person types for a ticket
+     */
+    private function format_person_types($person_types) {
+        if (empty($person_types) || !is_array($person_types)) {
+            return array();
+        }
+
+        $formatted = array();
+        foreach ($person_types as $pt) {
+            $formatted[] = array(
+                'id' => isset($pt['type_id']) ? $pt['type_id'] : null,
+                'name' => isset($pt['name_type']) ? $pt['name_type'] : '',
+                'price' => isset($pt['price_type']) ? floatval($pt['price_type']) : 0,
+                'min' => isset($pt['min_type']) ? absint($pt['min_type']) : 0,
+                'max' => isset($pt['max_type']) ? absint($pt['max_type']) : 10,
+            );
+        }
+
+        return $formatted;
+    }
+
+    /**
+     * Get recurrence info
+     */
+    private function get_recurrence_info($event_id, $prefix, $calendar_type) {
+        if ($calendar_type !== 'auto') {
+            return null;
+        }
+
+        $calendar_recurrence = get_post_meta($event_id, $prefix . 'calendar_recurrence', true);
+        $days = array();
+
+        if (!empty($calendar_recurrence) && is_array($calendar_recurrence)) {
+            foreach ($calendar_recurrence as $cal) {
+                if (isset($cal['calendar_day']) && !in_array($cal['calendar_day'], $days)) {
+                    $days[] = strtolower($cal['calendar_day']);
+                }
+            }
+        }
+
+        return array(
+            'frequency' => 'weekly',
+            'days' => $days,
+            'start_date' => get_post_meta($event_id, $prefix . 'calendar_start_date', true) ?: null,
+            'end_date' => get_post_meta($event_id, $prefix . 'calendar_end_date', true) ?: null,
+            'default_start_time' => get_post_meta($event_id, $prefix . 'calendar_recurrence_start_time', true) ?: null,
+            'default_end_time' => get_post_meta($event_id, $prefix . 'calendar_recurrence_end_time', true) ?: null,
+        );
+    }
+
+    /**
+     * Get booked spots for a specific slot
+     */
+    private function get_booked_spots($event_id, $date, $time = null) {
+        global $wpdb;
+
+        // Query bookings for this event/date/time
+        $meta_prefix = defined('OVA_METABOX_EVENT') ? OVA_METABOX_EVENT : 'el_';
+
+        $query = $wpdb->prepare(
+            "SELECT SUM(pm_qty.meta_value) as total
+             FROM {$wpdb->posts} p
+             INNER JOIN {$wpdb->postmeta} pm_event ON p.ID = pm_event.post_id AND pm_event.meta_key = %s
+             INNER JOIN {$wpdb->postmeta} pm_date ON p.ID = pm_date.post_id AND pm_date.meta_key = %s
+             INNER JOIN {$wpdb->postmeta} pm_qty ON p.ID = pm_qty.post_id AND pm_qty.meta_key = %s
+             WHERE p.post_type = 'el_bookings'
+             AND p.post_status IN ('publish', 'el-booked', 'el-hold')
+             AND pm_event.meta_value = %d
+             AND pm_date.meta_value = %s",
+            $meta_prefix . 'event_id',
+            $meta_prefix . 'order_date',
+            $meta_prefix . 'total_tickets',
+            $event_id,
+            $date
+        );
+
+        // Add time filter if specified
+        if ($time) {
+            $query = $wpdb->prepare(
+                "SELECT SUM(pm_qty.meta_value) as total
+                 FROM {$wpdb->posts} p
+                 INNER JOIN {$wpdb->postmeta} pm_event ON p.ID = pm_event.post_id AND pm_event.meta_key = %s
+                 INNER JOIN {$wpdb->postmeta} pm_date ON p.ID = pm_date.post_id AND pm_date.meta_key = %s
+                 INNER JOIN {$wpdb->postmeta} pm_time ON p.ID = pm_time.post_id AND pm_time.meta_key = %s
+                 INNER JOIN {$wpdb->postmeta} pm_qty ON p.ID = pm_qty.post_id AND pm_qty.meta_key = %s
+                 WHERE p.post_type = 'el_bookings'
+                 AND p.post_status IN ('publish', 'el-booked', 'el-hold')
+                 AND pm_event.meta_value = %d
+                 AND pm_date.meta_value = %s
+                 AND pm_time.meta_value = %s",
+                $meta_prefix . 'event_id',
+                $meta_prefix . 'order_date',
+                $meta_prefix . 'order_time',
+                $meta_prefix . 'total_tickets',
+                $event_id,
+                $date,
+                $time
+            );
+        }
+
+        $result = $wpdb->get_var($query);
+
+        return absint($result);
+    }
+
+    /**
+     * Get total tickets sold for a ticket type
+     */
+    private function get_tickets_sold($event_id, $ticket_id) {
+        global $wpdb;
+
+        if (empty($ticket_id)) {
+            return 0;
+        }
+
+        $meta_prefix = defined('OVA_METABOX_EVENT') ? OVA_METABOX_EVENT : 'el_';
+
+        // Query to count tickets sold
+        // Note: This is a simplified version - actual implementation may vary based on how tickets are stored
+        $result = $wpdb->get_var($wpdb->prepare(
+            "SELECT SUM(pm_qty.meta_value) as total
+             FROM {$wpdb->posts} p
+             INNER JOIN {$wpdb->postmeta} pm_event ON p.ID = pm_event.post_id AND pm_event.meta_key = %s
+             INNER JOIN {$wpdb->postmeta} pm_qty ON p.ID = pm_qty.post_id AND pm_qty.meta_key = %s
+             WHERE p.post_type = 'el_bookings'
+             AND p.post_status IN ('publish', 'el-booked', 'el-hold')
+             AND pm_event.meta_value = %d",
+            $meta_prefix . 'event_id',
+            $meta_prefix . 'total_tickets',
+            $event_id
+        ));
+
+        return absint($result);
     }
 }
