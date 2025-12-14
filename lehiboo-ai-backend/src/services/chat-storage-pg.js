@@ -450,6 +450,62 @@ export async function getCategoryPerformance() {
 }
 
 /**
+ * Compter les messages utilisateur sur une période (pour quota)
+ * @param {string} userId - ID utilisateur
+ * @param {number} days - Nombre de jours (défaut: 7)
+ * @returns {object} { count, resetDate }
+ */
+export async function getUserMessageCountForPeriod(userId, days = 7) {
+  if (!isConnected) {
+    return { count: 0, resetDate: null };
+  }
+
+  try {
+    // Calculer le début de la période (semaine glissante)
+    const periodStart = new Date();
+    periodStart.setDate(periodStart.getDate() - days);
+
+    // Compter les messages "user" (pas les réponses assistant) sur la période
+    const result = await pool.query(
+      `SELECT COUNT(*) as count, MIN(created_at) as oldest_message
+       FROM chat_messages
+       WHERE user_id = $1
+         AND role = 'user'
+         AND created_at >= $2`,
+      [userId, periodStart.toISOString()]
+    );
+
+    const count = parseInt(result.rows[0]?.count || 0, 10);
+
+    // Calculer la date de reset (quand le plus ancien message de la période expirera)
+    let resetDate = null;
+    if (result.rows[0]?.oldest_message) {
+      resetDate = new Date(result.rows[0].oldest_message);
+      resetDate.setDate(resetDate.getDate() + days);
+    } else {
+      // Si aucun message, reset dans 7 jours
+      resetDate = new Date();
+      resetDate.setDate(resetDate.getDate() + days);
+    }
+
+    logger.info('User message count for period', {
+      userId,
+      days,
+      count,
+      resetDate: resetDate.toISOString()
+    });
+
+    return {
+      count,
+      resetDate: resetDate.toISOString()
+    };
+  } catch (error) {
+    logger.error('Error getting user message count', { error: error.message });
+    return { count: 0, resetDate: null };
+  }
+}
+
+/**
  * Fermer les connexions
  */
 export async function closeDatabase() {
@@ -476,5 +532,6 @@ export default {
   logSearch,
   getPopularEvents,
   getCategoryPerformance,
+  getUserMessageCountForPeriod,
   closeDatabase
 };

@@ -160,6 +160,22 @@ export function isUsingPostgres() {
   return usePostgres;
 }
 
+/**
+ * Compter les messages utilisateur sur une période (pour quota)
+ * @param {string} userId - ID utilisateur
+ * @param {number} days - Nombre de jours (défaut: 7)
+ * @returns {object} { count, resetDate }
+ */
+export function getUserMessageCountForPeriod(userId, days = 7) {
+  if (usePostgres) {
+    return pgStorage.getUserMessageCountForPeriod(userId, days);
+  }
+  // JSON storage: count messages in memory
+  return jsonStorage.getUserMessageCountForPeriod
+    ? jsonStorage.getUserMessageCountForPeriod(userId, days)
+    : Promise.resolve({ count: 0, resetDate: null });
+}
+
 export default {
   initStorage,
   saveMessage,
@@ -175,5 +191,6 @@ export default {
   logSearch,
   getPopularEvents,
   getCategoryPerformance,
+  getUserMessageCountForPeriod,
   isUsingPostgres
 };

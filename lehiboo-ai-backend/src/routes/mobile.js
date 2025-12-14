@@ -12,7 +12,8 @@ import {
   handleMobileWeatherForecast,
   handleMobileChatHistory,
   handleMobileChatConversations,
-  handleMobileChatClear
+  handleMobileChatClear,
+  handleMobileChatQuota
 } from '../controllers/mobile-controller.js';
 import { validateApiKey } from '../middleware/auth.js';
 
@@ -91,5 +92,12 @@ router.get('/chat/conversations', validateApiKey, handleMobileChatConversations)
  * Query params: userId (requis), conversationId (optionnel - si absent, supprime tout)
  */
 router.delete('/chat/history', validateApiKey, handleMobileChatClear);
+
+/**
+ * GET /mobile/chat/quota - Vérifier le quota de messages
+ * Query params: userId (requis)
+ * Response: { limit, used, remaining, is_limit_reached, reset_date }
+ */
+router.get('/chat/quota', validateApiKey, handleMobileChatQuota);
 
 export default router;

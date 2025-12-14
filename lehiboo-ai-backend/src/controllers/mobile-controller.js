@@ -8,6 +8,12 @@ import chatStorage from '../services/chat-storage.js';
 import logger from '../utils/logger.js';
 import crypto from 'crypto';
 
+// Configuration des quotas
+const CHAT_QUOTA = {
+  LIMIT: 5,           // 5 messages max
+  PERIOD_DAYS: 7,     // par semaine (7 jours glissants)
+};
+
 /**
  * POST /mobile/chat
  * Endpoint principal de chat pour l'app mobile
@@ -32,6 +38,43 @@ export async function handleMobileChat(req, res) {
       userId,
       messagePreview: message?.substring(0, 50)
     });
+
+    // === VÉRIFICATION DU QUOTA ===
+    // Le quota n'est vérifié que pour les utilisateurs authentifiés (userId)
+    // Les utilisateurs anonymes ne sont pas limités (mais leurs messages ne sont pas sauvegardés)
+    if (userId) {
+      const { count, resetDate } = await chatStorage.getUserMessageCountForPeriod(
+        userId,
+        CHAT_QUOTA.PERIOD_DAYS
+      );
+
+      logger.info('User quota check', {
+        userId,
+        messageCount: count,
+        limit: CHAT_QUOTA.LIMIT,
+        resetDate
+      });
+
+      // Si la limite est atteinte, renvoyer une erreur 403
+      if (count >= CHAT_QUOTA.LIMIT) {
+        logger.warn('User quota exceeded', {
+          userId,
+          messageCount: count,
+          limit: CHAT_QUOTA.LIMIT
+        });
+
+        return res.status(403).json({
+          success: false,
+          error: 'LIMIT_REACHED',
+          message: `Vous avez atteint votre limite de ${CHAT_QUOTA.LIMIT} messages par semaine.`,
+          data: {
+            limit: CHAT_QUOTA.LIMIT,
+            used: count,
+            reset_date: resetDate
+          }
+        });
+      }
+    }
 
     // Générer la réponse (avec extraction d'infos utilisateur)
     const response = await generateMobileResponse(message, {
@@ -461,6 +504,58 @@ export async function handleMobileChatClear(req, res) {
   }
 }
 
+/**
+ * GET /mobile/chat/quota
+ * Récupère le quota de messages restant pour un utilisateur
+ */
+export async function handleMobileChatQuota(req, res) {
+  try {
+    const userId = req.query.userId || req.query.user_id;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'userId requis'
+      });
+    }
+
+    const { count, resetDate } = await chatStorage.getUserMessageCountForPeriod(
+      userId,
+      CHAT_QUOTA.PERIOD_DAYS
+    );
+
+    const remaining = Math.max(0, CHAT_QUOTA.LIMIT - count);
+    const isLimitReached = count >= CHAT_QUOTA.LIMIT;
+
+    logger.info('Quota check', {
+      userId,
+      used: count,
+      remaining,
+      limit: CHAT_QUOTA.LIMIT
+    });
+
+    return res.json({
+      success: true,
+      data: {
+        limit: CHAT_QUOTA.LIMIT,
+        used: count,
+        remaining,
+        is_limit_reached: isLimitReached,
+        reset_date: resetDate,
+        period_days: CHAT_QUOTA.PERIOD_DAYS
+      }
+    });
+
+  } catch (error) {
+    logger.error('Quota check error', { error: error.message });
+
+    return res.status(500).json({
+      success: false,
+      error: 'Erreur lors de la vérification du quota'
+    });
+  }
+}
+
 export default {
   handleMobileChat,
   handleMobileSearch,
@@ -470,5 +565,6 @@ export default {
   handleMobileWeatherForecast,
   handleMobileChatHistory,
   handleMobileChatConversations,
-  handleMobileChatClear
+  handleMobileChatClear,
+  handleMobileChatQuota
 };
