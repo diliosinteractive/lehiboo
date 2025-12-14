@@ -71,6 +71,7 @@ class LMA_Event_Formatter {
         $data['seat_config'] = self::get_seat_config($event, $meta_prefix);
         $data['external_booking'] = self::get_external_booking($event, $meta_prefix);
         $data['organizer'] = self::get_organizer_detail($event);
+        $data['coorganizers'] = self::get_coorganizers($event);
         $data['reviews'] = self::get_reviews($event);
         $data['similar_events'] = self::get_similar_events($event);
         $data['booking_info'] = self::get_booking_info($event, $meta_prefix);
@@ -518,9 +519,14 @@ class LMA_Event_Formatter {
             return null;
         }
 
+        // Nom public: org_display_name > org_name > display_name
+        $org_display_name = get_user_meta($author->ID, 'org_display_name', true);
+        $org_name = get_user_meta($author->ID, 'org_name', true);
+        $public_name = !empty($org_display_name) ? $org_display_name : (!empty($org_name) ? $org_name : $author->display_name);
+
         return array(
             'id' => $author->ID,
-            'name' => $author->display_name,
+            'name' => $public_name,
             'verified' => (bool) get_user_meta($author->ID, 'verified', true),
         );
     }
@@ -535,18 +541,146 @@ class LMA_Event_Formatter {
             return null;
         }
 
+        $author_id = $author->ID;
+
+        // Nom public: org_display_name > org_name > display_name
+        $org_display_name = get_user_meta($author_id, 'org_display_name', true);
+        $org_name = get_user_meta($author_id, 'org_name', true);
+        $public_name = !empty($org_display_name) ? $org_display_name : (!empty($org_name) ? $org_name : $author->display_name);
+
+        // Avatar/Logo: author_id_image ou gravatar
+        $author_id_image = get_user_meta($author_id, 'author_id_image', true);
+        $logo = $author_id_image
+            ? wp_get_attachment_image_url($author_id_image, 'thumbnail')
+            : get_avatar_url($author_id);
+
+        // Image de couverture
+        $org_cover_image = get_user_meta($author_id, 'org_cover_image', true);
+        $cover_image = $org_cover_image
+            ? wp_get_attachment_image_url($org_cover_image, 'large')
+            : null;
+
+        // Contact info
+        $user_phone = get_user_meta($author_id, 'user_phone', true);
+        $user_professional_email = get_user_meta($author_id, 'user_professional_email', true);
+        $org_web = get_user_meta($author_id, 'org_web', true);
+
+        // Location
+        $user_city = get_user_meta($author_id, 'user_city', true);
+        $user_country = get_user_meta($author_id, 'user_country', true);
+        $user_postcode = get_user_meta($author_id, 'user_postcode', true);
+        $user_address = get_user_meta($author_id, 'user_address', true);
+
+        // Infos pratiques
+        $org_pmr = get_user_meta($author_id, 'org_pmr', true);
+        $org_restauration = get_user_meta($author_id, 'org_restauration', true);
+        $org_boisson = get_user_meta($author_id, 'org_boisson', true);
+        $org_stationnement = get_user_meta($author_id, 'org_stationnement', true);
+        $org_event_type = get_user_meta($author_id, 'org_event_type', true);
+
+        // Réseaux sociaux
+        $user_profile_social = get_user_meta($author_id, 'user_profile_social', true);
+        $social_links = array();
+        if (!empty($user_profile_social) && is_array($user_profile_social)) {
+            foreach ($user_profile_social as $social) {
+                if (!empty($social[0])) {
+                    $social_links[] = array(
+                        'url' => $social[0],
+                        'icon' => isset($social[1]) ? $social[1] : null,
+                    );
+                }
+            }
+        }
+
         return array(
-            'id' => $author->ID,
-            'name' => $author->display_name,
-            'description' => get_user_meta($author->ID, 'description', true),
-            'logo' => get_avatar_url($author->ID),
-            'verified' => (bool) get_user_meta($author->ID, 'verified', true),
+            'id' => $author_id,
+            'name' => $public_name,
+            'description' => get_user_meta($author_id, 'description', true) ?: null,
+            'logo' => $logo,
+            'cover_image' => $cover_image,
+            'verified' => (bool) get_user_meta($author_id, 'verified', true),
             'contact' => array(
-                'phone' => get_user_meta($author->ID, 'phone', true) ?: null,
-                'email' => $author->user_email,
-                'website' => $author->user_url ?: null,
+                'phone' => $user_phone ?: null,
+                'email' => $user_professional_email ?: $author->user_email,
+                'website' => $org_web ?: ($author->user_url ?: null),
             ),
+            'location' => array(
+                'city' => $user_city ?: null,
+                'country' => $user_country ?: null,
+                'postcode' => $user_postcode ?: null,
+                'address' => $user_address ?: null,
+            ),
+            'practical_info' => array(
+                'pmr' => $org_pmr === 'oui',
+                'pmr_infos' => get_user_meta($author_id, 'org_pmr_infos', true) ?: null,
+                'restauration' => $org_restauration === 'oui',
+                'restauration_infos' => get_user_meta($author_id, 'org_restauration_infos', true) ?: null,
+                'boisson' => $org_boisson === 'oui',
+                'boisson_infos' => get_user_meta($author_id, 'org_boisson_infos', true) ?: null,
+                'stationnement' => $org_stationnement ?: null,
+                'event_type' => $org_event_type ?: null, // interieur, exterieur, mix
+            ),
+            'social_links' => $social_links,
+            'profile_url' => get_author_posts_url($author_id),
         );
+    }
+
+    /**
+     * Get coorganizers (co-organisateurs acceptés)
+     */
+    private static function get_coorganizers($event) {
+        // Vérifier si la classe existe (module coorganisateurs activé)
+        if (!class_exists('EL_Event_Coorganisation')) {
+            return array();
+        }
+
+        $coorganisers = EL_Event_Coorganisation::get_accepted_coorganisers($event->ID);
+
+        if (empty($coorganisers)) {
+            return array();
+        }
+
+        $result = array();
+
+        foreach ($coorganisers as $coorg) {
+            $org_id = $coorg->organisation_coorganisatrice_id;
+            $user = get_userdata($org_id);
+
+            if (!$user) {
+                continue;
+            }
+
+            // Nom public: org_display_name > org_name > display_name
+            $org_display_name = get_user_meta($org_id, 'org_display_name', true);
+            $org_name = get_user_meta($org_id, 'org_name', true);
+            $public_name = !empty($org_display_name) ? $org_display_name : (!empty($org_name) ? $org_name : $user->display_name);
+
+            // Avatar/Logo
+            $author_id_image = get_user_meta($org_id, 'author_id_image', true);
+            $logo = $author_id_image
+                ? wp_get_attachment_image_url($author_id_image, 'thumbnail')
+                : get_avatar_url($org_id);
+
+            // Role label
+            $role_labels = array(
+                'co-organisateur' => 'Co-organisateur',
+                'partenaire' => 'Partenaire',
+                'sponsor' => 'Sponsor',
+            );
+            $role_label = isset($role_labels[$coorg->role]) ? $role_labels[$coorg->role] : $coorg->role;
+
+            $result[] = array(
+                'id' => $org_id,
+                'name' => $public_name,
+                'logo' => $logo,
+                'role' => $coorg->role,
+                'role_label' => $role_label,
+                'city' => get_user_meta($org_id, 'user_city', true) ?: null,
+                'profile_url' => get_author_posts_url($org_id),
+            );
+        }
+
+        return $result;
     }
 
     /**
