@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 defined( 'ABSPATH' ) || exit();
 
@@ -7,7 +7,33 @@ if( !class_exists( 'El_Admin_Ajax' ) ){
 	class El_Admin_Ajax{
 
 		private $zip;
-		
+
+		/**
+		 * Vérifier si l'utilisateur a les droits d'édition d'événements
+		 * Envoie une erreur JSON et termine si non autorisé
+		 *
+		 * @return WP_User L'utilisateur courant
+		 */
+		protected function require_edit_capability() {
+			if ( ! is_user_logged_in() ) {
+				wp_send_json_error( array(
+					'message' => __( 'Authentication required', 'eventlist' ),
+					'code'    => 'authentication_required'
+				), 401 );
+				wp_die();
+			}
+
+			if ( ! current_user_can( 'edit_el_events' ) && ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( array(
+					'message' => __( 'Insufficient permissions', 'eventlist' ),
+					'code'    => 'insufficient_permissions'
+				), 403 );
+				wp_die();
+			}
+
+			return wp_get_current_user();
+		}
+
 		public function __construct(){
 			$this->init();
 		}
@@ -54,9 +80,10 @@ if( !class_exists( 'El_Admin_Ajax' ) ){
 				'el_add_seat_code_row',
 			);
 
+			// SECURITE: Actions ADMIN uniquement - pas de nopriv !
 			foreach($arr_ajax as $val){
 				add_action( 'wp_ajax_'.$val, array( $this, $val ) );
-				add_action( 'wp_ajax_nopriv_'.$val, array( $this, $val ) );
+				// Supprimé: wp_ajax_nopriv - ces actions admin nécessitent une authentification
 			}
 		}
 

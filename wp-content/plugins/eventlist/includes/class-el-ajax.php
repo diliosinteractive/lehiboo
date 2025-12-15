@@ -8,6 +8,66 @@ if( !class_exists( 'El_Ajax' ) ){
 		 */
 		protected static $_loaded = false;
 
+		/**
+		 * Vérifier si l'utilisateur est authentifié
+		 * Envoie une erreur JSON et termine si non authentifié
+		 *
+		 * @return int User ID si authentifié
+		 */
+		protected function require_authentication() {
+			if ( ! is_user_logged_in() ) {
+				wp_send_json_error( array(
+					'message' => __( 'Authentication required', 'eventlist' ),
+					'code'    => 'authentication_required'
+				), 401 );
+				wp_die();
+			}
+			return get_current_user_id();
+		}
+
+		/**
+		 * Vérifier si l'utilisateur a le rôle vendor/organisateur
+		 * Envoie une erreur JSON et termine si non autorisé
+		 *
+		 * @return WP_User L'utilisateur courant
+		 */
+		protected function require_vendor_capability() {
+			$this->require_authentication();
+
+			$user = wp_get_current_user();
+			$allowed_roles = array( 'el_event_manager', 'administrator', 'editor', 'author', 'vendor' );
+
+			if ( ! array_intersect( $allowed_roles, $user->roles ) && ! current_user_can( 'edit_el_events' ) ) {
+				wp_send_json_error( array(
+					'message' => __( 'Insufficient permissions', 'eventlist' ),
+					'code'    => 'insufficient_permissions'
+				), 403 );
+				wp_die();
+			}
+
+			return $user;
+		}
+
+		/**
+		 * Vérifier si l'utilisateur est admin
+		 * Envoie une erreur JSON et termine si non admin
+		 *
+		 * @return WP_User L'utilisateur courant
+		 */
+		protected function require_admin_capability() {
+			$this->require_authentication();
+
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( array(
+					'message' => __( 'Admin access required', 'eventlist' ),
+					'code'    => 'admin_required'
+				), 403 );
+				wp_die();
+			}
+
+			return wp_get_current_user();
+		}
+
 		public function __construct(){
 
 			if ( self::$_loaded ) {
@@ -24,185 +84,90 @@ if( !class_exists( 'El_Ajax' ) ){
 
 		public function init(){
 
-			// Define All Ajax function
-			$arr_ajax =  array(
-
-				// Vendor Update Profile
-				'el_update_profile',
-
-				// Vendor Update Organisation (V1 Le Hiboo)
-				'el_update_organisation',
-
-				// Vendor Update Presentation (V1 Le Hiboo)
-				'el_update_presentation',
-
-				// Vendor Update Localisation (V1 Le Hiboo)
-				'el_update_localisation',
-
-				// Vendor Gallery Operations (V1 Le Hiboo)
-				'el_delete_gallery_image',
-
-				// Vendor Add Social
-				'el_add_social',
-
-				// Vendor Save Social
-				'el_save_social',
-
-				// Check Password
-				'el_check_password',
-
-				// Update Password
-				'el_change_password',
-
-				// User Upgrade to Vendor Role
-				'el_update_role',
-
-				'el_check_vendor_field_required',
-
-				// Process Checkout
-				'el_process_checkout',
-
-				// Countdown Checkout
-				'el_countdown_checkout',
-
-				// Check User Login
-				'el_check_user_login',
-
-				// Check Login to view report
-				'el_check_login_report',
-
-				// Vendor update a post to pending status
-				'el_pending_post',
-
-				// Vendor update a post to publish status
-				'el_publish_post',
-
-				// Vendor Move a post to trash status
-				'el_trash_post',
-
-				// Vendor clone a post 
-				'el_duplicate_post',
-
-				// Vendor delete a post
-				'el_delete_post',
-
-				// Vendor Choose Buld Action
-				'el_bulk_action',
-
-				// Booking check discount
-				'el_check_discount',
-
-				// Load Location
+			// =====================================================
+			// ACTIONS PUBLIQUES - Accessibles sans authentification
+			// =====================================================
+			$public_actions = array(
+				// Recherche et affichage d'événements
 				'el_load_location',
-
-				// Save an event
-				'el_save_edit_event',
-
-				// Vendor export Booking to CSV
-				'el_export_csv',
-
-				// Vendor export Ticket to CSV
-				'export_csv_ticket',
-
-				// Vendor add a package
-				'el_add_package',
-
-				// The client add a event to wishlist
-				'el_add_wishlist',
-
-				// The client remove a event to wishlist
-				'el_remove_wishlist',
-
-				// The vendor update bank
-				'el_update_payout_method',
-
-				// Load location in search
 				'el_load_location_search',
-
-				// Search Map Page
 				'el_search_map',
-
-				// Display Event by filters in Elementor
 				'el_filter_elementor_grid',
-
-				// Send mail to vendor
-				'el_single_send_mail_vendor',
-
-				// Send mail when the client report an event
-				'el_single_send_mail_report',
-
-				// Update Ticket Status
-				'el_update_ticket_status',
-
-				// The customer cancel a booking
-				'el_cancel_booking',
-
-				//  add withdraw
-				'el_add_withdrawal',
-
-				// load schdules
-
+				'el_event_default',
+				'el_event_online',
+				'el_event_by_time',
+				'el_event_recent',
+				'el_event_speacial_pagination',
 				'el_load_schedules',
 
-				// load ticket rest
-
-				// 'el_load_ticket_rest',
-
-                // chose calendar in manage sale
-				'el_choose_calendar',
-
-                //load edit ticket calendar in manage sale
-				'el_load_edit_ticket_calendar',
-
-				//	update ticket max
-
-				'el_update_ticket_max',
-
-				// check date search ticket
-
-				'el_check_date_search_ticket',
-
-				// multiple customers ticket
-				'el_multiple_customers_ticket',
-
-				// Upload files
-				'el_upload_files',
-
-				// Geocoding API
+				// Geocoding
 				'el_geocode',
 
-				// Event List Default
-				'el_event_default',
-
-				// Event List Online
-				'el_event_online',
-
-				// Event List By Time
-				'el_event_by_time',
-
-				// Event Recent
-				'el_event_recent',
-
-				// recapcha
+				// Vérifications publiques
+				'el_check_user_login',
+				'el_check_login_report',
 				'el_verify_google_recapcha',
+				'el_check_discount',
 
-				// Download Ticket received
-				'el_ticket_received_download',
-
-				// Remove Ticket PDF
-				'el_fe_unlink_download_ticket',
-
-				// Show list ticket
-				'el_ticket_list',
-
-				// Ticket Transfer
-				'el_ticket_transfer',
-
-				// Countdown expired
+				// Countdown (session based)
+				'el_countdown_checkout',
 				'el_payment_countdown',
+			);
+
+			// =====================================================
+			// ACTIONS PRIVÉES - Requièrent une authentification
+			// =====================================================
+			$private_actions = array(
+				// Profil utilisateur/vendor
+				'el_update_profile',
+				'el_update_organisation',
+				'el_update_presentation',
+				'el_update_localisation',
+				'el_delete_gallery_image',
+				'el_add_social',
+				'el_save_social',
+				'el_check_password',
+				'el_change_password',
+				'el_update_role',
+				'el_check_vendor_field_required',
+				'el_update_payout_method',
+
+				// Gestion des événements (vendor)
+				'el_pending_post',
+				'el_publish_post',
+				'el_trash_post',
+				'el_duplicate_post',
+				'el_delete_post',
+				'el_bulk_action',
+				'el_save_edit_event',
+
+				// Checkout & Paiement
+				'el_process_checkout',
+				'el_add_package',
+				'el_add_withdrawal',
+
+				// Wishlist (nécessite user)
+				'el_add_wishlist',
+				'el_remove_wishlist',
+
+				// Contact vendor (avec rate limiting)
+				'el_single_send_mail_vendor',
+				'el_single_send_mail_report',
+
+				// Gestion tickets/bookings
+				'el_update_ticket_status',
+				'el_cancel_booking',
+				'el_ticket_transfer',
+				'el_cancel_check_in',
+				'el_update_ticket_max',
+				'el_multiple_customers_ticket',
+				'el_choose_calendar',
+				'el_load_edit_ticket_calendar',
+				'el_check_date_search_ticket',
+				'el_show_data_booking',
+				'el_show_column_tickets',
 
 				// Ticket Manager
-				// Download Ticket PDF
 				'el_ticket_manager_download_ticket',
 				'el_ticket_manager_remove_ticket_pdf',
 				'el_ticket_manager_send_ticket',
@@ -212,30 +177,39 @@ if( !class_exists( 'El_Ajax' ) ){
 				'el_create_tickets_show_calendar',
 				'el_create_tickets_show_tickets',
 				'el_create_tickets_save',
-				// Vendor cancel checkin ticket
-				'el_cancel_check_in',
-				'el_show_data_booking',
-				'el_show_column_tickets',
+				'el_ticket_received_download',
+				'el_fe_unlink_download_ticket',
+				'el_ticket_list',
 
-				'el_booking_download_all_in_one',
+				// Export (données sensibles)
+				'el_export_csv',
+				'export_csv_ticket',
 				'el_export_booking_split_multi_file',
-				'el_export_page_item',
-
-				'el_ticket_download_all_in_one',
 				'el_export_ticket_split_multi_file',
+				'el_export_page_item',
+				'el_ticket_download_all_in_one',
 				'el_export_ticket_page_item',
-				'el_event_speacial_pagination',
-
+				'el_booking_download_all_in_one',
 				'el_download_invoice',
 				'el_download_tickets',
 
-				// V1 Le Hiboo - AI Description Generator
+				// Upload fichiers
+				'el_upload_files',
+
+				// AI
 				'el_generate_ai_description',
 			);
 
-			foreach($arr_ajax as $val){
-				add_action( 'wp_ajax_'.$val, array( $this, $val ) );
-				add_action( 'wp_ajax_nopriv_'.$val, array( $this, $val ) );
+			// Enregistrer les actions PUBLIQUES (accessibles avec et sans auth)
+			foreach ( $public_actions as $action ) {
+				add_action( 'wp_ajax_' . $action, array( $this, $action ) );
+				add_action( 'wp_ajax_nopriv_' . $action, array( $this, $action ) );
+			}
+
+			// Enregistrer les actions PRIVÉES (authentification requise uniquement)
+			foreach ( $private_actions as $action ) {
+				add_action( 'wp_ajax_' . $action, array( $this, $action ) );
+				// PAS de wp_ajax_nopriv_ pour les actions privées !
 			}
 		}
 
