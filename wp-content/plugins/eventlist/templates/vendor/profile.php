@@ -579,12 +579,12 @@ $user_meta_field = get_option( 'ova_register_form' );
 								</div>
 							</div>
 
-							<!-- Forme juridique et SIREN côte à côte -->
+							<!-- Statut juridique et SIREN côte à côte -->
 							<div class="profile_row profile_row_2cols">
-								<!-- Forme juridique -->
+								<!-- Statut juridique - Récupéré depuis le backoffice -->
 								<div class="vendor_field">
 									<label class="control-label" for="org_forme_juridique">
-										<?php esc_html_e( 'Forme juridique', 'eventlist' ); ?>
+										<?php esc_html_e( 'Statut juridique', 'eventlist' ); ?>
 										<sup class="symbol-required">*</sup>
 									</label>
 									<?php
@@ -592,7 +592,8 @@ $user_meta_field = get_option( 'ova_register_form' );
 									if ( empty($org_forme_juridique) ) {
 										$org_forme_juridique = get_user_meta( $user_id, 'org_statut_juridique', true );
 									}
-									$formes_juridiques = get_option( 'el_formes_juridiques_list', array(
+									// Récupérer les statuts juridiques depuis le backoffice (comme Types de structure)
+									$statuts_juridiques = get_option( 'el_statuts_juridiques_list', array(
 										'association' => __( 'Association loi 1901', 'eventlist' ),
 										'sarl' => __( 'SARL', 'eventlist' ),
 										'sas' => __( 'SAS', 'eventlist' ),
@@ -604,8 +605,8 @@ $user_meta_field = get_option( 'ova_register_form' );
 									));
 									?>
 									<select id="org_forme_juridique" name="org_forme_juridique" required>
-										<option value=""><?php esc_html_e( 'Sélectionnez des types', 'eventlist' ); ?></option>
-										<?php foreach( $formes_juridiques as $key => $label ): ?>
+										<option value=""><?php esc_html_e( 'Sélectionnez un statut', 'eventlist' ); ?></option>
+										<?php foreach( $statuts_juridiques as $key => $label ): ?>
 											<option value="<?php echo esc_attr($key); ?>" <?php selected( $org_forme_juridique, $key ); ?>>
 												<?php echo esc_html($label); ?>
 											</option>
