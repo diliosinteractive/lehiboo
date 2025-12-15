@@ -1240,19 +1240,8 @@ if( !class_exists( 'El_Ajax' ) ){
 				}
 			}
 
-			// V1 Le Hiboo - Validation minimum 500 caractères pour la présentation
-			$description_length = mb_strlen( trim( $description ) );
-			if ( $description_length < 500 ) {
-				wp_send_json_error( array(
-					'message' => sprintf(
-						__( 'La présentation doit contenir au minimum 500 caractères. Actuellement : %d caractères.', 'eventlist' ),
-						$description_length
-					),
-					'current_length' => $description_length,
-					'required_length' => 500
-				) );
-				wp_die();
-			}
+			// V1 Le Hiboo - La description est maintenant facultative (recommandation 500 caractères côté frontend)
+			// Pas de validation bloquante côté serveur
 
 			$org_cover_image = isset( $post_data['org_cover_image'] ) ? absint( $post_data['org_cover_image'] ) : 0;
 			$org_email_contact = isset( $post_data['org_email_contact'] ) ? sanitize_email( $post_data['org_email_contact'] ) : '';
@@ -1446,12 +1435,16 @@ if( !class_exists( 'El_Ajax' ) ){
 			$org_web = isset( $post_data['org_web'] ) ? esc_url_raw( $post_data['org_web'] ) : '';
 			$org_event_type = isset( $post_data['org_event_type'] ) ? sanitize_text_field( $post_data['org_event_type'] ) : '';
 
+			// Description de l'organisateur (TinyMCE) - wp_kses_post pour autoriser HTML basique
+			$description = isset( $post_data['description'] ) ? wp_kses_post( $post_data['description'] ) : '';
+
 			update_user_meta( $user_id, 'org_cover_image', $org_cover_image );
 			update_user_meta( $user_id, 'author_id_image', $author_id_image );
 			update_user_meta( $user_id, 'org_email_contact', $org_email_contact );
 			update_user_meta( $user_id, 'org_phone_contact', $org_phone_contact );
 			update_user_meta( $user_id, 'org_web', $org_web );
 			update_user_meta( $user_id, 'org_event_type', $org_event_type );
+			update_user_meta( $user_id, 'description', $description );
 
 			// Réseaux sociaux (si présents)
 			if ( isset( $post_data['user_profile_social'] ) && is_array( $post_data['user_profile_social'] ) ) {
