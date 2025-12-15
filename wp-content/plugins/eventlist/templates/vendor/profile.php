@@ -336,15 +336,17 @@ $user_meta_field = get_option( 'ova_register_form' );
 								</div>
 							</div>
 
-							<div class="profile_row">
+							<div class="profile_row profile_row_2cols">
 								<!-- Confirmation mot de passe -->
-								<div class="vendor_field wrap_confirm_password vendor_field_half">
+								<div class="vendor_field wrap_confirm_password">
 									<label class="control-label" for="user_password_confirm">
 										<?php esc_html_e( 'Confirmer le nouveau mot de passe', 'eventlist' ); ?>
 									</label>
 									<input id="user_password_confirm" name="user_password_confirm" type="password" autocomplete="new-password" placeholder="<?php esc_attr_e( 'Confirmez votre nouveau mot de passe', 'eventlist' ); ?>">
 									<span class="show_pass" data-target="user_password_confirm"><i class="fa fa-eye"></i></span>
 								</div>
+								<!-- Espace vide pour l'alignement -->
+								<div class="vendor_field"></div>
 							</div>
 						</div>
 						<?php
