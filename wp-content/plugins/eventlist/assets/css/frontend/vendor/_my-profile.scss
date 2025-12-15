@@ -937,6 +937,538 @@
 	}
 }
 
+// ==================================
+// GRILLE 2 COLONNES POUR LE PROFIL
+// ==================================
+
+.profile_row {
+	display: flex;
+	gap: 24px;
+	margin-bottom: 24px;
+
+	@media (max-width: 768px) {
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	&.profile_row_2cols {
+		> .vendor_field,
+		> .autocomplete-wrapper {
+			flex: 1;
+			min-width: 0;
+		}
+	}
+
+	&.profile_row_images {
+		gap: 32px;
+
+		.cover_image_field {
+			flex: 2;
+		}
+
+		.logo_field {
+			flex: 1;
+			max-width: 200px;
+
+			@media (max-width: 768px) {
+				max-width: 100%;
+			}
+		}
+	}
+}
+
+.vendor_field_half {
+	max-width: 50%;
+
+	@media (max-width: 768px) {
+		max-width: 100%;
+	}
+}
+
+// ==================================
+// SÉPARATEURS DE SECTIONS
+// ==================================
+
+.profile_section_separator {
+	margin: 40px 0;
+	border: 0;
+	border-top: 2px solid #e2e8f0;
+}
+
+.profile_section_separator_light {
+	margin: 30px 0;
+	border: 0;
+	border-top: 1px solid #e2e8f0;
+}
+
+// ==================================
+// LOCALISATION AVEC CARTE
+// ==================================
+
+.profile_localisation_layout {
+	display: flex;
+	gap: 32px;
+	margin-bottom: 24px;
+
+	@media (max-width: 991px) {
+		flex-direction: column;
+	}
+
+	.localisation_fields {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.localisation_map {
+		flex: 1;
+		min-width: 300px;
+
+		@media (max-width: 991px) {
+			min-width: 100%;
+			order: -1;
+		}
+	}
+
+	.profile_map_container {
+		width: 100%;
+		height: 280px;
+		border-radius: 12px;
+		overflow: hidden;
+		border: 1.5px solid #e2e8f0;
+		background: #f8f9fa;
+	}
+}
+
+// ==================================
+// TOGGLES (SWITCH)
+// ==================================
+
+.toggle_switch {
+	position: relative;
+	display: inline-block;
+	width: 48px;
+	height: 26px;
+	flex-shrink: 0;
+
+	input {
+		opacity: 0;
+		width: 0;
+		height: 0;
+
+		&:checked + .toggle_slider {
+			background-color: #FF6B35;
+		}
+
+		&:checked + .toggle_slider:before {
+			transform: translateX(22px);
+		}
+
+		&:focus + .toggle_slider {
+			box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+		}
+	}
+
+	.toggle_slider {
+		position: absolute;
+		cursor: pointer;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #cbd5e0;
+		transition: 0.3s;
+		border-radius: 26px;
+
+		&:before {
+			position: absolute;
+			content: "";
+			height: 20px;
+			width: 20px;
+			left: 3px;
+			bottom: 3px;
+			background-color: white;
+			transition: 0.3s;
+			border-radius: 50%;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+		}
+	}
+
+	&.toggle_switch_small {
+		width: 40px;
+		height: 22px;
+
+		input:checked + .toggle_slider:before {
+			transform: translateX(18px);
+		}
+
+		.toggle_slider {
+			border-radius: 22px;
+
+			&:before {
+				height: 16px;
+				width: 16px;
+				bottom: 3px;
+			}
+		}
+	}
+}
+
+.toggle_field {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+
+	.toggle_label {
+		font-size: 14px;
+		font-weight: 500;
+		color: #4a5568;
+	}
+}
+
+// ==================================
+// SERVICES ET ACCESSIBILITÉ
+// ==================================
+
+.services_accessibility_section {
+	margin-top: 24px;
+
+	.section_toggle_header {
+		display: flex;
+		align-items: flex-start;
+		gap: 16px;
+		padding: 16px 0;
+		cursor: pointer;
+
+		.section_toggle_info {
+			flex: 1;
+
+			h4 {
+				margin: 0 0 8px 0;
+				font-size: 16px;
+				font-weight: 600;
+				color: #1a202c;
+			}
+
+			p {
+				margin: 0;
+				font-size: 14px;
+				color: #718096;
+				line-height: 1.5;
+			}
+		}
+	}
+
+	.services_content {
+		padding-top: 24px;
+	}
+
+	.service_field {
+		background: #f8f9fa;
+		border: 1.5px solid #e2e8f0;
+		border-radius: 12px;
+		padding: 16px;
+		margin-bottom: 0;
+
+		.service_header {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			margin-bottom: 12px;
+
+			.service_label {
+				font-size: 14px;
+				font-weight: 600;
+				color: #2d3748;
+			}
+		}
+
+		input[type="text"] {
+			background: #fff;
+		}
+
+		small {
+			margin-top: 8px;
+			font-size: 12px;
+			color: #718096;
+		}
+	}
+}
+
+// ==================================
+// DROPZONE POUR IMAGE DE COUVERTURE
+// ==================================
+
+.cover_dropzone {
+	border: 2px dashed #FF6B35;
+	border-radius: 12px;
+	background: #fff8f5;
+	min-height: 200px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	position: relative;
+	overflow: hidden;
+
+	&:hover {
+		background: #fff0eb;
+		border-color: #e85a29;
+	}
+
+	&.has_image {
+		border-style: solid;
+		border-color: #e2e8f0;
+		background: #f8f9fa;
+	}
+
+	.dropzone_placeholder {
+		text-align: center;
+		padding: 32px;
+
+		&.hidden {
+			display: none;
+		}
+
+		i {
+			font-size: 48px;
+			color: #FF6B35;
+			margin-bottom: 16px;
+		}
+
+		p {
+			margin: 0 0 4px 0;
+			font-size: 15px;
+			font-weight: 500;
+			color: #2d3748;
+		}
+
+		> small {
+			display: block;
+			font-size: 13px;
+			color: #718096;
+			margin-bottom: 16px;
+		}
+
+		.dropzone_info {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			font-size: 12px;
+			color: #a0aec0;
+
+			span {
+				display: block;
+			}
+		}
+	}
+
+	.dropzone_preview {
+		width: 100%;
+		height: 100%;
+		min-height: 200px;
+		position: relative;
+
+		&.hidden {
+			display: none;
+		}
+
+		img {
+			width: 100%;
+			height: 200px;
+			object-fit: cover;
+		}
+
+		.preview_actions {
+			position: absolute;
+			bottom: 12px;
+			right: 12px;
+			display: flex;
+			gap: 8px;
+
+			button {
+				width: 36px;
+				height: 36px;
+				border-radius: 50%;
+				border: none;
+				background: rgba(255, 255, 255, 0.95);
+				color: #4a5568;
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				transition: all 0.2s;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+				&:hover {
+					background: #fff;
+					transform: scale(1.1);
+				}
+
+				&.btn_remove_cover:hover {
+					color: #e53e3e;
+				}
+			}
+		}
+	}
+}
+
+// ==================================
+// LOGO PREVIEW
+// ==================================
+
+.logo_preview_container {
+	display: flex;
+	justify-content: center;
+
+	.logo_preview_wrapper {
+		position: relative;
+		width: 140px;
+		height: 140px;
+
+		.logo_preview_img {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			object-fit: cover;
+			border: 4px solid #fff;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		}
+
+		.btn_change_logo {
+			position: absolute;
+			bottom: 8px;
+			right: 8px;
+			width: 36px;
+			height: 36px;
+			border-radius: 50%;
+			border: none;
+			background: #FF6B35;
+			color: #fff;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: all 0.2s;
+			box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+
+			&:hover {
+				background: #e85a29;
+				transform: scale(1.1);
+			}
+
+			i {
+				font-size: 14px;
+			}
+		}
+	}
+}
+
+// ==================================
+// AUTOCOMPLETE INPUT AVEC ICÔNE
+// ==================================
+
+.autocomplete-wrapper {
+	.autocomplete-input {
+		position: relative;
+
+		input {
+			padding-right: 40px;
+		}
+
+		.autocomplete-icon {
+			position: absolute;
+			right: 14px;
+			top: 50%;
+			transform: translateY(-50%);
+			color: #a0aec0;
+			font-size: 16px;
+			pointer-events: none;
+		}
+
+		.autocomplete-loader {
+			position: absolute;
+			right: 14px;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 18px;
+			height: 18px;
+			border: 2px solid #e2e8f0;
+			border-top-color: #FF6B35;
+			border-radius: 50%;
+			animation: spin 0.8s linear infinite;
+			display: none;
+
+			&.active {
+				display: block;
+
+				& + .autocomplete-icon {
+					display: none;
+				}
+			}
+		}
+	}
+}
+
+// ==================================
+// SELECT2 MULTI-SELECT
+// ==================================
+
+.select2-multi {
+	width: 100% !important;
+
+	& + .select2-container {
+		width: 100% !important;
+
+		.select2-selection--multiple {
+			min-height: 46px;
+			border: 1.5px solid #e2e8f0;
+			border-radius: 8px;
+			padding: 4px 8px;
+			background: #fff;
+			transition: all 0.2s;
+
+			&:hover {
+				border-color: #cbd5e0;
+			}
+
+			&:focus,
+			&:focus-within {
+				border-color: #FF6B35;
+				box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+			}
+
+			.select2-selection__choice {
+				background: #fff0eb;
+				border: 1px solid #ffcdb8;
+				border-radius: 6px;
+				padding: 4px 8px;
+				margin: 4px 4px 4px 0;
+				color: #c53d00;
+				font-size: 13px;
+
+				.select2-selection__choice__remove {
+					color: #c53d00;
+					margin-right: 6px;
+
+					&:hover {
+						color: #e53e3e;
+					}
+				}
+			}
+
+			.select2-search__field {
+				margin-top: 6px;
+				font-size: 14px;
+
+				&::placeholder {
+					color: #a0aec0;
+				}
+			}
+		}
+	}
+}
+
 body.rtl {
 	.vendor_profile {
 		.ui-tabs .ui-tabs-nav li {
