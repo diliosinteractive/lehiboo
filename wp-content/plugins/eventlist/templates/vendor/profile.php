@@ -265,39 +265,88 @@ $user_meta_field = get_option( 'ova_register_form' );
 							<?php } ?>
 						</div>
 
-						<!-- Poste (menu déroulant) -->
-						<?php
-						$show_job = $OVALG_Settings ? $OVALG_Settings->show_job() : 'yes';
-						if( apply_filters( 'ovalg_register_user_show_job', true ) && $show_job == 'yes' ){
-							$available_jobs = get_option( 'el_job_positions_list', array(
-								'directeur' => __( 'Directeur / Directrice', 'eventlist' ),
-								'responsable' => __( 'Responsable événementiel', 'eventlist' ),
-								'charge_projet' => __( 'Chargé de projet', 'eventlist' ),
-								'coordinateur' => __( 'Coordinateur', 'eventlist' ),
-								'animateur' => __( 'Animateur', 'eventlist' ),
-								'artiste' => __( 'Artiste', 'eventlist' ),
-								'technicien' => __( 'Technicien', 'eventlist' ),
-								'benevole' => __( 'Bénévole', 'eventlist' ),
-								'president' => __( 'Président(e)', 'eventlist' ),
-								'secretaire' => __( 'Secrétaire', 'eventlist' ),
-								'tresorier' => __( 'Trésorier', 'eventlist' ),
-								'autre' => __( 'Autre', 'eventlist' ),
-							));
-						?>
-							<div class="vendor_field vendor_field_half">
-								<label class="control-label" for="user_job">
-									<?php esc_html_e( 'Poste', 'eventlist' ); ?>
-								</label>
-								<select id="user_job" name="user_job">
-									<option value=""><?php esc_html_e( 'Sélectionnez un poste', 'eventlist' ); ?></option>
-									<?php foreach( $available_jobs as $job_key => $job_label ): ?>
-										<option value="<?php echo esc_attr($job_key); ?>" <?php selected( $user_job, $job_key ); ?>>
-											<?php echo esc_html($job_label); ?>
-										</option>
-									<?php endforeach; ?>
-								</select>
+						<!-- Poste et Toggle Mot de passe côte à côte -->
+						<div class="profile_row profile_row_2cols">
+							<!-- Poste (menu déroulant) -->
+							<?php
+							$show_job = $OVALG_Settings ? $OVALG_Settings->show_job() : 'yes';
+							if( apply_filters( 'ovalg_register_user_show_job', true ) && $show_job == 'yes' ){
+								$available_jobs = get_option( 'el_job_positions_list', array(
+									'directeur' => __( 'Directeur / Directrice', 'eventlist' ),
+									'responsable' => __( 'Responsable événementiel', 'eventlist' ),
+									'charge_projet' => __( 'Chargé de projet', 'eventlist' ),
+									'coordinateur' => __( 'Coordinateur', 'eventlist' ),
+									'animateur' => __( 'Animateur', 'eventlist' ),
+									'artiste' => __( 'Artiste', 'eventlist' ),
+									'technicien' => __( 'Technicien', 'eventlist' ),
+									'benevole' => __( 'Bénévole', 'eventlist' ),
+									'president' => __( 'Président(e)', 'eventlist' ),
+									'secretaire' => __( 'Secrétaire', 'eventlist' ),
+									'tresorier' => __( 'Trésorier', 'eventlist' ),
+									'autre' => __( 'Autre', 'eventlist' ),
+								));
+							?>
+								<div class="vendor_field">
+									<label class="control-label" for="user_job">
+										<?php esc_html_e( 'Poste', 'eventlist' ); ?>
+									</label>
+									<select id="user_job" name="user_job">
+										<option value=""><?php esc_html_e( 'Sélectionnez un poste', 'eventlist' ); ?></option>
+										<?php foreach( $available_jobs as $job_key => $job_label ): ?>
+											<option value="<?php echo esc_attr($job_key); ?>" <?php selected( $user_job, $job_key ); ?>>
+												<?php echo esc_html($job_label); ?>
+											</option>
+										<?php endforeach; ?>
+									</select>
+								</div>
+							<?php } ?>
+
+							<!-- Toggle Modifier mot de passe -->
+							<div class="vendor_field toggle_password_field">
+								<label class="control-label"><?php esc_html_e( 'Mot de passe', 'eventlist' ); ?></label>
+								<div class="toggle_field">
+									<label class="toggle_switch">
+										<input type="checkbox" id="toggle_password_change" name="toggle_password_change" value="1">
+										<span class="toggle_slider"></span>
+									</label>
+									<span class="toggle_label"><?php esc_html_e( 'Modifier mon mot de passe', 'eventlist' ); ?></span>
+								</div>
 							</div>
-						<?php } ?>
+						</div>
+
+						<!-- Bloc Modification mot de passe (masqué par défaut) -->
+						<div id="password_change_block" class="password_change_block" style="display: none;">
+							<div class="profile_row profile_row_2cols">
+								<!-- Ancien mot de passe -->
+								<div class="vendor_field wrap_old_password">
+									<label class="control-label" for="user_password_old">
+										<?php esc_html_e( 'Mot de passe actuel', 'eventlist' ); ?>
+									</label>
+									<input id="user_password_old" name="user_password_old" type="password" autocomplete="current-password" placeholder="<?php esc_attr_e( 'Votre mot de passe actuel', 'eventlist' ); ?>">
+									<span class="show_pass" data-target="user_password_old"><i class="fa fa-eye"></i></span>
+								</div>
+
+								<!-- Nouveau mot de passe -->
+								<div class="vendor_field wrap_new_password">
+									<label class="control-label" for="user_password_new">
+										<?php esc_html_e( 'Nouveau mot de passe', 'eventlist' ); ?>
+									</label>
+									<input id="user_password_new" name="user_password_new" type="password" autocomplete="new-password" placeholder="<?php esc_attr_e( 'Minimum 8 caractères', 'eventlist' ); ?>">
+									<span class="show_pass" data-target="user_password_new"><i class="fa fa-eye"></i></span>
+								</div>
+							</div>
+
+							<div class="profile_row">
+								<!-- Confirmation mot de passe -->
+								<div class="vendor_field wrap_confirm_password vendor_field_half">
+									<label class="control-label" for="user_password_confirm">
+										<?php esc_html_e( 'Confirmer le nouveau mot de passe', 'eventlist' ); ?>
+									</label>
+									<input id="user_password_confirm" name="user_password_confirm" type="password" autocomplete="new-password" placeholder="<?php esc_attr_e( 'Confirmez votre nouveau mot de passe', 'eventlist' ); ?>">
+									<span class="show_pass" data-target="user_password_confirm"><i class="fa fa-eye"></i></span>
+								</div>
+							</div>
+						</div>
 						<?php
 						$show_website = $OVALG_Settings ? $OVALG_Settings->show_website() : 'no';
 						if ( apply_filters( 'ovalg_register_user_show_website', true ) && $show_website == 'yes' ) { ?>

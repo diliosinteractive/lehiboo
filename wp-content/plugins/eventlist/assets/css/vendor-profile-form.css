@@ -828,6 +828,83 @@
 }
 
 /* ==========================================================================
+   12.5. Password Change Block
+   ========================================================================== */
+
+/* Toggle mot de passe field */
+.el-vendor-profile-form-wrapper .toggle_password_field {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.el-vendor-profile-form-wrapper .toggle_password_field .toggle_field {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0 16px;
+}
+
+.el-vendor-profile-form-wrapper .toggle_password_field .toggle_label {
+    font-size: 14px;
+    color: #333;
+}
+
+/* Password change block */
+.el-vendor-profile-form-wrapper .password_change_block {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.el-vendor-profile-form-wrapper .password_change_block .profile_row {
+    margin-bottom: 16px;
+}
+
+.el-vendor-profile-form-wrapper .password_change_block .profile_row:last-child {
+    margin-bottom: 0;
+}
+
+/* Password field with show/hide button */
+.el-vendor-profile-form-wrapper .wrap_old_password,
+.el-vendor-profile-form-wrapper .wrap_new_password,
+.el-vendor-profile-form-wrapper .wrap_confirm_password {
+    position: relative;
+}
+
+.el-vendor-profile-form-wrapper .wrap_old_password input,
+.el-vendor-profile-form-wrapper .wrap_new_password input,
+.el-vendor-profile-form-wrapper .wrap_confirm_password input {
+    padding-right: 48px;
+}
+
+.el-vendor-profile-form-wrapper .show_pass {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #717171;
+    transition: color 0.2s ease;
+    margin-top: 12px; /* Offset for label */
+}
+
+.el-vendor-profile-form-wrapper .show_pass:hover {
+    color: #FF6600;
+}
+
+/* ==========================================================================
    13. Responsive Adjustments
    ========================================================================== */
 

@@ -202,6 +202,13 @@ jQuery(document).ready(function ($) {
                         $('.profile_user_info h3').text(response.data.display_name);
                     }
 
+                    // Redirect to login if password was changed
+                    if (response.data.password_changed) {
+                        setTimeout(function() {
+                            window.location.href = '/connexion/?password=changed';
+                        }, 2000);
+                    }
+
                 } else {
                     if (typeof ToastNotification !== 'undefined') {
                         ToastNotification.error(response.data.message || 'Une erreur est survenue lors de la sauvegarde.');
@@ -679,6 +686,37 @@ jQuery(document).ready(function ($) {
     $(document).on('el:coordinates:updated', function(e, data) {
         if (data && data.lat && data.lng) {
             window.updateProfileMap(data.lat, data.lng);
+        }
+    });
+
+    /* ==========================================================================
+       7. Password Change Toggle
+       ========================================================================== */
+
+    // Toggle password change block visibility
+    $('#toggle_password_change').on('change', function() {
+        var $passwordBlock = $('#password_change_block');
+        if ($(this).is(':checked')) {
+            $passwordBlock.slideDown(300);
+        } else {
+            $passwordBlock.slideUp(300);
+            // Clear password fields when hiding
+            $passwordBlock.find('input[type="password"]').val('');
+        }
+    });
+
+    // Show/Hide password toggle
+    $('.show_pass').on('click', function() {
+        var targetId = $(this).data('target');
+        var $input = $('#' + targetId);
+        var $icon = $(this).find('i');
+
+        if ($input.attr('type') === 'password') {
+            $input.attr('type', 'text');
+            $icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            $input.attr('type', 'password');
+            $icon.removeClass('fa-eye-slash').addClass('fa-eye');
         }
     });
 

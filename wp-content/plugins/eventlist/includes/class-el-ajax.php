@@ -1467,9 +1467,49 @@ if( !class_exists( 'El_Ajax' ) ){
 				update_user_meta( $user_id, 'user_profile_social', $socials );
 			}
 
+			// === Changement de mot de passe (si demandé) ===
+			$password_changed = false;
+			if ( ! empty( $post_data['toggle_password_change'] ) && $post_data['toggle_password_change'] == '1' ) {
+				$old_password = isset( $post_data['user_password_old'] ) ? $post_data['user_password_old'] : '';
+				$new_password = isset( $post_data['user_password_new'] ) ? $post_data['user_password_new'] : '';
+				$confirm_password = isset( $post_data['user_password_confirm'] ) ? $post_data['user_password_confirm'] : '';
+
+				// Valider les champs mot de passe
+				if ( ! empty( $new_password ) ) {
+					// Vérifier que l'ancien mot de passe est correct
+					$current_user = wp_get_current_user();
+					if ( ! wp_check_password( $old_password, $current_user->user_pass, $user_id ) ) {
+						wp_send_json_error( array( 'message' => __( 'Le mot de passe actuel est incorrect', 'eventlist' ) ) );
+						wp_die();
+					}
+
+					// Vérifier que les nouveaux mots de passe correspondent
+					if ( $new_password !== $confirm_password ) {
+						wp_send_json_error( array( 'message' => __( 'Les nouveaux mots de passe ne correspondent pas', 'eventlist' ) ) );
+						wp_die();
+					}
+
+					// Vérifier la longueur minimale
+					if ( strlen( $new_password ) < 8 ) {
+						wp_send_json_error( array( 'message' => __( 'Le nouveau mot de passe doit contenir au moins 8 caractères', 'eventlist' ) ) );
+						wp_die();
+					}
+
+					// Mettre à jour le mot de passe
+					wp_set_password( $new_password, $user_id );
+					$password_changed = true;
+				}
+			}
+
 			// Préparer les données de réponse
+			$message = __( 'Profil enregistré avec succès', 'eventlist' );
+			if ( $password_changed ) {
+				$message = __( 'Profil et mot de passe mis à jour avec succès. Vous allez être redirigé vers la page de connexion.', 'eventlist' );
+			}
+
 			$response_data = array(
-				'message' => __( 'Profil enregistré avec succès', 'eventlist' ),
+				'message' => $message,
+				'password_changed' => $password_changed,
 			);
 
 			// Ajouter l'URL de l'avatar si disponible
