@@ -23,6 +23,21 @@
     height: auto !important;
 }
 
+/* Admin bar offset for sticky bar */
+.admin-bar .profile_sticky_bar {
+    top: 0;
+}
+
+/* Profile row layout */
+.vendor_wrap .contents .vendor_profile .profile_row,
+.vendor_profile .profile_row {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 24px;
+    margin-bottom: 0;
+    width: 100%;
+}
+
 /* ==========================================================================
    2. Navigation - Scrollspy Style
    ========================================================================== */
