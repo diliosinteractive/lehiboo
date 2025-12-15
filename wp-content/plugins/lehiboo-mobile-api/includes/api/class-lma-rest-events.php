@@ -260,8 +260,9 @@ class LMA_REST_Events {
                 $event_lat = $event['location']['lat'] ?? null;
                 $event_lng = $event['location']['lng'] ?? null;
 
+                // Include events without coordinates (they can't be filtered geographically)
                 if ($event_lat === null || $event_lng === null) {
-                    return false; // Exclude events without coordinates
+                    return true;
                 }
 
                 // Check if event is within bounding box
