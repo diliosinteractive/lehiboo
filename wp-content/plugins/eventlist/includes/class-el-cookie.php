@@ -11,7 +11,7 @@ if ( ! class_exists('EL_Cookie') ) {
 
 		public function ova_event_setcookie(){
 
-			if ( is_singular( 'event' ) ) {
+			if ( is_singular( 'event' ) && ! headers_sent() ) {
 				setcookie('ova_event_id['.get_the_ID().']', get_the_ID(), time() + EL_Setting::instance()->general->get( 'cookie_expired', 604800 ), "/");
 			}
 		}

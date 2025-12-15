@@ -262,7 +262,11 @@ class EL_Analytics {
 		}
 
 		$session_id = wp_generate_password( 32, false );
-		setcookie( 'el_session_id', $session_id, time() + ( 86400 * 30 ), COOKIEPATH, COOKIE_DOMAIN );
+
+		// Only set cookie if headers haven't been sent yet
+		if ( ! headers_sent() ) {
+			setcookie( 'el_session_id', $session_id, time() + ( 86400 * 30 ), COOKIEPATH, COOKIE_DOMAIN );
+		}
 
 		return $session_id;
 	}
