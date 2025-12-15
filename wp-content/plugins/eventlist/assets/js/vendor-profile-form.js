@@ -73,7 +73,7 @@ jQuery(document).ready(function ($) {
             { id: 'org_type_structure', weight: 5, selector: 'select[name="org_type_structure"]' },
 
             // Location (20%)
-            { id: 'user_address', weight: 10, selector: 'input[name="user_address_line1"]' },
+            { id: 'user_address', weight: 10, selector: 'select[name="user_address"]' },
             { id: 'user_city', weight: 5, selector: 'input[name="user_city"]' },
             { id: 'user_postcode', weight: 5, selector: 'input[name="user_postcode"]' },
 
@@ -116,7 +116,7 @@ jQuery(document).ready(function ($) {
         var sections = {
             'section_profile': ['input[name="first_name"]', 'input[name="last_name"]', 'input[name="user_email"]'],
             'section_organisation': ['input[name="org_name"]', 'input[name="org_display_name"]'],
-            'section_localisation': ['input[name="user_address_line1"]'],
+            'section_localisation': ['select[name="user_address"]'],
             'section_presentation': ['textarea[name="org_description"]'],
             'section_password': [], // Always optional
             'section_bank': [], // Optional
@@ -454,5 +454,208 @@ jQuery(document).ready(function ($) {
             $(this).remove();
         });
     });
+
+    /* ==========================================================================
+       8. Location Fields - Select2 with Nominatim (OpenStreetMap)
+       ========================================================================== */
+
+    // Initialize Select2 for venue name (tags mode - can create new)
+    if ($('#profile_venue_name').length && $.fn.select2) {
+        $('#profile_venue_name').select2({
+            tags: true,
+            placeholder: 'Rechercher ou saisir un lieu...',
+            allowClear: true,
+            width: '100%',
+            minimumInputLength: 2,
+            language: {
+                inputTooShort: function() {
+                    return 'Saisissez au moins 2 caractères';
+                },
+                searching: function() {
+                    return 'Recherche...';
+                },
+                noResults: function() {
+                    return 'Tapez pour créer un nouveau lieu';
+                }
+            },
+            ajax: {
+                url: 'https://nominatim.openstreetmap.org/search',
+                dataType: 'json',
+                delay: 300,
+                data: function(params) {
+                    return {
+                        q: params.term,
+                        format: 'json',
+                        addressdetails: 1,
+                        limit: 10,
+                        countrycodes: 'fr',
+                        'accept-language': 'fr'
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.map(function(item) {
+                            // Extraire le nom du lieu (première partie avant la virgule)
+                            var name = item.display_name.split(',')[0];
+                            return {
+                                id: name,
+                                text: item.display_name,
+                                name: name,
+                                lat: item.lat,
+                                lon: item.lon,
+                                full_address: item.display_name
+                            };
+                        })
+                    };
+                }
+            },
+            templateResult: formatVenueResult,
+            templateSelection: function(data) {
+                return data.name || data.text || data.id;
+            }
+        });
+
+        // When venue is selected, also update address
+        $('#profile_venue_name').on('select2:select', function(e) {
+            var data = e.params.data;
+            if (data.full_address && data.lat && data.lon) {
+                // Update address select with the full address
+                var $addressSelect = $('#profile_address');
+                var newOption = new Option(data.full_address, data.full_address, true, true);
+                $addressSelect.append(newOption).trigger('change');
+
+                // Update coordinates
+                updateLocationCoordinates(data.lat, data.lon);
+            }
+        });
+    }
+
+    // Initialize Select2 for address (search only - no tags)
+    if ($('#profile_address').length && $.fn.select2) {
+        $('#profile_address').select2({
+            placeholder: 'Rechercher une adresse...',
+            allowClear: true,
+            width: '100%',
+            minimumInputLength: 3,
+            language: {
+                inputTooShort: function() {
+                    return 'Saisissez au moins 3 caractères';
+                },
+                searching: function() {
+                    return 'Recherche...';
+                },
+                noResults: function() {
+                    return 'Aucun résultat trouvé';
+                }
+            },
+            ajax: {
+                url: 'https://nominatim.openstreetmap.org/search',
+                dataType: 'json',
+                delay: 300,
+                data: function(params) {
+                    return {
+                        q: params.term,
+                        format: 'json',
+                        addressdetails: 1,
+                        limit: 10,
+                        countrycodes: 'fr',
+                        'accept-language': 'fr'
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.map(function(item) {
+                            return {
+                                id: item.display_name,
+                                text: item.display_name,
+                                lat: item.lat,
+                                lon: item.lon,
+                                address: item.address || {}
+                            };
+                        })
+                    };
+                }
+            },
+            templateResult: formatAddressResult
+        });
+
+        // When address is selected
+        $('#profile_address').on('select2:select', function(e) {
+            var data = e.params.data;
+            if (data.lat && data.lon) {
+                updateLocationCoordinates(data.lat, data.lon);
+
+                // Update hidden fields with address components
+                if (data.address) {
+                    var addr = data.address;
+                    var streetAddress = [addr.house_number, addr.road].filter(Boolean).join(' ');
+                    $('#user_address_line1').val(streetAddress || data.text.split(',')[0]);
+                    $('#user_city').val(addr.city || addr.town || addr.village || addr.municipality || '');
+                    $('#user_postcode').val(addr.postcode || '');
+                    $('#user_country').val(addr.country_code ? addr.country_code.toUpperCase() : 'FR');
+                }
+            }
+        });
+    }
+
+    // Format venue search results
+    function formatVenueResult(item) {
+        if (item.loading) {
+            return $('<span>Recherche...</span>');
+        }
+
+        var $container = $(
+            '<div class="select2-result-venue">' +
+                '<div class="select2-result-venue__icon"><i class="fa fa-map-marker-alt"></i></div>' +
+                '<div class="select2-result-venue__info">' +
+                    '<div class="select2-result-venue__name"></div>' +
+                    '<div class="select2-result-venue__address"></div>' +
+                '</div>' +
+            '</div>'
+        );
+
+        var name = item.name || item.text.split(',')[0];
+        var address = item.full_address || item.text;
+
+        $container.find('.select2-result-venue__name').text(name);
+        $container.find('.select2-result-venue__address').text(address);
+
+        return $container;
+    }
+
+    // Format address search results
+    function formatAddressResult(item) {
+        if (item.loading) {
+            return $('<span>Recherche...</span>');
+        }
+
+        var $container = $(
+            '<div class="select2-result-address">' +
+                '<div class="select2-result-address__icon"><i class="fa fa-map-marker-alt"></i></div>' +
+                '<div class="select2-result-address__text"></div>' +
+            '</div>'
+        );
+
+        $container.find('.select2-result-address__text').text(item.text);
+
+        return $container;
+    }
+
+    // Update coordinates and map
+    function updateLocationCoordinates(lat, lon) {
+        $('#org_latitude').val(lat);
+        $('#org_longitude').val(lon);
+        $('#user_lat').val(lat);
+        $('#user_lng').val(lon);
+        $('#org_gps_display').val(lat + ', ' + lon);
+
+        // Update Leaflet map if available
+        if (typeof window.updateProfileMap === 'function') {
+            window.updateProfileMap(parseFloat(lat), parseFloat(lon));
+        }
+
+        // Update completion gauge
+        updateCompletionGauge();
+    }
 
 });

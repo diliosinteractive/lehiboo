@@ -673,44 +673,69 @@ $user_meta_field = get_option( 'ova_register_form' );
 						<h4 class="heading_section"><?php esc_html_e( 'Localisation de mon Organisation', 'eventlist' ); ?></h4>
 						<p class="field_description"><?php esc_html_e( 'Ces informations sont nécessaires pour identifier et valider votre structure, ainsi que pour renseigner les utilisateurs si l\'adresse de votre structure est un lieu d\'accueil pour des événements.', 'eventlist' ); ?></p>
 
+							<?php
+							// Récupérer les données existantes
+							$user_address = get_user_meta( $user_id, 'user_address', true );
+							$org_venue_name = get_user_meta( $user_id, 'org_venue_name', true );
+							$latitude = get_user_meta( $user_id, 'org_latitude', true );
+							$longitude = get_user_meta( $user_id, 'org_longitude', true );
+
+							// Fallback: construire l'adresse à partir des champs séparés si user_address est vide
+							if ( empty($user_address) ) {
+								$addr = get_user_meta( $user_id, 'user_address_line1', true );
+								$city = get_user_meta( $user_id, 'user_city', true );
+								$postcode = get_user_meta( $user_id, 'user_postcode', true );
+								$user_address = trim( $addr . ' ' . $postcode . ' ' . $city );
+							}
+							?>
+
 							<!-- Layout avec carte à droite -->
 							<div class="profile_localisation_layout">
 								<div class="localisation_fields">
-									<!-- Recherche d'adresse via API -->
-									<div class="vendor_field autocomplete-wrapper">
-										<label class="control-label" for="org_address_search">
+									<!-- Nom du lieu (Select2 avec Nominatim) -->
+									<div class="vendor_field">
+										<label class="control-label" for="profile_venue_name">
+											<?php esc_html_e( 'Nom du lieu', 'eventlist' ); ?>
+										</label>
+										<select name="org_venue_name" id="profile_venue_name" class="profile_venue_select select2_venue">
+											<option value=""><?php esc_html_e( 'Rechercher ou saisir un lieu...', 'eventlist' ); ?></option>
+											<?php if ( $org_venue_name ) : ?>
+												<option value="<?php echo esc_attr($org_venue_name); ?>" selected><?php echo esc_html($org_venue_name); ?></option>
+											<?php endif; ?>
+										</select>
+										<small class="field_hint"><?php esc_html_e( 'Recherchez un lieu (parc, maison des associations, salle...) ou saisissez le nom manuellement', 'eventlist' ); ?></small>
+									</div>
+
+									<!-- Adresse (Select2 avec Nominatim) -->
+									<div class="vendor_field">
+										<label class="control-label" for="profile_address">
 											<?php esc_html_e( 'Adresse de votre structure', 'eventlist' ); ?>
 											<sup class="symbol-required">*</sup>
 										</label>
-										<div class="autocomplete-input">
-											<input id="org_address_search" name="org_address_search" type="text"
-												value="<?php
-													$addr = get_user_meta( $user_id, 'user_address_line1', true );
-													$city = get_user_meta( $user_id, 'user_city', true );
-													$postcode = get_user_meta( $user_id, 'user_postcode', true );
-													echo esc_attr( trim( $addr . ' ' . $postcode . ' ' . $city ) );
-												?>"
-												placeholder="<?php esc_attr_e( 'Tapez une adresse ...', 'eventlist' ); ?>">
-											<i class="fa fa-search autocomplete-icon"></i>
-											<div class="autocomplete-loader"></div>
-										</div>
+										<select name="user_address" id="profile_address" class="profile_address_select select2_address">
+											<option value=""><?php esc_html_e( 'Rechercher une adresse...', 'eventlist' ); ?></option>
+											<?php if ( $user_address ) : ?>
+												<option value="<?php echo esc_attr($user_address); ?>" selected><?php echo esc_html($user_address); ?></option>
+											<?php endif; ?>
+										</select>
+										<small class="field_hint"><?php esc_html_e( 'Tapez au moins 3 caractères pour rechercher', 'eventlist' ); ?></small>
 									</div>
 
-									<!-- Champs cachés pour l'adresse -->
+									<!-- Champs cachés pour l'adresse (pour compatibilité) -->
 									<input type="hidden" id="user_address_line1" name="user_address_line1" value="<?php echo esc_attr( get_user_meta( $user_id, 'user_address_line1', true ) ); ?>">
 									<input type="hidden" id="user_address_line2" name="user_address_line2" value="<?php echo esc_attr( get_user_meta( $user_id, 'user_address_line2', true ) ); ?>">
 									<input type="hidden" id="user_city" name="user_city" value="<?php echo esc_attr( get_user_meta( $user_id, 'user_city', true ) ); ?>">
 									<input type="hidden" id="user_postcode" name="user_postcode" value="<?php echo esc_attr( get_user_meta( $user_id, 'user_postcode', true ) ); ?>">
 									<input type="hidden" id="user_country" name="user_country" value="<?php echo esc_attr( get_user_meta( $user_id, 'user_country', true ) ?: 'FR' ); ?>">
+									<input type="hidden" id="user_lat" name="user_lat" value="<?php echo esc_attr( $latitude ); ?>">
+									<input type="hidden" id="user_lng" name="user_lng" value="<?php echo esc_attr( $longitude ); ?>">
 
-									<!-- Coordonnées GPS -->
+									<!-- Coordonnées GPS (lecture seule) -->
 									<div class="vendor_field">
 										<label class="control-label" for="org_gps_display">
 											<?php esc_html_e( 'Coordonnées GPS', 'eventlist' ); ?>
 										</label>
 										<?php
-										$latitude = get_user_meta( $user_id, 'org_latitude', true );
-										$longitude = get_user_meta( $user_id, 'org_longitude', true );
 										$gps_display = '';
 										if ( $latitude && $longitude ) {
 											$gps_display = $latitude . ', ' . $longitude;

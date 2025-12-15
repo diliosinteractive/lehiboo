@@ -39,6 +39,95 @@
 }
 
 /* ==========================================================================
+   1.5. Select2 Location Search Styles
+   ========================================================================== */
+
+/* Select2 container in profile form */
+.el-vendor-profile-form-wrapper .select2-container {
+    width: 100% !important;
+}
+
+.el-vendor-profile-form-wrapper .select2-container .select2-selection--single {
+    height: 48px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.el-vendor-profile-form-wrapper .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 30px;
+    padding-left: 0;
+    color: #333;
+}
+
+.el-vendor-profile-form-wrapper .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 46px;
+    right: 8px;
+}
+
+.el-vendor-profile-form-wrapper .select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #999;
+}
+
+/* Select2 dropdown results */
+.select2-result-venue,
+.select2-result-address {
+    display: flex;
+    align-items: flex-start;
+    padding: 8px 4px;
+    gap: 12px;
+}
+
+.select2-result-venue__icon,
+.select2-result-address__icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff6600;
+}
+
+.select2-result-venue__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.select2-result-venue__name {
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.select2-result-venue__address {
+    font-size: 12px;
+    color: #717171;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.select2-result-address__text {
+    flex: 1;
+    color: #333;
+    line-height: 1.4;
+}
+
+/* Field hint under Select2 */
+.el-vendor-profile-form-wrapper .vendor_field .field_hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #717171;
+}
+
+/* ==========================================================================
    2. Navigation - Scrollspy Style
    ========================================================================== */
 
