@@ -41,8 +41,15 @@ class EL_Vendor {
 			case 'general':
 			// V1 Le Hiboo - Rediriger general vers listing (dashboard désactivé temporairement)
 			if( el_is_vendor() ){
-				wp_redirect( add_query_arg( array( 'vendor' => 'listing', 'listing_type' => 'any' ), get_myaccount_page() ) );
-				exit;
+				$redirect_url = add_query_arg( array( 'vendor' => 'listing', 'listing_type' => 'any' ), get_myaccount_page() );
+				if ( ! headers_sent() ) {
+					wp_redirect( $redirect_url );
+					exit;
+				} else {
+					// Fallback JavaScript redirect if headers already sent
+					echo '<script>window.location.href = "' . esc_url( $redirect_url ) . '";</script>';
+					exit;
+				}
 			}
 			break;
 
