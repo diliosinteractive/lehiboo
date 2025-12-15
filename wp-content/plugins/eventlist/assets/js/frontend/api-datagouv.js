@@ -1,10 +1,77 @@
 /**
  * API data.gouv.fr Integration
  * V1 Le Hiboo - Intégration des API publiques françaises
+ * Avec cache localStorage pour améliorer les performances
  */
 
 (function($) {
     'use strict';
+
+    /**
+     * Gestionnaire de cache localStorage
+     */
+    var EL_Cache = {
+        PREFIX: 'el_api_cache_',
+        TTL: 15 * 60 * 1000, // 15 minutes en millisecondes
+
+        /**
+         * Obtenir une valeur du cache
+         */
+        get: function(key) {
+            try {
+                var item = localStorage.getItem(this.PREFIX + key);
+                if (!item) return null;
+
+                var data = JSON.parse(item);
+                if (Date.now() > data.expiry) {
+                    localStorage.removeItem(this.PREFIX + key);
+                    return null;
+                }
+                return data.value;
+            } catch (e) {
+                return null;
+            }
+        },
+
+        /**
+         * Stocker une valeur dans le cache
+         */
+        set: function(key, value) {
+            try {
+                var item = {
+                    value: value,
+                    expiry: Date.now() + this.TTL
+                };
+                localStorage.setItem(this.PREFIX + key, JSON.stringify(item));
+            } catch (e) {
+                // localStorage plein ou désactivé - on continue sans cache
+            }
+        },
+
+        /**
+         * Nettoyer les entrées expirées
+         */
+        cleanup: function() {
+            try {
+                var keysToRemove = [];
+                for (var i = 0; i < localStorage.length; i++) {
+                    var key = localStorage.key(i);
+                    if (key && key.startsWith(this.PREFIX)) {
+                        var item = JSON.parse(localStorage.getItem(key));
+                        if (Date.now() > item.expiry) {
+                            keysToRemove.push(key);
+                        }
+                    }
+                }
+                keysToRemove.forEach(function(key) {
+                    localStorage.removeItem(key);
+                });
+            } catch (e) {}
+        }
+    };
+
+    // Nettoyer le cache au chargement
+    EL_Cache.cleanup();
 
     /**
      * API Recherche d'Entreprises (INSEE Sirene)
@@ -23,6 +90,14 @@
                 return;
             }
 
+            // Vérifier le cache
+            var cacheKey = 'entreprise_' + query.toLowerCase().trim();
+            var cached = EL_Cache.get(cacheKey);
+            if (cached) {
+                callback(cached);
+                return;
+            }
+
             $.ajax({
                 url: 'https://recherche-entreprises.api.gouv.fr/search',
                 method: 'GET',
@@ -33,6 +108,8 @@
                 },
                 success: function(response) {
                     if (response && response.results) {
+                        // Stocker dans le cache
+                        EL_Cache.set(cacheKey, response.results);
                         callback(response.results);
                     } else {
                         callback([]);
@@ -118,6 +195,14 @@
                 return;
             }
 
+            // Vérifier le cache
+            var cacheKey = 'adresse_' + query.toLowerCase().trim();
+            var cached = EL_Cache.get(cacheKey);
+            if (cached) {
+                callback(cached);
+                return;
+            }
+
             $.ajax({
                 url: 'https://api-adresse.data.gouv.fr/search/',
                 method: 'GET',
@@ -128,6 +213,8 @@
                 },
                 success: function(response) {
                     if (response && response.features) {
+                        // Stocker dans le cache
+                        EL_Cache.set(cacheKey, response.features);
                         callback(response.features);
                     } else {
                         callback([]);

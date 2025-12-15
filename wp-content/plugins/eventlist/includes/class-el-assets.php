@@ -5,6 +5,9 @@ if ( class_exists( 'EL_Assets', false ) ) {
 	return EL_Assets::instance();
 }
 
+// Version des assets pour le cache navigateur - Incrémenter à chaque déploiement
+define( 'EL_ASSETS_VERSION', '1.2.0' );
+
 /**
  * Admin Assets classes
  */
