@@ -1,9 +1,10 @@
 /**
  * EventList - Profile Presentation Validation
- * V1 Le Hiboo - Validation minimum 500 caractères pour présentation organisateur
- * @version 1.0.8
+ * V1 Le Hiboo - Recommandation 500 caractères pour présentation organisateur (non bloquant)
+ * @version 1.1.0
  *
  * Changelog:
+ * - v1.1.0: Description facultative - message de recommandation uniquement (non bloquant)
  * - v1.0.8: Uniformisation du texte avec la page événement (ajout "pour enregistrement")
  * - v1.0.7: Suppression styles inline - styles maintenant dans _validation-counter.scss
  * - v1.0.6: FIX CRITIQUE - Correction sélecteur page (.vendor_profile au lieu de .vendor_profile_wrapper)
@@ -24,10 +25,7 @@
             return;
         }
 
-        const MIN_DESCRIPTION_LENGTH = 500;
-
-        // Flag global pour indiquer si la validation a échoué
-        window.el_presentation_validation_failed = false;
+        const RECOMMENDED_LENGTH = 500;
 
         /**
          * Compter les caractères dans l'éditeur (en retirant les balises HTML)
@@ -53,11 +51,11 @@
         }
 
         /**
-         * Afficher le compteur de caractères
+         * Afficher le compteur de caractères (recommandation, non bloquant)
          */
         function updateCharacterCounter() {
             const currentLength = getDescriptionLength();
-            const remaining = MIN_DESCRIPTION_LENGTH - currentLength;
+            const remaining = RECOMMENDED_LENGTH - currentLength;
 
             let $counter = $('#presentation-char-counter');
 
@@ -78,61 +76,24 @@
                     $counter.html(
                         '<span class="counter-warning">' +
                         '<i class="icon_info_alt"></i> ' +
-                        'Il manque <strong>' + remaining + ' caractères</strong> pour pouvoir enregistrer la présentation. ' +
-                        '(Minimum requis : 500 caractères pour enregistrement)' +
+                        'Il manque <strong>' + remaining + ' caractères</strong> pour une présentation optimisée sur votre page. ' +
+                        'Nous vous recommandons 500 caractères minimum.' +
                         '</span>'
                     );
-                    $counter.removeClass('counter-valid').addClass('counter-invalid');
+                    $counter.removeClass('counter-valid').addClass('counter-recommendation');
                 } else {
                     $counter.html(
                         '<span class="counter-success">' +
                         '<i class="icon_check"></i> ' +
-                        'Présentation valide (' + currentLength + ' caractères)' +
+                        'Présentation optimisée (' + currentLength + ' caractères)' +
                         '</span>'
                     );
-                    $counter.removeClass('counter-invalid').addClass('counter-valid');
+                    $counter.removeClass('counter-recommendation').addClass('counter-valid');
                 }
             }
         }
 
-        /**
-         * Valider avant soumission
-         */
-        function validateBeforeSubmit() {
-            // Reset du flag
-            window.el_presentation_validation_failed = false;
-
-            const currentLength = getDescriptionLength();
-
-            if (currentLength < MIN_DESCRIPTION_LENGTH) {
-                const remaining = MIN_DESCRIPTION_LENGTH - currentLength;
-
-                // Marquer la validation comme échouée
-                window.el_presentation_validation_failed = true;
-
-                alert(
-                    'La présentation doit contenir au minimum 500 caractères.\n\n' +
-                    'Actuellement : ' + currentLength + ' caractères\n' +
-                    'Il manque : ' + remaining + ' caractères'
-                );
-
-                // Scroller vers la description
-                const $descriptionSection = $('#author_presentation');
-                if ($descriptionSection.length) {
-                    $('html, body').animate({
-                        scrollTop: $descriptionSection.offset().top - 100
-                    }, 500);
-
-                    // Activer l'onglet présentation
-                    $('.profile_tab_item[data-section="author_presentation"]').trigger('click');
-                }
-
-                return false;
-            }
-
-            return true;
-        }
-
+        // Initialiser le compteur au chargement
         updateCharacterCounter();
 
         // Mettre à jour le compteur à chaque modification
@@ -152,34 +113,8 @@
             updateCharacterCounter();
         });
 
-        // Intercepter les clics sur le bouton de sauvegarde
-        $('input[name="el_update_presentation"]').each(function () {
-            const button = this;
-            button.addEventListener('click', function (e) {
-                // Valider avant soumission
-                if (!validateBeforeSubmit()) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-            }, true); // true = capture phase
-        });
-
-        // Hook AJAX beforeSend pour bloquer si validation échouée
-        $(document).ajaxSend(function (_event, jqxhr, settings) {
-            // Vérifier si c'est une requête de sauvegarde de présentation
-            if (settings.data && typeof settings.data === 'string' && settings.data.indexOf('el_update_presentation') !== -1) {
-                if (window.el_presentation_validation_failed === true) {
-                    // Annuler la requête AJAX
-                    jqxhr.abort();
-                    window.el_presentation_validation_failed = false;
-                    return false;
-                }
-            }
-        });
-
-        // Note: Les styles CSS sont maintenant dans /assets/css/frontend/vendor/_validation-counter.scss
+        // Note: Les styles CSS sont dans /assets/css/frontend/vendor/_validation-counter.scss
+        // La description est facultative - pas de validation bloquante
 
     });
 

@@ -257,8 +257,8 @@ class EL_Assets{
 			// Profile Validation (Score + Symboles + Validation) - V1 Le Hiboo CDC
 			wp_enqueue_script('el_profile_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-validation.js', array('jquery'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/frontend/profile-validation.js'), true );
 
-			// Profile Presentation Validation (500 chars minimum) - V1 Le Hiboo
-			wp_enqueue_script('el_profile_presentation_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-presentation-validation.js', array('jquery'),'1.0.8',true );
+			// Profile Presentation Validation (recommandation 500 chars) - V1 Le Hiboo
+			wp_enqueue_script('el_profile_presentation_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-presentation-validation.js', array('jquery'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/frontend/profile-presentation-validation.js'), true );
 		}
 
 		// Event Form Navigation (Vertical Tabs) - V1 Le Hiboo - Phase 6

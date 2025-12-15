@@ -31,8 +31,28 @@
         font-weight: 600;
     }
 
-    // État invalide (< 500 caractères)
+    // État invalide (< 500 caractères) - style bloquant
     &.counter-invalid {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-left: 4px solid #ffc107;
+        color: #856404;
+
+        .counter-warning {
+            display: inline-block;
+
+            i {
+                color: #ffc107;
+            }
+
+            strong {
+                color: #856404;
+            }
+        }
+    }
+
+    // État recommandation (non bloquant, juste informatif)
+    &.counter-recommendation {
         background: #fff3cd;
         border: 1px solid #ffc107;
         border-left: 4px solid #ffc107;
