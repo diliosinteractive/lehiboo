@@ -191,11 +191,28 @@
    6. Toggle Switches
    ========================================================================== */
 
+/* Aligner les toggles à gauche */
+.el-vendor-profile-form-wrapper .toggle_field,
+.el-vendor-profile-form-wrapper .section_toggle_header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    text-align: left;
+}
+
+.el-vendor-profile-form-wrapper .toggle_field .toggle_label,
+.el-vendor-profile-form-wrapper .section_toggle_header .section_title {
+    font-weight: 500;
+    color: #333;
+}
+
 .el-vendor-profile-form-wrapper .toggle_switch {
     position: relative;
     display: inline-block;
     width: 50px;
     height: 26px;
+    flex-shrink: 0;
 }
 
 .el-vendor-profile-form-wrapper .toggle_switch input {
