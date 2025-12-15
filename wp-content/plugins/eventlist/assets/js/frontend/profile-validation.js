@@ -341,20 +341,8 @@
      */
     $(document).ready(function() {
 
-        // Ajouter le score de complétion dans la sidebar
-        if ($('.profile_user_header').length > 0) {
-            const $scoreHtml = $(`
-                <div class="profile-completion-score">
-                    <div class="score-label">Profil complété</div>
-                    <div class="score-value">0%</div>
-                    <div class="score-bar">
-                        <div class="score-fill" style="width: 0%;"></div>
-                    </div>
-                    <div class="score-message">Commencez à remplir votre profil</div>
-                </div>
-            `);
-            $('.profile_user_header').after($scoreHtml);
-        }
+        // Score de complétion - Désactivé car utilise maintenant le widget sidebar-completion-widget
+        // La jauge de complétion est gérée par vendor-profile-form.js
 
         // Ajouter la légende des symboles
         if ($('#author_profile').length > 0) {

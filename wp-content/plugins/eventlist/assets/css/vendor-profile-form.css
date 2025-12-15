@@ -314,8 +314,8 @@
 .el-vendor-profile-form-wrapper .toggle_switch {
     position: relative;
     display: inline-block;
-    width: 50px;
-    height: 26px;
+    width: 52px;
+    height: 28px;
     flex-shrink: 0;
 }
 
@@ -332,9 +332,10 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ccc;
-    transition: 0.4s;
-    border-radius: 26px;
+    background-color: #E0E0E0;
+    border: 2px solid #D0D0D0;
+    transition: all 0.3s ease;
+    border-radius: 28px;
 }
 
 .el-vendor-profile-form-wrapper .toggle_slider:before {
@@ -342,19 +343,36 @@
     content: "";
     height: 20px;
     width: 20px;
-    left: 3px;
-    bottom: 3px;
+    left: 2px;
+    bottom: 2px;
     background-color: white;
-    transition: 0.4s;
+    transition: all 0.3s ease;
     border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .el-vendor-profile-form-wrapper .toggle_switch input:checked + .toggle_slider {
-    background-color: #20D489;
+    background-color: #FF6600;
+    border-color: #FF6600;
 }
 
 .el-vendor-profile-form-wrapper .toggle_switch input:checked + .toggle_slider:before {
     transform: translateX(24px);
+}
+
+/* Hover state */
+.el-vendor-profile-form-wrapper .toggle_switch:hover .toggle_slider {
+    border-color: #bbb;
+}
+
+.el-vendor-profile-form-wrapper .toggle_switch:hover input:checked + .toggle_slider {
+    background-color: #E55C00;
+    border-color: #E55C00;
+}
+
+/* Focus state for accessibility */
+.el-vendor-profile-form-wrapper .toggle_switch input:focus + .toggle_slider {
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2);
 }
 
 /* ==========================================================================
@@ -457,12 +475,76 @@
    10. Localisation Layout Profile (utilise les classes de event-form)
    ========================================================================== */
 
+/* Layout principal: champs à gauche, carte à droite (50/50) */
+.el-vendor-profile-form-wrapper .location_fields_wrapper {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.el-vendor-profile-form-wrapper .location_fields_left {
+    flex: 1;
+    min-width: 0;
+}
+
+.el-vendor-profile-form-wrapper .location_fields_right {
+    flex: 1;
+    min-width: 0;
+}
+
 /* Carte OSM dans le profil */
 .el-vendor-profile-form-wrapper #profile_osm_map {
     width: 100%;
     height: 100%;
-    min-height: 380px;
+    min-height: 300px;
     border-radius: 12px;
+}
+
+.el-vendor-profile-form-wrapper .location_map_container {
+    height: 100%;
+    min-height: 300px;
+}
+
+/* Select2 address - permettre le texte sur plusieurs lignes */
+.el-vendor-profile-form-wrapper .select2-container .select2-selection--single {
+    height: auto !important;
+    min-height: 48px;
+}
+
+.el-vendor-profile-form-wrapper .select2-container--default .select2-selection--single .select2-selection__rendered {
+    white-space: normal !important;
+    word-wrap: break-word;
+    line-height: 1.4;
+    padding: 8px 30px 8px 0;
+}
+
+/* Latitude/Longitude désactivés */
+.el-vendor-profile-form-wrapper .location_lat_input,
+.el-vendor-profile-form-wrapper .location_lng_input {
+    background-color: #f5f5f5 !important;
+    color: #666 !important;
+    cursor: not-allowed;
+}
+
+/* Toggle "Adresse visible" aligné à gauche */
+.el-vendor-profile-form-wrapper .toggle_field {
+    justify-content: flex-start !important;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 768px) {
+    .el-vendor-profile-form-wrapper .location_fields_wrapper {
+        flex-direction: column;
+    }
+
+    .el-vendor-profile-form-wrapper .location_fields_left,
+    .el-vendor-profile-form-wrapper .location_fields_right {
+        width: 100%;
+    }
+
+    .el-vendor-profile-form-wrapper #profile_osm_map {
+        min-height: 250px;
+    }
 }
 
 /* ==========================================================================

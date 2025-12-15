@@ -438,9 +438,9 @@
             }
         }
 
-        // Cacher le champ de recherche et afficher le nom
-        $('#org_name_search').hide();
-        $('#org_name').show().prop('readonly', false);
+        // Mettre à jour le champ de recherche avec le nom de l'entreprise sélectionnée
+        // (garder le champ visible pour permettre une nouvelle recherche)
+        $('#org_name_search').val(data.nom);
 
         // Valider les onglets
         if (typeof validateAllTabs === 'function') {

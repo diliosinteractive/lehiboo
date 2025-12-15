@@ -716,7 +716,8 @@ $user_meta_field = get_option( 'ova_register_form' );
 											   id="org_latitude"
 											   value="<?php echo esc_attr( $latitude ); ?>"
 											   class="location_lat_input"
-											   placeholder="48.8566">
+											   placeholder="48.8566"
+											   readonly>
 									</div>
 
 									<!-- Longitude -->
@@ -727,7 +728,8 @@ $user_meta_field = get_option( 'ova_register_form' );
 											   id="org_longitude"
 											   value="<?php echo esc_attr( $longitude ); ?>"
 											   class="location_lng_input"
-											   placeholder="2.3522">
+											   placeholder="2.3522"
+											   readonly>
 									</div>
 
 									<!-- Champs cachés pour l'adresse (compatibilité) -->
