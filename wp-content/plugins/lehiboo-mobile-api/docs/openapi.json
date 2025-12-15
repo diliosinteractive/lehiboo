@@ -25,6 +25,7 @@
     {"name": "Organizers", "description": "Organisateurs"},
     {"name": "Bookings", "description": "Réservations"},
     {"name": "Tickets", "description": "Billets"},
+    {"name": "Alerts", "description": "Alertes et Recherches sauvegardées"},
     {"name": "User", "description": "Utilisateur"},
     {"name": "Categories", "description": "Catégories"},
     {"name": "Partner", "description": "Espace Partenaire"}
@@ -380,6 +381,92 @@
         },
         "responses": {
           "200": {"description": "Favori mis à jour"}
+        }
+      }
+    },
+    "/me/alerts": {
+      "get": {
+        "tags": ["Alerts"],
+        "summary": "Liste des alertes",
+        "description": "Récupère toutes les alertes/recherches sauvegardées de l'utilisateur",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Liste des alertes",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AlertListResponse"}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Alerts"],
+        "summary": "Créer une alerte",
+        "description": "Créer une nouvelle alerte/recherche sauvegardée (limite: 20 par utilisateur)",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/AlertCreateRequest"}
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Alerte créée",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AlertResponse"}
+              }
+            }
+          },
+          "400": {"description": "Erreur de validation"},
+          "403": {"description": "Limite d'alertes atteinte (20 maximum)"}
+        }
+      }
+    },
+    "/me/alerts/{id}": {
+      "patch": {
+        "tags": ["Alerts"],
+        "summary": "Modifier une alerte",
+        "description": "Modifier le nom ou les paramètres de notification d'une alerte",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/AlertUpdateRequest"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Alerte mise à jour",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/AlertResponse"}
+              }
+            }
+          },
+          "404": {"description": "Alerte introuvable"}
+        }
+      },
+      "delete": {
+        "tags": ["Alerts"],
+        "summary": "Supprimer une alerte",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": {"description": "Alerte supprimée"},
+          "404": {"description": "Alerte introuvable"}
         }
       }
     },
@@ -788,6 +875,93 @@
               }
             }
           }
+        }
+      },
+      "AlertCreateRequest": {
+        "type": "object",
+        "description": "Au moins un critère de recherche est requis",
+        "properties": {
+          "name": {"type": "string", "description": "Nom de l'alerte (optionnel, généré automatiquement si absent)", "minLength": 2, "maxLength": 100},
+          "search_query": {"type": "string", "description": "Recherche textuelle"},
+          "city_slug": {"type": "string", "description": "Slug de la ville"},
+          "latitude": {"type": "number", "format": "double"},
+          "longitude": {"type": "number", "format": "double"},
+          "radius_km": {"type": "integer", "description": "Rayon de recherche en km"},
+          "date_type": {"type": "string", "enum": ["today", "tomorrow", "this_week", "this_weekend", "custom"]},
+          "start_date": {"type": "string", "format": "date", "description": "Requis si date_type=custom"},
+          "end_date": {"type": "string", "format": "date", "description": "Requis si date_type=custom"},
+          "price_type": {"type": "string", "enum": ["free", "paid"]},
+          "price_min": {"type": "number"},
+          "price_max": {"type": "number"},
+          "categories": {"type": "array", "items": {"type": "string"}, "description": "Array de slugs de catégories"},
+          "tags": {"type": "array", "items": {"type": "string"}, "description": "Array de slugs de tags"},
+          "is_family_friendly": {"type": "boolean"},
+          "is_accessible_pmr": {"type": "boolean"},
+          "is_online": {"type": "boolean"},
+          "enable_push_alert": {"type": "boolean", "default": true},
+          "enable_email_alert": {"type": "boolean", "default": false}
+        }
+      },
+      "AlertUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string", "minLength": 2, "maxLength": 100},
+          "enable_push_alert": {"type": "boolean"},
+          "enable_email_alert": {"type": "boolean"}
+        }
+      },
+      "AlertResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "data": {"$ref": "#/components/schemas/Alert"}
+        }
+      },
+      "AlertListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "data": {
+            "type": "object",
+            "properties": {
+              "alerts": {"type": "array", "items": {"$ref": "#/components/schemas/Alert"}},
+              "count": {"type": "integer"},
+              "limit": {"type": "integer", "example": 20}
+            }
+          }
+        }
+      },
+      "Alert": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "name": {"type": "string"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time", "nullable": true},
+          "search_criteria": {"$ref": "#/components/schemas/AlertSearchCriteria"},
+          "enable_push_alert": {"type": "boolean"},
+          "enable_email_alert": {"type": "boolean"}
+        }
+      },
+      "AlertSearchCriteria": {
+        "type": "object",
+        "properties": {
+          "search_query": {"type": "string", "nullable": true},
+          "city_slug": {"type": "string", "nullable": true},
+          "latitude": {"type": "number", "nullable": true},
+          "longitude": {"type": "number", "nullable": true},
+          "radius_km": {"type": "integer", "nullable": true},
+          "date_type": {"type": "string", "nullable": true},
+          "start_date": {"type": "string", "format": "date", "nullable": true},
+          "end_date": {"type": "string", "format": "date", "nullable": true},
+          "price_type": {"type": "string", "nullable": true},
+          "price_min": {"type": "number", "nullable": true},
+          "price_max": {"type": "number", "nullable": true},
+          "categories": {"type": "array", "items": {"type": "string"}, "nullable": true},
+          "tags": {"type": "array", "items": {"type": "string"}, "nullable": true},
+          "is_family_friendly": {"type": "boolean", "nullable": true},
+          "is_accessible_pmr": {"type": "boolean", "nullable": true},
+          "is_online": {"type": "boolean", "nullable": true}
         }
       }
     }

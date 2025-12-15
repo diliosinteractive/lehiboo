@@ -118,6 +118,7 @@ final class LeHiboo_Mobile_API {
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-user-profile.php';
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-organizers.php';
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-docs.php';
+        require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-alerts.php';
 
         // Initialize taxonomy image support
         new LMA_Taxonomy_Image();
@@ -253,11 +254,46 @@ final class LeHiboo_Mobile_API {
             KEY expires_at (expires_at)
         ) $charset_collate;";
 
+        // Alerts / Saved searches table
+        $table_alerts = $wpdb->prefix . 'lma_alerts';
+        $sql_alerts = "CREATE TABLE IF NOT EXISTS $table_alerts (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            user_id bigint(20) NOT NULL,
+            name varchar(255) NOT NULL,
+            search_query varchar(255) DEFAULT NULL,
+            city_slug varchar(100) DEFAULT NULL,
+            latitude decimal(10,8) DEFAULT NULL,
+            longitude decimal(11,8) DEFAULT NULL,
+            radius_km int DEFAULT NULL,
+            date_type varchar(20) DEFAULT NULL,
+            start_date date DEFAULT NULL,
+            end_date date DEFAULT NULL,
+            price_type varchar(10) DEFAULT NULL,
+            price_min decimal(10,2) DEFAULT NULL,
+            price_max decimal(10,2) DEFAULT NULL,
+            categories longtext DEFAULT NULL,
+            tags longtext DEFAULT NULL,
+            is_family_friendly tinyint(1) DEFAULT NULL,
+            is_accessible_pmr tinyint(1) DEFAULT NULL,
+            is_online tinyint(1) DEFAULT NULL,
+            enable_push_alert tinyint(1) DEFAULT 1,
+            enable_email_alert tinyint(1) DEFAULT 0,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT NULL,
+            last_notified_at datetime DEFAULT NULL,
+            PRIMARY KEY (id),
+            KEY user_id (user_id),
+            KEY created_at (created_at),
+            KEY enable_push_alert (enable_push_alert),
+            KEY enable_email_alert (enable_email_alert)
+        ) $charset_collate;";
+
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql_tokens);
         dbDelta($sql_rate);
         dbDelta($sql_logs);
         dbDelta($sql_otp);
+        dbDelta($sql_alerts);
     }
 
     /**
@@ -333,6 +369,7 @@ final class LeHiboo_Mobile_API {
             new LMA_REST_User_Profile(),
             new LMA_REST_Organizers(),
             new LMA_REST_Docs(),
+            new LMA_REST_Alerts(),
         );
 
         foreach ($controllers as $controller) {
@@ -546,6 +583,12 @@ final class LeHiboo_Mobile_API {
                         <tr><td colspan="4"><strong>Tickets (Client)</strong></td></tr>
                         <tr><td>GET</td><td>/me/tickets</td><td>Mes tickets</td><td>JWT</td></tr>
                         <tr><td>GET</td><td>/me/tickets/{id}</td><td>Détail ticket</td><td>JWT</td></tr>
+
+                        <tr><td colspan="4"><strong>Alertes / Recherches sauvegardées</strong></td></tr>
+                        <tr><td>GET</td><td>/me/alerts</td><td>Liste des alertes</td><td>JWT</td></tr>
+                        <tr><td>POST</td><td>/me/alerts</td><td>Créer une alerte</td><td>JWT</td></tr>
+                        <tr><td>PATCH</td><td>/me/alerts/{id}</td><td>Modifier une alerte</td><td>JWT</td></tr>
+                        <tr><td>DELETE</td><td>/me/alerts/{id}</td><td>Supprimer une alerte</td><td>JWT</td></tr>
 
                         <tr><td colspan="4"><strong>Partenaire</strong></td></tr>
                         <tr><td>GET</td><td>/partner/events</td><td>Mes événements</td><td>JWT (partner)</td></tr>

@@ -298,4 +298,72 @@ class LMA_Validator {
             'include_past' => filter_var($request->get_param('include_past'), FILTER_VALIDATE_BOOLEAN),
         );
     }
+
+    /**
+     * Validate alert/saved search data
+     *
+     * @param array $data
+     * @return true|WP_Error
+     */
+    public static function validate_alert($data) {
+        $errors = array();
+
+        // Name: optional but if provided, min 2 chars, max 100
+        if (!empty($data['name'])) {
+            if (strlen($data['name']) < 2) {
+                $errors['name'] = __('Le nom doit contenir au moins 2 caractères', 'lehiboo-mobile-api');
+            } elseif (strlen($data['name']) > 100) {
+                $errors['name'] = __('Le nom ne peut pas dépasser 100 caractères', 'lehiboo-mobile-api');
+            }
+        }
+
+        // date_type: allowed values
+        $valid_date_types = array('today', 'tomorrow', 'this_week', 'this_weekend', 'custom');
+        if (!empty($data['date_type']) && !in_array($data['date_type'], $valid_date_types)) {
+            $errors['date_type'] = __('Type de date invalide', 'lehiboo-mobile-api');
+        }
+
+        // price_type: allowed values
+        $valid_price_types = array('free', 'paid');
+        if (!empty($data['price_type']) && !in_array($data['price_type'], $valid_price_types)) {
+            $errors['price_type'] = __('Type de prix invalide', 'lehiboo-mobile-api');
+        }
+
+        // categories/tags: must be array if provided
+        if (isset($data['categories']) && !is_array($data['categories'])) {
+            $errors['categories'] = __('Les catégories doivent être un tableau', 'lehiboo-mobile-api');
+        }
+        if (isset($data['tags']) && !is_array($data['tags'])) {
+            $errors['tags'] = __('Les tags doivent être un tableau', 'lehiboo-mobile-api');
+        }
+
+        // At least one search criteria is required
+        $has_criteria = !empty($data['search_query'])
+            || !empty($data['city_slug'])
+            || !empty($data['latitude'])
+            || !empty($data['date_type'])
+            || !empty($data['price_type'])
+            || !empty($data['categories'])
+            || !empty($data['tags'])
+            || isset($data['is_family_friendly'])
+            || isset($data['is_accessible_pmr'])
+            || isset($data['is_online']);
+
+        if (!$has_criteria) {
+            $errors['criteria'] = __('Au moins un critère de recherche est requis', 'lehiboo-mobile-api');
+        }
+
+        if (!empty($errors)) {
+            return new WP_Error(
+                'validation_error',
+                __('Erreur de validation', 'lehiboo-mobile-api'),
+                array(
+                    'status' => 400,
+                    'errors' => $errors,
+                )
+            );
+        }
+
+        return true;
+    }
 }
