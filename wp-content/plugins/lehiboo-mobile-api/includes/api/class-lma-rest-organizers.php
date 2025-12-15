@@ -272,9 +272,9 @@ class LMA_REST_Organizers {
             $partner_list = EL_Partnership::get_accepted_partners($user_id);
             if (!empty($partner_list)) {
                 foreach (array_slice($partner_list, 0, 10) as $partner) {
-                    $partner_id = $partner->organisation_id_1 == $user_id
-                        ? $partner->organisation_id_2
-                        : $partner->organisation_id_1;
+                    $partner_id = $partner->organisation_principale_id == $user_id
+                        ? $partner->organisation_invitee_id
+                        : $partner->organisation_principale_id;
 
                     $partner_name_display = get_user_meta($partner_id, 'org_display_name', true);
                     $partner_org_name = get_user_meta($partner_id, 'org_name', true);
