@@ -3,7 +3,7 @@
  * Plugin Name: LeHiboo Mobile API
  * Plugin URI: https://lehiboo.com
  * Description: API REST sécurisée pour l'application mobile LeHiboo (Flutter)
- * Version: 2.0.0
+ * Version: 2.1.0
  * Author: LeHiboo
  * Author URI: https://lehiboo.com
  * License: GPL v2 or later
@@ -20,7 +20,8 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('LMA_VERSION', '2.0.0');
+define('LMA_VERSION', '2.1.0');
+define('LMA_DB_VERSION', '2.1.0'); // Version du schéma DB - incrémenter pour forcer les migrations
 define('LMA_PLUGIN_FILE', __FILE__);
 define('LMA_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('LMA_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -132,6 +133,9 @@ final class LeHiboo_Mobile_API {
         register_activation_hook(__FILE__, array($this, 'activate'));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
 
+        // Check for DB migrations on every load
+        $this->maybe_run_migrations();
+
         // Init
         add_action('init', array($this, 'init'), 0);
 
@@ -148,6 +152,27 @@ final class LeHiboo_Mobile_API {
 
         // Cron job for OTP cleanup
         add_action('lma_cleanup_expired_otp', array('LMA_OTP_Handler', 'cleanup_expired_otp'));
+    }
+
+    /**
+     * Check and run database migrations if needed
+     */
+    private function maybe_run_migrations() {
+        $installed_version = get_option('lma_db_version', '0');
+
+        if (version_compare($installed_version, LMA_DB_VERSION, '<')) {
+            $this->create_tables();
+            update_option('lma_db_version', LMA_DB_VERSION);
+
+            // Log migration
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log(sprintf(
+                    '[LeHiboo Mobile API] Database migrated from %s to %s',
+                    $installed_version,
+                    LMA_DB_VERSION
+                ));
+            }
+        }
     }
 
     /**
