@@ -242,7 +242,11 @@ class EL_Assets{
 			// Enqueue WordPress editor for WYSIWYG description field
 			wp_enqueue_editor();
 
-			wp_enqueue_script('el_profile_navigation', EL_PLUGIN_URI.'assets/js/frontend/profile-navigation.js', array('jquery'),false,true );
+			// Leaflet Map Library - V1 Le Hiboo
+			wp_enqueue_style('leaflet-css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4');
+			wp_enqueue_script('leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array(), '1.9.4', true);
+
+			wp_enqueue_script('el_profile_navigation', EL_PLUGIN_URI.'assets/js/frontend/profile-navigation.js', array('jquery', 'leaflet-js'),false,true );
 
 			// API data.gouv.fr - V1 Le Hiboo CDC
 			wp_enqueue_script('el_api_datagouv', EL_PLUGIN_URI.'assets/js/frontend/api-datagouv.js', array('jquery'),'1.0.0',true );
