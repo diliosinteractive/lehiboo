@@ -248,63 +248,6 @@
             });
         });
 
-        // Gestion de l'upload de l'image de couverture
-        var coverImageFrame;
-
-        $('body').on('click', '.add_cover_image', function(e) {
-            e.preventDefault();
-
-            var $button = $(this);
-            var $input = $button.siblings('.org_cover_image_id');
-            var $preview = $button.siblings('.preview_cover_image');
-            var $removeBtn = $button.siblings('.remove_cover_image');
-
-            // Si le media frame existe déjà, le réutiliser
-            if (coverImageFrame) {
-                coverImageFrame.open();
-                return;
-            }
-
-            // Créer le media frame
-            coverImageFrame = wp.media({
-                title: $button.data('uploader-title') || 'Sélectionner une image',
-                button: {
-                    text: $button.data('uploader-button-text') || 'Utiliser cette image'
-                },
-                multiple: false
-            });
-
-            // Quand une image est sélectionnée
-            coverImageFrame.on('select', function() {
-                var attachment = coverImageFrame.state().get('selection').first().toJSON();
-
-                $input.val(attachment.id);
-
-                if ($preview.length) {
-                    $preview.attr('src', attachment.url).show();
-                    $removeBtn.show();
-                } else {
-                    $button.before('<img class="preview_cover_image" src="' + attachment.url + '" style="max-width: 100%; height: auto; margin-bottom: 10px;">');
-                    $button.before('<button type="button" class="button remove_cover_image">Retirer l\'image</button>');
-                }
-            });
-
-            coverImageFrame.open();
-        });
-
-        // Retirer l'image de couverture (ancien style)
-        $('body').on('click', '.remove_cover_image', function(e) {
-            e.preventDefault();
-
-            var $button = $(this);
-            var $input = $button.siblings('.org_cover_image_id');
-            var $preview = $button.siblings('.preview_cover_image');
-
-            $input.val('');
-            $preview.remove();
-            $button.remove();
-        });
-
         // ===================================
         // TOGGLE SERVICES ET ACCESSIBILITÉ
         // ===================================
