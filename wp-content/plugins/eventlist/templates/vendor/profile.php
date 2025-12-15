@@ -121,6 +121,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 							</li>
 						<?php } ?>
 
+						<?php /* Masqué temporairement - Mot de passe
 						<li class="profile_tab_item">
 							<a href="#section_password">
 								<i class="icon_lock_alt"></i>
@@ -128,7 +129,9 @@ $user_meta_field = get_option( 'ova_register_form' );
 								<i class="icon_check_alt2 status-icon"></i>
 							</a>
 						</li>
+						*/ ?>
 
+						<?php /* Masqué temporairement - Informations de Paiement
 						<?php if( el_is_vendor() && apply_filters( 'el_profile_show_bank', true ) ){ ?>
 							<li class="profile_tab_item">
 								<a href="#section_bank">
@@ -138,6 +141,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 								</a>
 							</li>
 						<?php } ?>
+						*/ ?>
 
 						<?php if( el_is_vendor() && EL()->options->checkout->get( 'split_payment_stripe_active', 'no' ) == 'yes' ){ ?>
 							<li class="profile_tab_item">
@@ -1046,6 +1050,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 				<?php } ?>
 
 
+				<?php /* Masqué temporairement - Section Mot de passe ?>
 				<!-- Section: Mot de passe -->
 				<div id="section_password" class="event_section profile-section active-section">
 					<h4 class="heading_section"><?php esc_html_e( 'Mot de passe', 'eventlist' ); ?></h4>
@@ -1097,7 +1102,9 @@ $user_meta_field = get_option( 'ova_register_form' );
 						<?php wp_nonce_field( 'el_update_password_nonce', 'el_update_password_nonce' ); ?>
 
 				</div> <!-- End section_password -->
+				<?php */ ?>
 
+				<?php /* Masqué temporairement - Section Informations de Paiement
 				<?php if( el_is_vendor() && apply_filters( 'el_profile_show_bank', true ) ){ ?>
 					<!-- Section: Informations de Paiement -->
 					<div id="section_bank" class="event_section profile-section active-section">
@@ -1336,6 +1343,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 
 					</div> <!-- End section_bank -->
 				<?php } ?>
+				*/ ?>
 
 				<?php if( el_is_vendor() && EL()->options->checkout->get( 'split_payment_stripe_active', 'no' ) == 'yes' ){ ?>
 					<!-- Section: Stripe Connect -->
