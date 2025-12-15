@@ -2036,7 +2036,7 @@ if( !class_exists( 'El_Ajax' ) ){
 
 			if( isset( $post_data_sanitize[$_prefix.'ticket'] ) && $post_data_sanitize[$_prefix.'ticket'] ){
 				foreach ($post_data_sanitize[$_prefix.'ticket'] as $key => $value) {
-					if ($value['ticket_id'] == '') {
+					if (($value['ticket_id'] ?? '') == '') {
 						$post_data_sanitize[$_prefix.'ticket'][$key]['ticket_id'] = FLOOR(microtime(true)) + $k;
 						$k++;
 					}
@@ -2044,13 +2044,13 @@ if( !class_exists( 'El_Ajax' ) ){
 					// ticket private description
 					$post_data_sanitize[$_prefix.'ticket'][$key]['private_desc_ticket'] = isset( $meta_data['ticket'][$key]['private_desc_ticket'] ) ? wp_kses_post( $meta_data['ticket'][$key]['private_desc_ticket'] ) : '';
 
-					if ($value['setup_seat'] == '') {
+					if (($value['setup_seat'] ?? '') == '') {
 
 						$post_data_sanitize[$_prefix.'ticket'][$key]['setup_seat'] =  'yes';
 
 					}
 
-					if ( $value['setup_mode'] == 'automatic' ) {
+					if ( ($value['setup_mode'] ?? '') == 'automatic' ) {
 						$seat_code_setup = isset( $value['seat_code_setup'] ) ? recursive_sanitize_text_field( $value['seat_code_setup'] ) : [];
 						
 						$seat_list = array();
@@ -2068,7 +2068,7 @@ if( !class_exists( 'El_Ajax' ) ){
 						$post_data_sanitize[$_prefix.'ticket'][$key]['seat_list'] = implode(", ", $seat_list );
 					}
 
-					if ( $value['price_ticket'] ) {
+					if ( $value['price_ticket'] ?? null ) {
 						$price = $value['price_ticket'];
 						$new_price = str_replace( $decimal_separator, ".", $price );
 						if ( $price !== $new_price ) {
