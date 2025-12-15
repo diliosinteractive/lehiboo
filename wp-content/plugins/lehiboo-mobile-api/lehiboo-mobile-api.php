@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
 
 // Plugin constants
 define('LMA_VERSION', '2.1.0');
-define('LMA_DB_VERSION', '2.1.0'); // Version du schéma DB - incrémenter pour forcer les migrations
+define('LMA_DB_VERSION', '2.2.0'); // Version du schéma DB - incrémenter pour forcer les migrations
 define('LMA_PLUGIN_FILE', __FILE__);
 define('LMA_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('LMA_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -106,9 +106,13 @@ final class LeHiboo_Mobile_API {
         // Admin
         require_once LMA_PLUGIN_DIR . 'includes/admin/class-lma-taxonomy-image.php';
 
+        // Services
+        require_once LMA_PLUGIN_DIR . 'includes/services/class-lma-geocoder.php';
+
         // API Endpoints
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-auth.php';
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-events.php';
+        require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-cities.php';
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-bookings.php';
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-tickets.php';
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-user.php';
@@ -152,6 +156,9 @@ final class LeHiboo_Mobile_API {
 
         // Cron job for OTP cleanup
         add_action('lma_cleanup_expired_otp', array('LMA_OTP_Handler', 'cleanup_expired_otp'));
+
+        // Geocode events on save
+        add_action('save_post_event', array('LMA_Geocoder', 'geocode_event_on_save'), 10, 3);
     }
 
     /**
@@ -313,12 +320,38 @@ final class LeHiboo_Mobile_API {
             KEY enable_email_alert (enable_email_alert)
         ) $charset_collate;";
 
+        // Locations table (geocoded event addresses)
+        $table_locations = $wpdb->prefix . 'lma_locations';
+        $sql_locations = "CREATE TABLE IF NOT EXISTS $table_locations (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            event_id bigint(20) NOT NULL,
+            address_line varchar(255) DEFAULT NULL,
+            postal_code varchar(10) DEFAULT NULL,
+            city varchar(100) DEFAULT NULL,
+            department varchar(100) DEFAULT NULL,
+            region varchar(100) DEFAULT NULL,
+            country varchar(100) DEFAULT 'France',
+            latitude decimal(10,8) DEFAULT NULL,
+            longitude decimal(11,8) DEFAULT NULL,
+            raw_address text DEFAULT NULL,
+            geocoded_at datetime DEFAULT NULL,
+            geocode_source varchar(50) DEFAULT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT NULL,
+            PRIMARY KEY (id),
+            UNIQUE KEY event_id (event_id),
+            KEY city (city),
+            KEY postal_code (postal_code),
+            KEY coords (latitude, longitude)
+        ) $charset_collate;";
+
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql_tokens);
         dbDelta($sql_rate);
         dbDelta($sql_logs);
         dbDelta($sql_otp);
         dbDelta($sql_alerts);
+        dbDelta($sql_locations);
     }
 
     /**
@@ -384,6 +417,7 @@ final class LeHiboo_Mobile_API {
         $controllers = array(
             new LMA_REST_Auth(),
             new LMA_REST_Events(),
+            new LMA_REST_Cities(),
             new LMA_REST_Bookings(),
             new LMA_REST_Tickets(),
             new LMA_REST_User(),

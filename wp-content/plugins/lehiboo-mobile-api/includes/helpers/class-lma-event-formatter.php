@@ -290,13 +290,26 @@ class LMA_Event_Formatter {
                 ?: get_post_meta($event->ID, $prefix . 'location', true);
         }
 
-        $lat = floatval(get_post_meta($event->ID, $prefix . 'lat', true));
-        $lng = floatval(get_post_meta($event->ID, $prefix . 'lng', true));
+        // Try to get from lma_locations table first (geocoded data)
+        $db_location = self::get_location_from_db($event->ID);
+
+        if ($db_location && $db_location->latitude) {
+            $lat = floatval($db_location->latitude);
+            $lng = floatval($db_location->longitude);
+            $city = $db_location->city;
+            $address = $db_location->raw_address ?: $db_location->address_line;
+        } else {
+            // Fallback to post meta
+            $lat = floatval(get_post_meta($event->ID, $prefix . 'lat', true));
+            $lng = floatval(get_post_meta($event->ID, $prefix . 'lng', true));
+            $city = get_post_meta($event->ID, $prefix . 'city', true);
+            $address = get_post_meta($event->ID, $prefix . 'address', true);
+        }
 
         $location = array(
             'venue_name' => $venue_name,
-            'city' => get_post_meta($event->ID, $prefix . 'city', true),
-            'address' => get_post_meta($event->ID, $prefix . 'address', true),
+            'city' => $city,
+            'address' => $address,
             'lat' => $lat ?: null,
             'lng' => $lng ?: null,
         );
@@ -313,13 +326,44 @@ class LMA_Event_Formatter {
     }
 
     /**
+     * Get location from lma_locations table
+     *
+     * @param int $event_id
+     * @return object|null
+     */
+    private static function get_location_from_db($event_id) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'lma_locations';
+
+        // Check if table exists
+        if ($wpdb->get_var("SHOW TABLES LIKE '$table'") !== $table) {
+            return null;
+        }
+
+        return $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM $table WHERE event_id = %d",
+            $event_id
+        ));
+    }
+
+    /**
      * Get full location details
      */
     private static function get_full_location($event, $prefix) {
         $location = self::get_location($event, $prefix);
 
-        $location['postal_code'] = get_post_meta($event->ID, $prefix . 'postal_code', true);
-        $location['country'] = get_post_meta($event->ID, $prefix . 'country', true) ?: 'France';
+        // Try to get extended info from lma_locations table
+        $db_location = self::get_location_from_db($event->ID);
+
+        if ($db_location) {
+            $location['postal_code'] = $db_location->postal_code;
+            $location['department'] = $db_location->department;
+            $location['region'] = $db_location->region;
+            $location['country'] = $db_location->country ?: 'France';
+        } else {
+            $location['postal_code'] = get_post_meta($event->ID, $prefix . 'postal_code', true);
+            $location['country'] = get_post_meta($event->ID, $prefix . 'country', true) ?: 'France';
+        }
 
         if ($location['lat'] && $location['lng']) {
             $location['directions_url'] = sprintf(
