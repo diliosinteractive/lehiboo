@@ -247,103 +247,78 @@ jQuery(document).ready(function ($) {
     });
 
     /* ==========================================================================
-       5. Image Upload Handlers (Cover & Logo)
+       5. Image Selection via Media Picker (Cover & Logo)
        ========================================================================== */
 
-    // Cover Image
+    /**
+     * Ouvrir le Media Picker pour sélectionner une image
+     */
+    function openMediaPicker(type) {
+        if (typeof window.EL_MediaPicker === 'undefined') {
+            console.warn('EL_MediaPicker not available');
+            alert('Le gestionnaire de médias n\'est pas disponible. Veuillez recharger la page.');
+            return;
+        }
+
+        var title = type === 'cover' ? 'Choisir une image de couverture' : 'Choisir un logo';
+
+        window.EL_MediaPicker.open({
+            mode: 'single',
+            title: title,
+            callback: function(images) {
+                if (images && images.length > 0) {
+                    var image = images[0];
+                    if (type === 'cover') {
+                        updateCoverImage(image.id, image.url);
+                    } else {
+                        updateLogoImage(image.id, image.url);
+                    }
+                }
+            }
+        });
+    }
+
+    // Cover Image - Click sur la zone ou le placeholder
     $('#cover_dropzone').on('click', function (e) {
-        if (!$(e.target).is('button')) {
-            $(this).find('.cover_file_input').click();
+        if (!$(e.target).closest('.preview_actions').length) {
+            openMediaPicker('cover');
         }
     });
 
-    $('#cover_dropzone .cover_file_input').on('change', function () {
-        if (this.files && this.files[0]) {
-            uploadImage(this.files[0], 'cover');
-        }
-    });
-
-    $('.btn_change_cover').on('click', function (e) {
+    // Cover Image - Bouton changer
+    $(document).on('click', '.btn_pick_cover_image, .btn_change_cover:not(.btn_pick_cover_image)', function (e) {
         e.stopPropagation();
-        $('#cover_dropzone .cover_file_input').click();
+        openMediaPicker('cover');
     });
 
+    // Cover Image - Bouton supprimer
     $('.btn_remove_cover').on('click', function (e) {
         e.stopPropagation();
         removeCoverImage();
     });
 
-    // Logo
+    // Logo - Click sur la zone ou le placeholder
     $('#logo_dropzone').on('click', function (e) {
-        if (!$(e.target).is('button')) {
-            $(this).find('.logo_file_input').click();
+        if (!$(e.target).closest('.preview_actions').length) {
+            openMediaPicker('logo');
         }
     });
 
-    $('#logo_dropzone .logo_file_input').on('change', function () {
-        if (this.files && this.files[0]) {
-            uploadImage(this.files[0], 'logo');
-        }
-    });
-
-    $('.btn_change_logo').on('click', function (e) {
+    // Logo - Bouton changer
+    $(document).on('click', '.btn_pick_logo_image, .btn_change_logo:not(.btn_pick_logo_image)', function (e) {
         e.stopPropagation();
-        $('#logo_dropzone .logo_file_input').click();
+        openMediaPicker('logo');
     });
 
+    // Logo - Bouton supprimer
     $('.btn_remove_logo').on('click', function (e) {
         e.stopPropagation();
         removeLogoImage();
     });
 
-    // Upload function
-    function uploadImage(file, type) {
-        // Validate file type
-        if (!file.type.match(/^image\/(jpeg|jpg|png|gif|webp)$/i)) {
-            alert('Format non supporté. Utilisez JPG, PNG, GIF ou WebP.');
-            return;
-        }
-
-        // Validate file size (10MB max)
-        if (file.size > 10 * 1024 * 1024) {
-            alert('L\'image est trop volumineuse. Maximum 10 Mo.');
-            return;
-        }
-
-        var formData = new FormData();
-        formData.append('action', 'el_upload_vendor_media');
-        formData.append('file', file);
-        formData.append('nonce', el_vendor_media_params ? el_vendor_media_params.nonce : '');
-
-        var $dropzone = type === 'cover' ? $('#cover_dropzone') : $('#logo_dropzone');
-        $dropzone.addClass('uploading');
-
-        $.ajax({
-            url: ajax_object.ajax_url,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                $dropzone.removeClass('uploading');
-
-                if (response.success && response.data) {
-                    if (type === 'cover') {
-                        updateCoverImage(response.data.id, response.data.url);
-                    } else {
-                        updateLogoImage(response.data.id, response.data.url);
-                    }
-                } else {
-                    alert(response.data?.message || 'Erreur lors du téléversement');
-                }
-            },
-            error: function () {
-                $dropzone.removeClass('uploading');
-                alert('Erreur de connexion');
-            }
-        });
-    }
-
+    /**
+     * Mettre à jour l'image de couverture
+     */
     function updateCoverImage(id, url) {
         var $dropzone = $('#cover_dropzone');
         $dropzone.addClass('has_image');
@@ -353,6 +328,9 @@ jQuery(document).ready(function ($) {
         updateCompletionGauge();
     }
 
+    /**
+     * Supprimer l'image de couverture
+     */
     function removeCoverImage() {
         var $dropzone = $('#cover_dropzone');
         $dropzone.removeClass('has_image');
@@ -362,57 +340,34 @@ jQuery(document).ready(function ($) {
         updateCompletionGauge();
     }
 
+    /**
+     * Mettre à jour le logo
+     */
     function updateLogoImage(id, url) {
         var $dropzone = $('#logo_dropzone');
         $dropzone.addClass('has_image');
         $dropzone.find('.dropzone_placeholder').addClass('hidden');
         $dropzone.find('.dropzone_preview').removeClass('hidden').find('img').attr('src', url);
-        $dropzone.closest('.vendor_field').find('.org_logo_id').val(id);
+        // Update the correct hidden input for logo
+        $dropzone.closest('.vendor_field').find('.author_id_image').val(id);
         updateCompletionGauge();
     }
 
+    /**
+     * Supprimer le logo
+     */
     function removeLogoImage() {
         var $dropzone = $('#logo_dropzone');
         $dropzone.removeClass('has_image');
         $dropzone.find('.dropzone_placeholder').removeClass('hidden');
         $dropzone.find('.dropzone_preview').addClass('hidden').find('img').attr('src', '');
-        $dropzone.closest('.vendor_field').find('.org_logo_id').val('');
+        $dropzone.closest('.vendor_field').find('.author_id_image').val('');
         updateCompletionGauge();
     }
 
     /* ==========================================================================
-       6. Drag & Drop Support
+       6. (Reserved for future use)
        ========================================================================== */
-
-    var dropzones = ['#cover_dropzone', '#logo_dropzone'];
-
-    dropzones.forEach(function (selector) {
-        var $zone = $(selector);
-        var type = selector === '#cover_dropzone' ? 'cover' : 'logo';
-
-        $zone.on('dragover dragenter', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            $(this).addClass('is_dragover');
-        });
-
-        $zone.on('dragleave dragend', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            $(this).removeClass('is_dragover');
-        });
-
-        $zone.on('drop', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            $(this).removeClass('is_dragover');
-
-            var files = e.originalEvent.dataTransfer.files;
-            if (files.length > 0) {
-                uploadImage(files[0], type);
-            }
-        });
-    });
 
     /* ==========================================================================
        7. Social Networks Management

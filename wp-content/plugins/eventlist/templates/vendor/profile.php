@@ -986,24 +986,21 @@ $user_meta_field = get_option( 'ova_register_form' );
 
 									<?php
 									$org_cover_image = get_user_meta( $user_id, 'org_cover_image', true );
+									$cover_image_url = $org_cover_image ? wp_get_attachment_image_url($org_cover_image, 'large') : '';
 									?>
 									<div class="cover_dropzone <?php echo $org_cover_image ? 'has_image' : ''; ?>" id="cover_dropzone">
 										<div class="dropzone_placeholder <?php echo $org_cover_image ? 'hidden' : ''; ?>">
-											<i class="fa fa-cloud-upload-alt"></i>
-											<p><?php esc_html_e( 'Glissez vos fichiers ici', 'eventlist' ); ?></p>
-											<small><?php esc_html_e( 'ou cliquez pour parcourir', 'eventlist' ); ?></small>
+											<i class="fa fa-images"></i>
+											<p><?php esc_html_e( 'Cliquez pour choisir une image', 'eventlist' ); ?></p>
+											<small><?php esc_html_e( 'depuis votre galerie', 'eventlist' ); ?></small>
 											<div class="dropzone_info">
-												<span><?php esc_html_e( 'Format autorisés :', 'eventlist' ); ?> JPG, PNG</span>
 												<span><?php esc_html_e( 'Format recommandé : 1 200 px x 400 px (panoramique)', 'eventlist' ); ?></span>
-												<span><?php esc_html_e( 'Taille max :', 'eventlist' ); ?> 10 MO <?php esc_html_e( 'par fichier', 'eventlist' ); ?></span>
 											</div>
 										</div>
 										<div class="dropzone_preview <?php echo $org_cover_image ? '' : 'hidden'; ?>">
-											<?php if( $org_cover_image ): ?>
-												<img src="<?php echo esc_url( wp_get_attachment_image_url($org_cover_image, 'large') ); ?>" alt="<?php esc_attr_e( 'Image de couverture', 'eventlist' ); ?>">
-											<?php endif; ?>
+											<img src="<?php echo esc_url( $cover_image_url ); ?>" alt="<?php esc_attr_e( 'Image de couverture', 'eventlist' ); ?>">
 											<div class="preview_actions">
-												<button type="button" class="btn_change_cover" title="<?php esc_attr_e( 'Changer', 'eventlist' ); ?>">
+												<button type="button" class="btn_change_cover btn_pick_cover_image" title="<?php esc_attr_e( 'Changer', 'eventlist' ); ?>">
 													<i class="fa fa-sync-alt"></i>
 												</button>
 												<button type="button" class="btn_remove_cover" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
@@ -1011,7 +1008,6 @@ $user_meta_field = get_option( 'ova_register_form' );
 												</button>
 											</div>
 										</div>
-										<input type="file" class="cover_file_input" accept="image/jpeg,image/png" style="display: none;">
 									</div>
 									<input type="hidden" name="org_cover_image" class="org_cover_image_id" value="<?php echo esc_attr( $org_cover_image ); ?>">
 								</div>
@@ -1022,15 +1018,25 @@ $user_meta_field = get_option( 'ova_register_form' );
 										<?php esc_html_e( 'Logo', 'eventlist' ); ?>
 									</label>
 
-									<div class="logo_preview_container">
+									<div class="logo_dropzone <?php echo $author_id_image ? 'has_image' : ''; ?>" id="logo_dropzone">
 										<?php
-										$img_path = ( $author_id_image && wp_get_attachment_image_url($author_id_image, 'el_thumbnail') ) ? wp_get_attachment_image_url($author_id_image, 'el_thumbnail') : EL_PLUGIN_URI.'assets/img/unknow_user.png';
+										$logo_url = ( $author_id_image && wp_get_attachment_image_url($author_id_image, 'el_thumbnail') ) ? wp_get_attachment_image_url($author_id_image, 'el_thumbnail') : '';
+										$default_logo = EL_PLUGIN_URI.'assets/img/unknow_user.png';
 										?>
-										<div class="logo_preview_wrapper">
-											<img class="logo_preview_img" src="<?php echo esc_url($img_path); ?>" alt="<?php echo esc_attr($display_name); ?>">
-											<button type="button" class="btn_change_logo" title="<?php esc_attr_e( 'Changer', 'eventlist' ); ?>">
-												<i class="fa fa-pencil-alt"></i>
-											</button>
+										<div class="dropzone_placeholder <?php echo $author_id_image ? 'hidden' : ''; ?>">
+											<i class="fa fa-user-circle"></i>
+											<p><?php esc_html_e( 'Choisir un logo', 'eventlist' ); ?></p>
+										</div>
+										<div class="dropzone_preview <?php echo $author_id_image ? '' : 'hidden'; ?>">
+											<img class="logo_preview_img" src="<?php echo esc_url( $logo_url ?: $default_logo ); ?>" alt="<?php echo esc_attr($display_name); ?>">
+											<div class="preview_actions">
+												<button type="button" class="btn_change_logo btn_pick_logo_image" title="<?php esc_attr_e( 'Changer', 'eventlist' ); ?>">
+													<i class="fa fa-sync-alt"></i>
+												</button>
+												<button type="button" class="btn_remove_logo" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
+													<i class="fa fa-trash-alt"></i>
+												</button>
+											</div>
 										</div>
 									</div>
 									<input type="hidden" name="author_id_image" class="author_id_image" id="author_id_image_presentation" value="<?php echo esc_attr( $author_id_image ); ?>">

@@ -831,11 +831,15 @@
    12.5. Password Change Block
    ========================================================================== */
 
-/* Toggle mot de passe field */
+/* Toggle mot de passe field - aligné avec les autres champs */
 .el-vendor-profile-form-wrapper .toggle_password_field {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+}
+
+.el-vendor-profile-form-wrapper .toggle_password_field > .control-label {
+    margin-bottom: 8px;
 }
 
 .el-vendor-profile-form-wrapper .toggle_password_field .toggle_field {

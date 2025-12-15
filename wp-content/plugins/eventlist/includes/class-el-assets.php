@@ -259,6 +259,14 @@ class EL_Assets{
 
 			// Profile Presentation Validation (recommandation 500 chars) - V1 Le Hiboo
 			wp_enqueue_script('el_profile_presentation_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-presentation-validation.js', array('jquery'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/frontend/profile-presentation-validation.js'), true );
+
+			// V1 Le Hiboo - Media Picker pour images profil (cover + logo)
+			wp_enqueue_style('el_vendor_media_manager_css', EL_PLUGIN_URI.'assets/css/vendor-media-manager.css', array(), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/css/vendor-media-manager.css'));
+			wp_enqueue_script('el_vendor_media_picker', EL_PLUGIN_URI.'assets/js/frontend/vendor-media-picker.js', array('jquery'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/frontend/vendor-media-picker.js'), true);
+			wp_localize_script('el_vendor_media_picker', 'EL_MediaManager', array(
+				'nonce' => wp_create_nonce('el_vendor_media_nonce'),
+				'ajaxUrl' => admin_url('admin-ajax.php'),
+			));
 		}
 
 		// Event Form Navigation (Vertical Tabs) - V1 Le Hiboo - Phase 6
