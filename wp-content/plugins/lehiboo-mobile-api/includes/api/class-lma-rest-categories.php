@@ -51,6 +51,13 @@ class LMA_REST_Categories {
         $include_count = $request->get_param('include_count') !== 'false';
         $parent_only = $request->get_param('parent_only') === 'true';
 
+        // Try cache
+        $cache_key = 'categories_' . ($include_count ? '1' : '0') . '_' . ($parent_only ? '1' : '0');
+        $cached = LMA_Cache::get('categories', $cache_key);
+        if ($cached !== false) {
+            return LMA_Response::success($cached);
+        }
+
         $args = array(
             'taxonomy' => 'event_cat',
             'hide_empty' => false,
@@ -129,10 +136,15 @@ class LMA_REST_Categories {
             return strcasecmp($a['name'], $b['name']);
         });
 
-        return LMA_Response::success(array(
+        $response_data = array(
             'categories' => $categories,
             'count' => count($categories),
-        ));
+        );
+
+        // Cache the response
+        LMA_Cache::set('categories', $cache_key, $response_data);
+
+        return LMA_Response::success($response_data);
     }
 
     /**
@@ -141,6 +153,13 @@ class LMA_REST_Categories {
     public function get_thematiques($request) {
         $include_count = $request->get_param('include_count') !== 'false';
         $sort_by = $request->get_param('sort_by') ?: 'event_count'; // event_count (default) or name
+
+        // Try cache
+        $cache_key = 'thematiques_' . ($include_count ? '1' : '0') . '_' . $sort_by;
+        $cached = LMA_Cache::get('thematiques', $cache_key);
+        if ($cached !== false) {
+            return LMA_Response::success($cached);
+        }
 
         $terms = get_terms(array(
             'taxonomy' => 'event_thematique',
@@ -207,10 +226,15 @@ class LMA_REST_Categories {
             }, $thematiques);
         }
 
-        return LMA_Response::success(array(
+        $response_data = array(
             'thematiques' => $thematiques,
             'count' => count($thematiques),
-        ));
+        );
+
+        // Cache the response
+        LMA_Cache::set('thematiques', $cache_key, $response_data);
+
+        return LMA_Response::success($response_data);
     }
 
     /**
@@ -219,6 +243,13 @@ class LMA_REST_Categories {
     public function get_cities($request) {
         $include_count = $request->get_param('include_count') !== 'false';
         $hide_empty = $request->get_param('hide_empty') !== 'false';
+
+        // Try cache
+        $cache_key = 'cities_loc_' . ($include_count ? '1' : '0') . '_' . ($hide_empty ? '1' : '0');
+        $cached = LMA_Cache::get('cities', $cache_key);
+        if ($cached !== false) {
+            return LMA_Response::success($cached);
+        }
 
         // Get locations from event_loc taxonomy (cities are child terms)
         $terms = get_terms(array(
@@ -265,16 +296,27 @@ class LMA_REST_Categories {
             return strcasecmp($a['name'], $b['name']);
         });
 
-        return LMA_Response::success(array(
+        $response_data = array(
             'cities' => $cities,
             'count' => count($cities),
-        ));
+        );
+
+        // Cache the response
+        LMA_Cache::set('cities', $cache_key, $response_data);
+
+        return LMA_Response::success($response_data);
     }
 
     /**
      * Get all filter options
      */
     public function get_filter_options($request) {
+        // Try cache
+        $cached = LMA_Cache::get('filters', 'all_filters');
+        if ($cached !== false) {
+            return LMA_Response::success($cached);
+        }
+
         global $wpdb;
 
         $meta_prefix = defined('OVA_METABOX_EVENT') ? OVA_METABOX_EVENT : 'el_';
@@ -342,7 +384,7 @@ class LMA_REST_Categories {
             $meta_prefix . 'price'
         ));
 
-        return LMA_Response::success(array(
+        $response_data = array(
             'categories' => $categories_list,
             'thematiques' => $thematiques_list,
             'cities' => $cities,
@@ -362,7 +404,12 @@ class LMA_REST_Categories {
                 array('key' => 'indoor', 'label' => __('Intérieur', 'lehiboo-mobile-api'), 'type' => 'boolean'),
                 array('key' => 'outdoor', 'label' => __('Extérieur', 'lehiboo-mobile-api'), 'type' => 'boolean'),
             ),
-        ));
+        );
+
+        // Cache the response
+        LMA_Cache::set('filters', 'all_filters', $response_data);
+
+        return LMA_Response::success($response_data);
     }
 
     /**

@@ -42,6 +42,12 @@ class LMA_REST_Cities {
      * GET /cities
      */
     public function get_cities($request) {
+        // Try cache
+        $cached = LMA_Cache::get('cities', 'cities_geocoded');
+        if ($cached !== false) {
+            return LMA_Response::success($cached);
+        }
+
         // Get from database
         $cities = LMA_Geocoder::get_cities_with_events();
 
@@ -50,10 +56,15 @@ class LMA_REST_Cities {
             $cities = $this->get_default_cities();
         }
 
-        return LMA_Response::success(array(
+        $response_data = array(
             'cities' => $cities,
             'total' => count($cities),
-        ));
+        );
+
+        // Cache the response
+        LMA_Cache::set('cities', 'cities_geocoded', $response_data);
+
+        return LMA_Response::success($response_data);
     }
 
     /**

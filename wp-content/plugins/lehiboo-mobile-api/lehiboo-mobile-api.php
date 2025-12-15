@@ -102,6 +102,7 @@ final class LeHiboo_Mobile_API {
         require_once LMA_PLUGIN_DIR . 'includes/helpers/class-lma-validator.php';
         require_once LMA_PLUGIN_DIR . 'includes/helpers/class-lma-response.php';
         require_once LMA_PLUGIN_DIR . 'includes/helpers/class-lma-event-formatter.php';
+        require_once LMA_PLUGIN_DIR . 'includes/helpers/class-lma-cache.php';
 
         // Admin
         require_once LMA_PLUGIN_DIR . 'includes/admin/class-lma-taxonomy-image.php';
@@ -159,6 +160,41 @@ final class LeHiboo_Mobile_API {
 
         // Geocode events on save
         add_action('save_post_event', array('LMA_Geocoder', 'geocode_event_on_save'), 10, 3);
+
+        // Cache invalidation hooks
+        add_action('save_post_event', array($this, 'invalidate_event_cache'), 20, 1);
+        add_action('delete_post', array($this, 'invalidate_event_cache_on_delete'), 10, 1);
+        add_action('created_event_cat', array($this, 'invalidate_category_cache'), 10);
+        add_action('edited_event_cat', array($this, 'invalidate_category_cache'), 10);
+        add_action('delete_event_cat', array($this, 'invalidate_category_cache'), 10);
+        add_action('created_event_thematique', array($this, 'invalidate_category_cache'), 10);
+        add_action('edited_event_thematique', array($this, 'invalidate_category_cache'), 10);
+        add_action('delete_event_thematique', array($this, 'invalidate_category_cache'), 10);
+    }
+
+    /**
+     * Invalidate event cache when event is saved/updated
+     */
+    public function invalidate_event_cache($post_id) {
+        if (get_post_type($post_id) === 'event') {
+            LMA_Cache::invalidate_events($post_id);
+        }
+    }
+
+    /**
+     * Invalidate event cache when event is deleted
+     */
+    public function invalidate_event_cache_on_delete($post_id) {
+        if (get_post_type($post_id) === 'event') {
+            LMA_Cache::invalidate_events($post_id);
+        }
+    }
+
+    /**
+     * Invalidate category cache
+     */
+    public function invalidate_category_cache() {
+        LMA_Cache::invalidate_categories();
     }
 
     /**
@@ -362,6 +398,7 @@ final class LeHiboo_Mobile_API {
             'lma_enabled' => 'yes',
             'lma_jwt_secret' => wp_generate_password(64, true, true),
             'lma_rate_limit_enabled' => 'yes',
+            'lma_cache_enabled' => 'yes',
             'lma_log_requests' => 'no',
             'lma_cors_origins' => '*',
         );
@@ -485,6 +522,7 @@ final class LeHiboo_Mobile_API {
         if (isset($_POST['lma_save_settings']) && wp_verify_nonce($_POST['lma_nonce'], 'lma_settings')) {
             update_option('lma_enabled', isset($_POST['lma_enabled']) ? 'yes' : 'no');
             update_option('lma_rate_limit_enabled', isset($_POST['lma_rate_limit_enabled']) ? 'yes' : 'no');
+            update_option('lma_cache_enabled', isset($_POST['lma_cache_enabled']) ? 'yes' : 'no');
             update_option('lma_log_requests', isset($_POST['lma_log_requests']) ? 'yes' : 'no');
             update_option('lma_cors_origins', sanitize_text_field($_POST['lma_cors_origins']));
             update_option('lma_ai_backend_url', esc_url_raw($_POST['lma_ai_backend_url']));
@@ -492,6 +530,12 @@ final class LeHiboo_Mobile_API {
             update_option('lehiboo_ai_api_key', sanitize_text_field($_POST['lehiboo_ai_api_key']));
 
             echo '<div class="notice notice-success"><p>Parametres enregistres.</p></div>';
+        }
+
+        // Clear cache
+        if (isset($_POST['lma_clear_cache']) && wp_verify_nonce($_POST['lma_nonce'], 'lma_settings')) {
+            $cleared = LMA_Cache::clear_all();
+            echo '<div class="notice notice-success"><p>Cache vidé (' . $cleared . ' entrées supprimées).</p></div>';
         }
 
         // Regenerate JWT secret
@@ -502,11 +546,13 @@ final class LeHiboo_Mobile_API {
 
         $enabled = get_option('lma_enabled', 'yes');
         $rate_limit = get_option('lma_rate_limit_enabled', 'yes');
+        $cache_enabled = get_option('lma_cache_enabled', 'yes');
         $log_requests = get_option('lma_log_requests', 'no');
         $cors_origins = get_option('lma_cors_origins', '*');
         $ai_backend_url = get_option('lma_ai_backend_url', 'https://preprod.lehiboo.com/api-planner');
         $ai_backend_api_key = get_option('lma_ai_backend_api_key', '');
         $lehiboo_ai_api_key = get_option('lehiboo_ai_api_key', '');
+        $cache_stats = LMA_Cache::get_stats();
 
         ?>
         <div class="wrap">
@@ -535,6 +581,21 @@ final class LeHiboo_Mobile_API {
                                     <input type="checkbox" name="lma_rate_limit_enabled" value="yes" <?php checked($rate_limit, 'yes'); ?>>
                                     Activer la limitation de requêtes
                                 </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Cache API</th>
+                            <td>
+                                <label>
+                                    <input type="checkbox" name="lma_cache_enabled" value="yes" <?php checked($cache_enabled, 'yes'); ?>>
+                                    Activer le cache des réponses API (transients WordPress)
+                                </label>
+                                <p class="description">
+                                    Entrées en cache : <?php echo $cache_stats['total']; ?>
+                                    (events: <?php echo $cache_stats['events_list'] ?? 0; ?>,
+                                    categories: <?php echo $cache_stats['categories'] ?? 0; ?>,
+                                    cities: <?php echo $cache_stats['cities'] ?? 0; ?>)
+                                </p>
                             </td>
                         </tr>
                         <tr>
@@ -583,6 +644,7 @@ final class LeHiboo_Mobile_API {
 
                     <p class="submit">
                         <input type="submit" name="lma_save_settings" class="button-primary" value="Enregistrer">
+                        <input type="submit" name="lma_clear_cache" class="button-secondary" value="Vider le cache API">
                         <input type="submit" name="lma_regenerate_secret" class="button-secondary" value="Régénérer la clé JWT" onclick="return confirm('Attention: Cela invalidera tous les tokens existants. Continuer?');">
                     </p>
                 </form>

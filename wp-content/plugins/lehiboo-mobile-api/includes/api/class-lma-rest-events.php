@@ -44,6 +44,25 @@ class LMA_REST_Events {
         $filters = LMA_Validator::sanitize_event_filters($request);
         $meta_prefix = defined('OVA_METABOX_EVENT') ? OVA_METABOX_EVENT : 'el_';
 
+        // Build cache key from request parameters
+        $cache_params = array(
+            'page', 'per_page', 'orderby', 'order', 'search', 'category', 'thematique',
+            'location', 'city', 'date_from', 'date_to', 'price_min', 'price_max',
+            'free_only', 'indoor', 'outdoor', 'family_friendly', 'age_min',
+            'lat', 'lng', 'radius', 'lightweight', 'include_past',
+            'north_east_lat', 'north_east_lng', 'south_west_lat', 'south_west_lng'
+        );
+        $cache_key = LMA_Cache::key_from_request($request, $cache_params);
+
+        // Try to get from cache (only for unauthenticated requests)
+        $token = LMA_JWT_Handler::get_token_from_request($request);
+        if (!$token) {
+            $cached = LMA_Cache::get('events_list', $cache_key);
+            if ($cached !== false) {
+                return LMA_Response::success($cached);
+            }
+        }
+
         // Build query args
         $args = array(
             'post_type' => 'event',
@@ -329,14 +348,21 @@ class LMA_REST_Events {
                 return $pin['lat'] !== null && $pin['lng'] !== null;
             }));
 
-            return LMA_Response::success(array(
+            $response_data = array(
                 'pins' => $pins,
                 'total_count' => count($pins),
                 'filters_applied' => $filters_applied,
-            ));
+            );
+
+            // Cache the response (only for unauthenticated requests)
+            if (!$token) {
+                LMA_Cache::set('events_list', $cache_key, $response_data);
+            }
+
+            return LMA_Response::success($response_data);
         }
 
-        return LMA_Response::success(array(
+        $response_data = array(
             'events' => $events,
             'pagination' => array(
                 'current_page' => $filters['page'],
@@ -347,7 +373,14 @@ class LMA_REST_Events {
                 'has_prev' => $filters['page'] > 1,
             ),
             'filters_applied' => $filters_applied,
-        ));
+        );
+
+        // Cache the response (only for unauthenticated requests)
+        if (!$token) {
+            LMA_Cache::set('events_list', $cache_key, $response_data);
+        }
+
+        return LMA_Response::success($response_data);
     }
 
     /**
@@ -355,16 +388,7 @@ class LMA_REST_Events {
      */
     public function get_event($request) {
         $event_id = absint($request->get_param('id'));
-
-        $event = get_post($event_id);
-
-        if (!$event || $event->post_type !== 'event' || $event->post_status !== 'publish') {
-            return LMA_Response::error(
-                'event_not_found',
-                __('Événement introuvable', 'lehiboo-mobile-api'),
-                404
-            );
-        }
+        $cache_key = 'event_' . $event_id;
 
         // Get current user ID if authenticated
         $user_id = null;
@@ -376,9 +400,32 @@ class LMA_REST_Events {
             }
         }
 
+        // Try cache for unauthenticated requests
+        if (!$token) {
+            $cached = LMA_Cache::get('event_detail', $cache_key);
+            if ($cached !== false) {
+                return LMA_Response::success($cached);
+            }
+        }
+
+        $event = get_post($event_id);
+
+        if (!$event || $event->post_type !== 'event' || $event->post_status !== 'publish') {
+            return LMA_Response::error(
+                'event_not_found',
+                __('Événement introuvable', 'lehiboo-mobile-api'),
+                404
+            );
+        }
+
         $formatted = LMA_Event_Formatter::format_detail($event, array(
             'user_id' => $user_id,
         ));
+
+        // Cache for unauthenticated requests
+        if (!$token) {
+            LMA_Cache::set('event_detail', $cache_key, $formatted);
+        }
 
         return LMA_Response::success($formatted);
     }
