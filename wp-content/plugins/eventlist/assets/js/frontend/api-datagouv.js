@@ -422,10 +422,20 @@
             window.updateProfileMap(data.latitude, data.longitude);
         }
 
-        // Mettre à jour le champ de recherche d'adresse
+        // Mettre à jour le champ de recherche d'adresse (ancien input et nouveau Select2)
         if (data.adresse_ligne1) {
             const adresseComplete = [data.adresse_ligne1, data.code_postal, data.ville].filter(Boolean).join(' ');
+
+            // Ancien champ input
             $('#org_address_search').val(adresseComplete);
+
+            // Nouveau champ Select2 pour l'adresse
+            const $profileAddress = $('#profile_address');
+            if ($profileAddress.length) {
+                // Créer une nouvelle option avec l'adresse complète
+                const newOption = new Option(adresseComplete, adresseComplete, true, true);
+                $profileAddress.append(newOption).trigger('change');
+            }
         }
 
         // Cacher le champ de recherche et afficher le nom
