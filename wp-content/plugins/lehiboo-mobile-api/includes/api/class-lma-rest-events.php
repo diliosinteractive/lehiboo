@@ -249,8 +249,31 @@ class LMA_REST_Events {
             ));
         }, $query->posts);
 
-        // Filter by distance if coordinates provided
-        if ($filters['lat'] && $filters['lng'] && $filters['radius']) {
+        // Filter by bounding box if provided (for map navigation)
+        $has_bounding_box = $filters['north_east_lat'] !== null
+            && $filters['north_east_lng'] !== null
+            && $filters['south_west_lat'] !== null
+            && $filters['south_west_lng'] !== null;
+
+        if ($has_bounding_box) {
+            $events = array_filter($events, function($event) use ($filters) {
+                $event_lat = $event['location']['lat'] ?? null;
+                $event_lng = $event['location']['lng'] ?? null;
+
+                if ($event_lat === null || $event_lng === null) {
+                    return false; // Exclude events without coordinates
+                }
+
+                // Check if event is within bounding box
+                $lat_in_bounds = $event_lat >= $filters['south_west_lat'] && $event_lat <= $filters['north_east_lat'];
+                $lng_in_bounds = $event_lng >= $filters['south_west_lng'] && $event_lng <= $filters['north_east_lng'];
+
+                return $lat_in_bounds && $lng_in_bounds;
+            });
+            $events = array_values($events);
+        }
+        // Filter by distance if coordinates provided (radius search)
+        elseif ($filters['lat'] && $filters['lng'] && $filters['radius']) {
             $events = array_filter($events, function($event) use ($filters) {
                 if (!isset($event['location']['distance_km'])) {
                     return true;
@@ -281,7 +304,36 @@ class LMA_REST_Events {
             'price_max' => $filters['price_max'] > 0 ? $filters['price_max'] : null,
             'free_only' => $filters['free_only'] ?: null,
             'search' => $filters['search'],
+            'bounding_box' => $has_bounding_box ? array(
+                'north_east' => array('lat' => $filters['north_east_lat'], 'lng' => $filters['north_east_lng']),
+                'south_west' => array('lat' => $filters['south_west_lat'], 'lng' => $filters['south_west_lng']),
+            ) : null,
         ));
+
+        // Lightweight mode: return minimal data for map pins
+        if ($filters['lightweight']) {
+            $pins = array_map(function($event) {
+                return array(
+                    'id' => $event['id'],
+                    'title' => $event['title'],
+                    'lat' => $event['location']['lat'] ?? null,
+                    'lng' => $event['location']['lng'] ?? null,
+                    'category_icon' => $event['category']['slug'] ?? null,
+                    'price' => $event['price'] ?? null,
+                );
+            }, $events);
+
+            // Filter out events without coordinates
+            $pins = array_values(array_filter($pins, function($pin) {
+                return $pin['lat'] !== null && $pin['lng'] !== null;
+            }));
+
+            return LMA_Response::success(array(
+                'pins' => $pins,
+                'total_count' => count($pins),
+                'filters_applied' => $filters_applied,
+            ));
+        }
 
         return LMA_Response::success(array(
             'events' => $events,

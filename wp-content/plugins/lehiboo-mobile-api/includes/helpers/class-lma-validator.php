@@ -283,6 +283,13 @@ class LMA_Validator {
             'lat' => floatval($request->get_param('lat')),
             'lng' => floatval($request->get_param('lng')),
             'radius' => absint($request->get_param('radius')) ?: 20,
+            // Bounding box for map navigation (alternative to lat/lng/radius)
+            'north_east_lat' => $request->get_param('north_east_lat') !== null ? floatval($request->get_param('north_east_lat')) : null,
+            'north_east_lng' => $request->get_param('north_east_lng') !== null ? floatval($request->get_param('north_east_lng')) : null,
+            'south_west_lat' => $request->get_param('south_west_lat') !== null ? floatval($request->get_param('south_west_lat')) : null,
+            'south_west_lng' => $request->get_param('south_west_lng') !== null ? floatval($request->get_param('south_west_lng')) : null,
+            // Lightweight mode for map pins (returns minimal data)
+            'lightweight' => filter_var($request->get_param('lightweight'), FILTER_VALIDATE_BOOLEAN),
             'date_from' => sanitize_text_field($request->get_param('date_from')),
             'date_to' => sanitize_text_field($request->get_param('date_to')),
             'price_min' => floatval($request->get_param('price_min')),

@@ -456,7 +456,13 @@ PARAMETRES DISPONIBLES:
 - keyword: Recherche par nom/mot-cle dans le TITRE (ex: "Escape Game", "Laser Game")
 - city: Ville (defaut: Valenciennes)
 - anyLocation: true pour chercher PARTOUT (ignore le filtre ville). Utilise si "pas a X", "partout", "n'importe ou"
-- radius: Rayon en km (defaut: 30)
+
+RECHERCHE PAR PROXIMITE (GPS):
+- lat: Latitude GPS de l'utilisateur (ex: 50.6292)
+- lng: Longitude GPS de l'utilisateur (ex: 3.0573)
+- radius: Rayon de recherche en km (5-100, defaut: 30)
+→ Utilise ces params quand l'utilisateur dit "autour de moi", "pres de moi", "a X km", "nearby"
+
 - category: Slug categorie (sport, culture, gastronomie, nature, detente)
 - thematique: Slug thematique LeHiboo specifique
 - tags: Mots-cles pour filtrer par taxonomie ["spa", "randonnee", etc.]
@@ -484,7 +490,9 @@ EXEMPLES:
 5. "sortie en couple ce weekend" → { groupType: "couple", dates: "thisWeekend" }
 6. "resto pas cher" → { category: "gastronomie", maxPrice: 30 }
 7. "activite gratuite en famille" → { freeOnly: true, familyFriendly: true }
-8. "quoi faire ?" → {} (utilise les valeurs par defaut)`,
+8. "quoi faire ?" → {} (utilise les valeurs par defaut)
+9. "autour de moi" (avec GPS) → { lat: 50.62, lng: 3.05, radius: 30 }
+10. "spa a moins de 10km" (avec GPS) → { lat: 50.62, lng: 3.05, radius: 10, keyword: "spa" }`,
   parameters: searchEventsSchemaV2,
   execute: searchEventsV2
 };
