@@ -742,6 +742,91 @@
     display: block;
 }
 
+/* API Autocomplete Results (Organisation Search) */
+.el-vendor-profile-form-wrapper .api-autocomplete-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin-top: 4px;
+    padding: 0;
+    list-style: none;
+}
+
+.el-vendor-profile-form-wrapper .api-autocomplete-results li {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.15s ease;
+}
+
+.el-vendor-profile-form-wrapper .api-autocomplete-results li:last-child {
+    border-bottom: none;
+}
+
+.el-vendor-profile-form-wrapper .api-autocomplete-results li:hover {
+    background-color: #fff8f3;
+}
+
+.el-vendor-profile-form-wrapper .api-autocomplete-results .autocomplete-item-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.el-vendor-profile-form-wrapper .api-autocomplete-results .autocomplete-item-icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FF6600;
+}
+
+.el-vendor-profile-form-wrapper .api-autocomplete-results .autocomplete-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.el-vendor-profile-form-wrapper .api-autocomplete-results .autocomplete-item-name {
+    display: block;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.el-vendor-profile-form-wrapper .api-autocomplete-results .autocomplete-item-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 12px;
+    color: #717171;
+}
+
+.el-vendor-profile-form-wrapper .api-autocomplete-results .autocomplete-siren {
+    background: #f5f5f5;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.el-vendor-profile-form-wrapper .api-autocomplete-results .autocomplete-location i {
+    margin-right: 4px;
+}
+
 /* ==========================================================================
    13. Responsive Adjustments
    ========================================================================== */

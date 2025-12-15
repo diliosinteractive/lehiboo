@@ -130,7 +130,7 @@
 
         // Calculer le score de complétion (seulement sur les onglets qui comptent)
         const completionScore = totalTabs > 0 ? Math.round((validatedTabs / totalTabs) * 100) : 0;
-        updateCompletionScore(completionScore);
+        //updateCompletionScore(completionScore);
 
         return completionScore;
     };

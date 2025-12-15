@@ -664,13 +664,22 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    // Expose function for external use
+    // Expose function for external use (called from api-datagouv.js)
     window.updateProfileMap = function(lat, lng) {
-        if (profileMap && profileMarker) {
+        lat = parseFloat(lat);
+        lng = parseFloat(lng);
+        if (profileMap && profileMarker && !isNaN(lat) && !isNaN(lng)) {
             var latLng = [lat, lng];
             profileMarker.setLatLng(latLng);
             profileMap.setView(latLng, 15);
         }
     };
+
+    // Listen for custom event to update coordinates (from api-datagouv.js)
+    $(document).on('el:coordinates:updated', function(e, data) {
+        if (data && data.lat && data.lng) {
+            window.updateProfileMap(data.lat, data.lng);
+        }
+    });
 
 });

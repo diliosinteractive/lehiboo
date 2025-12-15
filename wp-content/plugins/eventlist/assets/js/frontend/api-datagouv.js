@@ -401,46 +401,58 @@
         // Nombre d'effectifs
         $('#org_nombre_effectifs').val(data.nombre_effectifs).trigger('change');
 
-        // Adresse
+        // Adresse - Remplir les champs cachés
         $('#user_address_line1').val(data.adresse_ligne1).trigger('change');
         $('#user_address_line2').val(data.adresse_ligne2).trigger('change');
         $('#user_city').val(data.ville).trigger('change');
         $('#user_postcode').val(data.code_postal).trigger('change');
         $('#user_country').val(data.pays).trigger('change');
 
-        // GPS - Remplir les champs cachés
-        $('#org_latitude').val(data.latitude).trigger('change');
-        $('#org_longitude').val(data.longitude).trigger('change');
-
-        // GPS - Afficher les coordonnées dans le champ visible
+        // GPS - Remplir les champs de coordonnées
         if (data.latitude && data.longitude) {
+            $('#org_latitude').val(data.latitude).trigger('change');
+            $('#org_longitude').val(data.longitude).trigger('change');
+            $('#user_lat').val(data.latitude);
+            $('#user_lng').val(data.longitude);
             $('#org_gps_display').val(data.latitude + ', ' + data.longitude);
         }
 
-        // Mettre à jour la carte Leaflet
-        if (typeof window.updateProfileMap === 'function' && data.latitude && data.longitude) {
-            window.updateProfileMap(data.latitude, data.longitude);
-        }
-
-        // Mettre à jour le champ de recherche d'adresse (ancien input et nouveau Select2)
+        // Mettre à jour le Select2 d'adresse dans la section Localisation
         if (data.adresse_ligne1) {
-            const adresseComplete = [data.adresse_ligne1, data.code_postal, data.ville].filter(Boolean).join(' ');
+            const adresseComplete = [data.adresse_ligne1, data.code_postal, data.ville].filter(Boolean).join(', ');
 
-            // Ancien champ input
+            // Ancien champ input (si présent)
             $('#org_address_search').val(adresseComplete);
 
             // Nouveau champ Select2 pour l'adresse
             const $profileAddress = $('#profile_address');
-            if ($profileAddress.length) {
-                // Créer une nouvelle option avec l'adresse complète
+            if ($profileAddress.length && $.fn.select2) {
+                // Vider les options existantes et ajouter la nouvelle
+                $profileAddress.empty();
                 const newOption = new Option(adresseComplete, adresseComplete, true, true);
-                $profileAddress.append(newOption).trigger('change');
+                $profileAddress.append(newOption).trigger('change.select2');
             }
         }
 
+        // Mettre à jour la carte Leaflet avec les nouvelles coordonnées
+        if (data.latitude && data.longitude) {
+            // Utiliser la fonction globale si disponible
+            if (typeof window.updateProfileMap === 'function') {
+                window.updateProfileMap(data.latitude, data.longitude);
+            }
+            // Ou déclencher un événement custom pour la carte
+            $(document).trigger('el:coordinates:updated', {
+                lat: data.latitude,
+                lng: data.longitude
+            });
+        }
+
         // Mettre à jour le champ de recherche avec le nom de l'entreprise sélectionnée
-        // (garder le champ visible pour permettre une nouvelle recherche)
-        $('#org_name_search').val(data.nom);
+        // Le champ reste éditable pour permettre une nouvelle recherche
+        const $searchInput = $('#org_name_search');
+        $searchInput.val(data.nom);
+        // S'assurer que le champ est focusable et éditable
+        $searchInput.prop('readonly', false).prop('disabled', false);
 
         // Valider les onglets
         if (typeof validateAllTabs === 'function') {
