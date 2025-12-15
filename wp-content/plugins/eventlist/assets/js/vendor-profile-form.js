@@ -286,7 +286,7 @@ jQuery(document).ready(function ($) {
     });
 
     // Cover Image - Bouton changer
-    $(document).on('click', '.btn_pick_cover_image, .btn_change_cover:not(.btn_pick_cover_image)', function (e) {
+    $(document).on('click', '.btn_pick_cover_image, .btn_change_cover', function (e) {
         e.stopPropagation();
         openMediaPicker('cover');
     });
@@ -305,7 +305,7 @@ jQuery(document).ready(function ($) {
     });
 
     // Logo - Bouton changer
-    $(document).on('click', '.btn_pick_logo_image, .btn_change_logo:not(.btn_pick_logo_image)', function (e) {
+    $(document).on('click', '.btn_pick_logo_image, .btn_change_logo', function (e) {
         e.stopPropagation();
         openMediaPicker('logo');
     });

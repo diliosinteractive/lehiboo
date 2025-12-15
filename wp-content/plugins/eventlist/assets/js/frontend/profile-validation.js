@@ -428,12 +428,14 @@
         // Écouter les événements AJAX pour recharger la page après sauvegarde
         $(document).on('ajaxComplete', function(_event, xhr, settings) {
             // Vérifier si c'est une requête de mise à jour du profil
-            if (settings.data && (
-                settings.data.includes('el_update_profile') ||
-                settings.data.includes('el_update_organisation') ||
-                settings.data.includes('el_update_presentation') ||
-                settings.data.includes('el_update_password') ||
-                settings.data.includes('el_update_payout_method')
+            // settings.data peut être un string ou un FormData, on vérifie le type
+            var dataStr = typeof settings.data === 'string' ? settings.data : '';
+            if (dataStr && (
+                dataStr.includes('el_update_profile') ||
+                dataStr.includes('el_update_organisation') ||
+                dataStr.includes('el_update_presentation') ||
+                dataStr.includes('el_update_password') ||
+                dataStr.includes('el_update_payout_method')
             )) {
                 // V1 Le Hiboo - Recharger la page après sauvegarde réussie
                 // pour mettre à jour l'URL du bouton "Prévisualiser" avec le nouveau slug
