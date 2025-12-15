@@ -941,47 +941,68 @@
 // GRILLE 2 COLONNES POUR LE PROFIL
 // ==================================
 
-.profile_row {
-	display: flex;
-	gap: 24px;
-	margin-bottom: 24px;
+// Wrapper avec haute spécificité pour le profil vendor
+.vendor_wrap .contents .vendor_profile,
+.vendor_profile {
 
-	@media (max-width: 768px) {
-		flex-direction: column;
-		gap: 16px;
-	}
+	// Grille 2 colonnes
+	.profile_row {
+		display: flex !important;
+		flex-direction: row !important;
+		gap: 24px;
+		margin-bottom: 24px;
+		width: 100%;
 
-	&.profile_row_2cols {
-		> .vendor_field,
-		> .autocomplete-wrapper {
-			flex: 1;
-			min-width: 0;
-		}
-	}
-
-	&.profile_row_images {
-		gap: 32px;
-
-		.cover_image_field {
-			flex: 2;
+		@media (max-width: 768px) {
+			flex-direction: column !important;
+			gap: 16px;
 		}
 
-		.logo_field {
-			flex: 1;
-			max-width: 200px;
+		&.profile_row_2cols {
+			> .vendor_field,
+			> .autocomplete-wrapper {
+				flex: 1 1 0;
+				min-width: 0;
+				max-width: calc(50% - 12px);
 
-			@media (max-width: 768px) {
-				max-width: 100%;
+				@media (max-width: 768px) {
+					max-width: 100%;
+				}
+			}
+		}
+
+		&.profile_row_images {
+			gap: 32px;
+
+			.cover_image_field {
+				flex: 2;
+			}
+
+			.logo_field {
+				flex: 1;
+				max-width: 200px;
+
+				@media (max-width: 768px) {
+					max-width: 100%;
+				}
 			}
 		}
 	}
-}
 
-.vendor_field_half {
-	max-width: 50%;
+	// Champ demi-largeur
+	.vendor_field_half {
+		max-width: 50%;
 
-	@media (max-width: 768px) {
-		max-width: 100%;
+		@media (max-width: 768px) {
+			max-width: 100%;
+		}
+	}
+
+	// Override du vendor_field dans les rows pour éviter le flex-direction: column
+	.profile_row > .vendor_field {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
 	}
 }
 

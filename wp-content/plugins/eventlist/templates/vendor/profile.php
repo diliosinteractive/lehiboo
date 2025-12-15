@@ -278,15 +278,15 @@ $user_meta_field = get_option( 'ova_register_form' );
 								<input id="user_url" value="<?php echo esc_url( wp_get_current_user()->user_url ); ?>" name="user_url" type="url" placeholder="<?php echo esc_attr( 'https://ovatheme.com' ); ?>" >
 							</div>
 						<?php } ?>
-						<!-- Address -->
-						<?php
+						<!-- Address - Masqué car déplacé dans l'onglet "Mon Organisation > Localisation" -->
+						<?php /*
 						$show_address = $OVALG_Settings ? $OVALG_Settings->show_address() : 'yes';
 						if( apply_filters( 'ovalg_register_user_show_address', true ) && $show_address == 'yes' ){ ?>
 							<div class="vendor_field">
 								<label class="control-label" for="user_address"><?php esc_html_e( 'Address', 'eventlist' ); ?></label>
 								<input id="user_address" value="<?php echo esc_attr( $user_address ); ?>" name="user_address" type="text" placeholder="<?php esc_attr_e( '123 New York', 'eventlist' ); ?>" >
 							</div>
-						<?php } ?>
+						<?php } */ ?>
 						<!-- Description déplacée dans l'onglet "Ma Présentation" -->
 						<!-- User Custom Field -->
 						<div class="ova_profile_custom_field_wrapper">
