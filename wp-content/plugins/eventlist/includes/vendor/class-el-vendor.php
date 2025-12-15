@@ -47,7 +47,8 @@ class EL_Vendor {
 					exit;
 				} else {
 					// Fallback JavaScript redirect if headers already sent
-					echo '<script>window.location.href = "' . esc_url( $redirect_url ) . '";</script>';
+					// Use esc_js() for JavaScript context (esc_url encodes & as &amp;)
+					echo '<script>window.location.replace("' . esc_js( $redirect_url ) . '");</script>';
 					exit;
 				}
 			}

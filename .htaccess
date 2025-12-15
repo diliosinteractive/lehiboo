@@ -1,4 +1,6 @@
-
+# Rediriger vendor=general vers vendor=indicateurs
+RewriteCond %{QUERY_STRING} ^vendor=general$ [NC]
+RewriteRule ^member-account/?$ /member-account/?vendor=indicateurs [R=301,L]
 # BEGIN WordPress
 # Les directives (lignes) entre « BEGIN WordPress » et « END WordPress » sont générées
 # dynamiquement, et doivent être modifiées uniquement via les filtres WordPress.
