@@ -192,10 +192,22 @@
                         }
 
                         results.forEach(function(entreprise) {
+                            const ville = entreprise.siege ? entreprise.siege.libelle_commune : '';
+                            const codePostal = entreprise.siege ? entreprise.siege.code_postal : '';
+                            const localisation = [codePostal, ville].filter(Boolean).join(' ');
+
                             const $item = $('<li></li>')
                                 .html(
-                                    '<strong>' + (entreprise.nom_complet || entreprise.nom_raison_sociale) + '</strong>' +
-                                    '<br><small>SIREN: ' + entreprise.siren + ' - ' + (entreprise.siege ? entreprise.siege.libelle_commune : '') + '</small>'
+                                    '<div class="autocomplete-item-content">' +
+                                        '<div class="autocomplete-item-icon"><i class="fa fa-building"></i></div>' +
+                                        '<div class="autocomplete-item-info">' +
+                                            '<span class="autocomplete-item-name">' + (entreprise.nom_complet || entreprise.nom_raison_sociale) + '</span>' +
+                                            '<span class="autocomplete-item-details">' +
+                                                '<span class="autocomplete-siren">SIREN ' + entreprise.siren + '</span>' +
+                                                (localisation ? '<span class="autocomplete-location"><i class="fa fa-map-marker-alt"></i> ' + localisation + '</span>' : '') +
+                                            '</span>' +
+                                        '</div>' +
+                                    '</div>'
                                 )
                                 .data('entreprise', entreprise)
                                 .on('click', function() {
@@ -248,8 +260,15 @@
                             const props = feature.properties;
                             const $item = $('<li></li>')
                                 .html(
-                                    '<strong>' + props.name + '</strong>' +
-                                    '<br><small>' + props.postcode + ' ' + props.city + '</small>'
+                                    '<div class="autocomplete-item-content">' +
+                                        '<div class="autocomplete-item-icon"><i class="fa fa-map-marker-alt"></i></div>' +
+                                        '<div class="autocomplete-item-info">' +
+                                            '<span class="autocomplete-item-name">' + props.name + '</span>' +
+                                            '<span class="autocomplete-item-details">' +
+                                                '<span class="autocomplete-location">' + props.postcode + ' ' + props.city + '</span>' +
+                                            '</span>' +
+                                        '</div>' +
+                                    '</div>'
                                 )
                                 .data('feature', feature)
                                 .on('click', function() {
