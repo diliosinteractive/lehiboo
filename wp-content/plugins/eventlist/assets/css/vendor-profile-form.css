@@ -1,0 +1,598 @@
+/*
+   Vendor Profile Form CSS - Specific overrides for profile page
+   Extends vendor-event-form.css
+*/
+
+/* ==========================================================================
+   1. Profile Form Wrapper
+   ========================================================================== */
+
+.vendor_wrap.el-vendor-profile-form-wrapper {
+    /* Same as event form */
+}
+
+.el-vendor-profile-form-wrapper .contents {
+    padding-top: 0;
+}
+
+/* Override pour que toutes les sections du profil soient visibles */
+.el-vendor-profile-form-wrapper .profile-section {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    height: auto !important;
+}
+
+/* ==========================================================================
+   2. Navigation - Scrollspy Style
+   ========================================================================== */
+
+.el-anchor-nav li a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    color: #484848;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.el-anchor-nav li a:hover {
+    background-color: #F7F7F7;
+    color: #222222;
+}
+
+.el-anchor-nav li.active a {
+    background-color: #F7F7F7;
+    color: #222222;
+    font-weight: 600;
+    box-shadow: inset 4px 0 0 #ff6600;
+}
+
+.el-anchor-nav li a span {
+    flex-grow: 1;
+    margin-left: 12px;
+}
+
+.el-anchor-nav li a i:first-child {
+    font-size: 16px;
+    color: #717171;
+    width: 20px;
+    text-align: center;
+}
+
+.el-anchor-nav li a .status-icon {
+    font-size: 12px;
+    color: #20D489;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.el-anchor-nav li.section-complete a .status-icon {
+    opacity: 1;
+}
+
+/* ==========================================================================
+   3. Section Cards - Profile specific
+   ========================================================================== */
+
+.el-vendor-profile-form-wrapper .event_section.profile-section {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    border: 1px solid #DDDDDD;
+    margin-bottom: 24px;
+    scroll-margin-top: 140px;
+}
+
+.el-vendor-profile-form-wrapper .event_section h4.heading_section {
+    font-size: 22px;
+    font-weight: 600;
+    color: #222222;
+    margin-bottom: 8px;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.el-vendor-profile-form-wrapper .event_section p.field_description {
+    color: #717171;
+    font-size: 16px;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   4. Profile Row Layouts
+   ========================================================================== */
+
+.el-vendor-profile-form-wrapper .profile_row {
+    margin-bottom: 24px;
+}
+
+.el-vendor-profile-form-wrapper .profile_row_2cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 768px) {
+    .el-vendor-profile-form-wrapper .profile_row_2cols {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+/* ==========================================================================
+   5. Form Elements
+   ========================================================================== */
+
+.el-vendor-profile-form-wrapper .vendor_field {
+    margin-bottom: 20px;
+}
+
+.el-vendor-profile-form-wrapper .vendor_field label {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #2d3748;
+}
+
+.el-vendor-profile-form-wrapper .vendor_field label sup.symbol-required {
+    color: #C13515;
+    margin-left: 3px;
+}
+
+.el-vendor-profile-form-wrapper .vendor_field input[type="text"],
+.el-vendor-profile-form-wrapper .vendor_field input[type="email"],
+.el-vendor-profile-form-wrapper .vendor_field input[type="number"],
+.el-vendor-profile-form-wrapper .vendor_field input[type="url"],
+.el-vendor-profile-form-wrapper .vendor_field input[type="date"],
+.el-vendor-profile-form-wrapper .vendor_field input[type="password"],
+.el-vendor-profile-form-wrapper .vendor_field select,
+.el-vendor-profile-form-wrapper .vendor_field textarea {
+    width: 100%;
+    padding: 14px 16px;
+    background-color: #ffffff;
+    border: 1px solid #B0B0B0;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #222222;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: none;
+}
+
+.el-vendor-profile-form-wrapper .vendor_field input:focus,
+.el-vendor-profile-form-wrapper .vendor_field select:focus,
+.el-vendor-profile-form-wrapper .vendor_field textarea:focus {
+    background-color: #ffffff;
+    border-color: #222222;
+    outline: none;
+    box-shadow: 0 0 0 1px #222222;
+}
+
+.el-vendor-profile-form-wrapper .vendor_field input::placeholder,
+.el-vendor-profile-form-wrapper .vendor_field textarea::placeholder {
+    color: #717171;
+}
+
+.el-vendor-profile-form-wrapper .vendor_field small,
+.el-vendor-profile-form-wrapper .vendor_field .form-text {
+    font-size: 13px;
+    color: #717171;
+    margin-top: 6px;
+    display: block;
+}
+
+/* ==========================================================================
+   6. Toggle Switches
+   ========================================================================== */
+
+.el-vendor-profile-form-wrapper .toggle_switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.el-vendor-profile-form-wrapper .toggle_switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.el-vendor-profile-form-wrapper .toggle_slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 26px;
+}
+
+.el-vendor-profile-form-wrapper .toggle_slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.el-vendor-profile-form-wrapper .toggle_switch input:checked + .toggle_slider {
+    background-color: #20D489;
+}
+
+.el-vendor-profile-form-wrapper .toggle_switch input:checked + .toggle_slider:before {
+    transform: translateX(24px);
+}
+
+/* ==========================================================================
+   7. Services Grid
+   ========================================================================== */
+
+.el-vendor-profile-form-wrapper .services_accessibility_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.el-vendor-profile-form-wrapper .service_accessibility_item {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    transition: all 0.2s ease;
+}
+
+.el-vendor-profile-form-wrapper .service_accessibility_item:hover {
+    border-color: #bbb;
+}
+
+.el-vendor-profile-form-wrapper .service_accessibility_header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.el-vendor-profile-form-wrapper .service_accessibility_item input[type="text"] {
+    margin-top: 8px;
+}
+
+/* ==========================================================================
+   8. Password Section
+   ========================================================================== */
+
+.el-vendor-profile-form-wrapper .wrap_old_password,
+.el-vendor-profile-form-wrapper .wrap_new_password,
+.el-vendor-profile-form-wrapper .wrap_confirm_password {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.el-vendor-profile-form-wrapper .show_pass {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #717171;
+    padding: 8px;
+}
+
+.el-vendor-profile-form-wrapper .show_pass:hover {
+    color: #222222;
+}
+
+.el-vendor-profile-form-wrapper .wrap_old_password .show_pass,
+.el-vendor-profile-form-wrapper .wrap_new_password .show_pass,
+.el-vendor-profile-form-wrapper .wrap_confirm_password .show_pass {
+    top: auto;
+    bottom: 10px;
+    transform: none;
+}
+
+/* ==========================================================================
+   9. Coming Soon Message
+   ========================================================================== */
+
+.el-vendor-profile-form-wrapper .coming-soon-message {
+    text-align: center;
+    padding: 48px 24px;
+    background: #f9f9f9;
+    border-radius: 12px;
+}
+
+.el-vendor-profile-form-wrapper .coming-soon-message .icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.el-vendor-profile-form-wrapper .coming-soon-message h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 12px;
+}
+
+.el-vendor-profile-form-wrapper .coming-soon-message p {
+    color: #717171;
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ==========================================================================
+   10. Localisation Layout Profile
+   ========================================================================== */
+
+.el-vendor-profile-form-wrapper .profile_localisation_layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+@media (max-width: 992px) {
+    .el-vendor-profile-form-wrapper .profile_localisation_layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.el-vendor-profile-form-wrapper .localisation_fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.el-vendor-profile-form-wrapper .localisation_map_preview {
+    height: 100%;
+    min-height: 350px;
+}
+
+.el-vendor-profile-form-wrapper .localisation_map_preview .profile_map_container {
+    height: 100%;
+    min-height: 350px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+}
+
+/* ==========================================================================
+   11. Image Upload Zones (Cover & Logo)
+   ========================================================================== */
+
+.el-vendor-profile-form-wrapper .profile_row_images {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+    .el-vendor-profile-form-wrapper .profile_row_images {
+        grid-template-columns: 1fr;
+    }
+}
+
+.el-vendor-profile-form-wrapper .cover_dropzone,
+.el-vendor-profile-form-wrapper .logo_dropzone {
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    background: #fafafa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.el-vendor-profile-form-wrapper .cover_dropzone {
+    aspect-ratio: 3/1;
+    min-height: 150px;
+}
+
+.el-vendor-profile-form-wrapper .logo_dropzone {
+    aspect-ratio: 1;
+    min-height: 150px;
+}
+
+.el-vendor-profile-form-wrapper .cover_dropzone:hover,
+.el-vendor-profile-form-wrapper .logo_dropzone:hover {
+    border-color: #FF6600;
+    background: #fff8f5;
+}
+
+.el-vendor-profile-form-wrapper .cover_dropzone.has_image,
+.el-vendor-profile-form-wrapper .logo_dropzone.has_image {
+    border: none;
+}
+
+.el-vendor-profile-form-wrapper .dropzone_placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.el-vendor-profile-form-wrapper .dropzone_placeholder i {
+    font-size: 36px;
+    color: #ccc;
+    margin-bottom: 12px;
+}
+
+.el-vendor-profile-form-wrapper .dropzone_placeholder p {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 4px;
+}
+
+.el-vendor-profile-form-wrapper .dropzone_placeholder small {
+    font-size: 12px;
+    color: #888;
+}
+
+.el-vendor-profile-form-wrapper .dropzone_placeholder.hidden {
+    display: none;
+}
+
+.el-vendor-profile-form-wrapper .dropzone_preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.el-vendor-profile-form-wrapper .dropzone_preview.hidden {
+    display: none;
+}
+
+.el-vendor-profile-form-wrapper .dropzone_preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.el-vendor-profile-form-wrapper .preview_actions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.el-vendor-profile-form-wrapper .dropzone_preview:hover .preview_actions {
+    opacity: 1;
+}
+
+.el-vendor-profile-form-wrapper .preview_actions button {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.el-vendor-profile-form-wrapper .preview_actions button:hover {
+    transform: scale(1.1);
+}
+
+.el-vendor-profile-form-wrapper .preview_actions .btn_remove_cover,
+.el-vendor-profile-form-wrapper .preview_actions .btn_remove_logo {
+    background: rgba(231, 76, 60, 0.9);
+    color: #fff;
+}
+
+/* ==========================================================================
+   12. Autocomplete Styling
+   ========================================================================== */
+
+.el-vendor-profile-form-wrapper .autocomplete-wrapper {
+    position: relative;
+}
+
+.el-vendor-profile-form-wrapper .autocomplete-input {
+    position: relative;
+}
+
+.el-vendor-profile-form-wrapper .autocomplete-input input {
+    padding-right: 40px;
+}
+
+.el-vendor-profile-form-wrapper .autocomplete-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #717171;
+    pointer-events: none;
+}
+
+.el-vendor-profile-form-wrapper .autocomplete-loader {
+    display: none;
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #FF6600;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translateY(-50%) rotate(0deg); }
+    100% { transform: translateY(-50%) rotate(360deg); }
+}
+
+.el-vendor-profile-form-wrapper .autocomplete-wrapper.loading .autocomplete-loader {
+    display: block;
+}
+
+/* ==========================================================================
+   13. Responsive Adjustments
+   ========================================================================== */
+
+@media (max-width: 992px) {
+    .el-vendor-profile-form-wrapper .profile_navigation_sidebar {
+        position: relative;
+        top: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .el-vendor-profile-form-wrapper .event_section.profile-section {
+        padding: 24px 20px;
+    }
+
+    .el-vendor-profile-form-wrapper .event_section h4.heading_section {
+        font-size: 18px;
+    }
+
+    .el-vendor-profile-form-wrapper .profile_sticky_bar {
+        padding: 10px 16px;
+    }
+
+    .el-vendor-profile-form-wrapper .sticky_bar_inner {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .el-vendor-profile-form-wrapper .sticky_bar_right {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

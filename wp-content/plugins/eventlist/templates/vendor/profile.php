@@ -1,4 +1,4 @@
-<?php 
+<?php
 if ( !defined( 'ABSPATH' ) ) exit();
 $user_id = wp_get_current_user()->ID;
 
@@ -38,7 +38,12 @@ $user_bank_ifsc_code 		= get_user_meta( $user_id, 'user_bank_ifsc_code', true ) 
 $user_meta_field = get_option( 'ova_register_form' );
 ?>
 
-<div class="vendor_wrap">
+<!-- Custom Assets for Profile Form - same style as Event Form -->
+<link rel="stylesheet" href="<?php echo EL_PLUGIN_URI . 'assets/css/vendor-event-form.css?v=' . time(); ?>">
+<link rel="stylesheet" href="<?php echo EL_PLUGIN_URI . 'assets/css/vendor-profile-form.css?v=' . time(); ?>">
+<script src="<?php echo EL_PLUGIN_URI . 'assets/js/vendor-profile-form.js?v=' . time(); ?>" defer></script>
+
+<div class="vendor_wrap el-vendor-profile-form-wrapper">
 	<?php echo el_get_template( 'vendor/sidebar.php' ); ?>
 
 	<div class="contents">
@@ -57,11 +62,9 @@ $user_meta_field = get_option( 'ova_register_form' );
 					$author_url = get_author_posts_url( $user_id );
 					?>
 					<a href="<?php echo esc_url( $author_url ); ?>" target="_blank" class="btn_preview_profile">
-						<i class="icon_search"></i>
 						<span><?php esc_html_e( 'Prévisualiser', 'eventlist' ); ?></span>
 					</a>
-					<button type="button" class="btn_save_profile" id="trigger_save_profile">
-						<i class="icon_check"></i>
+					<button type="button" class="btn_save_profile" id="el-btn-save-profile">
 						<span><?php esc_html_e( 'Enregistrer', 'eventlist' ); ?></span>
 					</button>
 				</div>
@@ -84,73 +87,92 @@ $user_meta_field = get_option( 'ova_register_form' );
 					</div>
 				</div>
 
-				<nav class="profile_tabs_nav">
+				<nav class="profile_tabs_nav el-anchor-nav">
 					<ul>
-						<li class="profile_tab_item active" data-tab="author_profile">
-							<a href="#author_profile">
+						<li class="profile_tab_item active">
+							<a href="#section_profile">
 								<i class="icon_profile"></i>
 								<span><?php esc_html_e( 'Informations Personnelles', 'eventlist' ); ?></span>
+								<i class="icon_check_alt2 status-icon"></i>
 							</a>
 						</li>
 
 						<?php if( el_is_vendor() ){ ?>
-							<li class="profile_tab_item" data-tab="author_organisation">
-								<a href="#author_organisation">
+							<li class="profile_tab_item">
+								<a href="#section_organisation">
 									<i class="icon_building"></i>
 									<span><?php esc_html_e( 'Mon Organisation', 'eventlist' ); ?></span>
+									<i class="icon_check_alt2 status-icon"></i>
 								</a>
 							</li>
-							<li class="profile_tab_item" data-tab="author_presentation">
-								<a href="#author_presentation">
+							<li class="profile_tab_item">
+								<a href="#section_localisation">
+									<i class="icon_pin_alt"></i>
+									<span><?php esc_html_e( 'Localisation', 'eventlist' ); ?></span>
+									<i class="icon_check_alt2 status-icon"></i>
+								</a>
+							</li>
+							<li class="profile_tab_item">
+								<a href="#section_presentation">
 									<i class="icon_documents_alt"></i>
 									<span><?php esc_html_e( 'Présentation', 'eventlist' ); ?></span>
+									<i class="icon_check_alt2 status-icon"></i>
 								</a>
 							</li>
 						<?php } ?>
-						<!-- L'onglet Localisation a été fusionné dans Mon Organisation -->
 
-						<li class="profile_tab_item" data-tab="author_password">
-							<a href="#author_password">
+						<li class="profile_tab_item">
+							<a href="#section_password">
 								<i class="icon_lock_alt"></i>
 								<span><?php esc_html_e( 'Mot de passe', 'eventlist' ); ?></span>
+								<i class="icon_check_alt2 status-icon"></i>
 							</a>
 						</li>
 
 						<?php if( el_is_vendor() && apply_filters( 'el_profile_show_bank', true ) ){ ?>
-							<li class="profile_tab_item" data-tab="author_bank">
-								<a href="#author_bank">
+							<li class="profile_tab_item">
+								<a href="#section_bank">
 									<i class="icon_creditcard"></i>
 									<span><?php esc_html_e( 'Informations de Paiement', 'eventlist' ); ?></span>
+									<i class="icon_check_alt2 status-icon"></i>
 								</a>
 							</li>
 						<?php } ?>
 
 						<?php if( el_is_vendor() && EL()->options->checkout->get( 'split_payment_stripe_active', 'no' ) == 'yes' ){ ?>
-							<li class="profile_tab_item" data-tab="strip_connect">
-								<a href="#strip_connect">
+							<li class="profile_tab_item">
+								<a href="#section_stripe">
 									<i class="icon_creditcard"></i>
 									<span><?php esc_html_e( 'Stripe Connect', 'eventlist' ); ?></span>
+									<i class="icon_check_alt2 status-icon"></i>
 								</a>
 							</li>
 						<?php } ?>
 					</ul>
 				</nav>
+
+				<!-- Sidebar Completion Widget -->
+				<div class="sidebar-completion-widget">
+					<h4><?php esc_html_e('Complétion du profil', 'eventlist'); ?></h4>
+					<div class="el-completion-bar">
+						<div class="el-completion-fill" id="el-completion-fill-sidebar" style="width: 0%;"></div>
+					</div>
+					<span class="el-completion-percent" id="el-completion-percent-sidebar">0%</span>
+				</div>
+
 			</div>
 
-			<!-- Contenu des onglets -->
+			<!-- Contenu des sections (toutes visibles au scroll) -->
 			<div class="profile_content_area">
 
-				<?php if( el_is_vendor() && EL()->options->checkout->get( 'split_payment_stripe_active', 'no' ) == 'yes' ){ ?>
-					<div id="strip_connect" class="tab-contents">
-						<?php do_action( 'el_extra_profile' ); ?>
-					</div>
-				<?php } ?>
+				<!-- Formulaire global pour le profil -->
+				<form action="" method="post" id="el-vendor-profile-form" enctype="multipart/form-data">
 
-				<!-- Profile -->
-				<div id="author_profile" class="tab-contents">
+				<!-- Section: Informations Personnelles -->
+				<div id="section_profile" class="event_section profile-section active-section">
 
-					<h2><?php esc_html_e( 'Mes informations professionnelles', 'eventlist' ); ?></h2>
-					<p class="description"><?php esc_html_e( 'Ces informations sont nécessaires pour gérer votre profil Administrateur du compte professionnel de votre organisation.', 'eventlist' ); ?></p>
+					<h4 class="heading_section"><?php esc_html_e( 'Informations Personnelles', 'eventlist' ); ?></h4>
+					<p class="field_description"><?php esc_html_e( 'Ces informations sont nécessaires pour gérer votre profil Administrateur du compte professionnel de votre organisation.', 'eventlist' ); ?></p>
 
 					<!-- Légende ajoutée dynamiquement par profile-validation.js -->
 
@@ -177,9 +199,6 @@ $user_meta_field = get_option( 'ova_register_form' );
 							</div>
 						</div>
 					<?php } ?>
-
-
-					<form id="el_save_profile" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
 
 						<!-- Prénom et Nom côte à côte -->
 						<div class="profile_row profile_row_2cols">
@@ -456,27 +475,16 @@ $user_meta_field = get_option( 'ova_register_form' );
 							<?php endif; ?>
 						</div>
 
-						<div class="vendor_field">
-							<input type="submit" name="el_update_profile" class="button el_submit_btn" value="<?php esc_attr_e( 'Update Profile', 'eventlist' ); ?>" />
-							<span class="ova__loader">
-								<img src="<?php echo esc_url( includes_url() . 'js/tinymce/skins/lightgray/img//loader.gif' ); ?>" />
-							</span>
-							
-						</div>
-						
 						<?php wp_nonce_field( 'el_update_profile_nonce', 'el_update_profile_nonce' ); ?>
-					</form>
 
-				</div>
+				</div> <!-- End section_profile -->
 
 
-				<!-- Mon Organisation (NOUVEAU) -->
+				<!-- Section: Mon Organisation -->
 				<?php if( el_is_vendor() ){ ?>
-					<div id="author_organisation" class="tab-contents">
-						<h2><?php esc_html_e( 'Informations sur mon Organisation', 'eventlist' ); ?></h2>
-						<p class="description"><?php esc_html_e( 'Ces informations administratives sont nécessaires pour identifier et valider votre structure.', 'eventlist' ); ?></p>
-
-						<form id="el_save_organisation" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
+					<div id="section_organisation" class="event_section profile-section active-section">
+						<h4 class="heading_section"><?php esc_html_e( 'Mon Organisation', 'eventlist' ); ?></h4>
+						<p class="field_description"><?php esc_html_e( 'Ces informations administratives sont nécessaires pour identifier et valider votre structure.', 'eventlist' ); ?></p>
 
 							<!-- Nom de l'Organisation et Nom à afficher côte à côte -->
 							<div class="profile_row profile_row_2cols">
@@ -652,23 +660,14 @@ $user_meta_field = get_option( 'ova_register_form' );
 								</div>
 							</div>
 
-							<div class="vendor_field">
-								<input type="submit" name="el_update_organisation" class="button el_submit_btn" value="<?php esc_attr_e( 'Enregistrer', 'eventlist' ); ?>" />
-								<span class="ova__loader">
-									<img src="<?php echo esc_url( includes_url() . 'js/tinymce/skins/lightgray/img//loader.gif' ); ?>" />
-								</span>
-							</div>
-
 							<?php wp_nonce_field( 'el_update_organisation_nonce', 'el_update_organisation_nonce' ); ?>
-						</form>
 
-						<!-- Section Localisation de mon Organisation -->
-						<hr class="profile_section_separator">
+					</div> <!-- End section_organisation -->
 
-						<h2><?php esc_html_e( 'Localisation de mon Organisation', 'eventlist' ); ?></h2>
-						<p class="description"><?php esc_html_e( 'Ces informations sont nécessaires pour identifier et valider votre structure, ainsi que pour renseigner les utilisateurs si l\'adresse de votre structure est un lieu d\'accueil pour des événements.', 'eventlist' ); ?></p>
-
-						<form id="el_save_localisation" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
+					<!-- Section: Localisation de mon Organisation -->
+					<div id="section_localisation" class="event_section profile-section active-section">
+						<h4 class="heading_section"><?php esc_html_e( 'Localisation de mon Organisation', 'eventlist' ); ?></h4>
+						<p class="field_description"><?php esc_html_e( 'Ces informations sont nécessaires pour identifier et valider votre structure, ainsi que pour renseigner les utilisateurs si l\'adresse de votre structure est un lieu d\'accueil pour des événements.', 'eventlist' ); ?></p>
 
 							<!-- Layout avec carte à droite -->
 							<div class="profile_localisation_layout">
@@ -892,26 +891,15 @@ $user_meta_field = get_option( 'ova_register_form' );
 								</div>
 							</div>
 
-							<div class="vendor_field">
-								<input type="submit" name="el_update_localisation" class="button el_submit_btn" value="<?php esc_attr_e( 'Enregistrer', 'eventlist' ); ?>" />
-								<span class="ova__loader">
-									<img src="<?php echo esc_url( includes_url() . 'js/tinymce/skins/lightgray/img//loader.gif' ); ?>" />
-								</span>
-							</div>
-
 							<?php wp_nonce_field( 'el_update_localisation_nonce', 'el_update_localisation_nonce' ); ?>
-						</form>
-					</div>
-				<?php } ?>
+
+					</div> <!-- End section_localisation -->
 
 
-				<!-- Présentation (Profil Public) (NOUVEAU) -->
-				<?php if( el_is_vendor() ){ ?>
-					<div id="author_presentation" class="tab-contents">
-						<h2><?php esc_html_e( 'Présentation de mon Organisation', 'eventlist' ); ?></h2>
-						<p class="description"><?php esc_html_e( 'Remplissez cette section pour créer votre vitrine et rassurer les utilisateurs ; un profil complet augmente la confiance et le nombre de vos participants.', 'eventlist' ); ?></p>
-
-						<form id="el_save_presentation" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
+				<!-- Section: Présentation -->
+					<div id="section_presentation" class="event_section profile-section active-section">
+						<h4 class="heading_section"><?php esc_html_e( 'Présentation de mon Organisation', 'eventlist' ); ?></h4>
+						<p class="field_description"><?php esc_html_e( 'Remplissez cette section pour créer votre vitrine et rassurer les utilisateurs ; un profil complet augmente la confiance et le nombre de vos participants.', 'eventlist' ); ?></p>
 
 							<!-- Image de couverture et Logo côte à côte -->
 							<div class="profile_row profile_row_images">
@@ -1052,63 +1040,16 @@ $user_meta_field = get_option( 'ova_register_form' );
 									</select>
 								</div>
 
-							<div class="vendor_field">
-								<input type="submit" name="el_update_presentation" class="button el_submit_btn" value="<?php esc_attr_e( 'Enregistrer', 'eventlist' ); ?>" />
-								<span class="ova__loader">
-									<img src="<?php echo esc_url( includes_url() . 'js/tinymce/skins/lightgray/img//loader.gif' ); ?>" />
-								</span>
-							</div>
-
 							<?php wp_nonce_field( 'el_update_presentation_nonce', 'el_update_presentation_nonce' ); ?>
-						</form>
-					</div>
-				<?php } ?>
 
-				<!-- Onglet Localisation supprimé - fusionné dans "Mon Organisation" -->
-
-
-				<!-- Social (existant - on le garde pour l'instant) -->
-				<?php if( el_is_vendor() ){ ?>
-					<div id="author_social" class="tab-contents">
-						<form id="el_save_social" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
-
-							<div class="wrap_social">
-								<div class="social_list">
-									<?php if ($user_profile_social) { 
-										foreach ($user_profile_social as $k_social => $v_social) { 
-											if ($v_social[0] != '') { ?>
-												
-												<div class="social_item vendor_field">
-													<input type="text" name="<?php echo esc_attr('user_profile_social['.$k_social.'][link]'); ?>" class="link_social" value="<?php echo esc_attr($v_social[0]); ?>" placeholder="<?php echo esc_attr( 'https://' ); ?>" autocomplete="off" autocorrect="off" autocapitalize="none" />
-													<select name="<?php echo esc_attr('user_profile_social['.$k_social.'][icon]'); ?>" class="icon_social">
-														<?php foreach (el_get_social() as $k_icon => $v_icon) { ?>
-															<option value="<?php echo esc_attr($k_icon); ?>" <?php echo esc_attr($k_icon == $v_social[1] ? 'selected' : ''); ?> ><?php echo esc_html( $v_icon ); ?></option>
-														<?php } ?>
-													</select>
-													<button class="button remove_social">x</button>
-												</div>
-											<?php } 
-										} 
-									} ?>
-								</div>
-								<button class="button add_social"><i class="icon_plus"></i>&nbsp;<?php esc_html_e( 'Add Social', 'eventlist' ); ?></button>
-							</div>
-
-							<input type="submit" name="el_update_social" class="el_submit_btn" value="<?php esc_attr_e( 'Update Social', 'eventlist' ); ?>" class="el_update_social" />
-							
-							<?php wp_nonce_field( 'el_update_social_nonce', 'el_update_social_nonce' ); ?>
-						</form>
-						<div class="success_social" style="display: none;"><?php esc_html_e( 'Update Success', 'eventlist' ); ?></div>
-					</div>
+					</div> <!-- End section_presentation -->
 				<?php } ?>
 
 
-				<!-- Password -->
-				<div id="author_password" class="tab-contents">
-					<h2><?php esc_html_e( 'Modifier mon mot de passe de connexion', 'eventlist' ); ?></h2>
-					<p class="description"><?php esc_html_e( 'Pour des raisons de sécurité, veuillez confirmer votre mot de passe actuel avant de définir un nouveau mot de passe.', 'eventlist' ); ?></p>
-
-					<form id="el_save_password" enctype="multipart/form-data" method="post" autocomplete="off" autocorrect="off" autocapitalize="none">
+				<!-- Section: Mot de passe -->
+				<div id="section_password" class="event_section profile-section active-section">
+					<h4 class="heading_section"><?php esc_html_e( 'Mot de passe', 'eventlist' ); ?></h4>
+					<p class="field_description"><?php esc_html_e( 'Pour des raisons de sécurité, veuillez confirmer votre mot de passe actuel avant de définir un nouveau mot de passe.', 'eventlist' ); ?></p>
 
 						<!-- Old Password -->
 						<div class="wrap_old_password vendor_field">
@@ -1153,15 +1094,15 @@ $user_meta_field = get_option( 'ova_register_form' );
 							<input id="confirm_password" autocomplete="off" value="" name="confirm_password" type="password" placeholder="<?php esc_html_e( 'Retapez le nouveau mot de passe', 'eventlist' ) ?>" required>
 							<div class="check"></div>
 						</div>
-						<input type="submit" name="el_update_password" class="el_submit_btn" value="<?php esc_html_e( 'Mettre à jour mon mot de passe', 'eventlist' ); ?>" class="el_update_password" />
-						
 						<?php wp_nonce_field( 'el_update_password_nonce', 'el_update_password_nonce' ); ?>
 
-					</form>
-				</div>
+				</div> <!-- End section_password -->
 
 				<?php if( el_is_vendor() && apply_filters( 'el_profile_show_bank', true ) ){ ?>
-					<div id="author_bank" class="tab-contents">
+					<!-- Section: Informations de Paiement -->
+					<div id="section_bank" class="event_section profile-section active-section">
+						<h4 class="heading_section"><?php esc_html_e( 'Informations de Paiement', 'eventlist' ); ?></h4>
+						<p class="field_description"><?php esc_html_e( 'Configurez vos méthodes de paiement pour recevoir vos revenus.', 'eventlist' ); ?></p>
 
 						<!-- Message "À venir prochainement" selon CDC -->
 						<div class="coming-soon-message">
@@ -1393,11 +1334,23 @@ $user_meta_field = get_option( 'ova_register_form' );
 						</form>
 						<?php endif; // Fin du if(false) pour masquer le formulaire ?>
 
-					</div>
+					</div> <!-- End section_bank -->
 				<?php } ?>
 
+				<?php if( el_is_vendor() && EL()->options->checkout->get( 'split_payment_stripe_active', 'no' ) == 'yes' ){ ?>
+					<!-- Section: Stripe Connect -->
+					<div id="section_stripe" class="event_section profile-section active-section">
+						<h4 class="heading_section"><?php esc_html_e( 'Stripe Connect', 'eventlist' ); ?></h4>
+						<p class="field_description"><?php esc_html_e( 'Connectez votre compte Stripe pour recevoir vos paiements directement.', 'eventlist' ); ?></p>
+						<?php do_action( 'el_extra_profile' ); ?>
+					</div> <!-- End section_stripe -->
+				<?php } ?>
 
-			</div> <!-- End tab-contents -->
+				<!-- Champs cachés du formulaire global -->
+				<input type="hidden" name="user_id" value="<?php echo esc_attr($user_id); ?>">
+				<?php wp_nonce_field( 'el_save_profile_global_nonce', 'el_save_profile_global_nonce' ); ?>
+
+				</form> <!-- End el-vendor-profile-form -->
 
 			</div> <!-- End profile_content_area -->
 
