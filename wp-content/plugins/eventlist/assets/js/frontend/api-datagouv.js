@@ -321,9 +321,25 @@
         $('#user_postcode').val(data.code_postal).trigger('change');
         $('#user_country').val(data.pays).trigger('change');
 
-        // GPS
+        // GPS - Remplir les champs cachés
         $('#org_latitude').val(data.latitude).trigger('change');
         $('#org_longitude').val(data.longitude).trigger('change');
+
+        // GPS - Afficher les coordonnées dans le champ visible
+        if (data.latitude && data.longitude) {
+            $('#org_gps_display').val(data.latitude + ', ' + data.longitude);
+        }
+
+        // Mettre à jour la carte Leaflet
+        if (typeof window.updateProfileMap === 'function' && data.latitude && data.longitude) {
+            window.updateProfileMap(data.latitude, data.longitude);
+        }
+
+        // Mettre à jour le champ de recherche d'adresse
+        if (data.adresse_ligne1) {
+            const adresseComplete = [data.adresse_ligne1, data.code_postal, data.ville].filter(Boolean).join(' ');
+            $('#org_address_search').val(adresseComplete);
+        }
 
         // Cacher le champ de recherche et afficher le nom
         $('#org_name_search').hide();
@@ -347,9 +363,22 @@
         $('#user_postcode').val(data.code_postal).trigger('change');
         $('#user_country').val(data.pays).trigger('change');
 
-        // GPS
+        // GPS - Remplir les champs cachés
         $('#org_latitude').val(data.latitude).trigger('change');
         $('#org_longitude').val(data.longitude).trigger('change');
+
+        // GPS - Afficher les coordonnées dans le champ visible
+        if (data.latitude && data.longitude) {
+            $('#org_gps_display').val(data.latitude + ', ' + data.longitude);
+        }
+
+        // Mettre à jour la carte Leaflet
+        if (typeof window.updateProfileMap === 'function' && data.latitude && data.longitude) {
+            window.updateProfileMap(data.latitude, data.longitude);
+        }
+
+        // Mettre à jour le champ de recherche avec l'adresse complète
+        $('#org_address_search').val(data.adresse_complete || data.adresse_ligne1);
 
         // Valider les onglets
         if (typeof validateAllTabs === 'function') {
