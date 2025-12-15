@@ -140,6 +140,7 @@ class LMA_REST_Categories {
      */
     public function get_thematiques($request) {
         $include_count = $request->get_param('include_count') !== 'false';
+        $sort_by = $request->get_param('sort_by') ?: 'event_count'; // event_count (default) or name
 
         $terms = get_terms(array(
             'taxonomy' => 'event_thematique',
@@ -157,16 +158,16 @@ class LMA_REST_Categories {
         $thematiques = array();
 
         foreach ($terms as $term) {
+            // Toujours calculer le count pour le tri
+            $event_count = $this->get_upcoming_event_count($term->term_id, 'event_thematique');
+
             $thematique = array(
                 'id' => $term->term_id,
                 'name' => $term->name,
                 'slug' => $term->slug,
                 'description' => $term->description,
+                'event_count' => $event_count,
             );
-
-            if ($include_count) {
-                $thematique['event_count'] = $this->get_upcoming_event_count($term->term_id, 'event_thematique');
-            }
 
             // Get icon if exists
             $icon = get_term_meta($term->term_id, 'thematique_icon', true);
@@ -183,10 +184,28 @@ class LMA_REST_Categories {
             $thematiques[] = $thematique;
         }
 
-        // Sort by name
-        usort($thematiques, function($a, $b) {
-            return strcasecmp($a['name'], $b['name']);
-        });
+        // Sort by event_count (descending) or by name
+        if ($sort_by === 'name') {
+            usort($thematiques, function($a, $b) {
+                return strcasecmp($a['name'], $b['name']);
+            });
+        } else {
+            // Default: sort by event_count descending, then by name
+            usort($thematiques, function($a, $b) {
+                if ($a['event_count'] === $b['event_count']) {
+                    return strcasecmp($a['name'], $b['name']);
+                }
+                return $b['event_count'] - $a['event_count'];
+            });
+        }
+
+        // Remove event_count if not requested
+        if (!$include_count) {
+            $thematiques = array_map(function($t) {
+                unset($t['event_count']);
+                return $t;
+            }, $thematiques);
+        }
 
         return LMA_Response::success(array(
             'thematiques' => $thematiques,
