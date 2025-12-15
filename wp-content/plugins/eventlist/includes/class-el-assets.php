@@ -252,10 +252,10 @@ class EL_Assets{
 			wp_enqueue_script('el_profile_navigation', EL_PLUGIN_URI.'assets/js/frontend/profile-navigation.js', array('jquery', 'leaflet-js'),false,true );
 
 			// API data.gouv.fr - V1 Le Hiboo CDC
-			wp_enqueue_script('el_api_datagouv', EL_PLUGIN_URI.'assets/js/frontend/api-datagouv.js', array('jquery'),'1.0.0',true );
+			wp_enqueue_script('el_api_datagouv', EL_PLUGIN_URI.'assets/js/frontend/api-datagouv.js', array('jquery'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/frontend/api-datagouv.js'), true );
 
 			// Profile Validation (Score + Symboles + Validation) - V1 Le Hiboo CDC
-			wp_enqueue_script('el_profile_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-validation.js', array('jquery'),'1.0.0',true );
+			wp_enqueue_script('el_profile_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-validation.js', array('jquery'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/frontend/profile-validation.js'), true );
 
 			// Profile Presentation Validation (500 chars minimum) - V1 Le Hiboo
 			wp_enqueue_script('el_profile_presentation_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-presentation-validation.js', array('jquery'),'1.0.8',true );
