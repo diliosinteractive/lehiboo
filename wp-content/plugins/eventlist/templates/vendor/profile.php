@@ -41,6 +41,11 @@ $user_meta_field = get_option( 'ova_register_form' );
 <!-- Custom Assets for Profile Form - same style as Event Form -->
 <link rel="stylesheet" href="<?php echo EL_PLUGIN_URI . 'assets/css/vendor-event-form.css?v=' . time(); ?>">
 <link rel="stylesheet" href="<?php echo EL_PLUGIN_URI . 'assets/css/vendor-profile-form.css?v=' . time(); ?>">
+
+<!-- Leaflet CSS & JS for OSM Map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 <script src="<?php echo EL_PLUGIN_URI . 'assets/js/vendor-profile-form.js?v=' . time(); ?>" defer></script>
 
 <div class="vendor_wrap el-vendor-profile-form-wrapper">
@@ -689,39 +694,54 @@ $user_meta_field = get_option( 'ova_register_form' );
 							}
 							?>
 
-							<!-- Layout avec carte à droite -->
-							<div class="profile_localisation_layout">
-								<div class="localisation_fields">
+							<!-- Layout identique à la page Activités -->
+							<div class="location_fields_wrapper">
+								<div class="location_fields_left">
 									<!-- Nom du lieu (Select2 avec Nominatim) -->
 									<div class="vendor_field">
-										<label class="control-label" for="profile_venue_name">
-											<?php esc_html_e( 'Nom du lieu', 'eventlist' ); ?>
-										</label>
-										<select name="org_venue_name" id="profile_venue_name" class="profile_venue_select select2_venue">
+										<label for="profile_venue_name"><?php esc_html_e( 'Nom du lieu', 'eventlist' ); ?></label>
+										<select name="org_venue_name" id="profile_venue_name" class="location_venue_select select2_venue">
 											<option value=""><?php esc_html_e( 'Rechercher ou saisir un lieu...', 'eventlist' ); ?></option>
 											<?php if ( $org_venue_name ) : ?>
 												<option value="<?php echo esc_attr($org_venue_name); ?>" selected><?php echo esc_html($org_venue_name); ?></option>
 											<?php endif; ?>
 										</select>
-										<small class="field_hint"><?php esc_html_e( 'Recherchez un lieu (parc, maison des associations, salle...) ou saisissez le nom manuellement', 'eventlist' ); ?></small>
 									</div>
 
 									<!-- Adresse (Select2 avec Nominatim) -->
 									<div class="vendor_field">
-										<label class="control-label" for="profile_address">
-											<?php esc_html_e( 'Adresse de votre structure', 'eventlist' ); ?>
-											<sup class="symbol-required">*</sup>
-										</label>
-										<select name="user_address" id="profile_address" class="profile_address_select select2_address">
+										<label for="profile_address"><?php esc_html_e( 'Adresse', 'eventlist' ); ?></label>
+										<select name="user_address" id="profile_address" class="location_address_select select2_address">
 											<option value=""><?php esc_html_e( 'Rechercher une adresse...', 'eventlist' ); ?></option>
 											<?php if ( $user_address ) : ?>
 												<option value="<?php echo esc_attr($user_address); ?>" selected><?php echo esc_html($user_address); ?></option>
 											<?php endif; ?>
 										</select>
-										<small class="field_hint"><?php esc_html_e( 'Tapez au moins 3 caractères pour rechercher', 'eventlist' ); ?></small>
 									</div>
 
-									<!-- Champs cachés pour l'adresse (pour compatibilité) -->
+									<!-- Latitude -->
+									<div class="vendor_field">
+										<label for="org_latitude"><?php esc_html_e( 'Latitude', 'eventlist' ); ?></label>
+										<input type="text"
+											   name="org_latitude"
+											   id="org_latitude"
+											   value="<?php echo esc_attr( $latitude ); ?>"
+											   class="location_lat_input"
+											   placeholder="48.8566">
+									</div>
+
+									<!-- Longitude -->
+									<div class="vendor_field">
+										<label for="org_longitude"><?php esc_html_e( 'Longitude', 'eventlist' ); ?></label>
+										<input type="text"
+											   name="org_longitude"
+											   id="org_longitude"
+											   value="<?php echo esc_attr( $longitude ); ?>"
+											   class="location_lng_input"
+											   placeholder="2.3522">
+									</div>
+
+									<!-- Champs cachés pour l'adresse (compatibilité) -->
 									<input type="hidden" id="user_address_line1" name="user_address_line1" value="<?php echo esc_attr( get_user_meta( $user_id, 'user_address_line1', true ) ); ?>">
 									<input type="hidden" id="user_address_line2" name="user_address_line2" value="<?php echo esc_attr( get_user_meta( $user_id, 'user_address_line2', true ) ); ?>">
 									<input type="hidden" id="user_city" name="user_city" value="<?php echo esc_attr( get_user_meta( $user_id, 'user_city', true ) ); ?>">
@@ -729,40 +749,24 @@ $user_meta_field = get_option( 'ova_register_form' );
 									<input type="hidden" id="user_country" name="user_country" value="<?php echo esc_attr( get_user_meta( $user_id, 'user_country', true ) ?: 'FR' ); ?>">
 									<input type="hidden" id="user_lat" name="user_lat" value="<?php echo esc_attr( $latitude ); ?>">
 									<input type="hidden" id="user_lng" name="user_lng" value="<?php echo esc_attr( $longitude ); ?>">
-
-									<!-- Coordonnées GPS (lecture seule) -->
-									<div class="vendor_field">
-										<label class="control-label" for="org_gps_display">
-											<?php esc_html_e( 'Coordonnées GPS', 'eventlist' ); ?>
-										</label>
-										<?php
-										$gps_display = '';
-										if ( $latitude && $longitude ) {
-											$gps_display = $latitude . ', ' . $longitude;
-										}
-										?>
-										<input id="org_gps_display" type="text" readonly
-											value="<?php echo esc_attr( $gps_display ); ?>"
-											placeholder="<?php esc_attr_e( 'Renseigné automatiquement', 'eventlist' ); ?>">
-										<input type="hidden" id="org_latitude" name="org_latitude" value="<?php echo esc_attr( $latitude ); ?>">
-										<input type="hidden" id="org_longitude" name="org_longitude" value="<?php echo esc_attr( $longitude ); ?>">
-									</div>
-
-									<!-- Toggle "Adresse visible en ligne" -->
-									<div class="vendor_field toggle_field">
-										<label class="toggle_switch">
-											<input type="checkbox" id="org_address_visible" name="org_address_visible" value="yes"
-												<?php checked( get_user_meta( $user_id, 'org_address_visible', true ), 'yes' ); ?>>
-											<span class="toggle_slider"></span>
-										</label>
-										<span class="toggle_label"><?php esc_html_e( 'Rendre mon adresse visible en ligne', 'eventlist' ); ?></span>
-									</div>
 								</div>
 
-								<!-- Carte -->
-								<div class="localisation_map">
-									<div id="profile_map" class="profile_map_container" data-lat="<?php echo esc_attr( $latitude ?: '48.8566' ); ?>" data-lng="<?php echo esc_attr( $longitude ?: '2.3522' ); ?>"></div>
+								<div class="location_fields_right">
+									<!-- Carte OSM -->
+									<div class="location_map_container">
+										<div id="profile_osm_map" class="osm_map" data-lat="<?php echo esc_attr( $latitude ?: '48.8566' ); ?>" data-lng="<?php echo esc_attr( $longitude ?: '2.3522' ); ?>"></div>
+									</div>
 								</div>
+							</div>
+
+							<!-- Toggle "Adresse visible en ligne" -->
+							<div class="vendor_field toggle_field" style="margin-top: 20px;">
+								<label class="toggle_switch">
+									<input type="checkbox" id="org_address_visible" name="org_address_visible" value="yes"
+										<?php checked( get_user_meta( $user_id, 'org_address_visible', true ), 'yes' ); ?>>
+									<span class="toggle_slider"></span>
+								</label>
+								<span class="toggle_label"><?php esc_html_e( 'Rendre mon adresse visible en ligne', 'eventlist' ); ?></span>
 							</div>
 
 							<!-- Section Services et Accessibilité (dépliable) -->

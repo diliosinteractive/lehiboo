@@ -647,15 +647,126 @@ jQuery(document).ready(function ($) {
         $('#org_longitude').val(lon);
         $('#user_lat').val(lat);
         $('#user_lng').val(lon);
-        $('#org_gps_display').val(lat + ', ' + lon);
 
         // Update Leaflet map if available
-        if (typeof window.updateProfileMap === 'function') {
-            window.updateProfileMap(parseFloat(lat), parseFloat(lon));
+        if (profileMap && profileMarker) {
+            var latLng = [parseFloat(lat), parseFloat(lon)];
+            profileMarker.setLatLng(latLng);
+            profileMap.setView(latLng, 15);
         }
 
         // Update completion gauge
         updateCompletionGauge();
     }
+
+    /* ==========================================================================
+       9. Leaflet Map Initialization for Profile
+       ========================================================================== */
+
+    var profileMap = null;
+    var profileMarker = null;
+
+    function initProfileMap() {
+        var $mapContainer = $('#profile_osm_map');
+        if (!$mapContainer.length || typeof L === 'undefined') {
+            return;
+        }
+
+        var lat = parseFloat($mapContainer.data('lat')) || 48.8566;
+        var lng = parseFloat($mapContainer.data('lng')) || 2.3522;
+
+        // Initialize map
+        profileMap = L.map('profile_osm_map').setView([lat, lng], 15);
+
+        // Add OSM tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(profileMap);
+
+        // Add draggable marker
+        profileMarker = L.marker([lat, lng], { draggable: true }).addTo(profileMap);
+
+        // Handle marker drag
+        profileMarker.on('dragend', function(e) {
+            var pos = e.target.getLatLng();
+            $('#org_latitude').val(pos.lat.toFixed(6));
+            $('#org_longitude').val(pos.lng.toFixed(6));
+            $('#user_lat').val(pos.lat.toFixed(6));
+            $('#user_lng').val(pos.lng.toFixed(6));
+            reverseGeocode(pos.lat, pos.lng);
+        });
+
+        // Handle map click
+        profileMap.on('click', function(e) {
+            profileMarker.setLatLng(e.latlng);
+            $('#org_latitude').val(e.latlng.lat.toFixed(6));
+            $('#org_longitude').val(e.latlng.lng.toFixed(6));
+            $('#user_lat').val(e.latlng.lat.toFixed(6));
+            $('#user_lng').val(e.latlng.lng.toFixed(6));
+            reverseGeocode(e.latlng.lat, e.latlng.lng);
+        });
+
+        // Handle manual lat/lng input
+        $('#org_latitude, #org_longitude').on('change', function() {
+            var newLat = parseFloat($('#org_latitude').val());
+            var newLng = parseFloat($('#org_longitude').val());
+            if (!isNaN(newLat) && !isNaN(newLng)) {
+                var latLng = [newLat, newLng];
+                profileMarker.setLatLng(latLng);
+                profileMap.setView(latLng, 15);
+            }
+        });
+    }
+
+    // Reverse geocode to get address from coordinates
+    function reverseGeocode(lat, lng) {
+        $.ajax({
+            url: 'https://nominatim.openstreetmap.org/reverse',
+            data: {
+                lat: lat,
+                lon: lng,
+                format: 'json',
+                'accept-language': 'fr'
+            },
+            success: function(data) {
+                if (data && data.display_name) {
+                    var $addressSelect = $('#profile_address');
+                    $addressSelect.empty();
+                    $addressSelect.append(new Option(data.display_name, data.display_name, true, true));
+                    $addressSelect.trigger('change');
+
+                    // Update hidden fields
+                    if (data.address) {
+                        var addr = data.address;
+                        var streetAddress = [addr.house_number, addr.road].filter(Boolean).join(' ');
+                        $('#user_address_line1').val(streetAddress || data.display_name.split(',')[0]);
+                        $('#user_city').val(addr.city || addr.town || addr.village || addr.municipality || '');
+                        $('#user_postcode').val(addr.postcode || '');
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize map when Leaflet is loaded
+    if (typeof L !== 'undefined') {
+        initProfileMap();
+    } else {
+        // Wait for Leaflet to load
+        $(window).on('load', function() {
+            if (typeof L !== 'undefined') {
+                initProfileMap();
+            }
+        });
+    }
+
+    // Expose function for external use
+    window.updateProfileMap = function(lat, lng) {
+        if (profileMap && profileMarker) {
+            var latLng = [lat, lng];
+            profileMarker.setLatLng(latLng);
+            profileMap.setView(latLng, 15);
+        }
+    };
 
 });
