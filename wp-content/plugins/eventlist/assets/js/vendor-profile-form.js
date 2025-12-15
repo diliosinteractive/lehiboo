@@ -459,77 +459,6 @@ jQuery(document).ready(function ($) {
        8. Location Fields - Select2 with Nominatim (OpenStreetMap)
        ========================================================================== */
 
-    // Initialize Select2 for venue name (tags mode - can create new)
-    if ($('#profile_venue_name').length && $.fn.select2) {
-        $('#profile_venue_name').select2({
-            tags: true,
-            placeholder: 'Rechercher ou saisir un lieu...',
-            allowClear: true,
-            width: '100%',
-            minimumInputLength: 2,
-            language: {
-                inputTooShort: function() {
-                    return 'Saisissez au moins 2 caractères';
-                },
-                searching: function() {
-                    return 'Recherche...';
-                },
-                noResults: function() {
-                    return 'Tapez pour créer un nouveau lieu';
-                }
-            },
-            ajax: {
-                url: 'https://nominatim.openstreetmap.org/search',
-                dataType: 'json',
-                delay: 300,
-                data: function(params) {
-                    return {
-                        q: params.term,
-                        format: 'json',
-                        addressdetails: 1,
-                        limit: 10,
-                        countrycodes: 'fr',
-                        'accept-language': 'fr'
-                    };
-                },
-                processResults: function(data) {
-                    return {
-                        results: data.map(function(item) {
-                            // Extraire le nom du lieu (première partie avant la virgule)
-                            var name = item.display_name.split(',')[0];
-                            return {
-                                id: name,
-                                text: item.display_name,
-                                name: name,
-                                lat: item.lat,
-                                lon: item.lon,
-                                full_address: item.display_name
-                            };
-                        })
-                    };
-                }
-            },
-            templateResult: formatVenueResult,
-            templateSelection: function(data) {
-                return data.name || data.text || data.id;
-            }
-        });
-
-        // When venue is selected, also update address
-        $('#profile_venue_name').on('select2:select', function(e) {
-            var data = e.params.data;
-            if (data.full_address && data.lat && data.lon) {
-                // Update address select with the full address
-                var $addressSelect = $('#profile_address');
-                var newOption = new Option(data.full_address, data.full_address, true, true);
-                $addressSelect.append(newOption).trigger('change');
-
-                // Update coordinates
-                updateLocationCoordinates(data.lat, data.lon);
-            }
-        });
-    }
-
     // Initialize Select2 for address (search only - no tags)
     if ($('#profile_address').length && $.fn.select2) {
         $('#profile_address').select2({
@@ -596,31 +525,6 @@ jQuery(document).ready(function ($) {
                 }
             }
         });
-    }
-
-    // Format venue search results
-    function formatVenueResult(item) {
-        if (item.loading) {
-            return $('<span>Recherche...</span>');
-        }
-
-        var $container = $(
-            '<div class="select2-result-venue">' +
-                '<div class="select2-result-venue__icon"><i class="fa fa-map-marker-alt"></i></div>' +
-                '<div class="select2-result-venue__info">' +
-                    '<div class="select2-result-venue__name"></div>' +
-                    '<div class="select2-result-venue__address"></div>' +
-                '</div>' +
-            '</div>'
-        );
-
-        var name = item.name || item.text.split(',')[0];
-        var address = item.full_address || item.text;
-
-        $container.find('.select2-result-venue__name').text(name);
-        $container.find('.select2-result-venue__address').text(address);
-
-        return $container;
     }
 
     // Format address search results

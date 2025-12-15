@@ -697,17 +697,6 @@ $user_meta_field = get_option( 'ova_register_form' );
 							<!-- Layout identique à la page Activités -->
 							<div class="location_fields_wrapper">
 								<div class="location_fields_left">
-									<!-- Nom du lieu (Select2 avec Nominatim) -->
-									<div class="vendor_field">
-										<label for="profile_venue_name"><?php esc_html_e( 'Nom du lieu', 'eventlist' ); ?></label>
-										<select name="org_venue_name" id="profile_venue_name" class="location_venue_select select2_venue">
-											<option value=""><?php esc_html_e( 'Rechercher ou saisir un lieu...', 'eventlist' ); ?></option>
-											<?php if ( $org_venue_name ) : ?>
-												<option value="<?php echo esc_attr($org_venue_name); ?>" selected><?php echo esc_html($org_venue_name); ?></option>
-											<?php endif; ?>
-										</select>
-									</div>
-
 									<!-- Adresse (Select2 avec Nominatim) -->
 									<div class="vendor_field">
 										<label for="profile_address"><?php esc_html_e( 'Adresse', 'eventlist' ); ?></label>
