@@ -201,7 +201,19 @@ $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_tic
 					<i class="icon_profile"></i><?php esc_html_e( 'Mon Profil', 'eventlist' ); ?>
 				</a>
 			</li>
-			
+
+			<?php // V1 Le Hiboo - Mes Documents (entre Mon Profil et Deconnexion)
+			if ( el_is_vendor() ) :
+				$missing_docs = class_exists( 'EL_Vendor_Documents' ) ? EL_Vendor_Documents::get_missing_required_documents( get_current_user_id() ) : array();
+				$doc_badge = ! empty( $missing_docs ) ? '<span class="doc_badge" style="background:#dc3545;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;margin-left:5px;">' . count( $missing_docs ) . '</span>' : '';
+			?>
+			<li class="menu_vendor_documents <?php if ($vendor == 'documents') echo esc_attr('active');  ?>">
+				<a href="<?php echo add_query_arg( array( 'vendor' => 'documents'), get_myaccount_page() ); ?>">
+					<i class="icon_document"></i><?php esc_html_e( 'Mes Documents', 'eventlist' ); echo $doc_badge; ?>
+				</a>
+			</li>
+			<?php endif; ?>
+
 			<?php if( is_user_logged_in() ) { ?>
 				<li class="menu_vendor_logout">
 					<a href="<?php echo apply_filters( 'el_logout_url' ,wp_logout_url() ); ?>">

@@ -224,6 +224,15 @@ class EL_Vendor {
 			}
 			break;
 
+			// V1 Le Hiboo - Mes Documents (gestion documents partenaire)
+			case 'documents':
+			if( el_is_vendor() ){
+				$template = apply_filters( 'el_shortcode_documents_template', 'vendor/documents.php' );
+			}else{
+				$template = apply_filters( 'el_shortcode_myaccount_template_profile', 'vendor/profile.php' );
+			}
+			break;
+
 
 		}
 

@@ -171,6 +171,15 @@ final class EventList{
 		require_once EL_PLUGIN_INC . 'vendor/class-el-vendor-media-manager.php';
 		require_once EL_PLUGIN_INC . 'vendor/class-el-vendor-media-ajax.php';
 
+		// V1 Le Hiboo - Vendor Documents (Secure Document Management)
+		require_once EL_PLUGIN_INC . 'documents/class-el-document-database.php';
+		require_once EL_PLUGIN_INC . 'documents/class-el-document-types.php';
+		require_once EL_PLUGIN_INC . 'documents/class-el-vendor-documents.php';
+		require_once EL_PLUGIN_INC . 'documents/class-el-document-audit.php';
+		require_once EL_PLUGIN_INC . 'documents/class-el-document-file-handler.php';
+		require_once EL_PLUGIN_INC . 'documents/class-el-document-ajax.php';
+		require_once EL_PLUGIN_INC . 'documents/class-el-document-notifications.php';
+
 		// Analytics
 		require_once EL_PLUGIN_INC . 'class-el-analytics.php';
 

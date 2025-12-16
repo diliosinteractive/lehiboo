@@ -70,6 +70,11 @@ function el_plugin_activate() {
 	require_once EL_PLUGIN_INC . 'coorganisateurs/class-el-coorg-database.php';
 	EL_Coorg_Database::create_tables();
 
+	// V1 Le Hiboo - Install documents tables
+	require_once EL_PLUGIN_INC . 'documents/class-el-document-database.php';
+	EL_Document_Database::create_tables();
+	EL_Document_Database::insert_default_document_types();
+
 	// Flush rewrite rules
 	flush_rewrite_rules();
 }

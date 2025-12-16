@@ -124,7 +124,13 @@ class El_Admin_Menus{
 		// V1 Le Hiboo - Dashboard Partenaires (Admin)
 		add_submenu_page( 'eventlist', esc_html__( 'Dashboard Partenaires', 'eventlist' ), esc_html__( 'Dashboard Partenaires', 'eventlist' ), 'manage_options', 'el_vendor_dashboard', array( $this, 'el_register_vendor_dashboard' ) );
 
+		// V1 Le Hiboo - Gestion des Documents Partenaires
+		add_submenu_page( 'eventlist', esc_html__( 'Types de Documents', 'eventlist' ), esc_html__( 'Types de Documents', 'eventlist' ), 'manage_options', 'el_document_types', array( $this, 'el_register_document_types' ) );
 
+		// Compteur de documents en attente
+		$pending_count = class_exists( 'EL_Vendor_Documents' ) ? EL_Vendor_Documents::count_by_status( 'pending' ) : 0;
+		$pending_badge = $pending_count > 0 ? ' <span class="awaiting-mod">' . $pending_count . '</span>' : '';
+		add_submenu_page( 'eventlist', esc_html__( 'Documents Partenaires', 'eventlist' ), esc_html__( 'Documents Partenaires', 'eventlist' ) . $pending_badge, 'manage_options', 'el_vendor_documents', array( $this, 'el_register_vendor_documents' ) );
 
 
 		do_action( 'el_add_submenu_page' );
@@ -182,6 +188,20 @@ class El_Admin_Menus{
 	 */
 	public function el_register_vendor_dashboard() {
 		EL()->_include( EL_PLUGIN_INC . 'admin/views/settings/vendor_dashboard.php' );
+	}
+
+	/**
+	 * V1 Le Hiboo - Types de Documents (Admin)
+	 */
+	public function el_register_document_types() {
+		EL()->_include( EL_PLUGIN_INC . 'admin/views/settings/document_types.php' );
+	}
+
+	/**
+	 * V1 Le Hiboo - Documents Partenaires (Admin)
+	 */
+	public function el_register_vendor_documents() {
+		EL()->_include( EL_PLUGIN_INC . 'admin/views/settings/vendor_documents.php' );
 	}
 
 	/**

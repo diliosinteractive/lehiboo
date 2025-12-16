@@ -45,6 +45,8 @@
 		$title = esc_html__( 'My Wishlist', 'eventlist' );
 	}else if( $vendor == 'profile' ){
 		$title = esc_html__( 'My Profile', 'eventlist' );
+	}else if( $vendor == 'documents' ){
+		$title = esc_html__( 'Mes Documents', 'eventlist' );
 	}else if( $vendor == 'manage_event' && $eid && $tab == ''){
 		$title = esc_html__( 'General', 'eventlist' );
 	}else if( $vendor == 'manage_event' && $eid && $tab == 'bookings'){
