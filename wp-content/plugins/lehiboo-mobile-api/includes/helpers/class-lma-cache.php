@@ -31,6 +31,7 @@ class LMA_Cache {
     private static $groups = array(
         'events_list' => self::TTL_SHORT,      // Events list changes frequently
         'event_detail' => self::TTL_MEDIUM,    // Single event details
+        'home_feed' => self::TTL_SHORT,        // Home feed (today/tomorrow/recommended)
         'categories' => self::TTL_LONG,        // Categories change rarely
         'thematiques' => self::TTL_LONG,       // Thematiques change rarely
         'cities' => self::TTL_LONG,            // Cities change rarely
@@ -220,6 +221,9 @@ class LMA_Cache {
     public static function invalidate_events($event_id = null) {
         // Clear events list cache (all variations)
         self::clear_group('events_list');
+
+        // Clear home feed cache
+        self::clear_group('home_feed');
 
         // Clear specific event if provided
         if ($event_id) {

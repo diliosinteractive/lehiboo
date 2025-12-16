@@ -125,6 +125,7 @@ final class LeHiboo_Mobile_API {
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-organizers.php';
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-docs.php';
         require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-alerts.php';
+        require_once LMA_PLUGIN_DIR . 'includes/api/class-lma-rest-home-feed.php';
 
         // Initialize taxonomy image support
         new LMA_Taxonomy_Image();
@@ -466,6 +467,7 @@ final class LeHiboo_Mobile_API {
             new LMA_REST_Organizers(),
             new LMA_REST_Docs(),
             new LMA_REST_Alerts(),
+            new LMA_REST_Home_Feed(),
         );
 
         foreach ($controllers as $controller) {
