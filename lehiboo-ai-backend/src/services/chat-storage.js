@@ -161,6 +161,16 @@ export function isUsingPostgres() {
 }
 
 /**
+ * Obtenir le pool PostgreSQL (pour partage avec autres services)
+ */
+export function getPool() {
+  if (usePostgres) {
+    return pgStorage.getPool();
+  }
+  return null;
+}
+
+/**
  * Compter les messages utilisateur sur une période (pour quota)
  * @param {string} userId - ID utilisateur
  * @param {number} days - Nombre de jours (défaut: 7)
@@ -192,5 +202,6 @@ export default {
   getPopularEvents,
   getCategoryPerformance,
   getUserMessageCountForPeriod,
-  isUsingPostgres
+  isUsingPostgres,
+  getPool
 };

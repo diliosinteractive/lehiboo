@@ -11,9 +11,11 @@ import config from './config/index.js';
 import logger from './utils/logger.js';
 import chatRoutes from './routes/chat.js';
 import mobileRoutes from './routes/mobile.js';
+import hibonsRoutes from './routes/hibons.js';
 import { testOpenAIConnection } from './services/ai-service-v2.js';
 import weatherService from './services/weather-service.js';
 import chatStorage from './services/chat-storage.js';
+import { initHibonsServices } from './services/hibons/index.js';
 
 // Créer l'application Express
 const app = express();
@@ -83,16 +85,18 @@ app.use((req, res, next) => {
 // Routes - Support direct et via proxy /api-planner
 app.use('/', chatRoutes);
 app.use('/mobile', mobileRoutes);
+app.use('/hibons', hibonsRoutes);
 
 // Routes avec prefix pour proxy Plesk (preprod.lehiboo.com/api-planner/*)
 app.use('/api-planner', chatRoutes);
 app.use('/api-planner/mobile', mobileRoutes);
+app.use('/api-planner/hibons', hibonsRoutes);
 
 // Route racine
 app.get('/', (req, res) => {
   res.json({
     name: 'Le Hiboo AI Backend',
-    version: '1.1.0',
+    version: '1.2.0',
     status: 'running',
     endpoints: {
       web: {
@@ -105,6 +109,17 @@ app.get('/', (req, res) => {
         search: 'POST /mobile/search',
         categories: 'GET /mobile/categories',
         cities: 'GET /mobile/cities'
+      },
+      hibons: {
+        wallet: 'GET /hibons/wallet',
+        balance: 'GET /hibons/balance',
+        transactions: 'GET /hibons/transactions',
+        dailyReward: 'GET /hibons/daily-reward',
+        achievements: 'GET /hibons/achievements',
+        challenges: 'GET /hibons/challenges',
+        leaderboard: 'GET /hibons/leaderboard',
+        wheel: 'GET /hibons/wheel',
+        shop: 'GET /hibons/shop'
       }
     },
   });
@@ -139,6 +154,16 @@ async function startServer() {
     logger.info('Initializing chat storage...');
     const usingPostgres = await chatStorage.initStorage();
     logger.info(usingPostgres ? '✅ PostgreSQL storage ready' : '⚠️  Using JSON file storage (PostgreSQL unavailable)');
+
+    // Initialiser les services Hibons (gamification)
+    if (usingPostgres) {
+      logger.info('Initializing Hibons services...');
+      const pool = chatStorage.getPool();
+      const hibonsReady = initHibonsServices(pool);
+      logger.info(hibonsReady ? '✅ Hibons services ready' : '⚠️  Hibons services failed to initialize');
+    } else {
+      logger.warn('⚠️  Hibons services disabled (requires PostgreSQL)');
+    }
 
     // Tester la connexion OpenAI
     logger.info('Testing OpenAI connection...');

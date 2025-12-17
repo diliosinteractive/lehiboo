@@ -55,6 +55,13 @@ export function isDatabaseConnected() {
 }
 
 /**
+ * Obtenir le pool de connexions (pour partage avec autres services)
+ */
+export function getPool() {
+  return pool;
+}
+
+/**
  * Obtenir ou créer une conversation
  */
 async function getOrCreateConversation(userId, conversationId) {
@@ -519,6 +526,7 @@ export async function closeDatabase() {
 export default {
   initDatabase,
   isDatabaseConnected,
+  getPool,
   saveMessage,
   saveEventImpressions,
   markEventClicked,
