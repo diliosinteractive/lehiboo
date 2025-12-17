@@ -15,22 +15,48 @@ let isConnected = false;
 
 /**
  * Initialiser la connexion PostgreSQL
+ * Supporte DATABASE_URL ou paramètres séparés (POSTGRES_HOST, etc.)
  */
 export async function initDatabase() {
   const databaseUrl = process.env.DATABASE_URL;
+  const pgHost = process.env.POSTGRES_HOST;
+  const pgPort = process.env.POSTGRES_PORT || 5432;
+  const pgDb = process.env.POSTGRES_DB;
+  const pgUser = process.env.POSTGRES_USER;
+  const pgPassword = process.env.POSTGRES_PASSWORD;
 
-  if (!databaseUrl) {
-    logger.warn('DATABASE_URL not set, PostgreSQL storage disabled');
+  // Vérifier si on a une config valide
+  const hasUrlConfig = !!databaseUrl;
+  const hasParamsConfig = pgHost && pgDb && pgUser;
+
+  if (!hasUrlConfig && !hasParamsConfig) {
+    logger.warn('PostgreSQL config not set (need DATABASE_URL or POSTGRES_* params)');
     return false;
   }
 
   try {
-    pool = new Pool({
-      connectionString: databaseUrl,
+    // Construire la config du pool
+    let poolConfig = {
       max: 10,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 5000,
-    });
+    };
+
+    if (hasParamsConfig) {
+      // Utiliser les paramètres séparés (plus robuste pour les mots de passe spéciaux)
+      poolConfig.host = pgHost;
+      poolConfig.port = parseInt(pgPort, 10);
+      poolConfig.database = pgDb;
+      poolConfig.user = pgUser;
+      poolConfig.password = pgPassword;
+      logger.info('Using PostgreSQL with individual parameters', { host: pgHost, port: pgPort, database: pgDb });
+    } else {
+      // Utiliser DATABASE_URL
+      poolConfig.connectionString = databaseUrl;
+      logger.info('Using PostgreSQL with DATABASE_URL');
+    }
+
+    pool = new Pool(poolConfig);
 
     // Test connection
     const client = await pool.connect();
