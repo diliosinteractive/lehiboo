@@ -556,6 +556,163 @@ export async function getReferralStats(userId) {
   }
 }
 
+// ============================================
+// CHAT CREDITS MANAGEMENT
+// ============================================
+
+/**
+ * Obtenir les crédits de chat disponibles pour un utilisateur
+ * Retourne les messages bonus non utilisés et le statut illimité
+ */
+export async function getChatCredits(userId) {
+  if (!pool) return { bonusMessages: 0, unlimited: false, unlimitedUntil: null };
+
+  try {
+    // Vérifier le mode illimité actif
+    const unlimitedResult = await pool.query(
+      `SELECT expires_at FROM hibons_purchases
+       WHERE user_id = $1
+         AND item_id = 'chat_unlimited_24h'
+         AND status = 'completed'
+         AND expires_at > NOW()
+       ORDER BY expires_at DESC
+       LIMIT 1`,
+      [userId]
+    );
+
+    const unlimited = unlimitedResult.rows.length > 0;
+    const unlimitedUntil = unlimited ? unlimitedResult.rows[0].expires_at : null;
+
+    // Compter les messages bonus disponibles
+    // Chaque achat stocke credits_remaining dans metadata
+    const messagesResult = await pool.query(
+      `SELECT COALESCE(SUM((metadata->>'credits_remaining')::int), 0) as total_remaining
+       FROM hibons_purchases
+       WHERE user_id = $1
+         AND item_id IN ('chat_message_1', 'chat_message_5')
+         AND status IN ('completed', 'partial')
+         AND (metadata->>'credits_remaining')::int > 0`,
+      [userId]
+    );
+
+    const bonusMessages = parseInt(messagesResult.rows[0]?.total_remaining || 0, 10);
+
+    logger.info('Hibons: Chat credits checked', { userId, bonusMessages, unlimited, unlimitedUntil });
+
+    return {
+      bonusMessages,
+      unlimited,
+      unlimitedUntil
+    };
+  } catch (error) {
+    logger.error('Hibons: Error getting chat credits', { error: error.message, userId });
+    return { bonusMessages: 0, unlimited: false, unlimitedUntil: null };
+  }
+}
+
+/**
+ * Consommer un crédit de message chat bonus
+ * Retourne true si un crédit a été consommé, false sinon
+ */
+export async function useChatCredit(userId) {
+  if (!pool) return false;
+
+  try {
+    // Trouver le premier achat avec des crédits disponibles et décrémenter
+    const result = await pool.query(
+      `UPDATE hibons_purchases
+       SET metadata = jsonb_set(
+             metadata,
+             '{credits_remaining}',
+             to_jsonb((metadata->>'credits_remaining')::int - 1)
+           ),
+           status = CASE
+             WHEN (metadata->>'credits_remaining')::int - 1 = 0 THEN 'used'
+             ELSE 'partial'
+           END,
+           used_at = CASE
+             WHEN (metadata->>'credits_remaining')::int - 1 = 0 THEN NOW()
+             ELSE used_at
+           END
+       WHERE id = (
+         SELECT id FROM hibons_purchases
+         WHERE user_id = $1
+           AND item_id IN ('chat_message_1', 'chat_message_5')
+           AND status IN ('completed', 'partial')
+           AND (metadata->>'credits_remaining')::int > 0
+         ORDER BY created_at ASC
+         LIMIT 1
+       )
+       RETURNING id, (metadata->>'credits_remaining')::int as remaining`,
+      [userId]
+    );
+
+    if (result.rows.length > 0) {
+      logger.info('Hibons: Chat credit used', {
+        userId,
+        purchaseId: result.rows[0].id,
+        remaining: result.rows[0].remaining
+      });
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    logger.error('Hibons: Error using chat credit', { error: error.message, userId });
+    return false;
+  }
+}
+
+/**
+ * Ajouter des crédits de message chat (appelé lors de l'achat)
+ */
+export async function addChatCredits(userId, itemId, quantity) {
+  if (!pool) return { success: false, error: 'Service unavailable' };
+
+  try {
+    // Enregistrer l'achat avec credits_remaining = quantity
+    const result = await pool.query(
+      `INSERT INTO hibons_purchases (user_id, item_id, cost, status, metadata, created_at)
+       VALUES ($1, $2, 0, 'completed', $3, NOW())
+       RETURNING id`,
+      [userId, itemId, JSON.stringify({ quantity, credits_remaining: quantity })]
+    );
+
+    logger.info('Hibons: Chat credits added', { userId, itemId, quantity, purchaseId: result.rows[0].id });
+
+    return { success: true, purchaseId: result.rows[0].id, quantity };
+  } catch (error) {
+    logger.error('Hibons: Error adding chat credits', { error: error.message, userId });
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Activer le mode chat illimité (24h ou autre durée)
+ */
+export async function activateChatUnlimited(userId, durationSeconds) {
+  if (!pool) return { success: false, error: 'Service unavailable' };
+
+  try {
+    const expiresAt = new Date();
+    expiresAt.setSeconds(expiresAt.getSeconds() + durationSeconds);
+
+    const result = await pool.query(
+      `INSERT INTO hibons_purchases (user_id, item_id, cost, status, expires_at, metadata, created_at)
+       VALUES ($1, 'chat_unlimited_24h', 0, 'completed', $2, $3, NOW())
+       RETURNING id`,
+      [userId, expiresAt.toISOString(), JSON.stringify({ duration: durationSeconds })]
+    );
+
+    logger.info('Hibons: Chat unlimited activated', { userId, expiresAt, purchaseId: result.rows[0].id });
+
+    return { success: true, purchaseId: result.rows[0].id, expiresAt };
+  } catch (error) {
+    logger.error('Hibons: Error activating chat unlimited', { error: error.message, userId });
+    return { success: false, error: error.message };
+  }
+}
+
 export default {
   initPool,
   isReady,
@@ -571,5 +728,10 @@ export default {
   activateMultiplier,
   updateLevel,
   applyReferralCode,
-  getReferralStats
+  getReferralStats,
+  // Chat credits
+  getChatCredits,
+  useChatCredit,
+  addChatCredits,
+  activateChatUnlimited
 };

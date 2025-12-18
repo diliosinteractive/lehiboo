@@ -587,7 +587,7 @@ export async function purchaseShopItem(req, res) {
       return res.status(400).json(debit);
     }
 
-    // Appliquer l'effet
+    // Appliquer l'effet selon le type d'item
     let effectResult = null;
 
     if (item.action === 'activateStreakShield') {
@@ -596,7 +596,26 @@ export async function purchaseShopItem(req, res) {
       effectResult = { message: 'Tour de roue disponible' };
     } else if (item.value?.multiplier) {
       effectResult = await walletService.activateMultiplier(req.userId, item.value.multiplier, item.value.duration);
+    } else if (item.value?.type === 'chat_message') {
+      // Ajouter des crédits de messages chat
+      effectResult = await walletService.addChatCredits(req.userId, itemId, item.value.quantity);
+      if (effectResult.success) {
+        effectResult.message = `+${item.value.quantity} message(s) Petit Boo ajouté(s)`;
+      }
+    } else if (item.value?.type === 'chat_unlimited') {
+      // Activer le mode chat illimité
+      effectResult = await walletService.activateChatUnlimited(req.userId, item.value.duration);
+      if (effectResult.success) {
+        effectResult.message = `Chat illimité activé jusqu'à ${new Date(effectResult.expiresAt).toLocaleString('fr-FR')}`;
+      }
     }
+
+    logger.info('Hibons: Shop item purchased', {
+      userId: req.userId,
+      itemId,
+      cost: item.cost,
+      effectType: item.value?.type || item.action
+    });
 
     res.json({
       success: true,

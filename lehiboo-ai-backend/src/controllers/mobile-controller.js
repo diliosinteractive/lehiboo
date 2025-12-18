@@ -5,6 +5,7 @@
 import { generateMobileResponse } from '../services/ai-service-mobile.js';
 import weatherService from '../services/weather-service.js';
 import chatStorage from '../services/chat-storage.js';
+import { walletService } from '../services/hibons/index.js';
 import logger from '../utils/logger.js';
 import crypto from 'crypto';
 
@@ -42,37 +43,88 @@ export async function handleMobileChat(req, res) {
     // === VÉRIFICATION DU QUOTA ===
     // Le quota n'est vérifié que pour les utilisateurs authentifiés (userId)
     // Les utilisateurs anonymes ne sont pas limités (mais leurs messages ne sont pas sauvegardés)
+    let usedBonusCredit = false;
+
     if (userId) {
-      const { count, resetDate } = await chatStorage.getUserMessageCountForPeriod(
-        userId,
-        CHAT_QUOTA.PERIOD_DAYS
-      );
+      // Vérifier les crédits Hibons (mode illimité ou messages bonus)
+      const chatCredits = await walletService.getChatCredits(userId);
 
-      logger.info('User quota check', {
-        userId,
-        messageCount: count,
-        limit: CHAT_QUOTA.LIMIT,
-        resetDate
-      });
+      // Si mode illimité actif, on passe directement
+      if (chatCredits.unlimited) {
+        logger.info('User has unlimited chat mode', {
+          userId,
+          unlimitedUntil: chatCredits.unlimitedUntil
+        });
+      } else {
+        // Vérifier le quota de base
+        const { count, resetDate } = await chatStorage.getUserMessageCountForPeriod(
+          userId,
+          CHAT_QUOTA.PERIOD_DAYS
+        );
 
-      // Si la limite est atteinte, renvoyer une erreur 403
-      if (count >= CHAT_QUOTA.LIMIT) {
-        logger.warn('User quota exceeded', {
+        logger.info('User quota check', {
           userId,
           messageCount: count,
-          limit: CHAT_QUOTA.LIMIT
+          limit: CHAT_QUOTA.LIMIT,
+          bonusMessages: chatCredits.bonusMessages,
+          resetDate
         });
 
-        return res.status(403).json({
-          success: false,
-          error: 'LIMIT_REACHED',
-          message: `Vous avez atteint votre limite de ${CHAT_QUOTA.LIMIT} messages par semaine.`,
-          data: {
-            limit: CHAT_QUOTA.LIMIT,
-            used: count,
-            reset_date: resetDate
+        // Si la limite de base est atteinte
+        if (count >= CHAT_QUOTA.LIMIT) {
+          // Vérifier si l'utilisateur a des messages bonus
+          if (chatCredits.bonusMessages > 0) {
+            // Consommer un crédit bonus
+            const creditUsed = await walletService.useChatCredit(userId);
+            if (creditUsed) {
+              usedBonusCredit = true;
+              logger.info('User used bonus chat credit', {
+                userId,
+                remainingBonus: chatCredits.bonusMessages - 1
+              });
+            } else {
+              // Échec de la consommation du crédit
+              return res.status(403).json({
+                success: false,
+                error: 'LIMIT_REACHED',
+                message: `Vous avez atteint votre limite de ${CHAT_QUOTA.LIMIT} messages par semaine.`,
+                data: {
+                  limit: CHAT_QUOTA.LIMIT,
+                  used: count,
+                  bonus_available: 0,
+                  reset_date: resetDate,
+                  can_purchase_more: true
+                }
+              });
+            }
+          } else {
+            // Pas de bonus disponible, bloquer
+            logger.warn('User quota exceeded', {
+              userId,
+              messageCount: count,
+              limit: CHAT_QUOTA.LIMIT,
+              bonusMessages: 0
+            });
+
+            return res.status(403).json({
+              success: false,
+              error: 'LIMIT_REACHED',
+              message: `Vous avez atteint votre limite de ${CHAT_QUOTA.LIMIT} messages par semaine. Achetez des messages supplémentaires avec vos Hibons !`,
+              data: {
+                limit: CHAT_QUOTA.LIMIT,
+                used: count,
+                bonus_available: 0,
+                reset_date: resetDate,
+                can_purchase_more: true,
+                shop_items: [
+                  { id: 'chat_message_1', name: '+1 message', cost: 50 },
+                  { id: 'chat_message_5', name: '+5 messages', cost: 200 },
+                  { id: 'chat_unlimited_24h', name: 'Illimité 24h', cost: 300 }
+                ]
+              }
+            });
           }
-        });
+        }
       }
     }
 
@@ -507,6 +559,7 @@ export async function handleMobileChatClear(req, res) {
 /**
  * GET /mobile/chat/quota
  * Récupère le quota de messages restant pour un utilisateur
+ * Inclut les bonus Hibons (messages achetés et mode illimité)
  */
 export async function handleMobileChatQuota(req, res) {
   try {
@@ -519,30 +572,54 @@ export async function handleMobileChatQuota(req, res) {
       });
     }
 
+    // Récupérer le quota de base
     const { count, resetDate } = await chatStorage.getUserMessageCountForPeriod(
       userId,
       CHAT_QUOTA.PERIOD_DAYS
     );
 
-    const remaining = Math.max(0, CHAT_QUOTA.LIMIT - count);
-    const isLimitReached = count >= CHAT_QUOTA.LIMIT;
+    // Récupérer les crédits Hibons
+    const chatCredits = await walletService.getChatCredits(userId);
+
+    const baseRemaining = Math.max(0, CHAT_QUOTA.LIMIT - count);
+    const totalRemaining = chatCredits.unlimited ? 999 : baseRemaining + chatCredits.bonusMessages;
+    const isLimitReached = !chatCredits.unlimited && baseRemaining === 0 && chatCredits.bonusMessages === 0;
 
     logger.info('Quota check', {
       userId,
       used: count,
-      remaining,
+      baseRemaining,
+      bonusMessages: chatCredits.bonusMessages,
+      unlimited: chatCredits.unlimited,
       limit: CHAT_QUOTA.LIMIT
     });
 
     return res.json({
       success: true,
       data: {
+        // Quota de base
         limit: CHAT_QUOTA.LIMIT,
         used: count,
-        remaining,
-        is_limit_reached: isLimitReached,
+        remaining: baseRemaining,
+        period_days: CHAT_QUOTA.PERIOD_DAYS,
         reset_date: resetDate,
-        period_days: CHAT_QUOTA.PERIOD_DAYS
+
+        // Bonus Hibons
+        bonus_messages: chatCredits.bonusMessages,
+        unlimited: chatCredits.unlimited,
+        unlimited_until: chatCredits.unlimitedUntil,
+
+        // Résumé
+        total_remaining: totalRemaining,
+        is_limit_reached: isLimitReached,
+        can_purchase_more: true,
+
+        // Items disponibles à l'achat
+        shop_items: [
+          { id: 'chat_message_1', name: '+1 message', cost: 50 },
+          { id: 'chat_message_5', name: '+5 messages', cost: 200 },
+          { id: 'chat_unlimited_24h', name: 'Illimité 24h', cost: 300 }
+        ]
       }
     });
 
