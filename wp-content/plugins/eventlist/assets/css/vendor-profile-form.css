@@ -957,10 +957,11 @@
 }
 
 .el-vendor-profile-form-wrapper .social_item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 12px !important;
     background: #f9fafb;
     padding: 12px;
     border-radius: 8px;
@@ -969,11 +970,12 @@
     box-sizing: border-box;
 }
 
+.el-vendor-profile-form-wrapper .social_item select.icon_social,
 .el-vendor-profile-form-wrapper .social_item .icon_social {
-    width: 140px;
-    min-width: 140px;
-    max-width: 140px;
-    flex-shrink: 0;
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+    flex: 0 0 150px !important;
     padding: 10px 12px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
@@ -982,9 +984,11 @@
     color: #374151;
 }
 
+.el-vendor-profile-form-wrapper .social_item input.link_social,
 .el-vendor-profile-form-wrapper .social_item .link_social {
-    flex: 1 1 auto;
-    min-width: 200px;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    width: auto !important;
     padding: 10px 12px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
@@ -998,12 +1002,13 @@
     box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
 }
 
-.el-vendor-profile-form-wrapper .social_item .btn_remove_social {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    max-width: 40px;
-    flex-shrink: 0;
+.el-vendor-profile-form-wrapper .social_item .btn_remove_social,
+.el-vendor-profile-form-wrapper .social_item button.btn_remove_social {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    flex: 0 0 40px !important;
     border: none;
     background: #fee2e2;
     color: #dc2626;
@@ -1078,4 +1083,8 @@
     height: 20px;
     width: 20px;
     bottom: 2px;
+}
+
+.vendor_wrap .contents .vendor_edit_event .vendor_field:last-child, .vendor_edit_event .vendor_field:last-child, .vendor_wrap .contents .vendor_profile .vendor_field:last-child, .vendor_profile .vendor_field:last-child {
+    margin-bottom: 24px;
 }
