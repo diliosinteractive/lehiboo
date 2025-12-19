@@ -46,7 +46,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-<script src="<?php echo EL_PLUGIN_URI . 'assets/js/vendor-profile-form.js?v=' . time(); ?>" defer></script>
+<!-- Note: vendor-profile-form.js est chargé via wp_enqueue_script dans class-el-assets.php -->
 
 <div class="vendor_wrap el-vendor-profile-form-wrapper">
 	<?php echo el_get_template( 'vendor/sidebar.php' ); ?>

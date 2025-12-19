@@ -976,12 +976,17 @@
     min-width: 150px !important;
     max-width: 150px !important;
     flex: 0 0 150px !important;
-    padding: 10px 12px;
+    padding: 10px 32px 10px 12px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
-    background: #fff;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M2 4l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 10px center;
+    background-size: 12px;
     font-size: 14px;
     color: #374151;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 .el-vendor-profile-form-wrapper .social_item input.link_social,
