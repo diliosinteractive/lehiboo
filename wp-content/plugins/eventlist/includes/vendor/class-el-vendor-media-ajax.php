@@ -212,6 +212,7 @@ class EL_Vendor_Media_Ajax {
         }
 
         $tree = isset( $_POST['tree'] ) ? (bool) $_POST['tree'] : false;
+        $user_id = get_current_user_id();
 
         if ( $tree ) {
             $folders = EL_Vendor_Folders::get_folder_tree();
@@ -219,8 +220,12 @@ class EL_Vendor_Media_Ajax {
             $folders = EL_Vendor_Folders::get_user_folders();
         }
 
+        // Compter le total de toutes les images
+        $total = EL_Vendor_Media_Manager::count_all_images( $user_id );
+
         wp_send_json_success( array(
             'folders' => $folders,
+            'total'   => $total,
         ) );
     }
 

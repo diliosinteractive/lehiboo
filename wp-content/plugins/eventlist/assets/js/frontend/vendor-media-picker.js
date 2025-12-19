@@ -441,7 +441,7 @@
                 },
                 success: function(response) {
                     if (response.success && response.data.folders) {
-                        self.renderFolders(response.data.folders);
+                        self.renderFolders(response.data.folders, response.data.total || 0);
                     }
                 }
             });
@@ -450,14 +450,16 @@
         /**
          * Rendre les dossiers
          */
-        renderFolders: function(folders) {
+        renderFolders: function(folders, total) {
             const $container = $('#media_picker_modal .picker_folders');
+            total = total || 0;
 
-            // Garder "Toutes les images"
+            // Garder "Toutes les images" avec le total
             let html = `
                 <div class="picker_folder_item active" data-folder-id="0">
                     <i class="fa fa-home"></i>
                     <span>Toutes les images</span>
+                    <span class="folder_count">(${total})</span>
                 </div>
             `;
 
