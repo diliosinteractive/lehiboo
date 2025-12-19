@@ -916,9 +916,10 @@
 .el-vendor-profile-form-wrapper .password_change_block .show_pass {
     position: absolute;
     right: 14px;
-    top: 50%;
-    margin-top: 10px; /* Compense la hauteur du label */
-    transform: translateY(-50%);
+    top: auto;
+    bottom: 12px;
+    margin-top: 0;
+    transform: none;
     width: 24px;
     height: 24px;
     display: flex;

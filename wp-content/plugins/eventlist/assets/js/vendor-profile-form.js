@@ -658,17 +658,20 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    // Show/Hide password toggle
-    $('.show_pass').on('click', function() {
+    // Show/Hide password toggle - utiliser la délégation d'événements
+    $(document).on('click', '.show_pass', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         var targetId = $(this).data('target');
         var $input = $('#' + targetId);
         var $icon = $(this).find('i');
 
-        if ($input.attr('type') === 'password') {
+        if ($input.length && $input.attr('type') === 'password') {
             // Afficher le mot de passe → icône œil ouvert
             $input.attr('type', 'text');
             $icon.removeClass('fa-eye-slash').addClass('fa-eye');
-        } else {
+        } else if ($input.length) {
             // Masquer le mot de passe → icône œil barré
             $input.attr('type', 'password');
             $icon.removeClass('fa-eye').addClass('fa-eye-slash');
