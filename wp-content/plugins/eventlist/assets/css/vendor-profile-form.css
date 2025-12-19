@@ -916,7 +916,7 @@
 .el-vendor-profile-form-wrapper .password_change_block .show_pass {
     position: absolute;
     right: 14px;
-    top: auto;
+    top: 30px;
     bottom: 12px;
     margin-top: 0;
     transform: none;
