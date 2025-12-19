@@ -188,14 +188,26 @@ if ( $author_id_image ) {
 			$org_video = get_user_meta( $author_id, 'org_video', true );
 			$org_event_type = get_user_meta( $author_id, 'org_event_type', true );
 			$org_stationnement = get_user_meta( $author_id, 'org_stationnement', true );
+
+			// Récupérer tous les services
 			$org_pmr = get_user_meta( $author_id, 'org_pmr', true );
 			$org_restauration = get_user_meta( $author_id, 'org_restauration', true );
 			$org_boisson = get_user_meta( $author_id, 'org_boisson', true );
+			$org_parking = get_user_meta( $author_id, 'org_parking', true );
+			$org_transport = get_user_meta( $author_id, 'org_transport', true );
+			$org_wifi = get_user_meta( $author_id, 'org_wifi', true );
+			$org_animaux = get_user_meta( $author_id, 'org_animaux', true );
+			$org_bebe = get_user_meta( $author_id, 'org_bebe', true );
 
 			// Récupérer les descriptions complémentaires
 			$org_pmr_infos = get_user_meta( $author_id, 'org_pmr_infos', true );
 			$org_restauration_infos = get_user_meta( $author_id, 'org_restauration_infos', true );
 			$org_boisson_infos = get_user_meta( $author_id, 'org_boisson_infos', true );
+			$org_parking_infos = get_user_meta( $author_id, 'org_parking_infos', true );
+			$org_transport_infos = get_user_meta( $author_id, 'org_transport_infos', true );
+			$org_wifi_infos = get_user_meta( $author_id, 'org_wifi_infos', true );
+			$org_animaux_infos = get_user_meta( $author_id, 'org_animaux_infos', true );
+			$org_bebe_infos = get_user_meta( $author_id, 'org_bebe_infos', true );
 			?>
 			<div class="stats_grid">
 				<div class="stat_card">
@@ -240,7 +252,18 @@ if ( $author_id_image ) {
 					</div>
 
 					<!-- Infos Pratiques -->
-					<?php if ( ($org_pmr && $org_pmr === 'oui') || ($org_restauration && $org_restauration === 'oui') || ($org_boisson && $org_boisson === 'oui') || $org_stationnement || $org_event_type ) : ?>
+					<?php
+					$has_services = ($org_pmr && $org_pmr === 'oui') ||
+						($org_restauration && $org_restauration === 'oui') ||
+						($org_boisson && $org_boisson === 'oui') ||
+						($org_parking && $org_parking === 'oui') ||
+						($org_transport && $org_transport === 'oui') ||
+						($org_wifi && $org_wifi === 'oui') ||
+						($org_animaux && $org_animaux === 'oui') ||
+						($org_bebe && $org_bebe === 'oui') ||
+						$org_stationnement || $org_event_type;
+					?>
+					<?php if ( $has_services ) : ?>
 						<div class="practical_info">
 							<?php if ( $org_pmr && $org_pmr === 'oui' ) : ?>
 								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_pmr_infos ? $org_pmr_infos : __( 'Établissement accessible aux personnes à mobilité réduite', 'eventlist' ) ); ?>">
@@ -263,9 +286,44 @@ if ( $author_id_image ) {
 								</div>
 							<?php endif; ?>
 
+							<?php if ( $org_parking && $org_parking === 'oui' ) : ?>
+								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_parking_infos ? $org_parking_infos : __( 'Parking disponible sur place', 'eventlist' ) ); ?>">
+									<i class="fas fa-parking"></i>
+									<span><?php esc_html_e( 'Parking sur place', 'eventlist' ); ?></span>
+								</div>
+							<?php endif; ?>
+
+							<?php if ( $org_transport && $org_transport === 'oui' ) : ?>
+								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_transport_infos ? $org_transport_infos : __( 'Accessible en transports en commun', 'eventlist' ) ); ?>">
+									<i class="fas fa-bus"></i>
+									<span><?php esc_html_e( 'Transports en commun', 'eventlist' ); ?></span>
+								</div>
+							<?php endif; ?>
+
+							<?php if ( $org_wifi && $org_wifi === 'oui' ) : ?>
+								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_wifi_infos ? $org_wifi_infos : __( 'Wifi disponible', 'eventlist' ) ); ?>">
+									<i class="fas fa-wifi"></i>
+									<span><?php esc_html_e( 'Wifi', 'eventlist' ); ?></span>
+								</div>
+							<?php endif; ?>
+
+							<?php if ( $org_animaux && $org_animaux === 'oui' ) : ?>
+								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_animaux_infos ? $org_animaux_infos : __( 'Les animaux sont acceptés', 'eventlist' ) ); ?>">
+									<i class="fas fa-paw"></i>
+									<span><?php esc_html_e( 'Animaux acceptés', 'eventlist' ); ?></span>
+								</div>
+							<?php endif; ?>
+
+							<?php if ( $org_bebe && $org_bebe === 'oui' ) : ?>
+								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_bebe_infos ? $org_bebe_infos : __( 'Adapté aux bébés et jeunes enfants', 'eventlist' ) ); ?>">
+									<i class="fas fa-baby"></i>
+									<span><?php esc_html_e( 'Adapté aux bébés', 'eventlist' ); ?></span>
+								</div>
+							<?php endif; ?>
+
 							<?php if ( $org_stationnement ) : ?>
 								<div class="info_item" data-tooltip="<?php echo esc_attr( $org_stationnement ); ?>">
-									<i class="fas fa-parking"></i>
+									<i class="fas fa-car"></i>
 									<span><?php esc_html_e( 'Stationnement', 'eventlist' ); ?></span>
 								</div>
 							<?php endif; ?>
@@ -277,7 +335,7 @@ if ( $author_id_image ) {
 									$event_type_label = __( 'Événements en intérieur', 'eventlist' );
 								} elseif ( $org_event_type === 'exterieur' ) {
 									$event_type_label = __( 'Événements en extérieur', 'eventlist' );
-								} elseif ( $org_event_type === 'mixte' ) {
+								} elseif ( $org_event_type === 'mixte' || $org_event_type === 'interieur_exterieur' ) {
 									$event_type_label = __( 'Événements en intérieur et extérieur', 'eventlist' );
 								}
 								?>

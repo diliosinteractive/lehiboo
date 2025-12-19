@@ -243,6 +243,11 @@ class LMA_REST_Organizers {
         $org_pmr = get_user_meta($user_id, 'org_pmr', true);
         $org_restauration = get_user_meta($user_id, 'org_restauration', true);
         $org_boisson = get_user_meta($user_id, 'org_boisson', true);
+        $org_parking = get_user_meta($user_id, 'org_parking', true);
+        $org_transport = get_user_meta($user_id, 'org_transport', true);
+        $org_wifi = get_user_meta($user_id, 'org_wifi', true);
+        $org_animaux = get_user_meta($user_id, 'org_animaux', true);
+        $org_bebe = get_user_meta($user_id, 'org_bebe', true);
         $org_stationnement = get_user_meta($user_id, 'org_stationnement', true);
         $org_event_type = get_user_meta($user_id, 'org_event_type', true);
 
@@ -323,6 +328,16 @@ class LMA_REST_Organizers {
                 'restauration_infos' => get_user_meta($user_id, 'org_restauration_infos', true) ?: null,
                 'boisson' => $org_boisson === 'oui',
                 'boisson_infos' => get_user_meta($user_id, 'org_boisson_infos', true) ?: null,
+                'parking' => $org_parking === 'oui',
+                'parking_infos' => get_user_meta($user_id, 'org_parking_infos', true) ?: null,
+                'transport' => $org_transport === 'oui',
+                'transport_infos' => get_user_meta($user_id, 'org_transport_infos', true) ?: null,
+                'wifi' => $org_wifi === 'oui',
+                'wifi_infos' => get_user_meta($user_id, 'org_wifi_infos', true) ?: null,
+                'animaux' => $org_animaux === 'oui',
+                'animaux_infos' => get_user_meta($user_id, 'org_animaux_infos', true) ?: null,
+                'bebe' => $org_bebe === 'oui',
+                'bebe_infos' => get_user_meta($user_id, 'org_bebe_infos', true) ?: null,
                 'stationnement' => $org_stationnement ?: null,
                 'event_type' => $org_event_type ?: null,
                 'event_type_label' => $this->get_event_type_label($org_event_type),
