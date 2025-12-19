@@ -525,6 +525,11 @@ jQuery(document).ready(function ($) {
             return;
         }
 
+        // Éviter la double initialisation
+        if (profileMap !== null) {
+            return;
+        }
+
         var lat = parseFloat($mapContainer.data('lat')) || 48.8566;
         var lng = parseFloat($mapContainer.data('lng')) || 2.3522;
 
@@ -654,11 +659,13 @@ jQuery(document).ready(function ($) {
         var $icon = $(this).find('i');
 
         if ($input.attr('type') === 'password') {
+            // Afficher le mot de passe → icône œil ouvert
             $input.attr('type', 'text');
-            $icon.removeClass('fa-eye').addClass('fa-eye-slash');
-        } else {
-            $input.attr('type', 'password');
             $icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        } else {
+            // Masquer le mot de passe → icône œil barré
+            $input.attr('type', 'password');
+            $icon.removeClass('fa-eye').addClass('fa-eye-slash');
         }
     });
 

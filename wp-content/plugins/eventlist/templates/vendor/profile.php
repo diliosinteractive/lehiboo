@@ -318,7 +318,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 										<?php esc_html_e( 'Mot de passe actuel', 'eventlist' ); ?>
 									</label>
 									<input id="user_password_old" name="user_password_old" type="password" autocomplete="current-password" placeholder="<?php esc_attr_e( 'Votre mot de passe actuel', 'eventlist' ); ?>">
-									<span class="show_pass" data-target="user_password_old"><i class="fa fa-eye"></i></span>
+									<span class="show_pass" data-target="user_password_old"><i class="fa fa-eye-slash"></i></span>
 								</div>
 
 								<!-- Nouveau mot de passe -->
@@ -327,7 +327,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 										<?php esc_html_e( 'Nouveau mot de passe', 'eventlist' ); ?>
 									</label>
 									<input id="user_password_new" name="user_password_new" type="password" autocomplete="new-password" placeholder="<?php esc_attr_e( 'Minimum 8 caractères', 'eventlist' ); ?>">
-									<span class="show_pass" data-target="user_password_new"><i class="fa fa-eye"></i></span>
+									<span class="show_pass" data-target="user_password_new"><i class="fa fa-eye-slash"></i></span>
 								</div>
 							</div>
 
@@ -338,7 +338,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 										<?php esc_html_e( 'Confirmer le nouveau mot de passe', 'eventlist' ); ?>
 									</label>
 									<input id="user_password_confirm" name="user_password_confirm" type="password" autocomplete="new-password" placeholder="<?php esc_attr_e( 'Confirmez votre nouveau mot de passe', 'eventlist' ); ?>">
-									<span class="show_pass" data-target="user_password_confirm"><i class="fa fa-eye"></i></span>
+									<span class="show_pass" data-target="user_password_confirm"><i class="fa fa-eye-slash"></i></span>
 								</div>
 								<!-- Espace vide pour l'alignement -->
 								<div class="vendor_field"></div>
