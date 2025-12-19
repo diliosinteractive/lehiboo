@@ -929,7 +929,99 @@
 }
 
 /* ==========================================================================
-   13. Responsive Adjustments
+   13. Social Networks
+   ========================================================================== */
+
+.el-vendor-profile-form-wrapper .social_networks_field {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.el-vendor-profile-form-wrapper .social_items_wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.el-vendor-profile-form-wrapper .social_item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f9fafb;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.el-vendor-profile-form-wrapper .social_item .icon_social {
+    width: 150px;
+    min-width: 150px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 14px;
+    color: #374151;
+}
+
+.el-vendor-profile-form-wrapper .social_item .link_social {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.el-vendor-profile-form-wrapper .social_item .link_social:focus {
+    border-color: #FF6600;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+}
+
+.el-vendor-profile-form-wrapper .social_item .btn_remove_social {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border: none;
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.el-vendor-profile-form-wrapper .social_item .btn_remove_social:hover {
+    background: #fecaca;
+    color: #b91c1c;
+}
+
+.el-vendor-profile-form-wrapper .btn_add_social {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #f3f4f6;
+    border: 1px dashed #d1d5db;
+    border-radius: 6px;
+    color: #374151;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.el-vendor-profile-form-wrapper .btn_add_social:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+    color: #111827;
+}
+
+/* ==========================================================================
+   14. Responsive Adjustments
    ========================================================================== */
 
 @media (max-width: 992px) {

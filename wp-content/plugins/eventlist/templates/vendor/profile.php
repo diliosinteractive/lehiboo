@@ -80,24 +80,12 @@ $user_meta_field = get_option( 'ova_register_form' );
 
 			<!-- Navigation verticale à gauche -->
 			<div class="profile_navigation_sidebar">
-				<div class="profile_user_header">
-					<div class="profile_avatar">
-						<?php
-						$img_path = ( $author_id_image && wp_get_attachment_image_url($author_id_image, 'el_thumbnail') ) ? wp_get_attachment_image_url($author_id_image, 'el_thumbnail') : EL_PLUGIN_URI.'assets/img/unknow_user.png';
-						?>
-						<img src="<?php echo esc_url($img_path); ?>" alt="<?php echo esc_attr($display_name); ?>">
-					</div>
-					<div class="profile_user_info">
-						<h3><?php echo esc_html( $display_name ); ?></h3>
-					</div>
-				</div>
-
 				<nav class="profile_tabs_nav el-anchor-nav">
 					<ul>
 						<li class="profile_tab_item active">
 							<a href="#section_profile">
 								<i class="icon_profile"></i>
-								<span><?php esc_html_e( 'Informations Personnelles', 'eventlist' ); ?></span>
+								<span><?php esc_html_e( 'Mes informations professionnelles', 'eventlist' ); ?></span>
 								<i class="icon_check_alt2 status-icon"></i>
 							</a>
 						</li>
@@ -177,10 +165,10 @@ $user_meta_field = get_option( 'ova_register_form' );
 				<!-- Formulaire global pour le profil -->
 				<form action="" method="post" id="el-vendor-profile-form" enctype="multipart/form-data">
 
-				<!-- Section: Informations Personnelles -->
+				<!-- Section: Mes informations professionnelles -->
 				<div id="section_profile" class="event_section profile-section active-section">
 
-					<h4 class="heading_section"><?php esc_html_e( 'Informations Personnelles', 'eventlist' ); ?></h4>
+					<h4 class="heading_section"><?php esc_html_e( 'Mes informations professionnelles', 'eventlist' ); ?></h4>
 					<p class="field_description"><?php esc_html_e( 'Ces informations sont nécessaires pour gérer votre profil Administrateur du compte professionnel de votre organisation.', 'eventlist' ); ?></p>
 
 					<!-- Légende ajoutée dynamiquement par profile-validation.js -->
@@ -271,20 +259,27 @@ $user_meta_field = get_option( 'ova_register_form' );
 							<?php
 							$show_job = $OVALG_Settings ? $OVALG_Settings->show_job() : 'yes';
 							if( apply_filters( 'ovalg_register_user_show_job', true ) && $show_job == 'yes' ){
-								$available_jobs = get_option( 'el_job_positions_list', array(
-									'directeur' => __( 'Directeur / Directrice', 'eventlist' ),
-									'responsable' => __( 'Responsable événementiel', 'eventlist' ),
-									'charge_projet' => __( 'Chargé de projet', 'eventlist' ),
-									'coordinateur' => __( 'Coordinateur', 'eventlist' ),
-									'animateur' => __( 'Animateur', 'eventlist' ),
-									'artiste' => __( 'Artiste', 'eventlist' ),
-									'technicien' => __( 'Technicien', 'eventlist' ),
-									'benevole' => __( 'Bénévole', 'eventlist' ),
-									'president' => __( 'Président(e)', 'eventlist' ),
-									'secretaire' => __( 'Secrétaire', 'eventlist' ),
-									'tresorier' => __( 'Trésorier', 'eventlist' ),
-									'autre' => __( 'Autre', 'eventlist' ),
+								// Récupérer la liste des postes depuis les options admin
+								$postes_list = get_option( 'el_postes_list', array(
+									'Dirigeant(e)',
+									'Responsable événementiel',
+									'Responsable de communication / marketing',
+									'Chargé(e) de communication',
+									'Chargé(e) de programmation',
+									'Community Manager',
+									'Médiateur(rice) culturel(le)',
+									'Chef de projets',
+									'Responsable administratif',
+									'Secrétaire / Assistant(e)',
+									'Animateur(rice) / Intervenant(e)',
+									'Autre',
 								));
+								// Convertir en tableau associatif (clé = slug, valeur = label)
+								$available_jobs = array();
+								foreach ( $postes_list as $poste ) {
+									$key = sanitize_title( $poste );
+									$available_jobs[ $key ] = $poste;
+								}
 							?>
 								<div class="vendor_field">
 									<label class="control-label" for="user_job">
@@ -1120,6 +1115,51 @@ $user_meta_field = get_option( 'ova_register_form' );
 										<option value="interieur_exterieur" <?php selected( $org_event_type, 'interieur_exterieur' ); ?>><?php esc_html_e( 'Intérieur & Extérieur', 'eventlist' ); ?></option>
 									</select>
 								</div>
+
+							<!-- Réseaux sociaux -->
+							<div class="vendor_field social_networks_field">
+								<label class="control-label">
+									<?php esc_html_e( 'Réseaux sociaux', 'eventlist' ); ?>
+								</label>
+								<small class="form-text text-muted" style="margin-bottom: 15px; display: block;">
+									<?php esc_html_e( 'Ajoutez les liens vers vos réseaux sociaux pour permettre aux utilisateurs de vous suivre.', 'eventlist' ); ?>
+								</small>
+
+								<div class="social_items_wrapper" id="social_items_wrapper">
+									<?php
+									$socials = get_user_meta( $user_id, 'user_profile_social', true );
+									if ( ! empty( $socials ) && is_array( $socials ) ) :
+										foreach ( $socials as $index => $social ) :
+											$icon = isset( $social['icon'] ) ? $social['icon'] : '';
+											$link = isset( $social['link'] ) ? $social['link'] : '';
+											?>
+											<div class="social_item">
+												<select name="user_profile_social[<?php echo esc_attr( $index ); ?>][icon]" class="icon_social">
+													<?php foreach ( el_get_social() as $key => $value ) : ?>
+														<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $icon, $key ); ?>>
+															<?php echo esc_html( $value ); ?>
+														</option>
+													<?php endforeach; ?>
+												</select>
+												<input type="url"
+													name="user_profile_social[<?php echo esc_attr( $index ); ?>][link]"
+													class="link_social"
+													value="<?php echo esc_url( $link ); ?>"
+													placeholder="<?php esc_attr_e( 'https://...', 'eventlist' ); ?>" />
+												<button type="button" class="btn_remove_social" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
+													<i class="fa fa-trash"></i>
+												</button>
+											</div>
+											<?php
+										endforeach;
+									endif;
+									?>
+								</div>
+
+								<button type="button" class="el_button el_button_secondary btn_add_social" id="btn_add_social">
+									<i class="fa fa-plus"></i> <?php esc_html_e( 'Ajouter un réseau social', 'eventlist' ); ?>
+								</button>
+							</div>
 
 							<?php wp_nonce_field( 'el_update_presentation_nonce', 'el_update_presentation_nonce' ); ?>
 

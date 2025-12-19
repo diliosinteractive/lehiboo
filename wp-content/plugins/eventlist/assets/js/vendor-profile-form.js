@@ -230,21 +230,8 @@ jQuery(document).ready(function ($) {
     }
 
     /* ==========================================================================
-       4. Password Toggle
+       4. Password Toggle (géré plus bas dans la section Password Change)
        ========================================================================== */
-
-    $('.show_pass').on('click', function () {
-        var $input = $(this).siblings('input');
-        var $icon = $(this).find('i');
-
-        if ($input.attr('type') === 'password') {
-            $input.attr('type', 'text');
-            $icon.removeClass('dashicons-hidden').addClass('dashicons-visibility');
-        } else {
-            $input.attr('type', 'password');
-            $icon.removeClass('dashicons-visibility').addClass('dashicons-hidden');
-        }
-    });
 
     /* ==========================================================================
        5. Image Selection via Media Picker (Cover & Logo)
@@ -674,5 +661,57 @@ jQuery(document).ready(function ($) {
             $icon.removeClass('fa-eye-slash').addClass('fa-eye');
         }
     });
+
+    /* ==========================================================================
+       Social Networks Management
+       ========================================================================== */
+
+    // Liste des réseaux sociaux disponibles (synchronisée avec PHP el_get_social())
+    var socialNetworks = {
+        'social_facebook_circle': 'Facebook',
+        'social_twitter_circle': 'Twitter',
+        'social_tiktok_circle': 'TikTok',
+        'social_pinterest_circle': 'Pinterest',
+        'social_instagram_circle': 'Instagram',
+        'social_linkedin_circle': 'LinkedIn',
+        'social_youtube_circle': 'YouTube',
+        'social_vimeo_circle': 'Vimeo'
+    };
+
+    // Ajouter un nouveau réseau social
+    $('#btn_add_social').on('click', function() {
+        var $wrapper = $('#social_items_wrapper');
+        var newIndex = $wrapper.find('.social_item').length;
+
+        var optionsHtml = '';
+        $.each(socialNetworks, function(key, value) {
+            optionsHtml += '<option value="' + key + '">' + value + '</option>';
+        });
+
+        var newItem = '<div class="social_item">' +
+            '<select name="user_profile_social[' + newIndex + '][icon]" class="icon_social">' +
+            optionsHtml +
+            '</select>' +
+            '<input type="url" name="user_profile_social[' + newIndex + '][link]" class="link_social" value="" placeholder="https://..." />' +
+            '<button type="button" class="btn_remove_social" title="Supprimer"><i class="fa fa-trash"></i></button>' +
+            '</div>';
+
+        $wrapper.append(newItem);
+    });
+
+    // Supprimer un réseau social
+    $(document).on('click', '.btn_remove_social', function() {
+        $(this).closest('.social_item').remove();
+        // Réindexer les champs pour éviter les trous
+        reindexSocialItems();
+    });
+
+    // Réindexer les champs de réseaux sociaux
+    function reindexSocialItems() {
+        $('#social_items_wrapper .social_item').each(function(index) {
+            $(this).find('.icon_social').attr('name', 'user_profile_social[' + index + '][icon]');
+            $(this).find('.link_social').attr('name', 'user_profile_social[' + index + '][link]');
+        });
+    }
 
 });

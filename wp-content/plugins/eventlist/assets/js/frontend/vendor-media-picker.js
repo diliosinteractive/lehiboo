@@ -381,9 +381,9 @@
 
                 const file = validFiles[index];
                 const formData = new FormData();
-                formData.append('action', 'el_vendor_upload_image');
+                formData.append('action', 'el_vendor_upload_media');
                 formData.append('nonce', window.EL_MediaManager.nonce);
-                formData.append('image', file);
+                formData.append('files', file);
                 formData.append('folder_id', self.currentFolder);
 
                 $.ajax({
@@ -436,7 +436,8 @@
                 type: 'POST',
                 data: {
                     action: 'el_vendor_get_folders',
-                    nonce: window.EL_MediaManager.nonce
+                    nonce: window.EL_MediaManager.nonce,
+                    tree: true // Pour récupérer les compteurs d'images
                 },
                 success: function(response) {
                     if (response.success && response.data.folders) {

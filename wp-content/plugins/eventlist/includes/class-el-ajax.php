@@ -1425,6 +1425,12 @@ if( !class_exists( 'El_Ajax' ) ){
 				$service_info = isset( $post_data['service_' . $service . '_info'] ) ? sanitize_text_field( $post_data['service_' . $service . '_info'] ) : '';
 				update_user_meta( $user_id, 'service_' . $service, $service_enabled );
 				update_user_meta( $user_id, 'service_' . $service . '_info', $service_info );
+
+				// Synchroniser avec les clés org_* utilisées par le front-end
+				// Le front attend 'oui'/'non' au lieu de 'yes'/'no'
+				$org_value = ( $service_enabled === 'yes' ) ? 'oui' : 'non';
+				update_user_meta( $user_id, 'org_' . $service, $org_value );
+				update_user_meta( $user_id, 'org_' . $service . '_infos', $service_info );
 			}
 
 			// === Section Présentation ===
