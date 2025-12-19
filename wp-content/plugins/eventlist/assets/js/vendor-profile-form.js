@@ -357,52 +357,8 @@ jQuery(document).ready(function ($) {
        ========================================================================== */
 
     /* ==========================================================================
-       7. Social Networks Management
+       7. Social Networks Management (moved to end of file)
        ========================================================================== */
-
-    var socialIndex = $('#social_list .social_item').length;
-
-    // Add Social Network
-    $(document).on('click', '.add_social', function(e) {
-        e.preventDefault();
-
-        var socialOptions = '';
-        var $existingSelect = $('#social_list .social_item:first .icon_social');
-        if ($existingSelect.length) {
-            socialOptions = $existingSelect.html();
-        } else {
-            socialOptions = `
-                <option value="facebook">Facebook</option>
-                <option value="instagram">Instagram</option>
-                <option value="twitter">Twitter/X</option>
-                <option value="linkedin">LinkedIn</option>
-                <option value="youtube">YouTube</option>
-                <option value="tiktok">TikTok</option>
-                <option value="website">Site web</option>
-            `;
-        }
-
-        var html = `
-            <div class="social_item vendor_field">
-                <select name="user_profile_social[${socialIndex}][icon]" class="icon_social">
-                    ${socialOptions}
-                </select>
-                <input type="text" name="user_profile_social[${socialIndex}][link]" value="" class="link_social" placeholder="https://">
-                <button type="button" class="button remove_social">x</button>
-            </div>
-        `;
-
-        $('#social_list, .social_list').append(html);
-        socialIndex++;
-    });
-
-    // Remove Social Network
-    $(document).on('click', '.remove_social', function(e) {
-        e.preventDefault();
-        $(this).closest('.social_item').fadeOut(200, function() {
-            $(this).remove();
-        });
-    });
 
     /* ==========================================================================
        8. Location Fields - Select2 with Nominatim (OpenStreetMap)
