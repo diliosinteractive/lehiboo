@@ -1115,50 +1115,53 @@ $user_meta_field = get_option( 'ova_register_form' );
 										<option value="interieur_exterieur" <?php selected( $org_event_type, 'interieur_exterieur' ); ?>><?php esc_html_e( 'Intérieur & Extérieur', 'eventlist' ); ?></option>
 									</select>
 								</div>
+							</div>
 
-							<!-- Réseaux sociaux -->
-							<div class="vendor_field social_networks_field">
-								<label class="control-label">
-									<?php esc_html_e( 'Réseaux sociaux', 'eventlist' ); ?>
-								</label>
-								<small class="form-text text-muted" style="margin-bottom: 15px; display: block;">
-									<?php esc_html_e( 'Ajoutez les liens vers vos réseaux sociaux pour permettre aux utilisateurs de vous suivre.', 'eventlist' ); ?>
-								</small>
+							<!-- Réseaux sociaux - Ligne complète -->
+							<div class="profile_row profile_row_full">
+								<div class="vendor_field social_networks_field">
+									<label class="control-label">
+										<?php esc_html_e( 'Réseaux sociaux', 'eventlist' ); ?>
+									</label>
+									<small class="form-text text-muted" style="margin-bottom: 15px; display: block;">
+										<?php esc_html_e( 'Ajoutez les liens vers vos réseaux sociaux pour permettre aux utilisateurs de vous suivre.', 'eventlist' ); ?>
+									</small>
 
-								<div class="social_items_wrapper" id="social_items_wrapper">
-									<?php
-									$socials = get_user_meta( $user_id, 'user_profile_social', true );
-									if ( ! empty( $socials ) && is_array( $socials ) ) :
-										foreach ( $socials as $index => $social ) :
-											$icon = isset( $social['icon'] ) ? $social['icon'] : '';
-											$link = isset( $social['link'] ) ? $social['link'] : '';
-											?>
-											<div class="social_item">
-												<select name="user_profile_social[<?php echo esc_attr( $index ); ?>][icon]" class="icon_social">
-													<?php foreach ( el_get_social() as $key => $value ) : ?>
-														<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $icon, $key ); ?>>
-															<?php echo esc_html( $value ); ?>
-														</option>
-													<?php endforeach; ?>
-												</select>
-												<input type="url"
-													name="user_profile_social[<?php echo esc_attr( $index ); ?>][link]"
-													class="link_social"
-													value="<?php echo esc_url( $link ); ?>"
-													placeholder="<?php esc_attr_e( 'https://...', 'eventlist' ); ?>" />
-												<button type="button" class="btn_remove_social" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
-													<i class="fa fa-trash"></i>
-												</button>
-											</div>
-											<?php
-										endforeach;
-									endif;
-									?>
+									<div class="social_items_wrapper" id="social_items_wrapper">
+										<?php
+										$socials = get_user_meta( $user_id, 'user_profile_social', true );
+										if ( ! empty( $socials ) && is_array( $socials ) ) :
+											foreach ( $socials as $index => $social ) :
+												$icon = isset( $social['icon'] ) ? $social['icon'] : '';
+												$link = isset( $social['link'] ) ? $social['link'] : '';
+												?>
+												<div class="social_item">
+													<select name="user_profile_social[<?php echo esc_attr( $index ); ?>][icon]" class="icon_social">
+														<?php foreach ( el_get_social() as $key => $value ) : ?>
+															<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $icon, $key ); ?>>
+																<?php echo esc_html( $value ); ?>
+															</option>
+														<?php endforeach; ?>
+													</select>
+													<input type="url"
+														name="user_profile_social[<?php echo esc_attr( $index ); ?>][link]"
+														class="link_social"
+														value="<?php echo esc_url( $link ); ?>"
+														placeholder="<?php esc_attr_e( 'https://...', 'eventlist' ); ?>" />
+													<button type="button" class="btn_remove_social" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
+														<i class="fa fa-trash"></i>
+													</button>
+												</div>
+												<?php
+											endforeach;
+										endif;
+										?>
+									</div>
+
+									<button type="button" class="el_button el_button_secondary btn_add_social" id="btn_add_social">
+										<i class="fa fa-plus"></i> <?php esc_html_e( 'Ajouter un réseau social', 'eventlist' ); ?>
+									</button>
 								</div>
-
-								<button type="button" class="el_button el_button_secondary btn_add_social" id="btn_add_social">
-									<i class="fa fa-plus"></i> <?php esc_html_e( 'Ajouter un réseau social', 'eventlist' ); ?>
-								</button>
 							</div>
 
 							<?php wp_nonce_field( 'el_update_presentation_nonce', 'el_update_presentation_nonce' ); ?>

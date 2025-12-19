@@ -525,8 +525,14 @@ jQuery(document).ready(function ($) {
             return;
         }
 
-        // Éviter la double initialisation
+        // Éviter la double initialisation - vérifier à la fois la variable et l'élément DOM
         if (profileMap !== null) {
+            return;
+        }
+
+        // Vérifier si l'élément DOM a déjà été initialisé par Leaflet
+        var mapElement = $mapContainer[0];
+        if (mapElement._leaflet_id) {
             return;
         }
 

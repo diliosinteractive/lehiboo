@@ -229,6 +229,14 @@
     }
 }
 
+.el-vendor-profile-form-wrapper .profile_row_full {
+    width: 100%;
+}
+
+.el-vendor-profile-form-wrapper .profile_row_full .vendor_field {
+    width: 100%;
+}
+
 /* ==========================================================================
    5. Form Elements
    ========================================================================== */
