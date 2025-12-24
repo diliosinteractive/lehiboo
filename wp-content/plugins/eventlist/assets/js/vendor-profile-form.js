@@ -421,7 +421,7 @@ jQuery(document).ready(function ($) {
        ========================================================================== */
 
     // Initialize Select2 for address (search only - no tags)
-    // Utilisation de l'API Adresse data.gouv.fr (plus fiable que Nominatim)
+    // Utilisation de l'API Adresse data.gouv.fr via EL_API_Adresse wrapper
     if ($('#profile_address').length && $.fn.select2) {
         $('#profile_address').select2({
             placeholder: 'Rechercher une adresse...',
@@ -440,42 +440,74 @@ jQuery(document).ready(function ($) {
                 }
             },
             ajax: {
-                url: 'https://api-adresse.data.gouv.fr/search/',
-                dataType: 'json',
                 delay: 300,
+                transport: function(params, success, failure) {
+                    // Utiliser EL_API_Adresse si disponible, sinon fallback sur fetch direct
+                    var query = params.data.q || '';
+
+                    if (typeof window.EL_API_Adresse !== 'undefined') {
+                        // Utiliser le wrapper existant (api-datagouv.js)
+                        window.EL_API_Adresse.search(query, function(features) {
+                            var results = features.map(function(item) {
+                                var props = item.properties || {};
+                                var coords = item.geometry && item.geometry.coordinates ? item.geometry.coordinates : [0, 0];
+                                return {
+                                    id: props.label || props.name,
+                                    text: props.label || props.name,
+                                    lat: coords[1],
+                                    lon: coords[0],
+                                    address: {
+                                        house_number: props.housenumber || '',
+                                        road: props.street || '',
+                                        city: props.city || '',
+                                        postcode: props.postcode || '',
+                                        country_code: 'FR'
+                                    }
+                                };
+                            });
+                            success({ results: results });
+                        });
+                        return { abort: function() {} };
+                    } else {
+                        // Fallback: appel direct à l'API
+                        var apiUrl = 'https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(query) + '&limit=10&autocomplete=1';
+                        return $.ajax({
+                            url: apiUrl,
+                            dataType: 'json'
+                        }).then(function(data) {
+                            if (!data || !data.features) {
+                                success({ results: [] });
+                                return;
+                            }
+                            var results = data.features.map(function(item) {
+                                var props = item.properties || {};
+                                var coords = item.geometry && item.geometry.coordinates ? item.geometry.coordinates : [0, 0];
+                                return {
+                                    id: props.label || props.name,
+                                    text: props.label || props.name,
+                                    lat: coords[1],
+                                    lon: coords[0],
+                                    address: {
+                                        house_number: props.housenumber || '',
+                                        road: props.street || '',
+                                        city: props.city || '',
+                                        postcode: props.postcode || '',
+                                        country_code: 'FR'
+                                    }
+                                };
+                            });
+                            success({ results: results });
+                        }).fail(function(jqXHR, textStatus, errorThrown) {
+                            console.error('API Adresse error:', textStatus, errorThrown);
+                            failure(errorThrown);
+                        });
+                    }
+                },
                 data: function(params) {
-                    return {
-                        q: params.term,
-                        limit: 10,
-                        autocomplete: 1
-                    };
+                    return { q: params.term };
                 },
                 processResults: function(data) {
-                    if (!data.features) {
-                        return { results: [] };
-                    }
-                    return {
-                        results: data.features.map(function(item) {
-                            var props = item.properties || {};
-                            var coords = item.geometry && item.geometry.coordinates ? item.geometry.coordinates : [0, 0];
-                            return {
-                                id: props.label || props.name,
-                                text: props.label || props.name,
-                                lat: coords[1], // GeoJSON: [longitude, latitude]
-                                lon: coords[0],
-                                address: {
-                                    house_number: props.housenumber || '',
-                                    road: props.street || '',
-                                    city: props.city || '',
-                                    postcode: props.postcode || '',
-                                    country_code: 'FR'
-                                }
-                            };
-                        })
-                    };
-                },
-                error: function(xhr, status, error) {
-                    console.warn('Erreur API Adresse:', error);
+                    return data;
                 }
             },
             templateResult: formatAddressResult

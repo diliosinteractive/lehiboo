@@ -301,6 +301,26 @@
     display: block;
 }
 
+/* Field description / hint text - must not be truncated */
+.el-vendor-profile-form-wrapper .vendor_field .field_description,
+.el-vendor-profile-form-wrapper .vendor_field p.field_description {
+    display: block !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    text-overflow: unset !important;
+    max-height: none !important;
+    height: auto !important;
+    font-size: 13px;
+    color: #717171;
+    margin-top: 8px;
+    margin-bottom: 0;
+    line-height: 1.5;
+    background: #FFF8F0;
+    border: 1px solid #FFE0C0;
+    border-radius: 6px;
+    padding: 10px 12px;
+}
+
 /* ==========================================================================
    6. Toggle Switches
    ========================================================================== */
@@ -972,12 +992,13 @@
     box-sizing: border-box;
 }
 
+/* Select réseau social: 30% de la largeur */
 .el-vendor-profile-form-wrapper .social_item select.icon_social,
 .el-vendor-profile-form-wrapper .social_item .icon_social {
-    width: 150px !important;
-    min-width: 150px !important;
-    max-width: 150px !important;
-    flex: 0 0 150px !important;
+    width: 30% !important;
+    min-width: 120px !important;
+    max-width: 200px !important;
+    flex: 0 0 30% !important;
     padding: 10px 32px 10px 12px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
@@ -991,10 +1012,11 @@
     appearance: none;
 }
 
+/* Input URL: 70% de la largeur restante (moins le bouton supprimer) */
 .el-vendor-profile-form-wrapper .social_item input.link_social,
 .el-vendor-profile-form-wrapper .social_item .link_social {
-    flex: 1 1 auto !important;
-    min-width: 150px !important;
+    flex: 1 1 70% !important;
+    min-width: 200px !important;
     width: auto !important;
     padding: 10px 12px;
     border: 1px solid #d1d5db;
@@ -1041,8 +1063,11 @@
     color: #b91c1c;
 }
 
+/* Bouton ajouter: ne prend PAS toute la largeur */
 .el-vendor-profile-form-wrapper .btn_add_social {
-    display: inline-flex;
+    display: inline-flex !important;
+    width: auto !important;
+    max-width: fit-content !important;
     align-items: center;
     gap: 8px;
     padding: 10px 16px;
@@ -1059,6 +1084,26 @@
     background: #e5e7eb;
     border-color: #9ca3af;
     color: #111827;
+}
+
+/* Social networks responsive - mobile */
+@media (max-width: 768px) {
+    .el-vendor-profile-form-wrapper .social_item {
+        flex-wrap: wrap !important;
+    }
+
+    .el-vendor-profile-form-wrapper .social_item select.icon_social,
+    .el-vendor-profile-form-wrapper .social_item .icon_social {
+        width: 100% !important;
+        max-width: none !important;
+        flex: 0 0 100% !important;
+    }
+
+    .el-vendor-profile-form-wrapper .social_item input.link_social,
+    .el-vendor-profile-form-wrapper .social_item .link_social {
+        flex: 1 1 calc(100% - 52px) !important;
+        min-width: 0 !important;
+    }
 }
 
 /* ==========================================================================
