@@ -502,19 +502,20 @@ jQuery(document).ready(function ($) {
         // Debug: écouter les événements Select2
         $('#profile_address').on('select2:open', function() {
             console.log('[Profile] Select2 dropdown OUVERT');
-            // Test direct API call quand le dropdown s'ouvre
-            console.log('[Profile] Test API direct...');
-            $.ajax({
-                url: 'https://api-adresse.data.gouv.fr/search/',
-                data: { q: 'paris', limit: 3 },
-                dataType: 'json',
-                success: function(data) {
-                    console.log('[Profile] TEST API OK - Résultats:', data.features ? data.features.length : 0);
-                },
-                error: function(xhr, status, error) {
-                    console.error('[Profile] TEST API ERREUR:', status, error);
-                }
-            });
+
+            // Écouter la saisie dans le champ de recherche Select2
+            setTimeout(function() {
+                var $searchField = $('.select2-search__field');
+                console.log('[Profile] Champ recherche trouvé:', $searchField.length > 0);
+
+                $searchField.off('input.debug').on('input.debug', function() {
+                    console.log('[Profile] SAISIE DÉTECTÉE:', $(this).val());
+                });
+
+                $searchField.off('keyup.debug').on('keyup.debug', function(e) {
+                    console.log('[Profile] KEYUP:', e.key, '- Valeur:', $(this).val());
+                });
+            }, 100);
         });
         $('#profile_address').on('select2:close', function() {
             console.log('[Profile] Select2 dropdown FERMÉ');
