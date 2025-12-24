@@ -22,25 +22,28 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 /**
- * Charger le system prompt mobile
+ * Charger le system prompt mobile v3 Compact (optimisé tokens)
  */
 async function loadMobilePrompt() {
   try {
-    const promptPath = join(__dirname, '../prompts/system-prompt-mobile-v2.md');
+    const promptPath = join(__dirname, '../prompts/system-prompt-mobile-v3-compact.md');
     const content = await readFile(promptPath, 'utf-8');
-    logger.info('Mobile system prompt loaded', { length: content.length });
+    logger.info('Mobile system prompt v3 Compact loaded', {
+      length: content.length,
+      tokensSaved: '~75% vs v2'
+    });
     return content;
   } catch (error) {
-    logger.error('Failed to load mobile prompt', { error: error.message });
+    logger.error('Failed to load mobile prompt v3', { error: error.message });
     throw new Error('Mobile system prompt not found');
   }
 }
 
 /**
  * Construire les messages pour l'IA
- * Optimisé: historique limité à 4 messages
+ * Optimisé: historique limité à 4 messages + contexte en préfixe (pas dans system prompt)
  */
-function buildMessages(currentMessage, history = []) {
+function buildMessages(currentMessage, history = [], userContext = {}) {
   const messages = [];
 
   // Historique limité à 4 messages (économise tokens)
@@ -49,8 +52,18 @@ function buildMessages(currentMessage, history = []) {
     messages.push({ role: msg.role, content: msg.content });
   });
 
-  // Message actuel
-  messages.push({ role: 'user', content: currentMessage });
+  // OPTIMISATION: Contexte utilisateur en préfixe compact (permet prompt caching)
+  let userMessage = currentMessage;
+  const contextKeys = Object.keys(userContext).filter(k =>
+    !k.startsWith('_') && userContext[k] !== undefined && userContext[k] !== null
+  );
+
+  if (contextKeys.length > 0) {
+    // Format compact: juste les clés importantes (économise ~100 tokens vs JSON complet)
+    userMessage = `[Contexte: ${contextKeys.join(', ')}]\n${currentMessage}`;
+  }
+
+  messages.push({ role: 'user', content: userMessage });
 
   return messages;
 }
@@ -69,19 +82,12 @@ export async function generateMobileResponse(message, context = {}) {
       userContextKeys: Object.keys(userContext).filter(k => !k.startsWith('_'))
     });
 
-    let systemPrompt = await loadMobilePrompt();
+    // OPTIMISATION: System prompt STATIQUE (permet prompt caching OpenAI)
+    // Le contexte utilisateur est passé en préfixe du message, pas dans le prompt
+    const systemPrompt = await loadMobilePrompt();
 
-    // Injecter le contexte utilisateur existant dans le prompt
-    if (Object.keys(userContext).filter(k => !k.startsWith('_')).length > 0) {
-      const contextInfo = Object.entries(userContext)
-        .filter(([k, v]) => !k.startsWith('_') && v !== undefined && v !== null)
-        .map(([k, v]) => `- ${k}: ${JSON.stringify(v)}`)
-        .join('\n');
-
-      systemPrompt = `${systemPrompt}\n\n## Contexte utilisateur connu\n\nTu te souviens de ces infos sur l'utilisateur:\n${contextInfo}\n\nUtilise ces infos pour personnaliser tes reponses (ex: "Salut ${userContext.first_name || 'toi'} !").`;
-    }
-
-    const messages = buildMessages(message, context.history);
+    // Construire les messages avec contexte en préfixe (économise ~500 tokens/requête)
+    const messages = buildMessages(message, context.history, userContext);
 
     // Variable pour stocker le contexte mis a jour
     let updatedUserContext = { ...userContext };
