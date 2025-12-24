@@ -4,7 +4,6 @@
  */
 
 jQuery(document).ready(function ($) {
-    console.log('[vendor-profile-form.js] FICHIER CHARGÉ ET EXÉCUTÉ');
 
     /* ==========================================================================
        1. Navigation & ScrollSpy
@@ -421,26 +420,24 @@ jQuery(document).ready(function ($) {
        8. Location Fields - Select2 with Nominatim (OpenStreetMap)
        ========================================================================== */
 
-    // Initialize Select2 for address (search only - no tags)
-    // Utilisation de l'API Adresse data.gouv.fr
-    console.log('[Profile] Initialisation Select2 adresse...');
-    console.log('[Profile] #profile_address exists:', $('#profile_address').length > 0);
-    console.log('[Profile] $.fn.select2 exists:', typeof $.fn.select2 !== 'undefined');
-
+    // Initialize Select2 for address - Recherche manuelle via API data.gouv.fr
+    // Note: L'AJAX intégré de Select2 ne fonctionne pas, donc on gère manuellement
     if ($('#profile_address').length && $.fn.select2) {
-        console.log('[Profile] Initialisation Select2 en cours...');
-
         // Détruire Select2 existant s'il y en a un
         if ($('#profile_address').hasClass('select2-hidden-accessible')) {
-            console.log('[Profile] Destruction Select2 existant...');
             $('#profile_address').select2('destroy');
         }
 
+        // Variable pour stocker les résultats de recherche
+        var addressSearchResults = {};
+        var searchTimeout = null;
+
+        // Initialiser Select2 SANS ajax (on gère manuellement)
         $('#profile_address').select2({
             placeholder: 'Rechercher une adresse...',
             allowClear: true,
             width: '100%',
-            minimumInputLength: 2,
+            minimumInputLength: 3,
             language: {
                 inputTooShort: function() {
                     return 'Saisissez au moins 3 caractères';
@@ -452,30 +449,66 @@ jQuery(document).ready(function ($) {
                     return 'Aucune adresse trouvée';
                 }
             },
-            ajax: {
-                url: 'https://api-adresse.data.gouv.fr/search/',
-                dataType: 'json',
-                delay: 350,
-                data: function(params) {
-                    console.log('[Profile] Recherche adresse:', params.term);
-                    return {
-                        q: params.term,
-                        limit: 10,
-                        autocomplete: 1
-                    };
-                },
-                processResults: function(data) {
-                    console.log('[Profile] Réponse API:', data);
-                    if (!data || !data.features) {
-                        console.warn('[Profile] Pas de features dans la réponse');
-                        return { results: [] };
+            templateResult: formatAddressResult
+        });
+
+        // Quand le dropdown s'ouvre, attacher l'écouteur de saisie
+        $('#profile_address').on('select2:open', function() {
+            setTimeout(function() {
+                var $searchField = $('.select2-search__field');
+
+                // Écouter la saisie pour lancer la recherche manuelle
+                $searchField.off('input.addressSearch').on('input.addressSearch', function() {
+                    var query = $(this).val();
+
+                    // Annuler la recherche précédente
+                    if (searchTimeout) {
+                        clearTimeout(searchTimeout);
                     }
-                    var results = data.features.map(function(item) {
+
+                    // Attendre un peu avant de lancer la recherche
+                    if (query.length >= 3) {
+                        searchTimeout = setTimeout(function() {
+                            searchAddressAPI(query);
+                        }, 350);
+                    }
+                });
+            }, 50);
+        });
+
+        // Fonction de recherche d'adresses via API data.gouv.fr
+        function searchAddressAPI(query) {
+            $.ajax({
+                url: 'https://api-adresse.data.gouv.fr/search/',
+                data: {
+                    q: query,
+                    limit: 10,
+                    autocomplete: 1
+                },
+                dataType: 'json',
+                success: function(data) {
+                    if (!data || !data.features || data.features.length === 0) {
+                        return;
+                    }
+
+                    // Vider et repeupler le select
+                    var $select = $('#profile_address');
+                    var currentVal = $select.val();
+
+                    // Garder l'option actuelle si elle existe
+                    $select.find('option:not(:selected)').remove();
+
+                    // Ajouter les nouvelles options
+                    data.features.forEach(function(item) {
                         var props = item.properties || {};
                         var coords = item.geometry && item.geometry.coordinates ? item.geometry.coordinates : [0, 0];
-                        return {
-                            id: props.label || props.name || item.properties.id,
-                            text: props.label || props.name,
+                        var label = props.label || props.name;
+                        var id = label; // Utiliser le label comme ID unique
+
+                        // Stocker les données pour usage ultérieur lors de la sélection
+                        addressSearchResults[id] = {
+                            id: id,
+                            text: label,
                             lat: coords[1],
                             lon: coords[0],
                             address: {
@@ -486,45 +519,28 @@ jQuery(document).ready(function ($) {
                                 country_code: 'FR'
                             }
                         };
+
+                        // Ajouter l'option si elle n'existe pas déjà
+                        if ($select.find('option[value="' + id.replace(/"/g, '\\"') + '"]').length === 0) {
+                            $select.append(new Option(label, id, false, false));
+                        }
                     });
-                    console.log('[Profile] Résultats mappés:', results.length);
-                    return { results: results };
+
+                    // Forcer Select2 à mettre à jour le dropdown
+                    $select.trigger('change.select2');
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('[Profile] Erreur AJAX:', textStatus, errorThrown);
+                error: function() {
+                    console.error('[Profile] Erreur lors de la recherche d\'adresse');
                 }
-            },
-            templateResult: formatAddressResult
-        });
-
-        console.log('[Profile] Select2 initialisé avec succès');
-
-        // Debug: écouter les événements Select2
-        $('#profile_address').on('select2:open', function() {
-            console.log('[Profile] Select2 dropdown OUVERT');
-
-            // Écouter la saisie dans le champ de recherche Select2
-            setTimeout(function() {
-                var $searchField = $('.select2-search__field');
-                console.log('[Profile] Champ recherche trouvé:', $searchField.length > 0);
-
-                $searchField.off('input.debug').on('input.debug', function() {
-                    console.log('[Profile] SAISIE DÉTECTÉE:', $(this).val());
-                });
-
-                $searchField.off('keyup.debug').on('keyup.debug', function(e) {
-                    console.log('[Profile] KEYUP:', e.key, '- Valeur:', $(this).val());
-                });
-            }, 100);
-        });
-        $('#profile_address').on('select2:close', function() {
-            console.log('[Profile] Select2 dropdown FERMÉ');
-        });
+            });
+        }
 
         // When address is selected
         $('#profile_address').on('select2:select', function(e) {
-            var data = e.params.data;
-            if (data.lat && data.lon) {
+            var selectedId = e.params.data.id;
+            var data = addressSearchResults[selectedId];
+
+            if (data && data.lat && data.lon) {
                 updateLocationCoordinates(data.lat, data.lon);
 
                 // Update hidden fields with address components
