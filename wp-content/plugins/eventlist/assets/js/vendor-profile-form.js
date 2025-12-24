@@ -43,100 +43,151 @@ jQuery(document).ready(function ($) {
     });
 
     /* ==========================================================================
-       2. Completion Gauge Logic
+       2. Completion Gauge Logic - V1 Le Hiboo
+       Total: 20 points = 100%
+       - Mes informations professionnelles: 5 points (25%)
+       - Mon organisation: 8 points (40%)
+       - Localisation: 2 points (10%)
+       - Présentation: 5 points (25%)
        ========================================================================== */
 
-    function updateCompletionGauge() {
-        var totalWeight = 0;
-        var filledWeight = 0;
+    // Configuration des champs par section avec leurs points
+    var completionConfig = {
+        // Section 1: Mes informations professionnelles (5 points = 25%)
+        section_profile: {
+            fields: [
+                { name: 'first_name', selector: 'input[name="first_name"]', points: 1 },
+                { name: 'last_name', selector: 'input[name="last_name"]', points: 1 },
+                { name: 'user_email', selector: 'input[name="user_email"]', points: 1 },
+                { name: 'user_phone', selector: 'input[name="user_phone"]', points: 1 },
+                { name: 'user_job', selector: 'input[name="user_job"]', points: 1 }
+            ],
+            totalPoints: 5
+        },
+        // Section 2: Mon organisation (8 points = 40%)
+        section_organisation: {
+            fields: [
+                { name: 'org_name', selector: 'input[name="org_name"]', points: 1 },
+                { name: 'org_display_name', selector: 'input[name="org_display_name"]', points: 1 },
+                { name: 'org_type_structure', selector: 'input[name="org_type_structure[]"]', type: 'checkbox', points: 1 },
+                { name: 'org_role', selector: 'input[name="org_role[]"]', type: 'checkbox', points: 1 },
+                { name: 'org_forme_juridique', selector: 'select[name="org_forme_juridique"]', points: 1 },
+                { name: 'org_siren', selector: 'input[name="org_siren"]', points: 1 },
+                { name: 'org_date_creation', selector: 'input[name="org_date_creation"]', points: 1 },
+                { name: 'org_nombre_effectifs', selector: 'select[name="org_nombre_effectifs"]', points: 1 }
+            ],
+            totalPoints: 8
+        },
+        // Section 3: Localisation (2 points = 10%)
+        section_localisation: {
+            fields: [
+                { name: 'user_address', selector: 'select[name="user_address"]', points: 1 },
+                { name: 'services_enabled', selector: 'input[name="services_enabled"]', type: 'checkbox', points: 1 }
+            ],
+            totalPoints: 2
+        },
+        // Section 4: Présentation (5 points = 25%)
+        section_presentation: {
+            fields: [
+                { name: 'org_cover_image', selector: 'input[name="org_cover_image"]', points: 1 },
+                { name: 'author_id_image', selector: 'input[name="author_id_image"]', points: 1 },
+                { name: 'description', selector: '#description', type: 'textarea_min500', points: 1 },
+                { name: 'org_email_contact', selector: 'input[name="org_email_contact"]', points: 1 },
+                { name: 'org_event_type', selector: 'select[name="org_event_type"]', points: 1 }
+            ],
+            totalPoints: 5
+        }
+    };
 
-        // Helper to check if field has value
-        function hasValue(selector) {
-            var el = $(selector);
-            if (el.length === 0) return false;
-            if (el.is(':checkbox') || el.is(':radio')) return el.is(':checked');
-            return $.trim(el.val()) !== '';
+    // Helper: Vérifier si un champ a une valeur
+    function isFieldFilled(field) {
+        var $el = $(field.selector);
+        if ($el.length === 0) return false;
+
+        // Checkbox - au moins une cochée
+        if (field.type === 'checkbox') {
+            return $el.filter(':checked').length > 0;
         }
 
-        // Define weighted sections for profile
-        var sections = [
-            // Personal Info (20%)
-            { id: 'first_name', weight: 5, selector: 'input[name="first_name"]' },
-            { id: 'last_name', weight: 5, selector: 'input[name="last_name"]' },
-            { id: 'user_email', weight: 5, selector: 'input[name="user_email"]' },
-            { id: 'user_phone', weight: 5, selector: 'input[name="user_phone"]' },
-
-            // Organization (30%)
-            { id: 'org_name', weight: 10, selector: 'input[name="org_name"]' },
-            { id: 'org_display_name', weight: 10, selector: 'input[name="org_display_name"]' },
-            { id: 'org_siret', weight: 5, selector: 'input[name="org_siret"]' },
-            { id: 'org_type_structure', weight: 5, selector: 'select[name="org_type_structure"]' },
-
-            // Location (20%)
-            { id: 'user_address', weight: 10, selector: 'select[name="user_address"]' },
-            { id: 'user_city', weight: 5, selector: 'input[name="user_city"]' },
-            { id: 'user_postcode', weight: 5, selector: 'input[name="user_postcode"]' },
-
-            // Presentation (30%)
-            { id: 'org_description', weight: 10, selector: 'textarea[name="org_description"]' },
-            { id: 'org_cover_image', weight: 10, selector: 'input[name="org_cover_image"]' },
-            { id: 'org_logo', weight: 10, selector: 'input[name="org_logo"]' }
-        ];
-
-        // Calculate
-        sections.forEach(function (section) {
-            totalWeight += section.weight;
-            var isFilled = false;
-
-            if (section.check) {
-                isFilled = section.check();
+        // Textarea avec minimum 500 caractères
+        if (field.type === 'textarea_min500') {
+            var val = '';
+            // Récupérer le contenu de TinyMCE si disponible
+            if (typeof tinyMCE !== 'undefined' && tinyMCE.get('description')) {
+                val = tinyMCE.get('description').getContent({ format: 'text' });
             } else {
-                isFilled = hasValue(section.selector);
+                val = $el.val() || '';
             }
+            return val.trim().length >= 500;
+        }
 
-            if (isFilled) {
-                filledWeight += section.weight;
+        // Input/Select standard
+        var val = $el.val();
+        if (Array.isArray(val)) {
+            return val.length > 0 && val[0] !== '';
+        }
+        return val !== null && val !== undefined && $.trim(val) !== '';
+    }
+
+    // Calculer les points d'une section
+    function calculateSectionPoints(sectionKey) {
+        var config = completionConfig[sectionKey];
+        if (!config) return { filled: 0, total: 0, complete: false };
+
+        var filledPoints = 0;
+        config.fields.forEach(function(field) {
+            if (isFieldFilled(field)) {
+                filledPoints += field.points;
             }
         });
 
-        var percent = Math.round((filledWeight / totalWeight) * 100);
+        return {
+            filled: filledPoints,
+            total: config.totalPoints,
+            complete: filledPoints >= config.totalPoints
+        };
+    }
+
+    // Mettre à jour la jauge de complétion
+    function updateCompletionGauge() {
+        var totalPoints = 20; // Total fixe
+        var filledPoints = 0;
+        var sectionResults = {};
+
+        // Calculer les points pour chaque section
+        Object.keys(completionConfig).forEach(function(sectionKey) {
+            var result = calculateSectionPoints(sectionKey);
+            sectionResults[sectionKey] = result;
+            filledPoints += result.filled;
+        });
+
+        // Calculer le pourcentage (arrondi à 5% près pour plus de clarté)
+        var percent = Math.round((filledPoints / totalPoints) * 100);
         if (percent > 100) percent = 100;
 
-        // Update UI (Sidebar Widget)
+        // Mettre à jour l'UI (Sidebar Widget)
         $('#el-completion-fill-sidebar').css('width', percent + '%');
         $('#el-completion-percent-sidebar').text(percent + '%');
 
-        // Update navigation status icons
-        updateNavigationStatus();
+        // Mettre à jour les icônes de navigation
+        updateNavigationStatus(sectionResults);
+
+        return { percent: percent, points: filledPoints, sections: sectionResults };
     }
 
-    // Update section completion status in navigation
-    function updateNavigationStatus() {
-        // Check each section
-        var sections = {
-            'section_profile': ['input[name="first_name"]', 'input[name="last_name"]', 'input[name="user_email"]'],
-            'section_organisation': ['input[name="org_name"]', 'input[name="org_display_name"]'],
-            'section_localisation': ['select[name="user_address"]'],
-            'section_presentation': ['textarea[name="org_description"]'],
-            'section_password': [], // Always optional
-            'section_bank': [], // Optional
-            'section_stripe': [] // Optional
-        };
+    // Mettre à jour les icônes de statut dans la navigation
+    function updateNavigationStatus(sectionResults) {
+        Object.keys(sectionResults).forEach(function(sectionKey) {
+            var result = sectionResults[sectionKey];
+            var $navItem = $('.el-anchor-nav a[href="#' + sectionKey + '"]').parent('li');
+            var $statusIcon = $navItem.find('.status-icon');
 
-        $.each(sections, function(sectionId, requiredFields) {
-            var isComplete = true;
-
-            requiredFields.forEach(function(field) {
-                if ($(field).length && $.trim($(field).val()) === '') {
-                    isComplete = false;
-                }
-            });
-
-            var $navItem = $('.el-anchor-nav a[href="#' + sectionId + '"]').parent('li');
-            if (isComplete && requiredFields.length > 0) {
+            if (result.complete) {
                 $navItem.addClass('section-complete');
+                $statusIcon.addClass('completed');
             } else {
                 $navItem.removeClass('section-complete');
+                $statusIcon.removeClass('completed');
             }
         });
     }
