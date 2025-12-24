@@ -421,8 +421,14 @@ jQuery(document).ready(function ($) {
        ========================================================================== */
 
     // Initialize Select2 for address (search only - no tags)
-    // Utilisation de l'API Adresse data.gouv.fr via EL_API_Adresse wrapper
+    // Utilisation de l'API Adresse data.gouv.fr
+    console.log('[Profile] Initialisation Select2 adresse...');
+    console.log('[Profile] #profile_address exists:', $('#profile_address').length > 0);
+    console.log('[Profile] $.fn.select2 exists:', typeof $.fn.select2 !== 'undefined');
+
     if ($('#profile_address').length && $.fn.select2) {
+        console.log('[Profile] Initialisation Select2 en cours...');
+
         $('#profile_address').select2({
             placeholder: 'Rechercher une adresse...',
             allowClear: true,
@@ -433,85 +439,58 @@ jQuery(document).ready(function ($) {
                     return 'Saisissez au moins 3 caractères';
                 },
                 searching: function() {
-                    return 'Recherche...';
+                    return 'Recherche en cours...';
                 },
                 noResults: function() {
-                    return 'Aucun résultat trouvé';
+                    return 'Aucune adresse trouvée';
                 }
             },
             ajax: {
-                delay: 300,
-                transport: function(params, success, failure) {
-                    // Utiliser EL_API_Adresse si disponible, sinon fallback sur fetch direct
-                    var query = params.data.q || '';
-
-                    if (typeof window.EL_API_Adresse !== 'undefined') {
-                        // Utiliser le wrapper existant (api-datagouv.js)
-                        window.EL_API_Adresse.search(query, function(features) {
-                            var results = features.map(function(item) {
-                                var props = item.properties || {};
-                                var coords = item.geometry && item.geometry.coordinates ? item.geometry.coordinates : [0, 0];
-                                return {
-                                    id: props.label || props.name,
-                                    text: props.label || props.name,
-                                    lat: coords[1],
-                                    lon: coords[0],
-                                    address: {
-                                        house_number: props.housenumber || '',
-                                        road: props.street || '',
-                                        city: props.city || '',
-                                        postcode: props.postcode || '',
-                                        country_code: 'FR'
-                                    }
-                                };
-                            });
-                            success({ results: results });
-                        });
-                        return { abort: function() {} };
-                    } else {
-                        // Fallback: appel direct à l'API
-                        var apiUrl = 'https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(query) + '&limit=10&autocomplete=1';
-                        return $.ajax({
-                            url: apiUrl,
-                            dataType: 'json'
-                        }).then(function(data) {
-                            if (!data || !data.features) {
-                                success({ results: [] });
-                                return;
-                            }
-                            var results = data.features.map(function(item) {
-                                var props = item.properties || {};
-                                var coords = item.geometry && item.geometry.coordinates ? item.geometry.coordinates : [0, 0];
-                                return {
-                                    id: props.label || props.name,
-                                    text: props.label || props.name,
-                                    lat: coords[1],
-                                    lon: coords[0],
-                                    address: {
-                                        house_number: props.housenumber || '',
-                                        road: props.street || '',
-                                        city: props.city || '',
-                                        postcode: props.postcode || '',
-                                        country_code: 'FR'
-                                    }
-                                };
-                            });
-                            success({ results: results });
-                        }).fail(function(jqXHR, textStatus, errorThrown) {
-                            console.error('API Adresse error:', textStatus, errorThrown);
-                            failure(errorThrown);
-                        });
-                    }
-                },
+                url: 'https://api-adresse.data.gouv.fr/search/',
+                dataType: 'json',
+                delay: 350,
                 data: function(params) {
-                    return { q: params.term };
+                    console.log('[Profile] Recherche adresse:', params.term);
+                    return {
+                        q: params.term,
+                        limit: 10,
+                        autocomplete: 1
+                    };
                 },
                 processResults: function(data) {
-                    return data;
+                    console.log('[Profile] Réponse API:', data);
+                    if (!data || !data.features) {
+                        console.warn('[Profile] Pas de features dans la réponse');
+                        return { results: [] };
+                    }
+                    var results = data.features.map(function(item) {
+                        var props = item.properties || {};
+                        var coords = item.geometry && item.geometry.coordinates ? item.geometry.coordinates : [0, 0];
+                        return {
+                            id: props.label || props.name || item.properties.id,
+                            text: props.label || props.name,
+                            lat: coords[1],
+                            lon: coords[0],
+                            address: {
+                                house_number: props.housenumber || '',
+                                road: props.street || '',
+                                city: props.city || '',
+                                postcode: props.postcode || '',
+                                country_code: 'FR'
+                            }
+                        };
+                    });
+                    console.log('[Profile] Résultats mappés:', results.length);
+                    return { results: results };
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('[Profile] Erreur AJAX:', textStatus, errorThrown);
                 }
             },
             templateResult: formatAddressResult
         });
+
+        console.log('[Profile] Select2 initialisé avec succès');
 
         // When address is selected
         $('#profile_address').on('select2:select', function(e) {
