@@ -52,15 +52,21 @@ function buildMessages(currentMessage, history = [], userContext = {}) {
     messages.push({ role: msg.role, content: msg.content });
   });
 
-  // OPTIMISATION: Contexte utilisateur en préfixe compact (permet prompt caching)
+  // OPTIMISATION: Contexte utilisateur en préfixe compact avec valeurs clés
   let userMessage = currentMessage;
-  const contextKeys = Object.keys(userContext).filter(k =>
-    !k.startsWith('_') && userContext[k] !== undefined && userContext[k] !== null
-  );
+  const importantKeys = ['first_name', 'city', 'age', 'age_group', 'has_children', 'children_ages', 'group_type'];
+  const contextParts = [];
 
-  if (contextKeys.length > 0) {
-    // Format compact: juste les clés importantes (économise ~100 tokens vs JSON complet)
-    userMessage = `[Contexte: ${contextKeys.join(', ')}]\n${currentMessage}`;
+  importantKeys.forEach(k => {
+    if (userContext[k] !== undefined && userContext[k] !== null) {
+      const val = Array.isArray(userContext[k]) ? userContext[k].join(',') : userContext[k];
+      contextParts.push(`${k}:${val}`);
+    }
+  });
+
+  if (contextParts.length > 0) {
+    // Format compact avec valeurs (permet personnalisation + économise tokens)
+    userMessage = `[User: ${contextParts.join(' | ')}]\n${currentMessage}`;
   }
 
   messages.push({ role: 'user', content: userMessage });
