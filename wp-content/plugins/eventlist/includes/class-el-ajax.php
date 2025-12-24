@@ -201,6 +201,10 @@ if( !class_exists( 'El_Ajax' ) ){
 
 				// V1 Le Hiboo - Global profile save
 				'el_save_profile_global',
+
+				// V1 Le Hiboo - OTP Email verification
+				'el_verify_email_otp',
+				'el_resend_email_otp',
 			);
 
 			// Enregistrer les actions PUBLIQUES (accessibles avec et sans auth)
@@ -1356,13 +1360,27 @@ if( !class_exists( 'El_Ajax' ) ){
 
 			// Vérifier si l'email a changé et s'il est valide
 			$current_user = get_userdata( $user_id );
+			$email_change_pending = false;
+
 			if ( $user_email && $user_email !== $current_user->user_email ) {
 				// Vérifier que l'email n'est pas déjà utilisé
 				if ( email_exists( $user_email ) && email_exists( $user_email ) !== $user_id ) {
 					wp_send_json_error( array( 'message' => __( 'Cette adresse email est déjà utilisée', 'eventlist' ) ) );
 					wp_die();
 				}
-				$user_data['user_email'] = $user_email;
+
+				// Générer un code OTP à 6 chiffres
+				$otp_code = sprintf( '%06d', wp_rand( 0, 999999 ) );
+
+				// Stocker l'OTP et le nouvel email en attente (expire dans 15 minutes)
+				set_transient( 'el_email_otp_' . $user_id, $otp_code, 15 * MINUTE_IN_SECONDS );
+				set_transient( 'el_pending_email_' . $user_id, $user_email, 15 * MINUTE_IN_SECONDS );
+
+				// Envoyer l'email OTP à l'ancien email
+				self::send_email_otp( $current_user->user_email, $otp_code, $user_email );
+
+				$email_change_pending = true;
+				// NE PAS modifier l'email dans user_data - attendre la vérification OTP
 			}
 
 			wp_update_user( $user_data );
@@ -1523,7 +1541,139 @@ if( !class_exists( 'El_Ajax' ) ){
 			$display_name = $org_display_name ?: $org_name ?: $first_name . ' ' . $last_name;
 			$response_data['display_name'] = trim( $display_name );
 
+			// Ajouter l'info sur le changement d'email en attente
+			if ( $email_change_pending ) {
+				$response_data['email_otp_required'] = true;
+				$response_data['message'] = __( 'Profil enregistré. Un code de vérification a été envoyé à votre adresse email actuelle pour confirmer le changement d\'email.', 'eventlist' );
+			}
+
 			wp_send_json_success( $response_data );
+			wp_die();
+		}
+
+		/**
+		 * Envoyer l'email OTP pour la vérification du changement d'email
+		 */
+		private static function send_email_otp( $old_email, $otp_code, $new_email ) {
+			$site_name = get_bloginfo( 'name' );
+
+			$subject = sprintf( __( '[%s] Code de vérification pour changement d\'email', 'eventlist' ), $site_name );
+
+			$body = '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">';
+			$body .= '<h2 style="color: #333;">' . __( 'Changement d\'adresse email', 'eventlist' ) . '</h2>';
+			$body .= '<p>' . __( 'Vous avez demandé à modifier votre adresse email de connexion.', 'eventlist' ) . '</p>';
+			$body .= '<p>' . sprintf( __( 'Nouvelle adresse demandée : <strong>%s</strong>', 'eventlist' ), esc_html( $new_email ) ) . '</p>';
+			$body .= '<p>' . __( 'Voici votre code de vérification :', 'eventlist' ) . '</p>';
+			$body .= '<div style="background: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0;">';
+			$body .= '<span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #E87722;">' . esc_html( $otp_code ) . '</span>';
+			$body .= '</div>';
+			$body .= '<p style="color: #666; font-size: 14px;">' . __( 'Ce code est valable pendant 15 minutes.', 'eventlist' ) . '</p>';
+			$body .= '<p style="color: #999; font-size: 12px;">' . __( 'Si vous n\'êtes pas à l\'origine de cette demande, ignorez cet email.', 'eventlist' ) . '</p>';
+			$body .= '</div>';
+
+			$headers = array(
+				'Content-Type: text/html; charset=UTF-8',
+			);
+
+			add_filter( 'wp_mail_from', 'el_wp_mail_from_function' );
+			add_filter( 'wp_mail_from_name', 'el_wp_mail_from_name_function' );
+
+			wp_mail( $old_email, $subject, $body, $headers );
+
+			remove_filter( 'wp_mail_from', 'el_wp_mail_from_function' );
+			remove_filter( 'wp_mail_from_name', 'el_wp_mail_from_name_function' );
+		}
+
+		/**
+		 * Vérifier le code OTP pour le changement d'email
+		 */
+		public function el_verify_email_otp() {
+			if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'el_nonce' ) ) {
+				wp_send_json_error( array( 'message' => __( 'Erreur de sécurité', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			$user_id = get_current_user_id();
+			if ( ! $user_id ) {
+				wp_send_json_error( array( 'message' => __( 'Vous devez être connecté', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			$otp_code = isset( $_POST['otp_code'] ) ? sanitize_text_field( $_POST['otp_code'] ) : '';
+
+			// Récupérer l'OTP stocké
+			$stored_otp = get_transient( 'el_email_otp_' . $user_id );
+			$pending_email = get_transient( 'el_pending_email_' . $user_id );
+
+			if ( ! $stored_otp || ! $pending_email ) {
+				wp_send_json_error( array( 'message' => __( 'Code expiré. Veuillez recommencer la procédure de changement d\'email.', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			if ( $otp_code !== $stored_otp ) {
+				wp_send_json_error( array( 'message' => __( 'Code de vérification incorrect', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			// Code correct - mettre à jour l'email
+			$result = wp_update_user( array(
+				'ID'         => $user_id,
+				'user_email' => $pending_email,
+			) );
+
+			if ( is_wp_error( $result ) ) {
+				wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+				wp_die();
+			}
+
+			// Supprimer les transients
+			delete_transient( 'el_email_otp_' . $user_id );
+			delete_transient( 'el_pending_email_' . $user_id );
+
+			wp_send_json_success( array(
+				'message'   => __( 'Adresse email mise à jour avec succès', 'eventlist' ),
+				'new_email' => $pending_email,
+			) );
+			wp_die();
+		}
+
+		/**
+		 * Renvoyer le code OTP pour le changement d'email
+		 */
+		public function el_resend_email_otp() {
+			if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'el_nonce' ) ) {
+				wp_send_json_error( array( 'message' => __( 'Erreur de sécurité', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			$user_id = get_current_user_id();
+			if ( ! $user_id ) {
+				wp_send_json_error( array( 'message' => __( 'Vous devez être connecté', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			$pending_email = get_transient( 'el_pending_email_' . $user_id );
+
+			if ( ! $pending_email ) {
+				wp_send_json_error( array( 'message' => __( 'Aucun changement d\'email en cours. Veuillez recommencer la procédure.', 'eventlist' ) ) );
+				wp_die();
+			}
+
+			$current_user = get_userdata( $user_id );
+
+			// Générer un nouveau code OTP
+			$otp_code = sprintf( '%06d', wp_rand( 0, 999999 ) );
+
+			// Mettre à jour les transients (15 minutes)
+			set_transient( 'el_email_otp_' . $user_id, $otp_code, 15 * MINUTE_IN_SECONDS );
+			set_transient( 'el_pending_email_' . $user_id, $pending_email, 15 * MINUTE_IN_SECONDS );
+
+			// Renvoyer l'email
+			self::send_email_otp( $current_user->user_email, $otp_code, $pending_email );
+
+			wp_send_json_success( array(
+				'message' => __( 'Un nouveau code de vérification a été envoyé à votre adresse email', 'eventlist' ),
+			) );
 			wp_die();
 		}
 

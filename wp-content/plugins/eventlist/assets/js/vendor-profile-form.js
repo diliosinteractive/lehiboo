@@ -209,6 +209,11 @@ jQuery(document).ready(function ($) {
                         }, 2000);
                     }
 
+                    // Show OTP modal if email change requires verification
+                    if (response.data.email_otp_required) {
+                        showEmailOtpModal();
+                    }
+
                 } else {
                     if (typeof ToastNotification !== 'undefined') {
                         ToastNotification.error(response.data.message || 'Une erreur est survenue lors de la sauvegarde.');
@@ -683,6 +688,221 @@ jQuery(document).ready(function ($) {
         $('#social_items_wrapper .social_item').each(function(index) {
             $(this).find('.icon_social').attr('name', 'user_profile_social[' + index + '][icon]');
             $(this).find('.link_social').attr('name', 'user_profile_social[' + index + '][link]');
+        });
+    }
+
+    /* ==========================================================================
+       9. Email OTP Verification Modal
+       ========================================================================== */
+
+    /**
+     * Show the OTP verification modal
+     */
+    function showEmailOtpModal() {
+        // Create modal if it doesn't exist
+        if ($('#email_otp_modal').length === 0) {
+            var modalHtml = '<div id="email_otp_modal" class="el_modal_overlay">' +
+                '<div class="el_modal">' +
+                '<div class="el_modal_header">' +
+                '<h3><i class="fas fa-shield-alt"></i> Vérification de l\'email</h3>' +
+                '<button type="button" class="el_modal_close" aria-label="Fermer">&times;</button>' +
+                '</div>' +
+                '<div class="el_modal_body">' +
+                '<p>Un code de vérification à 6 chiffres a été envoyé à votre adresse email actuelle.</p>' +
+                '<p class="otp_info">Entrez le code pour confirmer le changement d\'adresse email.</p>' +
+                '<div class="otp_input_wrapper">' +
+                '<input type="text" id="otp_input_1" class="otp_input" maxlength="1" pattern="[0-9]" inputmode="numeric" autofocus>' +
+                '<input type="text" id="otp_input_2" class="otp_input" maxlength="1" pattern="[0-9]" inputmode="numeric">' +
+                '<input type="text" id="otp_input_3" class="otp_input" maxlength="1" pattern="[0-9]" inputmode="numeric">' +
+                '<input type="text" id="otp_input_4" class="otp_input" maxlength="1" pattern="[0-9]" inputmode="numeric">' +
+                '<input type="text" id="otp_input_5" class="otp_input" maxlength="1" pattern="[0-9]" inputmode="numeric">' +
+                '<input type="text" id="otp_input_6" class="otp_input" maxlength="1" pattern="[0-9]" inputmode="numeric">' +
+                '</div>' +
+                '<div class="otp_error" style="display:none;"></div>' +
+                '</div>' +
+                '<div class="el_modal_footer">' +
+                '<button type="button" class="btn_resend_otp">Renvoyer le code</button>' +
+                '<button type="button" class="btn_verify_otp btn_primary">Vérifier</button>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+            $('body').append(modalHtml);
+            initOtpModalEvents();
+        }
+
+        // Show modal
+        $('#email_otp_modal').addClass('active');
+        $('#otp_input_1').focus();
+    }
+
+    /**
+     * Initialize OTP modal events
+     */
+    function initOtpModalEvents() {
+        // Close modal
+        $(document).on('click', '.el_modal_close, .el_modal_overlay', function(e) {
+            if (e.target === this) {
+                hideEmailOtpModal();
+            }
+        });
+
+        // OTP input navigation
+        $(document).on('input', '.otp_input', function() {
+            var $this = $(this);
+            var val = $this.val();
+
+            // Only allow digits
+            if (!/^\d*$/.test(val)) {
+                $this.val('');
+                return;
+            }
+
+            // Move to next input
+            if (val.length === 1) {
+                var $next = $this.next('.otp_input');
+                if ($next.length) {
+                    $next.focus();
+                }
+            }
+        });
+
+        // Handle backspace
+        $(document).on('keydown', '.otp_input', function(e) {
+            var $this = $(this);
+            if (e.key === 'Backspace' && $this.val() === '') {
+                var $prev = $this.prev('.otp_input');
+                if ($prev.length) {
+                    $prev.focus().val('');
+                }
+            }
+        });
+
+        // Handle paste
+        $(document).on('paste', '.otp_input', function(e) {
+            e.preventDefault();
+            var pastedData = (e.originalEvent.clipboardData || window.clipboardData).getData('text');
+            var digits = pastedData.replace(/\D/g, '').substring(0, 6);
+
+            if (digits.length === 6) {
+                for (var i = 0; i < 6; i++) {
+                    $('#otp_input_' + (i + 1)).val(digits[i]);
+                }
+                $('#otp_input_6').focus();
+            }
+        });
+
+        // Verify OTP button
+        $(document).on('click', '.btn_verify_otp', function() {
+            verifyEmailOtp();
+        });
+
+        // Resend OTP button
+        $(document).on('click', '.btn_resend_otp', function() {
+            resendEmailOtp();
+        });
+
+        // Enter key to verify
+        $(document).on('keydown', '.otp_input', function(e) {
+            if (e.key === 'Enter') {
+                verifyEmailOtp();
+            }
+        });
+    }
+
+    /**
+     * Hide the OTP modal
+     */
+    function hideEmailOtpModal() {
+        $('#email_otp_modal').removeClass('active');
+        // Clear inputs
+        $('.otp_input').val('');
+        $('.otp_error').hide().text('');
+    }
+
+    /**
+     * Verify the OTP code
+     */
+    function verifyEmailOtp() {
+        var otpCode = '';
+        for (var i = 1; i <= 6; i++) {
+            otpCode += $('#otp_input_' + i).val();
+        }
+
+        if (otpCode.length !== 6) {
+            $('.otp_error').text('Veuillez entrer le code à 6 chiffres').show();
+            return;
+        }
+
+        var $btn = $('.btn_verify_otp');
+        $btn.prop('disabled', true).text('Vérification...');
+
+        $.ajax({
+            url: ajax_object.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'el_verify_email_otp',
+                nonce: ajax_object.nonce,
+                otp_code: otpCode
+            },
+            success: function(response) {
+                $btn.prop('disabled', false).text('Vérifier');
+
+                if (response.success) {
+                    hideEmailOtpModal();
+                    if (typeof ToastNotification !== 'undefined') {
+                        ToastNotification.success(response.data.message);
+                    } else {
+                        alert(response.data.message);
+                    }
+                    // Update email field
+                    if (response.data.new_email) {
+                        $('#user_email').val(response.data.new_email);
+                    }
+                } else {
+                    $('.otp_error').text(response.data.message).show();
+                }
+            },
+            error: function() {
+                $btn.prop('disabled', false).text('Vérifier');
+                $('.otp_error').text('Erreur de connexion. Veuillez réessayer.').show();
+            }
+        });
+    }
+
+    /**
+     * Resend the OTP code
+     */
+    function resendEmailOtp() {
+        var $btn = $('.btn_resend_otp');
+        $btn.prop('disabled', true).text('Envoi...');
+
+        $.ajax({
+            url: ajax_object.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'el_resend_email_otp',
+                nonce: ajax_object.nonce
+            },
+            success: function(response) {
+                $btn.prop('disabled', false).text('Renvoyer le code');
+
+                if (response.success) {
+                    if (typeof ToastNotification !== 'undefined') {
+                        ToastNotification.success(response.data.message);
+                    } else {
+                        alert(response.data.message);
+                    }
+                    // Clear inputs
+                    $('.otp_input').val('');
+                    $('#otp_input_1').focus();
+                } else {
+                    $('.otp_error').text(response.data.message).show();
+                }
+            },
+            error: function() {
+                $btn.prop('disabled', false).text('Renvoyer le code');
+                $('.otp_error').text('Erreur de connexion. Veuillez réessayer.').show();
+            }
         });
     }
 

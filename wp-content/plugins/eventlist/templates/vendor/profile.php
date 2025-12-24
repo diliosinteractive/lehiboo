@@ -1100,10 +1100,10 @@ $user_meta_field = get_option( 'ova_register_form' );
 										placeholder="<?php esc_attr_e( 'Ex : https://lehiboo.com', 'eventlist' ); ?>">
 								</div>
 
-								<!-- Type d'événements organisés -->
+								<!-- Type de lieu -->
 								<div class="vendor_field">
 									<label class="control-label" for="org_event_type_select">
-										<?php esc_html_e( 'Type d\'événements organisé', 'eventlist' ); ?>
+										<?php esc_html_e( 'Type de lieu', 'eventlist' ); ?>
 									</label>
 									<?php
 									$org_event_type = get_user_meta( $user_id, 'org_event_type', true );
@@ -1114,6 +1114,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 										<option value="exterieur" <?php selected( $org_event_type, 'exterieur' ); ?>><?php esc_html_e( 'Extérieur', 'eventlist' ); ?></option>
 										<option value="interieur_exterieur" <?php selected( $org_event_type, 'interieur_exterieur' ); ?>><?php esc_html_e( 'Intérieur & Extérieur', 'eventlist' ); ?></option>
 									</select>
+									<p class="field_description"><?php esc_html_e( 'Type de lieu où se déroulent principalement les activités organisées par votre organisation.', 'eventlist' ); ?></p>
 								</div>
 							</div>
 

@@ -39,6 +39,8 @@ if( $author_id ){
 
 	$org_cover_image = get_user_meta( $author_id, 'org_cover_image', true ) ? get_user_meta( $author_id, 'org_cover_image', true ) : '';
 	$org_web = get_user_meta( $author_id, 'org_web', true ) ? get_user_meta( $author_id, 'org_web', true ) : '';
+	$org_email_contact = get_user_meta( $author_id, 'org_email_contact', true ) ? get_user_meta( $author_id, 'org_email_contact', true ) : '';
+	$org_phone_contact = get_user_meta( $author_id, 'org_phone_contact', true ) ? get_user_meta( $author_id, 'org_phone_contact', true ) : '';
 	$user_professional_email = get_user_meta( $author_id, 'user_professional_email', true ) ? get_user_meta( $author_id, 'user_professional_email', true ) : '';
 	$user_country = get_user_meta( $author_id, 'user_country', true ) ? get_user_meta( $author_id, 'user_country', true ) : '';
 	$user_city = get_user_meta( $author_id, 'user_city', true ) ? get_user_meta( $author_id, 'user_city', true ) : '';
@@ -70,6 +72,8 @@ if( $author_id ){
 					$display_phone = '';
 					if (is_singular('event') && $info_organizer == 'checked' && isset($phone_organizer) && $phone_organizer) {
 						$display_phone = $phone_organizer;
+					} elseif ( $org_phone_contact ) {
+						$display_phone = $org_phone_contact;
 					} elseif ( $user_phone ) {
 						$display_phone = $user_phone;
 					}
@@ -104,7 +108,9 @@ if( $author_id ){
 							<span class="contact_label"><?php esc_html_e( 'Email', 'eventlist' ); ?></span>
 							<?php if (is_singular('event') && $info_organizer == 'checked') { ?>
 								<a href="<?php echo esc_attr('mailto:'.$mail_organizer); ?>" class="contact_value"><?php echo esc_html( $mail_organizer ); ?></a>
-							<?php } elseif ( !is_singular('event') && $user_professional_email ) { ?>
+							<?php } elseif ( $org_email_contact ) { ?>
+								<a href="<?php echo esc_attr('mailto:'.$org_email_contact); ?>" class="contact_value"><?php echo esc_html( $org_email_contact ); ?></a>
+							<?php } elseif ( $user_professional_email ) { ?>
 								<a href="<?php echo esc_attr('mailto:'.$user_professional_email); ?>" class="contact_value"><?php echo esc_html( $user_professional_email ); ?></a>
 							<?php } else { ?>
 								<a href="<?php echo esc_attr('mailto:'.$user_email); ?>" class="contact_value"><?php echo esc_html( $user_email ); ?></a>
@@ -212,18 +218,18 @@ if( $author_id ){
 							endforeach; ?>
 						<?php elseif ( $user_profile_social && $info_organizer == '' ) : ?>
 							<?php foreach ($user_profile_social as $k_social => $v_social) :
-								if ($v_social[0] != '') : ?>
-									<a href="<?php echo esc_attr($v_social[0]); ?>" target="_blank" class="social_link" rel="nofollow">
-										<i class="<?php echo esc_html($v_social[1]); ?>"></i>
+								if ( ! empty( $v_social['link'] ) ) : ?>
+									<a href="<?php echo esc_attr($v_social['link']); ?>" target="_blank" class="social_link" rel="nofollow">
+										<i class="<?php echo esc_html($v_social['icon']); ?>"></i>
 									</a>
 								<?php endif;
 							endforeach; ?>
 						<?php endif; ?>
 					<?php elseif ( !is_singular('event') && $user_profile_social ) : ?>
 						<?php foreach ($user_profile_social as $k_social => $v_social) :
-							if ($v_social[0] != '') : ?>
-								<a href="<?php echo esc_attr($v_social[0]); ?>" target="_blank" class="social_link" rel="nofollow">
-									<i class="<?php echo esc_html($v_social[1]); ?>"></i>
+							if ( ! empty( $v_social['link'] ) ) : ?>
+								<a href="<?php echo esc_attr($v_social['link']); ?>" target="_blank" class="social_link" rel="nofollow">
+									<i class="<?php echo esc_html($v_social['icon']); ?>"></i>
 								</a>
 							<?php endif;
 						endforeach; ?>
