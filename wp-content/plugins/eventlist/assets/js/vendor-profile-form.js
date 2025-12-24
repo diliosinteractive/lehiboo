@@ -430,11 +430,17 @@ jQuery(document).ready(function ($) {
     if ($('#profile_address').length && $.fn.select2) {
         console.log('[Profile] Initialisation Select2 en cours...');
 
+        // Détruire Select2 existant s'il y en a un
+        if ($('#profile_address').hasClass('select2-hidden-accessible')) {
+            console.log('[Profile] Destruction Select2 existant...');
+            $('#profile_address').select2('destroy');
+        }
+
         $('#profile_address').select2({
             placeholder: 'Rechercher une adresse...',
             allowClear: true,
             width: '100%',
-            minimumInputLength: 3,
+            minimumInputLength: 2,
             language: {
                 inputTooShort: function() {
                     return 'Saisissez au moins 3 caractères';
@@ -496,6 +502,19 @@ jQuery(document).ready(function ($) {
         // Debug: écouter les événements Select2
         $('#profile_address').on('select2:open', function() {
             console.log('[Profile] Select2 dropdown OUVERT');
+            // Test direct API call quand le dropdown s'ouvre
+            console.log('[Profile] Test API direct...');
+            $.ajax({
+                url: 'https://api-adresse.data.gouv.fr/search/',
+                data: { q: 'paris', limit: 3 },
+                dataType: 'json',
+                success: function(data) {
+                    console.log('[Profile] TEST API OK - Résultats:', data.features ? data.features.length : 0);
+                },
+                error: function(xhr, status, error) {
+                    console.error('[Profile] TEST API ERREUR:', status, error);
+                }
+            });
         });
         $('#profile_address').on('select2:close', function() {
             console.log('[Profile] Select2 dropdown FERMÉ');
