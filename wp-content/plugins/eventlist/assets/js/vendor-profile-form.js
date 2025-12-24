@@ -4,6 +4,7 @@
  */
 
 jQuery(document).ready(function ($) {
+    console.log('[vendor-profile-form.js] FICHIER CHARGÉ ET EXÉCUTÉ');
 
     /* ==========================================================================
        1. Navigation & ScrollSpy
