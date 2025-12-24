@@ -259,12 +259,12 @@ class EL_Assets{
 				'ajaxUrl' => admin_url('admin-ajax.php'),
 			));
 
+			// API data.gouv.fr - V1 Le Hiboo CDC (doit être chargé AVANT vendor-profile-form.js)
+			wp_enqueue_script('el_api_datagouv', EL_PLUGIN_URI.'assets/js/frontend/api-datagouv.js', array('jquery'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/frontend/api-datagouv.js'), true );
+
 			// V1 Le Hiboo - Profile Form (completion gauge, save, media picker handlers)
 			wp_enqueue_style('el_vendor_profile_form_css', EL_PLUGIN_URI.'assets/css/vendor-profile-form.css', array(), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/css/vendor-profile-form.css'));
-			wp_enqueue_script('el_vendor_profile_form', EL_PLUGIN_URI.'assets/js/vendor-profile-form.js', array('jquery', 'el_vendor_media_picker'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/vendor-profile-form.js'), true);
-
-			// API data.gouv.fr - V1 Le Hiboo CDC
-			wp_enqueue_script('el_api_datagouv', EL_PLUGIN_URI.'assets/js/frontend/api-datagouv.js', array('jquery'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/frontend/api-datagouv.js'), true );
+			wp_enqueue_script('el_vendor_profile_form', EL_PLUGIN_URI.'assets/js/vendor-profile-form.js', array('jquery', 'el_vendor_media_picker', 'el_api_datagouv'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/vendor-profile-form.js'), true);
 
 			// Profile Validation (Score + Symboles + Validation) - V1 Le Hiboo CDC
 			wp_enqueue_script('el_profile_validation', EL_PLUGIN_URI.'assets/js/frontend/profile-validation.js', array('jquery'), '1.0.' . filemtime(EL_PLUGIN_PATH.'assets/js/frontend/profile-validation.js'), true );
