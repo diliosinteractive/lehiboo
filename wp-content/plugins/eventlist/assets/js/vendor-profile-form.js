@@ -493,6 +493,14 @@ jQuery(document).ready(function ($) {
 
         console.log('[Profile] Select2 initialisé avec succès');
 
+        // Debug: écouter les événements Select2
+        $('#profile_address').on('select2:open', function() {
+            console.log('[Profile] Select2 dropdown OUVERT');
+        });
+        $('#profile_address').on('select2:close', function() {
+            console.log('[Profile] Select2 dropdown FERMÉ');
+        });
+
         // When address is selected
         $('#profile_address').on('select2:select', function(e) {
             var data = e.params.data;
