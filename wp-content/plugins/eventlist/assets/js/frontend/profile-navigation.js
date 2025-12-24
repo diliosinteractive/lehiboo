@@ -12,7 +12,15 @@
         $('.profile_tab_item').on('click', function(e) {
             e.preventDefault();
 
-            var targetTab = $(this).data('tab');
+            // Extraire l'ancre du href du lien enfant
+            var $link = $(this).find('a');
+            var href = $link.attr('href') || '';
+            var targetTab = href.replace('#', '');
+
+            // Si pas de cible valide, ignorer
+            if (!targetTab) {
+                return;
+            }
 
             // Retirer la classe active de tous les onglets
             $('.profile_tab_item').removeClass('active');
@@ -20,11 +28,14 @@
             // Ajouter la classe active à l'onglet cliqué
             $(this).addClass('active');
 
-            // Masquer tous les contenus
-            $('.tab-contents').removeClass('active').hide();
-
-            // Afficher le contenu correspondant avec animation
-            $('#' + targetTab).addClass('active').fadeIn(300);
+            // Scroll vers la section correspondante
+            var $targetSection = $('#' + targetTab);
+            if ($targetSection.length) {
+                var offset = $targetSection.offset().top - 100; // 100px de marge pour la sticky bar
+                $('html, body').animate({
+                    scrollTop: offset
+                }, 400);
+            }
 
             // Mettre à jour le hash de l'URL sans scroll
             if (history.pushState) {
@@ -40,17 +51,32 @@
 
             if (hash) {
                 var targetTab = hash.substring(1); // Retirer le #
-                var $targetTabItem = $('.profile_tab_item[data-tab="' + targetTab + '"]');
+                // Chercher le lien qui pointe vers cette ancre
+                var $targetTabItem = $('.profile_tab_item').filter(function() {
+                    return $(this).find('a').attr('href') === hash;
+                });
 
                 if ($targetTabItem.length) {
-                    $targetTabItem.trigger('click');
+                    // Activer l'onglet correspondant
+                    $('.profile_tab_item').removeClass('active');
+                    $targetTabItem.addClass('active');
+
+                    // Scroll vers la section après un court délai (pour le chargement de la page)
+                    setTimeout(function() {
+                        var $targetSection = $('#' + targetTab);
+                        if ($targetSection.length) {
+                            var offset = $targetSection.offset().top - 100;
+                            $('html, body').animate({
+                                scrollTop: offset
+                            }, 400);
+                        }
+                    }, 300);
                     return;
                 }
             }
 
-            // Par défaut, afficher le premier onglet
+            // Par défaut, activer le premier onglet
             $('.profile_tab_item:first').addClass('active');
-            $('.tab-contents:first').addClass('active').show();
         }
 
         initTabFromHash();

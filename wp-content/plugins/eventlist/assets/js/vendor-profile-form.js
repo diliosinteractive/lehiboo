@@ -370,6 +370,7 @@ jQuery(document).ready(function ($) {
        ========================================================================== */
 
     // Initialize Select2 for address (search only - no tags)
+    // Utilisation de l'API Adresse data.gouv.fr (plus fiable que Nominatim)
     if ($('#profile_address').length && $.fn.select2) {
         $('#profile_address').select2({
             placeholder: 'Rechercher une adresse...',
@@ -388,31 +389,42 @@ jQuery(document).ready(function ($) {
                 }
             },
             ajax: {
-                url: 'https://nominatim.openstreetmap.org/search',
+                url: 'https://api-adresse.data.gouv.fr/search/',
                 dataType: 'json',
                 delay: 300,
                 data: function(params) {
                     return {
                         q: params.term,
-                        format: 'json',
-                        addressdetails: 1,
                         limit: 10,
-                        countrycodes: 'fr',
-                        'accept-language': 'fr'
+                        autocomplete: 1
                     };
                 },
                 processResults: function(data) {
+                    if (!data.features) {
+                        return { results: [] };
+                    }
                     return {
-                        results: data.map(function(item) {
+                        results: data.features.map(function(item) {
+                            var props = item.properties || {};
+                            var coords = item.geometry && item.geometry.coordinates ? item.geometry.coordinates : [0, 0];
                             return {
-                                id: item.display_name,
-                                text: item.display_name,
-                                lat: item.lat,
-                                lon: item.lon,
-                                address: item.address || {}
+                                id: props.label || props.name,
+                                text: props.label || props.name,
+                                lat: coords[1], // GeoJSON: [longitude, latitude]
+                                lon: coords[0],
+                                address: {
+                                    house_number: props.housenumber || '',
+                                    road: props.street || '',
+                                    city: props.city || '',
+                                    postcode: props.postcode || '',
+                                    country_code: 'FR'
+                                }
                             };
                         })
                     };
+                },
+                error: function(xhr, status, error) {
+                    console.warn('Erreur API Adresse:', error);
                 }
             },
             templateResult: formatAddressResult
@@ -690,6 +702,25 @@ jQuery(document).ready(function ($) {
             $(this).find('.link_social').attr('name', 'user_profile_social[' + index + '][link]');
         });
     }
+
+    // Tooltip pour les champs URL des réseaux sociaux (afficher l'URL complète au survol)
+    function updateSocialLinkTooltips() {
+        $('#social_items_wrapper .link_social').each(function() {
+            var val = $(this).val();
+            if (val) {
+                $(this).attr('title', val);
+            }
+        });
+    }
+
+    // Mettre à jour le tooltip quand l'URL change
+    $(document).on('input change', '.link_social', function() {
+        var val = $(this).val();
+        $(this).attr('title', val || '');
+    });
+
+    // Initialiser les tooltips au chargement
+    updateSocialLinkTooltips();
 
     /* ==========================================================================
        9. Email OTP Verification Modal

@@ -992,13 +992,22 @@
 .el-vendor-profile-form-wrapper .social_item input.link_social,
 .el-vendor-profile-form-wrapper .social_item .link_social {
     flex: 1 1 auto !important;
-    min-width: 0 !important;
+    min-width: 150px !important;
     width: auto !important;
     padding: 10px 12px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
     font-size: 14px;
     background: #fff;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Afficher l'URL complète au focus */
+.el-vendor-profile-form-wrapper .social_item input.link_social:focus {
+    text-overflow: clip;
+    overflow: visible;
 }
 
 .el-vendor-profile-form-wrapper .social_item .link_social:focus {
