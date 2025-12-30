@@ -14,10 +14,11 @@ console.log('VendorRegister: Script chargé');
 	const VendorRegister = {
 
 		currentStep: 1,
-		totalSteps: 4,
+		totalSteps: 5,
 		storageKey: 'lehiboo_vendor_registration_draft',
 		autoSaveTimer: null,
 		emailVerified: false,
+		selectedPlan: null,
 
 		/**
 		 * Initialisation
@@ -56,6 +57,7 @@ console.log('VendorRegister: Script chargé');
 
 			// Upload files
 			$(document).on('click', '.upload_area', this.triggerFileUpload);
+			$(document).on('click', '.btn_upload_trigger', this.triggerFileUploadFromButton);
 			$(document).on('change', 'input[type="file"]', this.handleFileSelect);
 
 			// Form submission
@@ -64,6 +66,67 @@ console.log('VendorRegister: Script chargé');
 			// Password validation
 			$('#vendor_password').on('input', this.validatePassword);
 			$('#vendor_password_confirm').on('input', this.checkPasswordMatch);
+
+			// Subscription plan selection (Step 5)
+			$(document).on('click', '.subscription_card, .btn_select_plan', this.selectPlan.bind(this));
+
+			// Step 5: Update submit button state when checkboxes change
+			$(document).on('change', '#vendor_terms, #vendor_privacy', this.updateSubmitButtonState.bind(this));
+		},
+
+		/**
+		 * Select subscription plan
+		 */
+		selectPlan: function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			const $target = $(e.currentTarget);
+			const $card = $target.hasClass('subscription_card') ? $target : $target.closest('.subscription_card');
+			const plan = $card.data('plan');
+
+			if (!plan) return;
+
+			// Update selected state
+			$('.subscription_card').removeClass('selected');
+			$card.addClass('selected');
+
+			// Store selected plan
+			this.selectedPlan = plan;
+			$('#vendor_subscription_plan').val(plan);
+
+			// Update button text
+			$('.subscription_card .btn_select_plan').each(function () {
+				const cardPlan = $(this).data('plan');
+				const $icon = $(this).find('i');
+				if (cardPlan === plan) {
+					$(this).html('<i class="fas fa-check"></i> Sélectionné');
+				} else {
+					if (cardPlan === 'premium') {
+						$(this).html('<i class="fas fa-crown"></i> Sélectionner');
+					} else {
+						$(this).html('<i class="fas fa-check-circle"></i> Sélectionner');
+					}
+				}
+			});
+
+			// Update submit button state
+			this.updateSubmitButtonState();
+
+			console.log('Plan sélectionné:', plan);
+		},
+
+		/**
+		 * Update submit button state based on plan + checkboxes
+		 */
+		updateSubmitButtonState: function () {
+			const planSelected = this.selectedPlan !== null;
+			const termsChecked = $('#vendor_terms').is(':checked');
+			const privacyChecked = $('#vendor_privacy').is(':checked');
+
+			const canSubmit = planSelected && termsChecked && privacyChecked;
+
+			$('.btn_submit').prop('disabled', !canSubmit);
 		},
 
 		/**
@@ -676,11 +739,11 @@ console.log('VendorRegister: Script chargé');
 				}
 			}
 
-			// Validation spécifique step 4 (Documents + CGU + Cloudflare)
+			// Validation spécifique step 4 (Documents - optionnels)
 			if (step === 4) {
-				console.log('validateStep: Validation étape 4 - Documents');
+				console.log('validateStep: Validation étape 4 - Documents (optionnels)');
 
-				// Vérifier les uploads requis
+				// Vérifier les uploads requis (si data-required="true")
 				const $requiredUploads = $('.upload_area[data-required="true"]');
 				console.log('validateStep: Nombre uploads requis trouvés:', $requiredUploads.length);
 
@@ -702,6 +765,20 @@ console.log('VendorRegister: Script chargé');
 					VendorRegister.showNotification('error', 'Veuillez télécharger tous les documents obligatoires.');
 					return isValid;
 				}
+			}
+
+			// Validation spécifique step 5 (Abonnement + CGU + Privacy + Cloudflare)
+			if (step === 5) {
+				console.log('validateStep: Validation étape 5 - Abonnement');
+
+				// Vérifier la sélection d'un plan
+				const selectedPlan = $('#vendor_subscription_plan').val();
+				console.log('validateStep: Plan sélectionné:', selectedPlan);
+				if (!selectedPlan) {
+					isValid = false;
+					VendorRegister.showNotification('error', 'Veuillez sélectionner un abonnement.');
+					return isValid;
+				}
 
 				// Vérifier CGU
 				const cguChecked = $('#vendor_terms').is(':checked');
@@ -709,6 +786,15 @@ console.log('VendorRegister: Script chargé');
 				if (!cguChecked) {
 					isValid = false;
 					VendorRegister.showNotification('error', 'Veuillez accepter les conditions générales d\'utilisation.');
+					return isValid;
+				}
+
+				// Vérifier Politique de confidentialité
+				const privacyChecked = $('#vendor_privacy').is(':checked');
+				console.log('validateStep: Politique confidentialité acceptée:', privacyChecked);
+				if (!privacyChecked) {
+					isValid = false;
+					VendorRegister.showNotification('error', 'Veuillez accepter la politique de confidentialité.');
 					return isValid;
 				}
 
@@ -1030,6 +1116,15 @@ console.log('VendorRegister: Script chargé');
 		},
 
 		/**
+		 * Trigger file upload from button
+		 */
+		triggerFileUploadFromButton: function (e) {
+			e.preventDefault();
+			const inputId = $(this).data('target');
+			$(`#${inputId}`).click();
+		},
+
+		/**
 		 * Handle file select
 		 */
 		handleFileSelect: function (e) {
@@ -1084,12 +1179,13 @@ console.log('VendorRegister: Script chargé');
 			const $form = $('#vendor_register_form');
 			const $submitBtn = $form.find('.btn_submit');
 			const formData = new FormData($form[0]);
+			const selectedPlan = this.selectedPlan;
 
 			// Add action
 			formData.append('action', 'lehiboo_vendor_register');
 
 			// Disable submit button
-			$submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Envoi en cours...');
+			$submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Création du compte...');
 
 			$.ajax({
 				url: lehiboo_register_ajax.ajax_url,
@@ -1105,20 +1201,26 @@ console.log('VendorRegister: Script chargé');
 						// Nettoyer les données sauvegardées (inscription réussie)
 						VendorRegister.clearSavedData();
 
-						// Redirection vers la page de confirmation
-						const redirectUrl = response.data.redirect_url || '/vendor-pending/';
+						// Redirection selon le plan choisi
+						let redirectUrl = response.data.redirect_url || '/member-account/';
+
+						// Si plan premium, rediriger vers la page de paiement
+						if (selectedPlan === 'premium' && response.data.payment_url) {
+							redirectUrl = response.data.payment_url;
+						}
+
 						setTimeout(function () {
 							window.location.href = redirectUrl;
 						}, 2000);
 					} else {
 						VendorRegister.showNotification('error', response.data.message);
-						$submitBtn.prop('disabled', false).html('<i class="fas fa-check"></i> Soumettre ma demande');
+						$submitBtn.prop('disabled', false).html('<i class="fas fa-user-plus"></i> Créer le compte');
 					}
 				},
 				error: function (xhr, status, error) {
 					console.error('Erreur AJAX:', error);
 					VendorRegister.showNotification('error', 'Une erreur est survenue. Veuillez réessayer.');
-					$submitBtn.prop('disabled', false).html('<i class="fas fa-check"></i> Soumettre ma demande');
+					$submitBtn.prop('disabled', false).html('<i class="fas fa-user-plus"></i> Créer le compte');
 				}
 			});
 		},

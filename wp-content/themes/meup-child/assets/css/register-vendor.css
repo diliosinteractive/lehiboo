@@ -425,6 +425,38 @@
 	margin-bottom: 8px;
 }
 
+.upload_description {
+	font-size: 13px;
+	color: var(--grey-medium);
+	margin: 0 0 12px 0;
+	line-height: 1.5;
+}
+
+.btn_upload_trigger {
+	margin-top: 12px;
+	padding: 10px 20px;
+	background: var(--white);
+	border: 2px solid var(--orange-primary);
+	color: var(--orange-primary);
+	border-radius: var(--border-radius);
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: var(--transition);
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.btn_upload_trigger:hover {
+	background: var(--orange-primary);
+	color: var(--white);
+}
+
+.btn_upload_trigger i {
+	font-size: 14px;
+}
+
 .upload_area {
 	border: 2px dashed #E0E4E9;
 	border-radius: var(--border-radius);
@@ -1007,5 +1039,231 @@
 	.org_images_row {
 		grid-template-columns: 1fr;
 		gap: 16px;
+	}
+}
+
+/* ========================================
+   STEP 5 - SUBSCRIPTION CARDS
+======================================== */
+.subscription_cards {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 24px;
+	margin-bottom: 32px;
+}
+
+.subscription_card {
+	position: relative;
+	background: var(--white);
+	border: 2px solid #E0E4E9;
+	border-radius: 12px;
+	padding: 28px;
+	cursor: pointer;
+	transition: var(--transition);
+	display: flex;
+	flex-direction: column;
+}
+
+.subscription_card:hover {
+	border-color: var(--orange-primary);
+	box-shadow: 0 4px 20px rgba(255, 96, 31, 0.15);
+}
+
+.subscription_card.selected {
+	border-color: var(--orange-primary);
+	border-width: 3px;
+	background: var(--orange-light);
+	box-shadow: 0 4px 20px rgba(255, 96, 31, 0.2);
+}
+
+/* Premium card styling */
+.subscription_card_premium {
+	border-color: var(--orange-primary);
+}
+
+.subscription_badge {
+	position: absolute;
+	top: -12px;
+	right: 20px;
+	background: var(--orange-primary);
+	color: var(--white);
+	font-size: 12px;
+	font-weight: 700;
+	padding: 6px 14px;
+	border-radius: 20px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+/* Card header */
+.subscription_card_header {
+	text-align: center;
+	margin-bottom: 20px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid #E0E4E9;
+}
+
+.subscription_card_title {
+	font-size: 20px;
+	font-weight: 700;
+	color: var(--grey-dark);
+	margin: 0 0 16px 0;
+}
+
+.subscription_card_price {
+	display: flex;
+	align-items: baseline;
+	justify-content: center;
+	gap: 4px;
+}
+
+.price_amount {
+	font-size: 42px;
+	font-weight: 800;
+	color: var(--orange-primary);
+	line-height: 1;
+}
+
+.price_period {
+	font-size: 16px;
+	color: var(--grey-medium);
+	font-weight: 500;
+}
+
+.subscription_card_desc {
+	font-size: 14px;
+	color: var(--grey-medium);
+	margin: 12px 0 0 0;
+	line-height: 1.5;
+}
+
+/* Card body - features list */
+.subscription_card_body {
+	flex: 1;
+	margin-bottom: 24px;
+}
+
+.subscription_features {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.subscription_features li {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 10px 0;
+	font-size: 14px;
+	color: var(--grey-dark);
+	line-height: 1.4;
+}
+
+.subscription_features li i {
+	color: #27AE60;
+	font-size: 14px;
+	margin-top: 2px;
+	flex-shrink: 0;
+}
+
+/* Card footer - select button */
+.subscription_card_footer {
+	margin-top: auto;
+}
+
+.btn_select_plan {
+	width: 100%;
+	padding: 14px 20px;
+	background: var(--white);
+	color: var(--orange-primary);
+	border: 2px solid var(--orange-primary);
+	border-radius: var(--border-radius);
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: var(--transition);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+.btn_select_plan:hover {
+	background: var(--orange-primary);
+	color: var(--white);
+}
+
+.btn_select_plan.btn_premium {
+	background: var(--orange-primary);
+	color: var(--white);
+}
+
+.btn_select_plan.btn_premium:hover {
+	background: var(--orange-hover);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(255, 96, 31, 0.3);
+}
+
+/* Selected state for buttons */
+.subscription_card.selected .btn_select_plan {
+	background: var(--orange-primary);
+	color: var(--white);
+}
+
+.subscription_card.selected .btn_select_plan i::before {
+	content: "\f00c"; /* fa-check */
+}
+
+/* Disabled submit until plan selected */
+.btn_submit:disabled {
+	background: var(--grey-medium);
+	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
+}
+
+/* Responsive subscription cards */
+@media (max-width: 768px) {
+	.subscription_cards {
+		grid-template-columns: 1fr;
+		gap: 20px;
+	}
+
+	.subscription_card {
+		padding: 24px 20px;
+	}
+
+	.subscription_badge {
+		right: 16px;
+		font-size: 11px;
+		padding: 5px 12px;
+	}
+
+	.price_amount {
+		font-size: 36px;
+	}
+
+	.subscription_card_title {
+		font-size: 18px;
+	}
+}
+
+@media (max-width: 480px) {
+	.subscription_card {
+		padding: 20px 16px;
+	}
+
+	.price_amount {
+		font-size: 32px;
+	}
+
+	.subscription_features li {
+		font-size: 13px;
+		padding: 8px 0;
+	}
+
+	.btn_select_plan {
+		padding: 12px 16px;
+		font-size: 14px;
 	}
 }

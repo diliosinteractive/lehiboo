@@ -115,13 +115,13 @@ function meup_child_scripts() {
         wp_enqueue_script( 'lehiboo-register-customer', get_stylesheet_directory_uri() . '/assets/js/register-customer.js', array('jquery'), '1.1.0', true );
 
         // Styles et scripts pour le formulaire partenaire
-        wp_enqueue_style( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/css/register-vendor.css', array('lehiboo-register-customer'), '2.3.0' );
+        wp_enqueue_style( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/css/register-vendor.css', array('lehiboo-register-customer'), '2.4.0' );
 
         // Select2 pour les multi-select (formulaire partenaire)
         wp_enqueue_style( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', array(), '4.1.0' );
         wp_enqueue_script( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array('jquery'), '4.1.0', true );
 
-        wp_enqueue_script( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/js/register-vendor.js', array('jquery', 'select2'), '3.5.0', true );
+        wp_enqueue_script( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/js/register-vendor.js', array('jquery', 'select2'), '3.6.0', true );
 
         // Cloudflare Turnstile CAPTCHA pour formulaire partenaire
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
@@ -1344,12 +1344,20 @@ function lehiboo_handle_vendor_register() {
 	$org_zipcode = isset( $_POST['vendor_org_zipcode'] ) ? sanitize_text_field( $_POST['vendor_org_zipcode'] ) : '';
 	$org_description = isset( $_POST['vendor_org_description'] ) ? sanitize_textarea_field( $_POST['vendor_org_description'] ) : '';
 
+	// ÉTAPE 5 : Abonnement
+	$subscription_plan = isset( $_POST['vendor_subscription_plan'] ) ? sanitize_text_field( $_POST['vendor_subscription_plan'] ) : 'free';
+
 	// Validation de base
 	if ( empty( $firstname ) || empty( $lastname ) || empty( $email ) || empty( $password ) ||
 	     empty( $org_name ) || empty( $org_display_name ) || empty( $org_type ) || empty( $org_siret ) ||
 	     empty( $org_address ) || empty( $org_city ) || empty( $org_zipcode ) ||
 	     empty( $types_structure ) || empty( $org_roles ) ) {
 		wp_send_json_error( array( 'message' => 'Veuillez remplir tous les champs obligatoires.' ) );
+	}
+
+	// Validation de l'abonnement
+	if ( empty( $subscription_plan ) || ! in_array( $subscription_plan, array( 'free', 'premium' ), true ) ) {
+		wp_send_json_error( array( 'message' => 'Veuillez sélectionner un abonnement.' ) );
 	}
 
 	if ( ! is_email( $email ) ) {
@@ -1418,12 +1426,24 @@ function lehiboo_handle_vendor_register() {
 	update_user_meta( $user_id, 'user_phone', $phone );
 	update_user_meta( $user_id, 'org_phone', $phone );
 
-	// STATUT : En attente d'approbation
-	update_user_meta( $user_id, 'vendor_status', 'pending_approval' );
+	// STATUT : Approuvé directement (documents optionnels, à compléter plus tard)
+	update_user_meta( $user_id, 'vendor_status', 'approved' );
 	update_user_meta( $user_id, 'vendor_application_date', current_time( 'mysql' ) );
+	update_user_meta( $user_id, 'vendor_approval_date', current_time( 'mysql' ) );
 
 	// Marquer l'email comme vérifié (OTP déjà validé avant création)
 	update_user_meta( $user_id, 'email_verified', 1 );
+
+	// Sauvegarder l'abonnement choisi
+	update_user_meta( $user_id, 'subscription_plan', $subscription_plan );
+	update_user_meta( $user_id, 'subscription_date', current_time( 'mysql' ) );
+
+	// Si plan premium, on note qu'il faut finaliser le paiement
+	if ( $subscription_plan === 'premium' ) {
+		update_user_meta( $user_id, 'subscription_status', 'pending_payment' );
+	} else {
+		update_user_meta( $user_id, 'subscription_status', 'active' );
+	}
 
 	// Gestion des uploads de fichiers
 	require_once( ABSPATH . 'wp-admin/includes/file.php' );
@@ -1446,59 +1466,94 @@ function lehiboo_handle_vendor_register() {
 		}
 	}
 
-	// Upload Kbis
-	if ( ! empty( $_FILES['vendor_kbis']['name'] ) ) {
-		$kbis_id = media_handle_upload( 'vendor_kbis', 0 );
-		if ( ! is_wp_error( $kbis_id ) ) {
-			update_user_meta( $user_id, 'org_kbis_id', $kbis_id );
+	// Upload Justificatif d'existence (Kbis, statuts, etc.)
+	if ( ! empty( $_FILES['vendor_justificatif']['name'] ) ) {
+		$justificatif_id = media_handle_upload( 'vendor_justificatif', 0 );
+		if ( ! is_wp_error( $justificatif_id ) ) {
+			update_user_meta( $user_id, 'org_justificatif_id', $justificatif_id );
 		}
 	}
 
-	// Upload Assurance
-	if ( ! empty( $_FILES['vendor_insurance']['name'] ) ) {
-		$insurance_id = media_handle_upload( 'vendor_insurance', 0 );
-		if ( ! is_wp_error( $insurance_id ) ) {
-			update_user_meta( $user_id, 'org_insurance_id', $insurance_id );
+	// Upload Attestation d'assurance
+	if ( ! empty( $_FILES['vendor_attestation']['name'] ) ) {
+		$attestation_id = media_handle_upload( 'vendor_attestation', 0 );
+		if ( ! is_wp_error( $attestation_id ) ) {
+			update_user_meta( $user_id, 'org_attestation_id', $attestation_id );
 		}
 	}
 
-	// Préparer les données pour l'email de confirmation (envoyé après validation OTP)
 	// ========================================
-	// ENVOI DES EMAILS DE CONFIRMATION
+	// CONNEXION AUTOMATIQUE
 	// ========================================
-	// L'email est déjà vérifié via OTP avant soumission du formulaire
-	// On envoie directement les emails de confirmation
+	wp_set_current_user( $user_id );
+	wp_set_auth_cookie( $user_id, true );
+	do_action( 'wp_login', $username, get_userdata( $user_id ) );
 
-	// Email au vendor
-	$subject_vendor = '[Le Hiboo] Votre demande de partenariat a été reçue';
+	// ========================================
+	// ENVOI DES EMAILS DE BIENVENUE
+	// ========================================
+	// URL du dashboard vendor
+	$dashboard_url = function_exists( 'get_myaccount_page' ) ? get_myaccount_page() : home_url( '/member-account/' );
+
+	// Email au vendor - Bienvenue
+	$subject_vendor = '[Lehiboo Experiences] - Bravo ! Votre compte Organisateur est créé !';
+
 	$message_vendor = "Bonjour {$firstname},\n\n";
-	$message_vendor .= "Nous avons bien reçu votre demande de partenariat pour {$org_name}.\n\n";
-	$message_vendor .= "Votre dossier est en cours d'examen. Notre équipe reviendra vers vous sous 48h ouvrées.\n\n";
-	$message_vendor .= "Cordialement,\nL'équipe Le Hiboo";
+	$message_vendor .= "Votre compte organisateur Le Hiboo a bien été créé avec succès.\n";
+	$message_vendor .= "Vous pouvez dès maintenant accéder à votre espace et commencer à créer vos activités.\n\n";
+	$message_vendor .= "Accéder à mon espace organisateur :\n";
+	$message_vendor .= "{$dashboard_url}\n\n";
+	$message_vendor .= "Prochaines étapes :\n";
+	$message_vendor .= "- Complétez les informations de votre organisation.\n";
+	$message_vendor .= "- Ajoutez vos documents de vérification si ce n'est pas déjà fait.\n";
+	$message_vendor .= "- Créez et publiez votre première activité !\n\n";
+	$message_vendor .= "À très vite sur Le Hiboo,\n";
+	$message_vendor .= "L'équipe Lehiboo Experiences\n\n";
+	$message_vendor .= "Besoin d'aide ? Contactez-nous à support@lehiboo.com";
 
-	wp_mail( $email, $subject_vendor, $message_vendor );
+	$headers = array(
+		'Content-Type: text/plain; charset=UTF-8',
+		'From: Lehiboo Experiences <no-reply@lehiboo.com>'
+	);
 
-	// Email à l'admin
+	wp_mail( $email, $subject_vendor, $message_vendor, $headers );
+
+	// Email à l'admin - Notification
 	$admin_email = get_option( 'admin_email' );
-	$admin_subject = '[Le Hiboo] Nouvelle demande partenaire : ' . $org_name;
-	$admin_message = "Une nouvelle demande de partenariat a été reçue.\n\n";
+	$admin_subject = '[Lehiboo] Nouveau partenaire inscrit : ' . $org_name;
+	$plan_label = ( $subscription_plan === 'premium' ) ? 'Premium (29€/mois)' : 'Gratuit';
+	$admin_message = "Un nouveau partenaire s'est inscrit sur la plateforme.\n\n";
 	$admin_message .= "Organisation : {$org_name}\n";
 	$admin_message .= "Contact : {$firstname} {$lastname}\n";
 	$admin_message .= "Email : {$email}\n";
-	$admin_message .= "Type : {$org_type}\n\n";
-	$admin_message .= "Accédez à l'administration pour valider cette demande.";
+	$admin_message .= "Statut juridique : {$org_type}\n";
+	$admin_message .= "SIREN : {$org_siret}\n";
+	$admin_message .= "Abonnement choisi : {$plan_label}\n\n";
+	$admin_message .= "Le compte a été activé automatiquement. Les documents sont optionnels et peuvent être ajoutés ultérieurement.";
 
 	wp_mail( $admin_email, $admin_subject, $admin_message );
 
 	// Nettoyer les OTP de pré-inscription pour cet email
 	LeHiboo_OTP::delete_email_otps( $email );
 
+	// Préparer la réponse
+	$response_data = array(
+		'message' => 'Bienvenue ! Votre compte Organisateur a été créé avec succès.',
+		'redirect_url' => $dashboard_url,
+		'user_id' => $user_id,
+		'subscription_plan' => $subscription_plan
+	);
+
+	// Si plan premium, ajouter l'URL de paiement
+	if ( $subscription_plan === 'premium' ) {
+		// URL vers la page de packages du plugin EventList
+		$payment_url = function_exists( 'get_myaccount_page' ) ? get_myaccount_page() . '?vendor=package' : home_url( '/member-account/?vendor=package' );
+		$response_data['payment_url'] = $payment_url;
+		$response_data['message'] = 'Bienvenue ! Votre compte a été créé. Vous allez être redirigé vers la page de paiement pour activer votre abonnement Premium.';
+	}
+
 	// Retourner succès
-	wp_send_json_success( array(
-		'message' => 'Votre demande de partenariat a été envoyée avec succès !',
-		'redirect_url' => home_url( '/vendor-pending/' ),
-		'user_id' => $user_id
-	) );
+	wp_send_json_success( $response_data );
 }
 
 // ========================================
@@ -1592,9 +1647,9 @@ function lehiboo_ajax_verify_otp() {
 			error_log( 'LeHiboo OTP: Emails de confirmation envoyés pour vendor ' . $user_id );
 		}
 
-		// Rediriger vers vendor-pending au lieu de member-account
-		$redirect_url = home_url( '/vendor-pending/' );
-		$message = 'Email vérifié ! Votre demande de partenariat a bien été envoyée. Vous recevrez une réponse sous 48h.';
+		// Rediriger vers le dashboard vendor (plus de page pending)
+		$redirect_url = function_exists( 'get_myaccount_page' ) ? get_myaccount_page() : home_url( '/member-account/' );
+		$message = 'Email vérifié ! Bienvenue sur votre espace partenaire.';
 	} else {
 		$redirect_url = home_url( '/member-account/' );
 		$message = 'Email vérifié ! Connexion en cours...';

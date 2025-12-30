@@ -37,6 +37,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					<span class="step_nav_label">Documents</span>
 				</div>
 			</div>
+			<div class="step_nav_item" data-step="5">
+				<div class="step_nav_bar"></div>
+				<div class="step_nav_content">
+					<span class="step_nav_label">Abonnement</span>
+				</div>
+			</div>
 		</div>
 
 		<!-- Formulaire -->
@@ -496,36 +502,128 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 				============================================= -->
 				<div class="form_step" data-step="4">
 					<h2 class="form_step_title">Documents</h2>
-					<p class="form_step_subtitle">Téléchargez les documents requis pour valider votre profil</p>
+					<p class="form_step_subtitle">Ces documents sont optionnels à l'inscription. Vous pourrez les ajouter plus tard depuis votre espace partenaire.</p>
 
 					<div class="upload_group">
-						<label class="upload_label">Kbis ou statuts association <span class="required">*</span></label>
-						<div class="upload_area" data-input="vendor_kbis" data-required="true">
+						<label class="upload_label">Justificatif d'existence</label>
+					<p class="upload_description">Kbis de moins de 3 mois, statuts de l'association, ou tout document officiel attestant de l'existence légale de votre structure.</p>
+						<div class="upload_area" data-input="vendor_justificatif" data-required="false">
 							<i class="fas fa-file-pdf"></i>
 							<p>Glissez-déposez ou cliquez pour télécharger</p>
-							<span class="upload_hint">PDF (max 5 MB)</span>
-							<input type="file" id="vendor_kbis" name="vendor_kbis" accept=".pdf" hidden>
+							<span class="upload_hint">PDF, JPG ou PNG (max 5 MB)</span>
+							<input type="file" id="vendor_justificatif" name="vendor_justificatif" accept=".pdf,.jpg,.jpeg,.png" hidden>
 							<div class="upload_preview" style="display: none;"></div>
 						</div>
+						<button type="button" class="btn btn_upload_trigger" data-target="vendor_justificatif">
+							<i class="fas fa-upload"></i> Importer un fichier
+						</button>
 					</div>
 
 					<div class="upload_group">
-						<label class="upload_label">Assurance RC Pro <span class="required">*</span></label>
-						<div class="upload_area" data-input="vendor_insurance" data-required="true">
+						<label class="upload_label">Attestation d'assurance</label>
+						<p class="upload_description">Attestation de responsabilité civile professionnelle en cours de validité couvrant vos activités.</p>
+						<div class="upload_area" data-input="vendor_attestation" data-required="false">
 							<i class="fas fa-file-pdf"></i>
 							<p>Glissez-déposez ou cliquez pour télécharger</p>
-							<span class="upload_hint">PDF (max 5 MB)</span>
-							<input type="file" id="vendor_insurance" name="vendor_insurance" accept=".pdf" hidden>
+							<span class="upload_hint">PDF, JPG ou PNG (max 5 MB)</span>
+							<input type="file" id="vendor_attestation" name="vendor_attestation" accept=".pdf,.jpg,.jpeg,.png" hidden>
 							<div class="upload_preview" style="display: none;"></div>
+						</div>
+						<button type="button" class="btn btn_upload_trigger" data-target="vendor_attestation">
+							<i class="fas fa-upload"></i> Importer un fichier
+						</button>
+					</div>
+
+					<div class="form_actions">
+						<button type="button" class="btn btn_secondary btn_prev" data-prev="3">Retour</button>
+						<button type="button" class="btn btn_primary btn_next" data-next="5">Suivant</button>
+					</div>
+				</div>
+
+				<!-- ============================================
+				     ÉTAPE 5 : CHOIX DE L'ABONNEMENT
+				============================================= -->
+				<div class="form_step" data-step="5">
+					<h2 class="form_step_title">Choisissez votre abonnement</h2>
+					<p class="form_step_subtitle">
+						Vous pourrez changer d'abonnement à tout moment depuis votre espace organisateur.<br>
+						La publication de vos activités nécessite la vérification de votre structure, quel que soit l'abonnement.
+					</p>
+
+					<!-- Cartes d'abonnement -->
+					<div class="subscription_cards">
+						<!-- Carte Gratuit -->
+						<div class="subscription_card" data-plan="free">
+							<div class="subscription_card_header">
+								<h3 class="subscription_card_title">Abonnement Gratuit</h3>
+								<div class="subscription_card_price">
+									<span class="price_amount">0 €</span>
+									<span class="price_period">/ mois</span>
+								</div>
+							</div>
+							<div class="subscription_card_body">
+								<ul class="subscription_features">
+									<li><i class="fas fa-check"></i> Accès au dashboard Organisateur</li>
+									<li><i class="fas fa-check"></i> Création et publication d'activités</li>
+									<li><i class="fas fa-check"></i> Prévisualisation des fiches</li>
+									<li><i class="fas fa-check"></i> Gestion de la page Profil</li>
+								</ul>
+							</div>
+							<div class="subscription_card_footer">
+								<button type="button" class="btn btn_select_plan" data-plan="free">
+									<i class="fas fa-check-circle"></i> Sélectionner
+								</button>
+							</div>
+						</div>
+
+						<!-- Carte Payant -->
+						<div class="subscription_card subscription_card_premium" data-plan="premium">
+							<div class="subscription_badge">Recommandé</div>
+							<div class="subscription_card_header">
+								<h3 class="subscription_card_title">Abonnement Premium</h3>
+								<div class="subscription_card_price">
+									<span class="price_amount">29 €</span>
+									<span class="price_period">/ mois</span>
+								</div>
+								<p class="subscription_card_desc">Pour publier vos activités et toucher le public Le Hiboo.</p>
+							</div>
+							<div class="subscription_card_body">
+								<ul class="subscription_features">
+									<li><i class="fas fa-check"></i> Toutes les fonctionnalités du plan Gratuit</li>
+									<li><i class="fas fa-check"></i> Accès à l'aide IA pour générer du contenu</li>
+									<li><i class="fas fa-check"></i> Gestion des réservations et inscriptions</li>
+									<li><i class="fas fa-check"></i> Messagerie avec les participants</li>
+									<li><i class="fas fa-check"></i> Accès aux statistiques de performance</li>
+								</ul>
+							</div>
+							<div class="subscription_card_footer">
+								<button type="button" class="btn btn_select_plan btn_premium" data-plan="premium">
+									<i class="fas fa-crown"></i> Sélectionner
+								</button>
+							</div>
 						</div>
 					</div>
 
+					<input type="hidden" id="vendor_subscription_plan" name="vendor_subscription_plan" value="">
+
+					<!-- Checkbox CGU -->
 					<div class="form_group checkbox_group">
 						<label class="checkbox_label">
-							<input type="checkbox" id="vendor_terms" name="vendor_terms">
+							<input type="checkbox" id="vendor_terms" name="vendor_terms" required>
 							<span class="checkbox_custom"></span>
 							<span class="checkbox_text">
-								J'accepte les <a href="/cgu" target="_blank">conditions générales d'utilisation</a> et la <a href="/charte" target="_blank">charte qualité</a>
+								J'accepte les <a href="/cgu" target="_blank">conditions générales d'utilisation</a> et la <a href="/charte" target="_blank">charte qualité</a> <span class="required">*</span>
+							</span>
+						</label>
+					</div>
+
+					<!-- Checkbox Politique de confidentialité -->
+					<div class="form_group checkbox_group">
+						<label class="checkbox_label">
+							<input type="checkbox" id="vendor_privacy" name="vendor_privacy" required>
+							<span class="checkbox_custom"></span>
+							<span class="checkbox_text">
+								J'ai pris connaissance et j'accepte la <a href="/politique-de-confidentialite" target="_blank">Politique de confidentialité de Le Hiboo</a> <span class="required">*</span>
 							</span>
 						</label>
 					</div>
@@ -536,10 +634,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					</div>
 
 					<div class="form_actions">
-						<button type="button" class="btn btn_secondary btn_prev" data-prev="3">Retour</button>
-						<button type="submit" class="btn btn_primary btn_submit">
-							<i class="fas fa-check"></i>
-							Soumettre ma demande
+						<button type="button" class="btn btn_secondary btn_prev" data-prev="4">Retour</button>
+						<button type="submit" class="btn btn_primary btn_submit" disabled>
+							<i class="fas fa-user-plus"></i>
+							Créer le compte
 						</button>
 					</div>
 				</div>
