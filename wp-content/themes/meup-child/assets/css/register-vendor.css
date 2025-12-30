@@ -1475,6 +1475,22 @@ body:has(.register_header) main {
 	margin-bottom: 28px;
 }
 
+.features_intro {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--orange-primary);
+	margin: 0 0 16px 0;
+	padding-bottom: 12px;
+	border-bottom: 1px dashed var(--grey-border);
+}
+
+.features_intro i {
+	font-size: 16px;
+}
+
 .subscription_features {
 	list-style: none;
 	padding: 0;
@@ -1484,18 +1500,27 @@ body:has(.register_header) main {
 .subscription_features li {
 	display: flex;
 	align-items: flex-start;
-	gap: 14px;
-	padding: 12px 0;
+	gap: 12px;
+	padding: 10px 0;
 	font-size: 14px;
 	color: var(--grey-dark);
-	line-height: 1.5;
+	line-height: 1.4;
+	border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.subscription_features li:last-child {
+	border-bottom: none;
 }
 
 .subscription_features li i {
-	color: var(--green-success);
-	font-size: 14px;
-	margin-top: 3px;
+	color: var(--orange-primary);
+	font-size: 16px;
+	margin-top: 1px;
 	flex-shrink: 0;
+}
+
+.subscription_features li span {
+	flex: 1;
 }
 
 /* Card footer - select button */
@@ -1506,11 +1531,11 @@ body:has(.register_header) main {
 .btn_select_plan {
 	width: 100%;
 	padding: 16px 24px;
-	background: var(--white);
-	color: var(--orange-primary);
-	border: 2px solid var(--orange-primary);
+	background: var(--grey-light);
+	color: var(--grey-dark);
+	border: 2px solid var(--grey-border);
 	border-radius: var(--border-radius-sm);
-	font-size: 16px;
+	font-size: 15px;
 	font-weight: 600;
 	cursor: pointer;
 	transition: var(--transition);
@@ -1520,31 +1545,57 @@ body:has(.register_header) main {
 	gap: 10px;
 }
 
+.btn_select_plan .btn_selected {
+	display: none;
+}
+
 .btn_select_plan:hover {
-	background: var(--orange-primary);
-	color: var(--white);
-	transform: translateY(-2px);
+	background: var(--orange-light);
+	color: var(--orange-primary);
+	border-color: var(--orange-primary);
 }
 
 .btn_select_plan.btn_premium {
 	background: var(--orange-primary);
 	color: var(--white);
+	border-color: var(--orange-primary);
 }
 
 .btn_select_plan.btn_premium:hover {
 	background: var(--orange-hover);
-	transform: translateY(-3px);
+	border-color: var(--orange-hover);
+	transform: translateY(-2px);
 	box-shadow: var(--shadow-orange);
 }
 
-/* Selected state for buttons */
-.subscription_card.selected .btn_select_plan {
-	background: var(--orange-primary);
-	color: var(--white);
+/* Selected state for cards and buttons */
+.subscription_card.selected {
+	border-color: var(--green-success);
+	border-width: 3px;
+	background: linear-gradient(135deg, #E8F5E9 0%, var(--white) 100%);
+	box-shadow: 0 4px 20px rgba(39, 174, 96, 0.15);
 }
 
-.subscription_card.selected .btn_select_plan i::before {
-	content: "\f00c"; /* fa-check */
+.subscription_card.selected .btn_select_plan {
+	background: var(--green-success);
+	color: var(--white);
+	border-color: var(--green-success);
+	cursor: default;
+}
+
+.subscription_card.selected .btn_select_plan:hover {
+	transform: none;
+	box-shadow: none;
+}
+
+.subscription_card.selected .btn_select_plan .btn_text {
+	display: none;
+}
+
+.subscription_card.selected .btn_select_plan .btn_selected {
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 /* Disabled submit until plan selected */

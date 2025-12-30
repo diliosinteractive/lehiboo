@@ -617,50 +617,57 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 						<!-- Carte Gratuit -->
 						<div class="subscription_card" data-plan="free">
 							<div class="subscription_card_header">
-								<h3 class="subscription_card_title">Abonnement Gratuit</h3>
+								<h3 class="subscription_card_title">Gratuit</h3>
 								<div class="subscription_card_price">
 									<span class="price_amount">0 €</span>
 									<span class="price_period">/ mois</span>
 								</div>
+								<p class="subscription_card_desc">Pour découvrir la plateforme</p>
 							</div>
 							<div class="subscription_card_body">
 								<ul class="subscription_features">
-									<li><i class="fas fa-check"></i> Accès au dashboard Organisateur</li>
-									<li><i class="fas fa-check"></i> Création et publication d'activités</li>
-									<li><i class="fas fa-check"></i> Prévisualisation des fiches</li>
-									<li><i class="fas fa-check"></i> Gestion de la page Profil</li>
+									<li><i class="fas fa-check-circle"></i> <span>Accès au dashboard Organisateur</span></li>
+									<li><i class="fas fa-check-circle"></i> <span>Création et publication d'activités</span></li>
+									<li><i class="fas fa-check-circle"></i> <span>Prévisualisation des fiches</span></li>
+									<li><i class="fas fa-check-circle"></i> <span>Gestion de la page Profil</span></li>
 								</ul>
 							</div>
 							<div class="subscription_card_footer">
 								<button type="button" class="btn btn_select_plan" data-plan="free">
-									<i class="fas fa-check-circle"></i> Sélectionner
+									<span class="btn_text">Choisir ce plan</span>
+									<span class="btn_selected"><i class="fas fa-check"></i> Plan sélectionné</span>
 								</button>
 							</div>
 						</div>
 
-						<!-- Carte Payant -->
+						<!-- Carte Premium -->
 						<div class="subscription_card subscription_card_premium" data-plan="premium">
-							<div class="subscription_badge">Recommandé</div>
+							<div class="subscription_badge"><i class="fas fa-star"></i> Recommandé</div>
 							<div class="subscription_card_header">
-								<h3 class="subscription_card_title">Abonnement Premium</h3>
+								<h3 class="subscription_card_title">Premium</h3>
 								<div class="subscription_card_price">
 									<span class="price_amount">29 €</span>
 									<span class="price_period">/ mois</span>
 								</div>
-								<p class="subscription_card_desc">Pour publier vos activités et toucher le public Le Hiboo.</p>
+								<p class="subscription_card_desc">Pour développer votre activité</p>
 							</div>
 							<div class="subscription_card_body">
+								<p class="features_intro"><i class="fas fa-gift"></i> Tout le plan Gratuit, plus :</p>
 								<ul class="subscription_features">
-									<li><i class="fas fa-check"></i> Toutes les fonctionnalités du plan Gratuit</li>
-									<li><i class="fas fa-check"></i> Accès à l'aide IA pour générer du contenu</li>
-									<li><i class="fas fa-check"></i> Gestion des réservations et inscriptions</li>
-									<li><i class="fas fa-check"></i> Messagerie avec les participants</li>
-									<li><i class="fas fa-check"></i> Accès aux statistiques de performance</li>
+									<li><i class="fas fa-check-circle"></i> <span>Réservations illimitées</span></li>
+									<li><i class="fas fa-check-circle"></i> <span>Application mobile mode Partenaire</span></li>
+									<li><i class="fas fa-check-circle"></i> <span>Scan des billets via l'application</span></li>
+									<li><i class="fas fa-check-circle"></i> <span>Accès étendu aux infos utilisateurs</span></li>
+									<li><i class="fas fa-check-circle"></i> <span>Gestion des avis clients</span></li>
+									<li><i class="fas fa-check-circle"></i> <span>Messagerie avec les participants</span></li>
+									<li><i class="fas fa-check-circle"></i> <span>Aide IA pour générer du contenu</span></li>
+									<li><i class="fas fa-check-circle"></i> <span>Statistiques de performance</span></li>
 								</ul>
 							</div>
 							<div class="subscription_card_footer">
 								<button type="button" class="btn btn_select_plan btn_premium" data-plan="premium">
-									<i class="fas fa-crown"></i> Sélectionner
+									<span class="btn_text"><i class="fas fa-crown"></i> Choisir Premium</span>
+									<span class="btn_selected"><i class="fas fa-check"></i> Plan sélectionné</span>
 								</button>
 							</div>
 						</div>
