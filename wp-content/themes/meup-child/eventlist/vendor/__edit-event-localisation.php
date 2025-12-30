@@ -102,27 +102,70 @@ $event_online_notes = get_post_meta( $post_id, $_prefix.'event_online_notes', tr
 // Valeur actuelle du venue
 $current_venue = is_array($venue) ? (isset($venue[0]) ? $venue[0] : '') : $venue;
 
-// Champs supplémentaires pour lieu physique
-$event_location_type = get_post_meta( $post_id, $_prefix.'event_location_type', true);
-$parking_info = get_post_meta( $post_id, $_prefix.'parking_info', true) ?: '';
-$parking_image = get_post_meta( $post_id, $_prefix.'parking_image', true) ?: '';
-$access_info = get_post_meta( $post_id, $_prefix.'access_info', true) ?: '';
-$access_image = get_post_meta( $post_id, $_prefix.'access_image', true) ?: '';
-$pmr_accessible = get_post_meta( $post_id, $_prefix.'pmr_accessible', true) ?: '';
-$pmr_notes = get_post_meta( $post_id, $_prefix.'pmr_notes', true) ?: '';
-$catering_available = get_post_meta( $post_id, $_prefix.'catering_available', true) ?: '';
-$catering_notes = get_post_meta( $post_id, $_prefix.'catering_notes', true) ?: '';
-$drinks_available = get_post_meta( $post_id, $_prefix.'drinks_available', true) ?: '';
-$drinks_notes = get_post_meta( $post_id, $_prefix.'drinks_notes', true) ?: '';
+// Services de l'événement (peuvent être hérités du profil ou personnalisés)
+$event_services_enabled = get_post_meta( $post_id, $_prefix.'services_enabled', true) ?: '';
+$event_parking = get_post_meta( $post_id, $_prefix.'event_parking', true) ?: '';
+$event_parking_info = get_post_meta( $post_id, $_prefix.'event_parking_info', true) ?: '';
+$event_transport = get_post_meta( $post_id, $_prefix.'event_transport', true) ?: '';
+$event_transport_info = get_post_meta( $post_id, $_prefix.'event_transport_info', true) ?: '';
+$event_pmr = get_post_meta( $post_id, $_prefix.'event_pmr', true) ?: '';
+$event_pmr_info = get_post_meta( $post_id, $_prefix.'event_pmr_info', true) ?: '';
+$event_wifi = get_post_meta( $post_id, $_prefix.'event_wifi', true) ?: '';
+$event_wifi_info = get_post_meta( $post_id, $_prefix.'event_wifi_info', true) ?: '';
+$event_animals = get_post_meta( $post_id, $_prefix.'event_animals', true) ?: '';
+$event_animals_info = get_post_meta( $post_id, $_prefix.'event_animals_info', true) ?: '';
+$event_baby = get_post_meta( $post_id, $_prefix.'event_baby', true) ?: '';
+$event_baby_info = get_post_meta( $post_id, $_prefix.'event_baby_info', true) ?: '';
+$event_restau = get_post_meta( $post_id, $_prefix.'event_restau', true) ?: '';
+$event_restau_info = get_post_meta( $post_id, $_prefix.'event_restau_info', true) ?: '';
+$event_boisson = get_post_meta( $post_id, $_prefix.'event_boisson', true) ?: '';
+$event_boisson_info = get_post_meta( $post_id, $_prefix.'event_boisson_info', true) ?: '';
 
-// Taxonomie type événement
-$event_types_taxonomy = get_terms(array(
-    'taxonomy' => 'event_location_type',
-    'hide_empty' => false,
-));
-if (is_wp_error($event_types_taxonomy)) {
-    $event_types_taxonomy = array();
+// Services du profil de l'entité courante
+$user_services = array(
+    'parking' => get_user_meta( $user_id, 'org_stationnement', true ) === 'yes',
+    'parking_info' => get_user_meta( $user_id, 'org_stationnement_infos', true ) ?: '',
+    'transport' => false,
+    'transport_info' => '',
+    'pmr' => get_user_meta( $user_id, 'org_pmr', true ) === 'yes',
+    'pmr_info' => get_user_meta( $user_id, 'org_pmr_infos', true ) ?: '',
+    'wifi' => false,
+    'wifi_info' => '',
+    'animals' => false,
+    'animals_info' => '',
+    'baby' => false,
+    'baby_info' => '',
+    'restau' => get_user_meta( $user_id, 'org_restauration', true ) === 'yes',
+    'restau_info' => get_user_meta( $user_id, 'org_restauration_infos', true ) ?: '',
+    'boisson' => get_user_meta( $user_id, 'org_boisson', true ) === 'yes',
+    'boisson_info' => get_user_meta( $user_id, 'org_boisson_infos', true ) ?: '',
+);
+
+// Ajouter les services aux partenaires
+foreach ( $partners as $key => $partner ) {
+    $pid = $partner['id'];
+    $partners[$key]['services'] = array(
+        'parking' => get_user_meta( $pid, 'org_stationnement', true ) === 'yes',
+        'parking_info' => get_user_meta( $pid, 'org_stationnement_infos', true ) ?: '',
+        'transport' => false,
+        'transport_info' => '',
+        'pmr' => get_user_meta( $pid, 'org_pmr', true ) === 'yes',
+        'pmr_info' => get_user_meta( $pid, 'org_pmr_infos', true ) ?: '',
+        'wifi' => false,
+        'wifi_info' => '',
+        'animals' => false,
+        'animals_info' => '',
+        'baby' => false,
+        'baby_info' => '',
+        'restau' => get_user_meta( $pid, 'org_restauration', true ) === 'yes',
+        'restau_info' => get_user_meta( $pid, 'org_restauration_infos', true ) ?: '',
+        'boisson' => get_user_meta( $pid, 'org_boisson', true ) === 'yes',
+        'boisson_info' => get_user_meta( $pid, 'org_boisson_infos', true ) ?: '',
+    );
 }
+
+// Déterminer si le toggle services doit être ouvert par défaut
+$services_toggle_open = !empty($event_services_enabled) || !empty($event_parking) || !empty($event_pmr) || !empty($event_restau) || !empty($event_boisson);
 ?>
 
 <div class="event_basic_block localisation_section">
@@ -246,151 +289,215 @@ if (is_wp_error($event_types_taxonomy)) {
             </div>
         </div>
 
-        <!-- Séparateur -->
-        <hr class="el_separator location_separator">
-
-        <!-- Champs supplémentaires pour lieu physique -->
-        <div class="location_extra_fields">
-
-            <!-- Stationnement -->
-            <div class="vendor_field location_extra_field location_extra_field_with_image">
-                <div class="field_header">
-                    <label class="field_label"><?php esc_html_e( 'Stationnement', 'eventlist' ); ?></label>
-                    <p class="field_hint"><?php esc_html_e( 'Donnez aux visiteurs véhiculés toutes les informations sur le stationnement, vous pouvez importer une image du parking ou du plan pour se garer', 'eventlist' ); ?></p>
+        <!-- Toggle Services et Accessibilité -->
+        <div class="services_toggle_section <?php echo $services_toggle_open ? 'is-open' : ''; ?>" id="services_toggle_section">
+            <div class="services_toggle_header">
+                <label class="services_toggle_switch">
+                    <input type="checkbox"
+                           name="<?php echo esc_attr($_prefix.'services_enabled'); ?>"
+                           id="services_enabled"
+                           value="1"
+                           <?php checked($services_toggle_open, true); ?>>
+                    <span class="toggle_slider"></span>
+                </label>
+                <div class="services_toggle_label">
+                    <span class="toggle_title"><?php esc_html_e( 'Services et Accessibilité', 'eventlist' ); ?></span>
                 </div>
-                <div class="field_content_row">
-                    <div class="field_input_wrapper">
-                        <input type="text"
-                               name="<?php echo esc_attr($_prefix.'parking_info'); ?>"
-                               id="parking_info"
-                               value="<?php echo esc_attr($parking_info); ?>"
-                               placeholder="<?php esc_attr_e( 'Champ texte', 'eventlist' ); ?>">
-                    </div>
-                    <div class="field_image_wrapper">
-                        <input type="hidden" name="<?php echo esc_attr($_prefix.'parking_image'); ?>" id="parking_image" value="<?php echo esc_attr($parking_image); ?>">
-                        <button type="button" class="btn_add_location_image" data-target="parking_image">
-                            <i class="fa fa-image"></i> <?php esc_html_e( 'Ajouter une image', 'eventlist' ); ?>
-                        </button>
-                        <?php if ($parking_image) : ?>
-                        <div class="location_image_preview" id="parking_image_preview">
-                            <img src="<?php echo esc_url(wp_get_attachment_image_url($parking_image, 'thumbnail')); ?>" alt="">
-                            <button type="button" class="btn_remove_location_image" data-target="parking_image"><i class="fa fa-times"></i></button>
+            </div>
+
+            <div class="services_toggle_content" style="<?php echo $services_toggle_open ? 'display: block;' : 'display: none;'; ?>">
+                <p class="services_description">
+                    <?php esc_html_e( 'Informez les utilisateurs sur les services disponibles et l\'accessibilité par rapport au lieu.', 'eventlist' ); ?><br>
+                    <span class="services_note"><?php esc_html_e( 'Ces informations pourront être reprises automatiquement sur vos fiches d\'événements qui se déroulent à cette adresse.', 'eventlist' ); ?></span>
+                </p>
+
+                <!-- Grille des services (2 colonnes) -->
+                <div class="services_grid">
+                    <!-- Parking sur place -->
+                    <div class="service_item">
+                        <div class="service_header">
+                            <label class="service_toggle_switch">
+                                <input type="checkbox"
+                                       name="<?php echo esc_attr($_prefix.'event_parking'); ?>"
+                                       id="event_parking"
+                                       class="service_checkbox"
+                                       value="yes"
+                                       <?php checked($event_parking, 'yes'); ?>>
+                                <span class="toggle_slider small"></span>
+                            </label>
+                            <span class="service_label"><?php esc_html_e( 'Parking sur place', 'eventlist' ); ?></span>
                         </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Accès & Transports -->
-            <div class="vendor_field location_extra_field location_extra_field_with_image">
-                <div class="field_header">
-                    <label class="field_label"><?php esc_html_e( 'Accès & Transports', 'eventlist' ); ?></label>
-                    <p class="field_hint"><?php esc_html_e( 'Donnez aux visiteurs toutes les informations pour accéder au lieu.', 'eventlist' ); ?></p>
-                </div>
-                <div class="field_content_row">
-                    <div class="field_input_wrapper">
                         <input type="text"
-                               name="<?php echo esc_attr($_prefix.'access_info'); ?>"
-                               id="access_info"
-                               value="<?php echo esc_attr($access_info); ?>"
-                               placeholder="<?php esc_attr_e( 'Champ texte', 'eventlist' ); ?>">
+                               name="<?php echo esc_attr($_prefix.'event_parking_info'); ?>"
+                               id="event_parking_info"
+                               class="service_info_input"
+                               value="<?php echo esc_attr($event_parking_info); ?>"
+                               placeholder="<?php esc_attr_e( 'Ex : Parking gratuit de 50 places ...', 'eventlist' ); ?>">
+                        <p class="service_hint"><?php esc_html_e( 'Cochez si le stationnement est possible, et donnez toutes les informations utiles pour les visiteurs véhiculés.', 'eventlist' ); ?></p>
                     </div>
-                    <div class="field_image_wrapper">
-                        <input type="hidden" name="<?php echo esc_attr($_prefix.'access_image'); ?>" id="access_image" value="<?php echo esc_attr($access_image); ?>">
-                        <button type="button" class="btn_add_location_image" data-target="access_image">
-                            <i class="fa fa-image"></i> <?php esc_html_e( 'Ajouter une image', 'eventlist' ); ?>
-                        </button>
-                        <?php if ($access_image) : ?>
-                        <div class="location_image_preview" id="access_image_preview">
-                            <img src="<?php echo esc_url(wp_get_attachment_image_url($access_image, 'thumbnail')); ?>" alt="">
-                            <button type="button" class="btn_remove_location_image" data-target="access_image"><i class="fa fa-times"></i></button>
+
+                    <!-- Transports en commun -->
+                    <div class="service_item">
+                        <div class="service_header">
+                            <label class="service_toggle_switch">
+                                <input type="checkbox"
+                                       name="<?php echo esc_attr($_prefix.'event_transport'); ?>"
+                                       id="event_transport"
+                                       class="service_checkbox"
+                                       value="yes"
+                                       <?php checked($event_transport, 'yes'); ?>>
+                                <span class="toggle_slider small"></span>
+                            </label>
+                            <span class="service_label"><?php esc_html_e( 'Transports en commun', 'eventlist' ); ?></span>
                         </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Accessibilité PMR -->
-            <div class="vendor_field location_extra_field location_checkbox_field">
-                <div class="field_header">
-                    <label class="field_label"><?php esc_html_e( 'Accessibilité PMR', 'eventlist' ); ?></label>
-                    <p class="field_hint"><?php esc_html_e( 'Donnez aux visiteurs des informations pour les Personnes à Mobilité Réduite, et cochez si votre structure permet leur accès.', 'eventlist' ); ?></p>
-                </div>
-                <div class="field_content_row field_checkbox_row">
-                    <label class="location_checkbox_option <?php echo ($pmr_accessible == '1') ? 'active' : ''; ?>" for="pmr_accessible">
-                        <input type="checkbox"
-                               name="<?php echo esc_attr($_prefix.'pmr_accessible'); ?>"
-                               id="pmr_accessible"
-                               value="1"
-                               <?php checked($pmr_accessible, '1'); ?>>
-                        <span class="option_checkbox"></span>
-                        <span class="option_label"><?php esc_html_e( 'Accessible PMR', 'eventlist' ); ?></span>
-                    </label>
-                    <div class="field_notes_wrapper">
-                        <label><?php esc_html_e( 'Notes :', 'eventlist' ); ?></label>
                         <input type="text"
-                               name="<?php echo esc_attr($_prefix.'pmr_notes'); ?>"
-                               id="pmr_notes"
-                               value="<?php echo esc_attr($pmr_notes); ?>"
-                               placeholder="<?php esc_attr_e( 'Champ texte', 'eventlist' ); ?>">
+                               name="<?php echo esc_attr($_prefix.'event_transport_info'); ?>"
+                               id="event_transport_info"
+                               class="service_info_input"
+                               value="<?php echo esc_attr($event_transport_info); ?>"
+                               placeholder="<?php esc_attr_e( 'Ex : Bus T309, ...', 'eventlist' ); ?>">
+                        <p class="service_hint"><?php esc_html_e( 'Cochez si le lieu est accessible par les transports en commun, et donnez toutes les informations nécessaires.', 'eventlist' ); ?></p>
                     </div>
-                </div>
-            </div>
 
-            <!-- Restauration sur place -->
-            <div class="vendor_field location_extra_field location_checkbox_field">
-                <div class="field_header">
-                    <label class="field_label"><?php esc_html_e( 'Restauration sur place', 'eventlist' ); ?></label>
-                    <p class="field_hint"><?php esc_html_e( 'Donnez aux visiteurs des informations sur la possibilité de se restaurer sur place', 'eventlist' ); ?></p>
-                </div>
-                <div class="field_content_row field_checkbox_row">
-                    <label class="location_checkbox_option <?php echo ($catering_available == '1') ? 'active' : ''; ?>" for="catering_available">
-                        <input type="checkbox"
-                               name="<?php echo esc_attr($_prefix.'catering_available'); ?>"
-                               id="catering_available"
-                               value="1"
-                               <?php checked($catering_available, '1'); ?>>
-                        <span class="option_checkbox"></span>
-                        <span class="option_label"><?php esc_html_e( 'Restauration sur place', 'eventlist' ); ?></span>
-                    </label>
-                    <div class="field_notes_wrapper">
-                        <label><?php esc_html_e( 'Notes :', 'eventlist' ); ?></label>
+                    <!-- Accessible PMR -->
+                    <div class="service_item">
+                        <div class="service_header">
+                            <label class="service_toggle_switch">
+                                <input type="checkbox"
+                                       name="<?php echo esc_attr($_prefix.'event_pmr'); ?>"
+                                       id="event_pmr"
+                                       class="service_checkbox"
+                                       value="yes"
+                                       <?php checked($event_pmr, 'yes'); ?>>
+                                <span class="toggle_slider small"></span>
+                            </label>
+                            <span class="service_label"><?php esc_html_e( 'Accessible PMR', 'eventlist' ); ?></span>
+                        </div>
                         <input type="text"
-                               name="<?php echo esc_attr($_prefix.'catering_notes'); ?>"
-                               id="catering_notes"
-                               value="<?php echo esc_attr($catering_notes); ?>"
-                               placeholder="<?php esc_attr_e( 'Champ texte', 'eventlist' ); ?>">
+                               name="<?php echo esc_attr($_prefix.'event_pmr_info'); ?>"
+                               id="event_pmr_info"
+                               class="service_info_input"
+                               value="<?php echo esc_attr($event_pmr_info); ?>"
+                               placeholder="<?php esc_attr_e( 'Ex : Entrée accessible pour les Personnes ...', 'eventlist' ); ?>">
+                        <p class="service_hint"><?php esc_html_e( 'Cochez si la structure permet l\'accès aux Personnes à Mobilité Réduite, et informez sur les services disponibles.', 'eventlist' ); ?></p>
                     </div>
-                </div>
-            </div>
 
-            <!-- Boisson sur place -->
-            <div class="vendor_field location_extra_field location_checkbox_field">
-                <div class="field_header">
-                    <label class="field_label"><?php esc_html_e( 'Boisson sur place', 'eventlist' ); ?></label>
-                    <p class="field_hint"><?php esc_html_e( 'Donnez aux visiteurs des informations sur la possibilité d\'avoir des rafraîchissements sur place', 'eventlist' ); ?></p>
-                </div>
-                <div class="field_content_row field_checkbox_row">
-                    <label class="location_checkbox_option <?php echo ($drinks_available == '1') ? 'active' : ''; ?>" for="drinks_available">
-                        <input type="checkbox"
-                               name="<?php echo esc_attr($_prefix.'drinks_available'); ?>"
-                               id="drinks_available"
-                               value="1"
-                               <?php checked($drinks_available, '1'); ?>>
-                        <span class="option_checkbox"></span>
-                        <span class="option_label"><?php esc_html_e( 'Boisson sur place', 'eventlist' ); ?></span>
-                    </label>
-                    <div class="field_notes_wrapper">
-                        <label><?php esc_html_e( 'Notes :', 'eventlist' ); ?></label>
+                    <!-- Wifi -->
+                    <div class="service_item">
+                        <div class="service_header">
+                            <label class="service_toggle_switch">
+                                <input type="checkbox"
+                                       name="<?php echo esc_attr($_prefix.'event_wifi'); ?>"
+                                       id="event_wifi"
+                                       class="service_checkbox"
+                                       value="yes"
+                                       <?php checked($event_wifi, 'yes'); ?>>
+                                <span class="toggle_slider small"></span>
+                            </label>
+                            <span class="service_label"><?php esc_html_e( 'Wifi', 'eventlist' ); ?></span>
+                        </div>
                         <input type="text"
-                               name="<?php echo esc_attr($_prefix.'drinks_notes'); ?>"
-                               id="drinks_notes"
-                               value="<?php echo esc_attr($drinks_notes); ?>"
-                               placeholder="<?php esc_attr_e( 'Champ texte', 'eventlist' ); ?>">
+                               name="<?php echo esc_attr($_prefix.'event_wifi_info'); ?>"
+                               id="event_wifi_info"
+                               class="service_info_input"
+                               value="<?php echo esc_attr($event_wifi_info); ?>"
+                               placeholder="<?php esc_attr_e( 'Ex : Wifi gratuit sur inscription ...', 'eventlist' ); ?>">
+                        <p class="service_hint"><?php esc_html_e( 'Cochez si le wifi est disponible, et donnez les informations utiles.', 'eventlist' ); ?></p>
+                    </div>
+
+                    <!-- Animaux acceptés -->
+                    <div class="service_item">
+                        <div class="service_header">
+                            <label class="service_toggle_switch">
+                                <input type="checkbox"
+                                       name="<?php echo esc_attr($_prefix.'event_animals'); ?>"
+                                       id="event_animals"
+                                       class="service_checkbox"
+                                       value="yes"
+                                       <?php checked($event_animals, 'yes'); ?>>
+                                <span class="toggle_slider small"></span>
+                            </label>
+                            <span class="service_label"><?php esc_html_e( 'Animaux acceptés', 'eventlist' ); ?></span>
+                        </div>
+                        <input type="text"
+                               name="<?php echo esc_attr($_prefix.'event_animals_info'); ?>"
+                               id="event_animals_info"
+                               class="service_info_input"
+                               value="<?php echo esc_attr($event_animals_info); ?>"
+                               placeholder="<?php esc_attr_e( 'Ex : Chiens et chats acceptés, ...', 'eventlist' ); ?>">
+                        <p class="service_hint"><?php esc_html_e( 'Cochez si les animaux de compagnie sont acceptés sur place, et donnez les informations utiles.', 'eventlist' ); ?></p>
+                    </div>
+
+                    <!-- Adapté aux bébés -->
+                    <div class="service_item">
+                        <div class="service_header">
+                            <label class="service_toggle_switch">
+                                <input type="checkbox"
+                                       name="<?php echo esc_attr($_prefix.'event_baby'); ?>"
+                                       id="event_baby"
+                                       class="service_checkbox"
+                                       value="yes"
+                                       <?php checked($event_baby, 'yes'); ?>>
+                                <span class="toggle_slider small"></span>
+                            </label>
+                            <span class="service_label"><?php esc_html_e( 'Adapté aux bébés', 'eventlist' ); ?></span>
+                        </div>
+                        <input type="text"
+                               name="<?php echo esc_attr($_prefix.'event_baby_info'); ?>"
+                               id="event_baby_info"
+                               class="service_info_input"
+                               value="<?php echo esc_attr($event_baby_info); ?>"
+                               placeholder="<?php esc_attr_e( 'Ex : Espace de change, espace de jeux ...', 'eventlist' ); ?>">
+                        <p class="service_hint"><?php esc_html_e( 'Cochez et informez si la structure est adaptée pour l\'accueil de bébé (espace de change, etc.);', 'eventlist' ); ?></p>
+                    </div>
+
+                    <!-- Restauration sur place -->
+                    <div class="service_item">
+                        <div class="service_header">
+                            <label class="service_toggle_switch">
+                                <input type="checkbox"
+                                       name="<?php echo esc_attr($_prefix.'event_restau'); ?>"
+                                       id="event_restau"
+                                       class="service_checkbox"
+                                       value="yes"
+                                       <?php checked($event_restau, 'yes'); ?>>
+                                <span class="toggle_slider small"></span>
+                            </label>
+                            <span class="service_label"><?php esc_html_e( 'Restauration sur place', 'eventlist' ); ?></span>
+                        </div>
+                        <input type="text"
+                               name="<?php echo esc_attr($_prefix.'event_restau_info'); ?>"
+                               id="event_restau_info"
+                               class="service_info_input"
+                               value="<?php echo esc_attr($event_restau_info); ?>"
+                               placeholder="<?php esc_attr_e( 'Ex : Cafétéria disponible ...', 'eventlist' ); ?>">
+                        <p class="service_hint"><?php esc_html_e( 'Cochez si la structure permet l\'accès aux Personnes à Mobilité Réduite, et informez sur les services disponibles.', 'eventlist' ); ?></p>
+                    </div>
+
+                    <!-- Boisson sur place -->
+                    <div class="service_item">
+                        <div class="service_header">
+                            <label class="service_toggle_switch">
+                                <input type="checkbox"
+                                       name="<?php echo esc_attr($_prefix.'event_boisson'); ?>"
+                                       id="event_boisson"
+                                       class="service_checkbox"
+                                       value="yes"
+                                       <?php checked($event_boisson, 'yes'); ?>>
+                                <span class="toggle_slider small"></span>
+                            </label>
+                            <span class="service_label"><?php esc_html_e( 'Boisson sur place', 'eventlist' ); ?></span>
+                        </div>
+                        <input type="text"
+                               name="<?php echo esc_attr($_prefix.'event_boisson_info'); ?>"
+                               id="event_boisson_info"
+                               class="service_info_input"
+                               value="<?php echo esc_attr($event_boisson_info); ?>"
+                               placeholder="<?php esc_attr_e( 'Ex : Soft disponible à la cafétéria...', 'eventlist' ); ?>">
+                        <p class="service_hint"><?php esc_html_e( 'Cochez si le lieu est accessible par les transports en commun, et donnez toutes les informations nécessaires.', 'eventlist' ); ?></p>
                     </div>
                 </div>
             </div>
-
         </div>
 
     </div>
@@ -426,6 +533,16 @@ if (is_wp_error($event_types_taxonomy)) {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <script>
+// Services data from PHP (entity and partners)
+var EL_ServicesData = {
+    entity: <?php echo json_encode($user_services); ?>,
+    partners: {
+        <?php foreach ( $partners as $partner ) : ?>
+        '<?php echo esc_js($partner['id']); ?>': <?php echo json_encode($partner['services']); ?>,
+        <?php endforeach; ?>
+    }
+};
+
 (function($) {
     'use strict';
 
@@ -637,6 +754,79 @@ if (is_wp_error($event_types_taxonomy)) {
                 $('#' + targetId + '_preview').remove();
             });
 
+            // Toggle Services et Accessibilité
+            $('#services_enabled').on('change', function() {
+                self.handleServicesToggle($(this).is(':checked'));
+            });
+
+            // Clic sur le header du toggle pour basculer
+            $('.services_toggle_header').on('click', function(e) {
+                // Éviter le double déclenchement si on clique sur le switch lui-même
+                if ($(e.target).closest('.services_toggle_switch').length) {
+                    return;
+                }
+                var $checkbox = $('#services_enabled');
+                $checkbox.prop('checked', !$checkbox.prop('checked')).trigger('change');
+            });
+
+        },
+
+        // Gestion du toggle Services
+        handleServicesToggle: function(isOpen) {
+            var $section = $('#services_toggle_section');
+            var $content = $section.find('.services_toggle_content');
+
+            if (isOpen) {
+                $section.addClass('is-open');
+                $content.slideDown(300);
+            } else {
+                $section.removeClass('is-open');
+                $content.slideUp(300);
+            }
+        },
+
+        // Pré-remplir les services depuis le profil de l'entité/partenaire
+        prefillServicesFromSource: function(sourceType, partnerId) {
+            var services = null;
+
+            if (sourceType === 'entity') {
+                services = EL_ServicesData.entity;
+            } else if (sourceType === 'coorg' && partnerId && EL_ServicesData.partners[partnerId]) {
+                services = EL_ServicesData.partners[partnerId];
+            }
+
+            // Si pas de services disponibles, ne rien faire
+            if (!services) {
+                return;
+            }
+
+            // Pré-remplir les checkboxes et infos
+            this.setServiceValue('event_parking', services.parking, services.parking_info);
+            this.setServiceValue('event_transport', services.transport, services.transport_info);
+            this.setServiceValue('event_pmr', services.pmr, services.pmr_info);
+            this.setServiceValue('event_wifi', services.wifi, services.wifi_info);
+            this.setServiceValue('event_animals', services.animals, services.animals_info);
+            this.setServiceValue('event_baby', services.baby, services.baby_info);
+            this.setServiceValue('event_restau', services.restau, services.restau_info);
+            this.setServiceValue('event_boisson', services.boisson, services.boisson_info);
+
+            // Ouvrir le toggle si au moins un service est activé
+            var hasAnyService = services.parking || services.pmr || services.restau || services.boisson;
+            if (hasAnyService) {
+                $('#services_enabled').prop('checked', true);
+                this.handleServicesToggle(true);
+            }
+        },
+
+        // Helper pour définir la valeur d'un service
+        setServiceValue: function(fieldId, isChecked, infoValue) {
+            var $checkbox = $('#' + fieldId);
+            var $info = $('#' + fieldId + '_info');
+
+            $checkbox.prop('checked', isChecked);
+            if (infoValue) {
+                $info.val(infoValue);
+            }
         },
 
         initializeFromSource: function() {
@@ -667,6 +857,8 @@ if (is_wp_error($event_types_taxonomy)) {
                 this.clearLocationFields();
                 this.setFieldsReadonly(false);
                 $('#coorg_entity_id').val('');
+                // Réinitialiser les services pour une nouvelle adresse
+                this.clearServices();
             } else {
                 // Entity ou Co-org - remplir avec les données de l'option sélectionnée
                 var address = $selected.data('address') || '';
@@ -676,14 +868,26 @@ if (is_wp_error($event_types_taxonomy)) {
                 this.fillLocationFields(address, lat, lng, true);
                 this.setFieldsReadonly(true);
 
-                // Si c'est un co-org, mettre à jour le champ caché
+                // Si c'est un co-org, mettre à jour le champ caché et pré-remplir les services
                 if (sourceValue.indexOf('coorg_') === 0) {
                     var partnerId = $selected.data('partner-id') || '';
                     $('#coorg_entity_id').val(partnerId);
+                    // Pré-remplir les services depuis le profil du partenaire
+                    this.prefillServicesFromSource('coorg', partnerId);
                 } else {
                     $('#coorg_entity_id').val('');
+                    // Pré-remplir les services depuis le profil de l'entité
+                    this.prefillServicesFromSource('entity', null);
                 }
             }
+        },
+
+        // Réinitialiser les services
+        clearServices: function() {
+            $('#event_parking, #event_transport, #event_pmr, #event_wifi, #event_animals, #event_baby, #event_restau, #event_boisson').prop('checked', false);
+            $('#event_parking_info, #event_transport_info, #event_pmr_info, #event_wifi_info, #event_animals_info, #event_baby_info, #event_restau_info, #event_boisson_info').val('');
+            $('#services_enabled').prop('checked', false);
+            this.handleServicesToggle(false);
         },
 
         setFieldsReadonly: function(readonly) {
@@ -823,6 +1027,229 @@ if (is_wp_error($event_types_taxonomy)) {
 </script>
 
 <style>
+/* Layout des champs d'adresse et carte - côte à côte avec même hauteur */
+.location_fields_wrapper {
+    display: flex;
+    gap: 24px;
+    align-items: stretch;
+    margin-bottom: 32px;
+}
+
+.location_fields_left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.location_fields_right {
+    flex: 1;
+    display: flex;
+    min-height: 250px;
+}
+
+.location_map_container {
+    flex: 1;
+    display: flex;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+}
+
+#location_osm_map {
+    width: 100%;
+    height: 100%;
+    min-height: 250px;
+}
+
+/* Toggle Services et Accessibilité */
+.services_toggle_section {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 0;
+    margin-top: 24px;
+    overflow: hidden;
+}
+
+.services_toggle_header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: #fafafa;
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.services_toggle_section.is-open .services_toggle_header {
+    border-bottom-color: #e0e0e0;
+}
+
+.services_toggle_header:hover {
+    background: #f5f5f5;
+}
+
+.services_toggle_label {
+    flex: 1;
+}
+
+.toggle_title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Toggle Switch Style */
+.services_toggle_switch,
+.service_toggle_switch {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.services_toggle_switch input,
+.service_toggle_switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.toggle_slider {
+    display: block;
+    width: 52px;
+    height: 28px;
+    background-color: #ccc;
+    border-radius: 28px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.toggle_slider::before {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    background-color: #fff;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.services_toggle_switch input:checked + .toggle_slider,
+.service_toggle_switch input:checked + .toggle_slider {
+    background-color: #FF6600;
+}
+
+.services_toggle_switch input:checked + .toggle_slider::before,
+.service_toggle_switch input:checked + .toggle_slider::before {
+    transform: translateX(24px);
+}
+
+/* Small toggle for services */
+.toggle_slider.small {
+    width: 44px;
+    height: 24px;
+}
+
+.toggle_slider.small::before {
+    width: 18px;
+    height: 18px;
+}
+
+.service_toggle_switch input:checked + .toggle_slider.small::before {
+    transform: translateX(20px);
+}
+
+/* Services Content */
+.services_toggle_content {
+    padding: 24px;
+}
+
+.services_description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+    margin: 0 0 24px 0;
+}
+
+.services_note {
+    color: #999;
+    font-style: italic;
+}
+
+/* Services Grid - 2 colonnes */
+.services_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.service_item {
+    background: #fafafa;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.service_header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.service_label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.service_info_input {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #333;
+    background: #fff;
+    margin-bottom: 8px;
+}
+
+.service_info_input:focus {
+    border-color: #FF6600;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+}
+
+.service_hint {
+    font-size: 12px;
+    color: #888;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .location_fields_wrapper {
+        flex-direction: column;
+    }
+
+    .location_fields_right {
+        min-height: 300px;
+    }
+
+    .services_grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Autocomplétion adresse */
 .address_autocomplete_wrapper {
     position: relative;
