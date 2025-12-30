@@ -175,6 +175,16 @@ $base_url = admin_url( 'admin.php?page=el_vendor_documents' );
                             <?php endif; ?>
                         </td>
                         <td>
+                            <?php
+                            // Determiner si le fichier peut etre previsualise
+                            $previewable_mimes = array( 'application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp' );
+                            $can_preview = in_array( $doc->mime_type, $previewable_mimes );
+                            ?>
+                            <?php if ( $can_preview ) : ?>
+                                <button type="button" class="button button-small btn_preview_doc" data-doc-id="<?php echo esc_attr( $doc->id ); ?>" data-filename="<?php echo esc_attr( $doc->original_filename ); ?>" data-mime="<?php echo esc_attr( $doc->mime_type ); ?>" title="<?php esc_attr_e( 'Previsualiser', 'eventlist' ); ?>" style="color:#2196F3;">
+                                    <span class="dashicons dashicons-visibility" style="vertical-align:middle;"></span>
+                                </button>
+                            <?php endif; ?>
                             <a href="<?php echo esc_url( add_query_arg( array( 'action' => 'el_admin_download_document', 'document_id' => $doc->id, 'nonce' => wp_create_nonce( 'el_admin_document_nonce' ) ), admin_url( 'admin-ajax.php' ) ) ); ?>" class="button button-small" title="<?php esc_attr_e( 'Telecharger', 'eventlist' ); ?>" target="_blank">
                                 <span class="dashicons dashicons-download" style="vertical-align:middle;"></span>
                             </a>
@@ -270,6 +280,38 @@ $base_url = admin_url( 'admin.php?page=el_vendor_documents' );
             <a href="#" id="vendor_edit_link" class="button button-primary" target="_blank" style="float:left;">
                 <span class="dashicons dashicons-edit" style="vertical-align:middle;"></span>
                 <?php esc_html_e( 'Modifier dans WordPress', 'eventlist' ); ?>
+            </a>
+            <button type="button" class="button el-modal-cancel"><?php esc_html_e( 'Fermer', 'eventlist' ); ?></button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Prévisualisation Document -->
+<div id="preview_modal" class="el-modal" style="display:none;">
+    <div class="el-modal-overlay"></div>
+    <div class="el-modal-content el-preview-modal-content">
+        <div class="el-modal-header" style="background:#2196F3;">
+            <h2 style="color:#fff;">
+                <span class="dashicons dashicons-visibility" style="vertical-align:middle;margin-right:8px;"></span>
+                <span id="preview_modal_title"><?php esc_html_e( 'Prévisualisation', 'eventlist' ); ?></span>
+            </h2>
+            <button type="button" class="el-modal-close" style="color:#fff;">&times;</button>
+        </div>
+        <div class="el-modal-body el-preview-body">
+            <!-- Loader -->
+            <div id="preview_loader" style="text-align:center;padding:40px;">
+                <span class="spinner is-active" style="float:none;margin:0 auto;"></span>
+                <p style="margin-top:10px;color:#666;"><?php esc_html_e( 'Chargement...', 'eventlist' ); ?></p>
+            </div>
+            <!-- Preview content -->
+            <div id="preview_content" style="display:none;">
+                <!-- PDF iframe or image will be inserted here -->
+            </div>
+        </div>
+        <div class="el-modal-footer">
+            <a href="#" id="preview_download_link" class="button button-primary" target="_blank" style="float:left;">
+                <span class="dashicons dashicons-download" style="vertical-align:middle;"></span>
+                <?php esc_html_e( 'Télécharger', 'eventlist' ); ?>
             </a>
             <button type="button" class="button el-modal-cancel"><?php esc_html_e( 'Fermer', 'eventlist' ); ?></button>
         </div>
@@ -429,6 +471,40 @@ $base_url = admin_url( 'admin.php?page=el_vendor_documents' );
 .btn_view_vendor_profile:hover strong {
     text-decoration: underline;
 }
+/* Styles pour le modal de previsualisation */
+.el-preview-modal-content {
+    width: 90%;
+    max-width: 1000px;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+.el-preview-body {
+    flex: 1;
+    overflow: hidden;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+}
+#preview_content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#preview_content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+#preview_content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
 </style>
 
 <script>
@@ -478,6 +554,57 @@ jQuery(document).ready(function($) {
     $(document).on('keydown', function(e) {
         if (e.key === 'Escape') {
             $('.el-modal').fadeOut(200);
+        }
+    });
+
+    // ========================================
+    // Modal Previsualisation Document
+    // ========================================
+
+    // Ouvrir modal previsualisation
+    $(document).on('click', '.btn_preview_doc', function() {
+        var docId = $(this).data('doc-id');
+        var filename = $(this).data('filename');
+        var mimeType = $(this).data('mime');
+
+        // Construire les URLs
+        var previewUrl = ajaxUrl + '?action=el_admin_preview_document&document_id=' + docId + '&nonce=' + adminNonce;
+        var downloadUrl = ajaxUrl + '?action=el_admin_download_document&document_id=' + docId + '&nonce=' + adminNonce;
+
+        // Mise a jour du titre et du lien de telechargement
+        $('#preview_modal_title').text(filename);
+        $('#preview_download_link').attr('href', downloadUrl);
+
+        // Afficher le modal avec le loader
+        $('#preview_loader').show();
+        $('#preview_content').hide().empty();
+        $('#preview_modal').fadeIn(200);
+
+        // Charger le contenu selon le type
+        if (mimeType === 'application/pdf') {
+            // PDF : utiliser un iframe
+            var iframe = $('<iframe>').attr('src', previewUrl);
+            iframe.on('load', function() {
+                $('#preview_loader').hide();
+                $('#preview_content').show();
+            });
+            $('#preview_content').html(iframe);
+        } else if (mimeType.indexOf('image/') === 0) {
+            // Image : utiliser une balise img
+            var img = $('<img>').attr('src', previewUrl).attr('alt', filename);
+            img.on('load', function() {
+                $('#preview_loader').hide();
+                $('#preview_content').show();
+            });
+            img.on('error', function() {
+                $('#preview_loader').hide();
+                $('#preview_content').html('<p style="color:#dc3545;padding:20px;">Erreur lors du chargement de l\'image</p>').show();
+            });
+            $('#preview_content').html(img);
+        } else {
+            // Type non supporte
+            $('#preview_loader').hide();
+            $('#preview_content').html('<p style="color:#666;padding:20px;">Ce type de fichier ne peut pas etre previsualise</p>').show();
         }
     });
 

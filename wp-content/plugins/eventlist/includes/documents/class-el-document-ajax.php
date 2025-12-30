@@ -30,6 +30,7 @@ class EL_Document_Ajax {
         add_action( 'wp_ajax_el_admin_approve_document', array( __CLASS__, 'admin_approve_document' ) );
         add_action( 'wp_ajax_el_admin_reject_document', array( __CLASS__, 'admin_reject_document' ) );
         add_action( 'wp_ajax_el_admin_download_document', array( __CLASS__, 'admin_download_document' ) );
+        add_action( 'wp_ajax_el_admin_preview_document', array( __CLASS__, 'admin_preview_document' ) );
 
         // Admin - Types de documents
         add_action( 'wp_ajax_el_admin_create_doc_type', array( __CLASS__, 'admin_create_doc_type' ) );
@@ -477,6 +478,28 @@ class EL_Document_Ajax {
         }
 
         EL_Document_File_Handler::serve_file( $document_id, get_current_user_id() );
+    }
+
+    /**
+     * Previsualisation d'un document (admin) - inline sans telechargement
+     */
+    public static function admin_preview_document() {
+        if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( $_GET['nonce'], 'el_admin_document_nonce' ) ) {
+            wp_die( __( 'Nonce invalide', 'eventlist' ) );
+        }
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( __( 'Permission refusee', 'eventlist' ) );
+        }
+
+        $document_id = isset( $_GET['document_id'] ) ? absint( $_GET['document_id'] ) : 0;
+
+        if ( ! $document_id ) {
+            wp_die( __( 'Document non specifie', 'eventlist' ) );
+        }
+
+        // Servir le fichier en mode inline (preview)
+        EL_Document_File_Handler::serve_file( $document_id, get_current_user_id(), false );
     }
 
     // =========================================================================
