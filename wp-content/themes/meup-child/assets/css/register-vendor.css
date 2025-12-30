@@ -278,17 +278,20 @@ body:has(.register_header) main {
 
 .steps_progress_bar {
 	position: absolute !important;
-	top: 40px !important;
-	left: 10% !important;
-	right: 10% !important;
-	height: 3px !important;
+	top: 38px !important;
+	left: calc(10% + 24px) !important;
+	right: calc(10% + 24px) !important;
+	height: 4px !important;
 	background: var(--grey-border) !important;
 	border-radius: 2px !important;
-	z-index: 1 !important;
+	z-index: 0 !important;
 	display: block !important;
 }
 
 .progress_fill {
+	position: absolute !important;
+	top: 0 !important;
+	left: 0 !important;
 	height: 100% !important;
 	background: var(--orange-primary) !important;
 	border-radius: 2px !important;

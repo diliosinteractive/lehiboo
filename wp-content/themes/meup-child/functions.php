@@ -115,7 +115,7 @@ function meup_child_scripts() {
         wp_enqueue_script( 'lehiboo-register-customer', get_stylesheet_directory_uri() . '/assets/js/register-customer.js', array('jquery'), '1.1.0', true );
 
         // Styles et scripts pour le formulaire partenaire
-        wp_enqueue_style( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/css/register-vendor.css', array('lehiboo-register-customer'), '3.4.0' );
+        wp_enqueue_style( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/css/register-vendor.css', array('lehiboo-register-customer'), '3.5.0' );
 
         // Select2 pour les multi-select (formulaire partenaire)
         wp_enqueue_style( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', array(), '4.1.0' );
