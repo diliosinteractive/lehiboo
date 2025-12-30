@@ -57,6 +57,22 @@ if ( class_exists( 'EL_Vendor_Documents' ) ) {
 		<ul class="dashboard_nav">
 
             <?php if( el_is_vendor() ) { ?>
+                <!-- V1 Le Hiboo - ONBOARDING / BIENVENUE -->
+                <?php
+                $onboarding_completed = get_user_meta( $user_id, 'lehiboo_onboarding_completed', true );
+                $onboarding_status = class_exists( 'LeHiboo_Vendor_Onboarding' ) ? LeHiboo_Vendor_Onboarding::get_onboarding_status( $user_id ) : array();
+                $onboarding_progress = isset( $onboarding_status['progress_percent'] ) ? $onboarding_status['progress_percent'] : 0;
+                ?>
+                <li class="menu_vendor_onboarding <?php if ($vendor == 'onboarding') echo esc_attr('active');  ?>">
+                    <a href="<?php echo add_query_arg( array( 'vendor' => 'onboarding'), get_myaccount_page() ); ?>">
+                        <i class="fas fa-hand-sparkles"></i>
+                        <?php esc_html_e( 'Bienvenue', 'eventlist' ); ?>
+                        <?php if ( $onboarding_progress < 100 ) : ?>
+                            <span class="onboarding_progress_badge"><?php echo $onboarding_progress; ?>%</span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+
                 <!-- NOUVELLE NAVIGATION PARTENAIRE -->
                 <li class="nav-section-title"><?php esc_html_e( 'Gestion des Activités', 'eventlist' ); ?></li>
 

@@ -507,3 +507,50 @@ button#el_coorg_add_btn {
     color: #6B7C8A;
     margin: 0;
 }
+/* ========================================
+   ONBOARDING - SIDEBAR NAVIGATION
+======================================== */
+
+/* Menu item Bienvenue/Onboarding */
+.menu_vendor_onboarding a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    background: linear-gradient(135deg, #FFF4EF 0%, #FFE4D6 100%) !important;
+    border-left: 3px solid #FF601F !important;
+}
+
+.menu_vendor_onboarding a i {
+    color: #FF601F;
+}
+
+/* Badge de progression */
+.onboarding_progress_badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    padding: 2px 8px;
+    background: #FF601F;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 10px;
+    margin-left: auto;
+}
+
+/* Doc badge (documents manquants) */
+.doc_badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    background: #dc3545;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 10px;
+    margin-left: 5px;
+}

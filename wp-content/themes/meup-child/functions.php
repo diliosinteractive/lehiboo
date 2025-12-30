@@ -268,6 +268,20 @@ if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-re
 }
 
 // ========================================
+// V1 Le Hiboo - GESTION DES DOCUMENTS PARTENAIRES
+// ========================================
+if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-documents.php' ) ) {
+	require_once get_stylesheet_directory() . '/includes/class-lehiboo-vendor-documents.php';
+}
+
+// ========================================
+// V1 Le Hiboo - ONBOARDING PARTENAIRES
+// ========================================
+if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-onboarding.php' ) ) {
+	require_once get_stylesheet_directory() . '/includes/class-lehiboo-vendor-onboarding.php';
+}
+
+// ========================================
 // MASQUER LE MENU PRINCIPAL SUR LES PAGES PARTENAIRES
 // ========================================
 /**
