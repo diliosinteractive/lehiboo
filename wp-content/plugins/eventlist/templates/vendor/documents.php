@@ -104,7 +104,9 @@ foreach ( $document_types as $type ) {
                     </div>
                     <div class="el-alert-content">
                         <strong><?php esc_html_e( 'Documents requis en attente', 'eventlist' ); ?></strong>
-                        <p><?php esc_html_e( 'Certains documents obligatoires sont manquants ou en attente de validation. Sans ces documents approuves, vous ne pourrez pas creer ou publier d\'activites.', 'eventlist' ); ?></p>
+                        <p><?php esc_html_e( 'Certains documents obligatoires n\'ont pas encore été importés ou sont en cours de validation.', 'eventlist' ); ?><br>
+                        <?php esc_html_e( 'Tous les documents doivent être transmis pour finaliser votre inscription.', 'eventlist' ); ?><br>
+                        <?php esc_html_e( 'Après vérification par l\'équipe Le Hiboo, la publication de vos événements sera activée.', 'eventlist' ); ?></p>
                     </div>
                 </div>
             <?php elseif ( $all_approved ) : ?>
@@ -113,8 +115,8 @@ foreach ( $document_types as $type ) {
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <div class="el-alert-content">
-                        <strong><?php esc_html_e( 'Tous vos documents sont valides !', 'eventlist' ); ?></strong>
-                        <p><?php esc_html_e( 'Vous pouvez creer et publier vos activites.', 'eventlist' ); ?></p>
+                        <strong><?php esc_html_e( 'Bravo ! Vos documents sont validés !', 'eventlist' ); ?></strong>
+                        <p><?php esc_html_e( 'Vous pouvez mettre en ligne vos activités.', 'eventlist' ); ?></p>
                     </div>
                 </div>
             <?php endif; ?>
@@ -260,19 +262,6 @@ foreach ( $document_types as $type ) {
 
                     </div>
                 <?php endforeach; ?>
-            </div>
-
-            <!-- Info box -->
-            <div class="documents_info_box">
-                <i class="fas fa-info-circle"></i>
-                <div>
-                    <strong><?php esc_html_e( 'Informations importantes', 'eventlist' ); ?></strong>
-                    <ul>
-                        <li><?php esc_html_e( 'Les documents marques d\'un asterisque (*) sont obligatoires.', 'eventlist' ); ?></li>
-                        <li><?php esc_html_e( 'Chaque document sera examine par notre equipe sous 24-48h.', 'eventlist' ); ?></li>
-                        <li><?php esc_html_e( 'Vous serez notifie par email du statut de validation.', 'eventlist' ); ?></li>
-                    </ul>
-                </div>
             </div>
 
         </div>
