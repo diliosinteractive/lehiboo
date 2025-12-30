@@ -216,8 +216,8 @@ body:has(.register_header) main {
 	align-items: center !important;
 	gap: 24px !important;
 	padding: 28px 20px !important;
-	background: linear-gradient(135deg, var(--grey-light) 0%, var(--white) 100%) !important;
-	border-bottom: 1px solid var(--grey-border) !important;
+	background: transparent !important;
+	border-bottom: none !important;
 	animation: fadeIn 0.6s ease;
 	margin: 0 !important;
 	list-style: none !important;
@@ -277,15 +277,7 @@ body:has(.register_header) main {
 }
 
 .steps_progress_bar {
-	position: absolute !important;
-	top: 46px !important;
-	left: 80px !important;
-	right: 80px !important;
-	height: 4px !important;
-	background: var(--grey-border) !important;
-	border-radius: 2px !important;
-	z-index: 1 !important;
-	display: block !important;
+	display: none !important;
 }
 
 .progress_fill {
@@ -425,7 +417,7 @@ body:has(.register_header) main {
 	margin: 0 auto;
 	margin-top: 12px !important;
 	background: var(--white);
-	border-radius: var(--border-radius);
+	border-radius: 24px !important;
 	padding: 40px 48px;
 	box-shadow: var(--shadow-lg);
 	animation: fadeInUp 0.6s ease;
