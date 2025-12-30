@@ -90,7 +90,7 @@ class LeHiboo_Vendor_Admin {
 
 		// Query
 		$args = array(
-			'role' => 'el_event_vendor',
+			'role' => 'el_event_manager',
 			'number' => $per_page,
 			'offset' => ( $paged - 1 ) * $per_page,
 			'orderby' => 'registered',
@@ -132,21 +132,21 @@ class LeHiboo_Vendor_Admin {
 		$all_vendors = new WP_User_Query( array( 'role' => 'el_event_vendor' ) );
 
 		$pending = new WP_User_Query( array(
-			'role' => 'el_event_vendor',
+			'role' => 'el_event_manager',
 			'meta_query' => array(
 				array( 'key' => 'vendor_status', 'value' => 'pending_approval' )
 			)
 		) );
 
 		$approved = new WP_User_Query( array(
-			'role' => 'el_event_vendor',
+			'role' => 'el_event_manager',
 			'meta_query' => array(
 				array( 'key' => 'vendor_status', 'value' => 'approved' )
 			)
 		) );
 
 		$rejected = new WP_User_Query( array(
-			'role' => 'el_event_vendor',
+			'role' => 'el_event_manager',
 			'meta_query' => array(
 				array( 'key' => 'vendor_status', 'value' => 'rejected' )
 			)

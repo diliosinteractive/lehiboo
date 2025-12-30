@@ -8,14 +8,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Récupérer les données détaillées
 $recent_vendors = new WP_User_Query( array(
-	'role' => 'el_event_vendor',
+	'role' => 'el_event_manager',
 	'number' => 10,
 	'orderby' => 'registered',
 	'order' => 'DESC'
 ) );
 
 $recent_approved = new WP_User_Query( array(
-	'role' => 'el_event_vendor',
+	'role' => 'el_event_manager',
 	'meta_query' => array(
 		array( 'key' => 'vendor_status', 'value' => 'approved' )
 	),
@@ -30,7 +30,7 @@ $org_types = array( 'association', 'entreprise', 'autoentrepreneur', 'collectivi
 $type_stats = array();
 foreach ( $org_types as $type ) {
 	$query = new WP_User_Query( array(
-		'role' => 'el_event_vendor',
+		'role' => 'el_event_manager',
 		'meta_query' => array(
 			array( 'key' => 'org_type', 'value' => $type )
 		)

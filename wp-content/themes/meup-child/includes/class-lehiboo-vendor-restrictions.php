@@ -67,7 +67,7 @@ class LeHiboo_Vendor_Restrictions {
 		}
 
 		$user = get_userdata( $user_id );
-		if ( ! $user || ! in_array( 'el_event_vendor', $user->roles ) ) {
+		if ( ! $user || ! in_array( 'el_event_manager', $user->roles ) ) {
 			return null;
 		}
 
@@ -150,7 +150,7 @@ class LeHiboo_Vendor_Restrictions {
 		$current_user = wp_get_current_user();
 
 		// Vérifier si c'est un vendor
-		if ( ! in_array( 'el_event_vendor', $current_user->roles ) ) {
+		if ( ! in_array( 'el_event_manager', $current_user->roles ) ) {
 			return;
 		}
 

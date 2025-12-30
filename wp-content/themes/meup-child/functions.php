@@ -276,8 +276,10 @@ if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-on
 }
 
 // ========================================
-// V1 Le Hiboo - ÉTENDRE el_is_vendor() POUR INCLURE el_event_vendor
-// Le plugin EventList ne vérifie que 'el_event_manager', mais nous utilisons 'el_event_vendor'
+// V1 Le Hiboo - NOTE SUR LES RÔLES
+// Le Hiboo utilise el_event_manager (rôle défini par le plugin EventList)
+// Le filtre ci-dessous garde la compatibilité avec d'éventuels anciens utilisateurs
+// ayant le rôle el_event_vendor (qui n'existe plus)
 // ========================================
 add_filter( 'el_is_vendor', 'lehiboo_extend_is_vendor_check' );
 function lehiboo_extend_is_vendor_check( $is_vendor ) {
@@ -286,7 +288,7 @@ function lehiboo_extend_is_vendor_check( $is_vendor ) {
 		return true;
 	}
 
-	// Vérifier aussi le rôle el_event_vendor utilisé par Le Hiboo
+	// Compatibilité: vérifier aussi l'ancien rôle el_event_vendor (migration)
 	$user = wp_get_current_user();
 	if ( in_array( 'el_event_vendor', $user->roles ) ) {
 		return true;
@@ -805,9 +807,9 @@ function lehiboo_update_vendor_slugs() {
 
 	global $wpdb;
 
-	// Récupérer tous les utilisateurs avec le rôle el_event_vendor
+	// Récupérer tous les utilisateurs avec le rôle el_event_manager (vendors)
 	$vendors = get_users( array(
-		'role' => 'el_event_vendor',
+		'role' => 'el_event_manager',
 		'fields' => 'ID'
 	) );
 
@@ -1445,9 +1447,9 @@ function lehiboo_handle_vendor_register() {
 		'display_name' => $org_name,
 	) );
 
-	// Assigner le rôle el_event_vendor
+	// Assigner le rôle el_event_manager (rôle vendor du plugin EventList)
 	$user = new WP_User( $user_id );
-	$user->set_role( 'el_event_vendor' );
+	$user->set_role( 'el_event_manager' );
 
 	// Sauvegarder les métadonnées organisation
 	update_user_meta( $user_id, 'org_name', $org_name );

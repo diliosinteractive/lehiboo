@@ -59,7 +59,7 @@ class LeHiboo_Vendor_Onboarding {
 	 */
 	public function redirect_to_onboarding_on_first_login( $user_login, $user ) {
 		// Vérifier si c'est un vendor
-		if ( ! in_array( 'el_event_vendor', $user->roles ) ) {
+		if ( ! in_array( 'el_event_manager', $user->roles ) ) {
 			return;
 		}
 
