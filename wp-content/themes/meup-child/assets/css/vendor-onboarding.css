@@ -1,14 +1,14 @@
 /**
  * Vendor Onboarding Page Styles
- * Version 2.0 - Design moderne et visible
+ * Version 2.1 - Design moderne et intégré avec sidebar
  */
 
-/* Reset pour la page onboarding */
+/* Reset pour la page onboarding - intégration avec structure vendor_wrap */
+.vendor_wrap .contents .onboarding_page,
 .el_vendor_page .onboarding_page,
 .onboarding_page {
-	max-width: 900px;
-	margin: 0 auto;
-	padding: 30px 20px;
+	max-width: 100%;
+	padding: 0;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
