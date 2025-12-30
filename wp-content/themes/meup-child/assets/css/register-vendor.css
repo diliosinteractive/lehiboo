@@ -1787,6 +1787,6 @@ body:has(.register_header) main {
 		font-size: 14px;
 	}
 }
-form#vendor_register_form {
+.register_form {
     padding: 0px!important;
 }
