@@ -737,6 +737,17 @@ console.log('VendorRegister: Script chargé');
 				} else {
 					$('#vendor_org_roles').next('.select2-container').removeClass('select2-error');
 				}
+
+				// Vérifier Statut juridique (Select2 simple)
+				const legalStatus = $('#vendor_org_type').val();
+				if (!legalStatus || legalStatus === '') {
+					isValid = false;
+					$('#vendor_org_type').next('.select2-container').addClass('select2-error');
+					VendorRegister.showNotification('error', 'Veuillez sélectionner votre statut juridique.');
+					return isValid;
+				} else {
+					$('#vendor_org_type').next('.select2-container').removeClass('select2-error');
+				}
 			}
 
 			// Validation spécifique step 4 (Documents - optionnels)
