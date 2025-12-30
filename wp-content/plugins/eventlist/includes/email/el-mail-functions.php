@@ -1406,3 +1406,27 @@ if ( ! function_exists("el_send_ticket_mail") ) {
 		return $result;
 	}
 }
+
+/* ************************ Email OTP - Changement d'email **********************/
+
+/**
+ * Email "from" pour l'envoi d'OTP de vérification d'email
+ */
+if ( ! function_exists( 'el_wp_mail_from_function' ) ) {
+	function el_wp_mail_from_function() {
+		if ( EL()->options->mail->get( 'admin_email' ) ) {
+			return EL()->options->mail->get( 'admin_email' );
+		} else {
+			return get_option( 'admin_email' );
+		}
+	}
+}
+
+/**
+ * Email "from name" pour l'envoi d'OTP de vérification d'email
+ */
+if ( ! function_exists( 'el_wp_mail_from_name_function' ) ) {
+	function el_wp_mail_from_name_function() {
+		return get_bloginfo( 'name' );
+	}
+}
