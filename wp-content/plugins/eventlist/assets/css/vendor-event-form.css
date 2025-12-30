@@ -2705,15 +2705,15 @@ textarea.field-error {
     cursor: help;
 }
 
-/* Field note under label */
+/* Field note under select */
 .field-note {
     display: block;
     font-size: 11px !important;
     font-weight: 400 !important;
     color: #717171 !important;
     font-style: italic;
-    margin-top: -4px;
-    margin-bottom: 8px;
+    margin-top: 4px;
+    margin-bottom: 0;
     text-transform: none !important;
     letter-spacing: normal !important;
 }

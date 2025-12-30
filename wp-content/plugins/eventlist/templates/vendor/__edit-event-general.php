@@ -124,7 +124,6 @@ $has_optional_data = !empty($selected_thematiques) || !empty($selected_special) 
                     <?php esc_html_e( 'Type d\'événement', 'eventlist' ); ?>
                     <span class="required-for-publish" title="<?php esc_attr_e( 'Obligatoire pour la mise en ligne', 'eventlist' ); ?>">**</span>
                 </label>
-                <small class="field-note"><?php esc_html_e( 'Obligatoire pour la mise en ligne', 'eventlist' ); ?></small>
                 <select name="event_tag" id="event_tag" class="selectpicker" data-live-search="true">
                     <option value=""><?php esc_html_e( '--- Sélectionner ---', 'eventlist' ); ?></option>
                     <?php
@@ -144,6 +143,7 @@ $has_optional_data = !empty($selected_thematiques) || !empty($selected_special) 
                     }
                     ?>
                 </select>
+                <small class="field-note"><?php esc_html_e( 'Obligatoire pour la mise en ligne', 'eventlist' ); ?></small>
             </div>
         </div>
     </div>
@@ -156,7 +156,6 @@ $has_optional_data = !empty($selected_thematiques) || !empty($selected_special) 
                     <?php esc_html_e( 'Public visé', 'eventlist' ); ?>
                     <span class="required-for-publish" title="<?php esc_attr_e( 'Obligatoire pour la mise en ligne', 'eventlist' ); ?>">**</span>
                 </label>
-                <small class="field-note"><?php esc_html_e( 'Obligatoire pour la mise en ligne', 'eventlist' ); ?></small>
                 <select name="event_public[]" id="event_public" class="selectpicker" multiple data-placeholder="<?php esc_attr_e( 'Sélection multiple possible', 'eventlist' ); ?>" data-live-search="true">
                     <?php
                     $publics = get_terms(array('taxonomy' => 'event_public', 'hide_empty' => false, 'parent' => 0));
@@ -181,6 +180,7 @@ $has_optional_data = !empty($selected_thematiques) || !empty($selected_special) 
                     }
                     ?>
                 </select>
+                <small class="field-note"><?php esc_html_e( 'Obligatoire pour la mise en ligne', 'eventlist' ); ?></small>
             </div>
         </div>
         <div class="el_col_6">
