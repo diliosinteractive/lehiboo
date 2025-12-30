@@ -726,9 +726,12 @@
 	margin-bottom: 24px;
 }
 
+.otp_verification_wrapper .otp_inputs_wrapper .otp_input,
 .otp_input {
-	width: 52px;
-	height: 60px;
+	width: 52px !important;
+	min-width: 52px !important;
+	max-width: 52px !important;
+	height: 60px !important;
 	border: 2px solid #E0E4E9;
 	border-radius: 8px;
 	text-align: center;
@@ -737,6 +740,9 @@
 	color: var(--grey-dark);
 	transition: var(--transition);
 	background: var(--white);
+	padding: 0 !important;
+	box-sizing: border-box;
+	flex: 0 0 52px;
 }
 
 .otp_input:focus {
@@ -860,10 +866,14 @@
 		gap: 8px;
 	}
 
+	.otp_verification_wrapper .otp_inputs_wrapper .otp_input,
 	.otp_input {
-		width: 44px;
-		height: 52px;
+		width: 44px !important;
+		min-width: 44px !important;
+		max-width: 44px !important;
+		height: 52px !important;
 		font-size: 20px;
+		flex: 0 0 44px;
 	}
 
 	.otp_icon {
