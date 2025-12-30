@@ -238,21 +238,9 @@ if (is_wp_error($event_types_taxonomy)) {
         <!-- Champs d'adresse et carte -->
         <div class="location_fields_wrapper">
             <div class="location_fields_left">
-                <!-- Nom du lieu - Input texte libre -->
-                <div class="vendor_field">
-                    <label for="location_venue_name"><?php esc_html_e( 'Nom du lieu', 'eventlist' ); ?></label>
-                    <input type="text"
-                           name="<?php echo esc_attr($_prefix.'add_venue'); ?>"
-                           id="location_venue_name"
-                           class="location_venue_input <?php echo ($address_source != 'new') ? 'readonly' : ''; ?>"
-                           value="<?php echo esc_attr($current_venue); ?>"
-                           placeholder="<?php esc_attr_e( 'Ex: Salle des fêtes, Mairie, etc.', 'eventlist' ); ?>"
-                           <?php echo ($address_source != 'new') ? 'readonly' : ''; ?>>
-                </div>
-
-                <!-- Adresse - Input avec autocomplétion -->
+                <!-- Adresse de l'activité - Input avec autocomplétion -->
                 <div class="vendor_field address_autocomplete_wrapper">
-                    <label for="location_address"><?php esc_html_e( 'Adresse', 'eventlist' ); ?></label>
+                    <label for="location_address"><?php esc_html_e( 'Adresse de l\'activité', 'eventlist' ); ?></label>
                     <div class="address_input_container">
                         <input type="text"
                                name="<?php echo esc_attr($_prefix.'address'); ?>"
@@ -266,28 +254,18 @@ if (is_wp_error($event_types_taxonomy)) {
                     </div>
                 </div>
 
-                <!-- Latitude -->
+                <!-- Coordonnées GPS (indicatif, non modifiable) -->
                 <div class="vendor_field">
-                    <label for="map_lat"><?php esc_html_e( 'Latitude', 'eventlist' ); ?></label>
+                    <label for="map_gps"><?php esc_html_e( 'Coordonnées GPS', 'eventlist' ); ?></label>
                     <input type="text"
-                           name="<?php echo esc_attr($_prefix.'map_lat'); ?>"
-                           id="map_lat"
-                           value="<?php echo esc_attr($map_lat); ?>"
-                           class="location_lat_input"
-                           placeholder="48.8566"
+                           id="map_gps"
+                           value="<?php echo ($map_lat && $map_lng) ? esc_attr($map_lat . ', ' . $map_lng) : ''; ?>"
+                           class="location_gps_input"
+                           placeholder="48.8566, 2.3522"
                            readonly>
-                </div>
-
-                <!-- Longitude -->
-                <div class="vendor_field">
-                    <label for="map_lng"><?php esc_html_e( 'Longitude', 'eventlist' ); ?></label>
-                    <input type="text"
-                           name="<?php echo esc_attr($_prefix.'map_lng'); ?>"
-                           id="map_lng"
-                           value="<?php echo esc_attr($map_lng); ?>"
-                           class="location_lng_input"
-                           placeholder="2.3522"
-                           readonly>
+                    <!-- Champs cachés pour la sauvegarde -->
+                    <input type="hidden" name="<?php echo esc_attr($_prefix.'map_lat'); ?>" id="map_lat" value="<?php echo esc_attr($map_lat); ?>">
+                    <input type="hidden" name="<?php echo esc_attr($_prefix.'map_lng'); ?>" id="map_lng" value="<?php echo esc_attr($map_lng); ?>">
                 </div>
 
                 <!-- Champs cachés -->
@@ -310,18 +288,6 @@ if (is_wp_error($event_types_taxonomy)) {
 
         <!-- Champs supplémentaires pour lieu physique -->
         <div class="location_extra_fields">
-
-            <!-- Type d'événements organisés -->
-            <div class="vendor_field location_extra_field">
-                <label class="field_label"><?php esc_html_e( 'Type d\'événements organisés', 'eventlist' ); ?></label>
-                <p class="field_hint"><?php esc_html_e( 'Informez si les événements que votre structure organise sont plutôt en intérieur, à l\'extérieur, ou les deux.', 'eventlist' ); ?></p>
-                <select name="<?php echo esc_attr($_prefix.'event_location_type'); ?>" id="event_location_type" class="location_type_select">
-                    <option value=""><?php esc_html_e( 'À sélectionner', 'eventlist' ); ?></option>
-                    <option value="interieur" <?php selected($event_location_type, 'interieur'); ?>><?php esc_html_e( 'En intérieur', 'eventlist' ); ?></option>
-                    <option value="exterieur" <?php selected($event_location_type, 'exterieur'); ?>><?php esc_html_e( 'En extérieur', 'eventlist' ); ?></option>
-                    <option value="les_deux" <?php selected($event_location_type, 'les_deux'); ?>><?php esc_html_e( 'Les deux', 'eventlist' ); ?></option>
-                </select>
-            </div>
 
             <!-- Stationnement -->
             <div class="vendor_field location_extra_field location_extra_field_with_image">
@@ -687,12 +653,11 @@ if (is_wp_error($event_types_taxonomy)) {
             $('#coorg_entity_select').on('change', function() {
                 var $selected = $(this).find(':selected');
                 if ($selected.val()) {
-                    var venue = $selected.data('venue') || '';
                     var address = $selected.data('address') || '';
                     var lat = $selected.data('lat') || '';
                     var lng = $selected.data('lng') || '';
 
-                    self.fillLocationFields(venue, address, lat, lng, true);
+                    self.fillLocationFields(address, lat, lng, true);
                 }
             });
 
@@ -721,10 +686,6 @@ if (is_wp_error($event_types_taxonomy)) {
                 $('#' + targetId + '_preview').remove();
             });
 
-            // Synchroniser le nom du lieu avec le champ hidden lors de la saisie
-            $('#location_venue_name').on('input', function() {
-                $('#venue_storage').val($(this).val());
-            });
         },
 
         initializeFromSource: function() {
@@ -733,25 +694,23 @@ if (is_wp_error($event_types_taxonomy)) {
             // Si c'est entity ou coorg, pré-remplir les champs
             if (source === 'entity') {
                 var $entity = $('#address_source_entity');
-                var venue = $entity.data('venue') || '';
                 var address = $entity.data('address') || '';
                 var lat = $entity.data('lat') || '';
                 var lng = $entity.data('lng') || '';
 
-                // Ne pré-remplir que si les champs sont vides
-                if (!$('#location_venue_name').val() && venue) {
-                    this.fillLocationFields(venue, address, lat, lng, true);
+                // Ne pré-remplir que si l'adresse est vide
+                if (!$('#location_address').val() && address) {
+                    this.fillLocationFields(address, lat, lng, true);
                 }
             } else if (source === 'coorg') {
                 var $selected = $('#coorg_entity_select').find(':selected');
                 if ($selected.val()) {
-                    var venue = $selected.data('venue') || '';
                     var address = $selected.data('address') || '';
                     var lat = $selected.data('lat') || '';
                     var lng = $selected.data('lng') || '';
 
-                    if (!$('#location_venue_name').val() && venue) {
-                        this.fillLocationFields(venue, address, lat, lng, true);
+                    if (!$('#location_address').val() && address) {
+                        this.fillLocationFields(address, lat, lng, true);
                     }
                 }
             }
@@ -772,7 +731,6 @@ if (is_wp_error($event_types_taxonomy)) {
                 var $selected = $('#coorg_entity_select').find(':selected');
                 if ($selected.val()) {
                     this.fillLocationFields(
-                        $selected.data('venue') || '',
                         $selected.data('address') || '',
                         $selected.data('lat') || '',
                         $selected.data('lng') || '',
@@ -787,11 +745,10 @@ if (is_wp_error($event_types_taxonomy)) {
             // Remplir avec les données de l'entité
             if (source === 'entity') {
                 var $entity = $('#address_source_entity');
-                var venue = $entity.data('venue') || '';
                 var address = $entity.data('address') || '';
                 var lat = $entity.data('lat') || '';
                 var lng = $entity.data('lng') || '';
-                this.fillLocationFields(venue, address, lat, lng, true);
+                this.fillLocationFields(address, lat, lng, true);
                 this.setFieldsReadonly(true);
             }
 
@@ -804,26 +761,18 @@ if (is_wp_error($event_types_taxonomy)) {
 
         setFieldsReadonly: function(readonly) {
             this.isFieldsReadonly = readonly;
-            var $venue = $('#location_venue_name');
             var $address = $('#location_address');
 
             if (readonly) {
-                $venue.prop('readonly', true).addClass('readonly');
                 $address.prop('readonly', true).addClass('readonly');
                 this.marker.dragging.disable();
             } else {
-                $venue.prop('readonly', false).removeClass('readonly');
                 $address.prop('readonly', false).removeClass('readonly');
                 this.marker.dragging.enable();
             }
         },
 
-        fillLocationFields: function(venue, address, lat, lng, updateMap) {
-            // Nom du lieu
-            $('#location_venue_name').val(venue || '');
-            // Synchroniser avec le champ hidden pour la sauvegarde
-            $('#venue_storage').val(venue || '');
-
+        fillLocationFields: function(address, lat, lng, updateMap) {
             // Adresse
             $('#location_address').val(address || '');
 
@@ -837,16 +786,17 @@ if (is_wp_error($event_types_taxonomy)) {
         },
 
         clearLocationFields: function() {
-            $('#location_venue_name').val('');
             $('#location_address').val('');
-            // Vider aussi le champ hidden
-            $('#venue_storage').val('');
             // Garder les coordonnées par défaut pour la carte
         },
 
         updateCoordinates: function(lat, lng) {
-            $('#map_lat').val(parseFloat(lat).toFixed(6));
-            $('#map_lng').val(parseFloat(lng).toFixed(6));
+            var latVal = parseFloat(lat).toFixed(6);
+            var lngVal = parseFloat(lng).toFixed(6);
+            $('#map_lat').val(latVal);
+            $('#map_lng').val(lngVal);
+            // Mettre à jour le champ GPS combiné (affichage)
+            $('#map_gps').val(latVal + ', ' + lngVal);
         },
 
         updateMapPosition: function(lat, lng) {
@@ -1016,18 +966,17 @@ if (is_wp_error($event_types_taxonomy)) {
 }
 
 /* Champs en lecture seule */
-.location_venue_input.readonly,
 .location_address_input.readonly {
     background-color: #f9f9f9;
     color: #666;
     cursor: not-allowed;
 }
 
-/* Lat/Lng en lecture seule toujours */
-.location_lat_input,
-.location_lng_input {
+/* Coordonnées GPS en lecture seule */
+.location_gps_input {
     background-color: #f9f9f9 !important;
     color: #666 !important;
+    cursor: not-allowed;
 }
 
 /* Séparateur localisation */
