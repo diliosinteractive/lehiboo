@@ -7,6 +7,20 @@
 /* ========================================
    HIDE SITE HEADER/FOOTER ON REGISTRATION PAGE
 ======================================== */
+/* Fallback avec classe body (compatible tous navigateurs) */
+body.vendor-registration-page #masthead,
+body.vendor-registration-page .site-header,
+body.vendor-registration-page header.header,
+body.vendor-registration-page .meup-header,
+body.vendor-registration-page .ovaheader,
+body.vendor-registration-page .header-main,
+body.vendor-registration-page .nav-menu-main,
+body.vendor-registration-page #site-navigation,
+body.vendor-registration-page .sticky-header,
+body.vendor-registration-page footer.site-footer,
+body.vendor-registration-page .ovafooter,
+body.vendor-registration-page #colophon,
+/* Sélecteur :has() pour navigateurs modernes */
 body:has(.register_header) #masthead,
 body:has(.register_header) .site-header,
 body:has(.register_header) header.header,
@@ -23,11 +37,16 @@ body:has(.register_header) #colophon {
 }
 
 /* Remove any top margin/padding from body when custom header is shown */
+body.vendor-registration-page,
 body:has(.register_header) {
 	padding-top: 0 !important;
 	margin-top: 0 !important;
 }
 
+body.vendor-registration-page .site-content,
+body.vendor-registration-page #content,
+body.vendor-registration-page .content-area,
+body.vendor-registration-page main,
 body:has(.register_header) .site-content,
 body:has(.register_header) #content,
 body:has(.register_header) .content-area,
@@ -124,33 +143,37 @@ body:has(.register_header) main {
    CUSTOM HEADER - REGISTRATION
 ======================================== */
 .register_header {
-	position: sticky;
-	top: 0;
-	z-index: 1000;
-	background: var(--white);
-	border-bottom: 1px solid var(--grey-border);
-	box-shadow: var(--shadow-sm);
+	position: sticky !important;
+	top: 0 !important;
+	z-index: 1000 !important;
+	background: var(--white) !important;
+	border-bottom: 1px solid var(--grey-border) !important;
+	box-shadow: var(--shadow-sm) !important;
+	display: block !important;
+	width: 100% !important;
 }
 
 .register_header_inner {
-	max-width: 1200px;
-	margin: 0 auto;
-	padding: 16px 24px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+	max-width: 1200px !important;
+	margin: 0 auto !important;
+	padding: 16px 24px !important;
+	display: flex !important;
+	flex-direction: row !important;
+	justify-content: space-between !important;
+	align-items: center !important;
 }
 
 .register_header_logo {
-	display: flex;
-	align-items: center;
-	text-decoration: none;
+	display: flex !important;
+	align-items: center !important;
+	text-decoration: none !important;
 }
 
 .register_header_logo .logo_img {
-	height: 44px;
-	width: auto;
+	height: 44px !important;
+	width: auto !important;
 	transition: var(--transition);
+	display: block !important;
 }
 
 .register_header_logo:hover .logo_img {
@@ -158,51 +181,59 @@ body:has(.register_header) main {
 }
 
 .register_header_support {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	font-size: 14px;
-	color: var(--grey-medium);
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: center !important;
+	gap: 10px !important;
+	font-size: 14px !important;
+	color: var(--grey-medium) !important;
 }
 
 .register_header_support i {
-	color: var(--orange-primary);
-	font-size: 16px;
+	color: var(--orange-primary) !important;
+	font-size: 16px !important;
 }
 
 .register_header_support .support_phone {
-	font-weight: 700;
-	color: var(--grey-dark);
-	text-decoration: none;
+	font-weight: 700 !important;
+	color: var(--grey-dark) !important;
+	text-decoration: none !important;
 	transition: var(--transition);
 }
 
 .register_header_support .support_phone:hover {
-	color: var(--orange-primary);
+	color: var(--orange-primary) !important;
 }
 
 /* ========================================
    REASSURANCE BADGES
 ======================================== */
 .reassurance_badges {
-	display: flex;
-	justify-content: center;
-	gap: 24px;
-	padding: 28px 20px;
-	background: linear-gradient(135deg, var(--grey-light) 0%, var(--white) 100%);
-	border-bottom: 1px solid var(--grey-border);
+	display: flex !important;
+	flex-direction: row !important;
+	flex-wrap: wrap !important;
+	justify-content: center !important;
+	align-items: center !important;
+	gap: 24px !important;
+	padding: 28px 20px !important;
+	background: linear-gradient(135deg, var(--grey-light) 0%, var(--white) 100%) !important;
+	border-bottom: 1px solid var(--grey-border) !important;
 	animation: fadeIn 0.6s ease;
+	margin: 0 !important;
+	list-style: none !important;
 }
 
 .reassurance_badge {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	padding: 12px 20px;
-	background: var(--white);
-	border-radius: var(--border-radius);
-	box-shadow: var(--shadow-sm);
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: center !important;
+	gap: 12px !important;
+	padding: 12px 20px !important;
+	background: var(--white) !important;
+	border-radius: var(--border-radius) !important;
+	box-shadow: var(--shadow-sm) !important;
 	transition: var(--transition);
+	margin: 0 !important;
 }
 
 .reassurance_badge:hover {
@@ -237,126 +268,142 @@ body:has(.register_header) main {
    STEPS NAVIGATION - NEW DESIGN
 ======================================== */
 .steps_navigation {
-	position: relative;
-	padding: 40px 20px 32px;
-	background: var(--white);
-	max-width: 900px;
-	margin: 0 auto;
+	position: relative !important;
+	padding: 40px 20px 32px !important;
+	background: var(--white) !important;
+	max-width: 900px !important;
+	margin: 0 auto !important;
+	display: block !important;
 }
 
 .steps_progress_bar {
-	position: absolute;
-	top: 60px;
-	left: 80px;
-	right: 80px;
-	height: 4px;
-	background: var(--grey-border);
-	border-radius: 2px;
-	z-index: 1;
+	position: absolute !important;
+	top: 60px !important;
+	left: 80px !important;
+	right: 80px !important;
+	height: 4px !important;
+	background: var(--grey-border) !important;
+	border-radius: 2px !important;
+	z-index: 1 !important;
+	display: block !important;
 }
 
 .progress_fill {
-	height: 100%;
-	background: var(--orange-primary);
-	border-radius: 2px;
-	width: 0%;
-	transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+	height: 100% !important;
+	background: var(--orange-primary) !important;
+	border-radius: 2px !important;
+	width: 0% !important;
+	transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+	display: block !important;
 }
 
 .steps_container {
-	display: flex;
-	justify-content: space-between;
-	position: relative;
-	z-index: 2;
+	display: flex !important;
+	flex-direction: row !important;
+	justify-content: space-between !important;
+	align-items: flex-start !important;
+	position: relative !important;
+	z-index: 2 !important;
+	list-style: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
 }
 
 .step_item {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 12px;
-	cursor: default;
-	flex: 1;
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+	gap: 12px !important;
+	cursor: default !important;
+	flex: 1 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	list-style: none !important;
 }
 
 .step_circle {
-	width: 48px;
-	height: 48px;
-	border-radius: 50%;
-	background: var(--white);
-	border: 3px solid var(--grey-border);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	position: relative;
+	width: 48px !important;
+	height: 48px !important;
+	border-radius: 50% !important;
+	background: var(--white) !important;
+	border: 3px solid var(--grey-border) !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	position: relative !important;
 	transition: var(--transition);
+	min-width: 48px !important;
+	min-height: 48px !important;
 }
 
 .step_circle i {
-	font-size: 18px;
-	color: var(--grey-medium);
+	font-size: 18px !important;
+	color: var(--grey-medium) !important;
 	transition: var(--transition);
+	margin: 0 !important;
+	padding: 0 !important;
 }
 
 .step_circle .step_check {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	opacity: 0;
-	transform: scale(0);
+	position: absolute !important;
+	top: 0 !important;
+	left: 0 !important;
+	right: 0 !important;
+	bottom: 0 !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	opacity: 0 !important;
+	transform: scale(0) !important;
 }
 
 .step_circle .step_check i {
-	color: var(--white);
-	font-size: 16px;
+	color: var(--white) !important;
+	font-size: 16px !important;
 }
 
 .step_label {
-	font-size: 13px;
-	font-weight: 600;
-	color: var(--grey-medium);
-	text-align: center;
+	font-size: 13px !important;
+	font-weight: 600 !important;
+	color: var(--grey-medium) !important;
+	text-align: center !important;
 	transition: var(--transition);
+	display: block !important;
 }
 
 /* Step Active State */
 .step_item.active .step_circle {
-	border-color: var(--orange-primary);
-	background: var(--white);
-	animation: pulseGlow 2s infinite;
+	border-color: var(--orange-primary) !important;
+	background: var(--white) !important;
+	animation: pulseGlow 2s infinite !important;
 }
 
 .step_item.active .step_circle i {
-	color: var(--orange-primary);
+	color: var(--orange-primary) !important;
 }
 
 .step_item.active .step_label {
-	color: var(--orange-primary);
+	color: var(--orange-primary) !important;
 }
 
 /* Step Completed State */
 .step_item.completed .step_circle {
-	border-color: var(--orange-primary);
-	background: var(--orange-primary);
+	border-color: var(--orange-primary) !important;
+	background: var(--orange-primary) !important;
 }
 
 .step_item.completed .step_circle > i:first-child {
-	opacity: 0;
+	opacity: 0 !important;
 }
 
 .step_item.completed .step_circle .step_check {
-	opacity: 1;
-	transform: scale(1);
-	animation: checkBounce 0.4s ease;
+	opacity: 1 !important;
+	transform: scale(1) !important;
+	animation: checkBounce 0.4s ease !important;
 }
 
 .step_item.completed .step_label {
-	color: var(--grey-dark);
+	color: var(--grey-dark) !important;
 }
 
 /* ========================================

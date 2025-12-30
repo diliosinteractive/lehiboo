@@ -8,6 +8,8 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
 
+<script>document.body.classList.add('vendor-registration-page');</script>
+
 <!-- Header simplifié dédié inscription -->
 <header class="register_header">
 	<div class="register_header_inner">
