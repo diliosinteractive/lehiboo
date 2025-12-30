@@ -99,7 +99,15 @@ function meup_child_scripts() {
     }
 
     // V1 Le Hiboo - Page de choix d'inscription (Utilisateur/Partenaire)
-    if ( is_page_template( 'page-templates/template-register-choice.php' ) ) {
+    // Vérifier le template OU la page member-login avec paramètre type
+    $is_register_page = is_page_template( 'page-templates/template-register-choice.php' );
+
+    // Alternative: page member-login avec ?type=vendor ou ?type=customer
+    if ( ! $is_register_page && is_page( 'member-login' ) && isset( $_GET['type'] ) && in_array( $_GET['type'], array('vendor', 'customer'), true ) ) {
+        $is_register_page = true;
+    }
+
+    if ( $is_register_page ) {
         wp_enqueue_style( 'lehiboo-register-choice', get_stylesheet_directory_uri() . '/assets/css/register-choice.css', array('meup-parent-style'), '3.0.0' );
 
         // Styles et scripts pour le formulaire utilisateur
@@ -113,7 +121,7 @@ function meup_child_scripts() {
         wp_enqueue_style( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', array(), '4.1.0' );
         wp_enqueue_script( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array('jquery'), '4.1.0', true );
 
-        wp_enqueue_script( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/js/register-vendor.js', array('jquery', 'select2'), '3.2.0', true );
+        wp_enqueue_script( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/js/register-vendor.js', array('jquery', 'select2'), '3.3.0', true );
 
         // Cloudflare Turnstile CAPTCHA pour formulaire partenaire
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
