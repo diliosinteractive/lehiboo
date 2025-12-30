@@ -15,8 +15,20 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	<div class="register_header_inner">
 		<a href="<?php echo home_url(); ?>" class="register_header_logo">
 			<?php
+			$logo_url = '';
+			// 1. Essayer le logo personnalisé WordPress
 			$custom_logo_id = get_theme_mod( 'custom_logo' );
-			$logo_url = $custom_logo_id ? wp_get_attachment_image_url( $custom_logo_id, 'medium' ) : get_template_directory_uri() . '/assets/img/logo.png';
+			if ( $custom_logo_id ) {
+				$logo_url = wp_get_attachment_image_url( $custom_logo_id, 'medium' );
+			}
+			// 2. Fallback: logo du thème enfant
+			if ( empty( $logo_url ) && file_exists( get_stylesheet_directory() . '/assets/img/logo.png' ) ) {
+				$logo_url = get_stylesheet_directory_uri() . '/assets/img/logo.png';
+			}
+			// 3. Fallback: logo du thème parent
+			if ( empty( $logo_url ) ) {
+				$logo_url = get_template_directory_uri() . '/assets/img/logo.png';
+			}
 			?>
 			<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" class="logo_img">
 		</a>

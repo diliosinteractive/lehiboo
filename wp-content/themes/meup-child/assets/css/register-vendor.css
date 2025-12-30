@@ -269,7 +269,7 @@ body:has(.register_header) main {
 ======================================== */
 .steps_navigation {
 	position: relative !important;
-	padding: 40px 20px 32px !important;
+	padding: 16px 20px 12px !important;
 	background: var(--white) !important;
 	max-width: 900px !important;
 	margin: 0 auto !important;
@@ -278,7 +278,7 @@ body:has(.register_header) main {
 
 .steps_progress_bar {
 	position: absolute !important;
-	top: 60px !important;
+	top: 46px !important;
 	left: 80px !important;
 	right: 80px !important;
 	height: 4px !important;
@@ -423,9 +423,10 @@ body:has(.register_header) main {
 .register_form_container {
 	max-width: 900px;
 	margin: 0 auto;
+	margin-top: 12px !important;
 	background: var(--white);
 	border-radius: var(--border-radius);
-	padding: 48px;
+	padding: 40px 48px;
 	box-shadow: var(--shadow-lg);
 	animation: fadeInUp 0.6s ease;
 }
