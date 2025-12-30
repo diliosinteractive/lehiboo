@@ -1496,17 +1496,17 @@ function lehiboo_handle_vendor_register() {
 	$dashboard_url = function_exists( 'get_myaccount_page' ) ? get_myaccount_page() : home_url( '/member-account/' );
 
 	// Email au vendor - Bienvenue
-	$subject_vendor = '[Lehiboo Experiences] - Bravo ! Votre compte Organisateur est créé !';
+	$subject_vendor = '[Lehiboo Experiences] - Bravo ! Votre compte Organisateur est créé 🎉 !';
 
 	$message_vendor = "Bonjour {$firstname},\n\n";
 	$message_vendor .= "Votre compte organisateur Le Hiboo a bien été créé avec succès.\n";
 	$message_vendor .= "Vous pouvez dès maintenant accéder à votre espace et commencer à créer vos activités.\n\n";
-	$message_vendor .= "Accéder à mon espace organisateur :\n";
+	$message_vendor .= "👉 Accéder à mon espace organisateur\n";
 	$message_vendor .= "{$dashboard_url}\n\n";
-	$message_vendor .= "Prochaines étapes :\n";
-	$message_vendor .= "- Complétez les informations de votre organisation.\n";
-	$message_vendor .= "- Ajoutez vos documents de vérification si ce n'est pas déjà fait.\n";
-	$message_vendor .= "- Créez et publiez votre première activité !\n\n";
+	$message_vendor .= "🚀 Prochaines étapes :\n";
+	$message_vendor .= "• Complétez les informations de votre organisation.\n";
+	$message_vendor .= "• Ajoutez vos documents de vérification si ce n'est pas déjà fait.\n";
+	$message_vendor .= "• Créez et publiez votre première activité !\n\n";
 	$message_vendor .= "À très vite sur Le Hiboo,\n";
 	$message_vendor .= "L'équipe Lehiboo Experiences\n\n";
 	$message_vendor .= "Besoin d'aide ? Contactez-nous à support@lehiboo.com";
