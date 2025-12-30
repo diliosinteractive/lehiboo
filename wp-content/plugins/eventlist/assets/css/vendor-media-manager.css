@@ -1709,3 +1709,44 @@
         font-size: 14px;
     }
 }
+
+/* ==========================================================================
+   View Mode Toggle - Grille/Liste
+   ========================================================================== */
+
+.vendor_media_manager .view_mode {
+    display: inline-flex;
+    align-items: center;
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 4px;
+    gap: 2px;
+}
+
+.vendor_media_manager .view_mode button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #666;
+}
+
+.vendor_media_manager .view_mode button:hover {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.vendor_media_manager .view_mode button.active {
+    background: #FF6600;
+    color: #fff;
+}
+
+.vendor_media_manager .view_mode button i {
+    font-size: 14px;
+}
