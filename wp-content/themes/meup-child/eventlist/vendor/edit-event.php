@@ -265,7 +265,7 @@ if ( class_exists( 'LeHiboo_Vendor_Onboarding' ) ) {
         <div class="profile_sticky_bar">
             <div class="sticky_bar_inner">
                 <div class="sticky_bar_left">
-                    <h3><?php esc_html_e('Créer une activité', 'eventlist'); ?></h3>
+                    <h3><?php echo empty( $post_id ) ? esc_html__( 'Créer une activité', 'eventlist' ) : esc_html__( 'Modifier l\'activité', 'eventlist' ); ?></h3>
                 </div>
                 <div class="sticky_bar_right">
                     <!-- Status Indicator -->
