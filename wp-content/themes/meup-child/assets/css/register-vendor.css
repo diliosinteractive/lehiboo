@@ -927,21 +927,26 @@
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
-	background: var(--orange-light);
+	background: var(--orange-primary);
 	border: 1px solid var(--orange-primary);
 	border-radius: 6px;
-	padding: 4px 10px;
-	color: var(--grey-dark);
-	font-size: 13px;
+	padding: 6px 12px;
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: 500;
+	margin: 4px 6px 4px 0;
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-	color: var(--orange-primary);
-	margin-right: 6px;
+	color: #ffffff;
+	margin-right: 8px;
+	font-size: 16px;
+	opacity: 0.8;
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
-	color: var(--orange-hover);
+	color: #ffffff;
+	opacity: 1;
 }
 
 .select2-dropdown {

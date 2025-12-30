@@ -599,9 +599,22 @@ console.log('VendorRegister: Script chargé');
 
 			$required.each(function () {
 				const $field = $(this);
-				const value = $field.val() ? $field.val().trim() : '';
 
-				if (!value) {
+				// Skip Select2 multi-selects - they're validated separately below
+				if ($field.hasClass('select2_multi')) {
+					return true; // continue to next field
+				}
+
+				const rawValue = $field.val();
+				let isEmpty = false;
+
+				if (Array.isArray(rawValue)) {
+					isEmpty = rawValue.length === 0;
+				} else {
+					isEmpty = !rawValue || !rawValue.trim();
+				}
+
+				if (isEmpty) {
 					isValid = false;
 					$field.addClass('error');
 					console.log('validateStep: Champ requis vide:', $field.attr('id') || $field.attr('name'));
