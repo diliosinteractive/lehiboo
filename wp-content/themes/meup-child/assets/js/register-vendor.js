@@ -584,17 +584,19 @@
 		 * Validate current step
 		 */
 		validateStep: function (step) {
+			console.log('validateStep: Validation étape', step);
 			const $currentStep = $(`.form_step[data-step="${step}"]`);
 			const $required = $currentStep.find('[required]');
 			let isValid = true;
 
 			$required.each(function () {
 				const $field = $(this);
-				const value = $field.val().trim();
+				const value = $field.val() ? $field.val().trim() : '';
 
 				if (!value) {
 					isValid = false;
 					$field.addClass('error');
+					console.log('validateStep: Champ requis vide:', $field.attr('id') || $field.attr('name'));
 					VendorRegister.showNotification('error', 'Veuillez remplir tous les champs obligatoires.');
 					return false;
 				} else {
@@ -603,17 +605,19 @@
 			});
 
 			// Validation spécifique step 1 (Informations personnelles)
-			if (step === 1) {
+			if (step === 1 && isValid) {
 				const password = $('#vendor_password').val();
 				const passwordConfirm = $('#vendor_password_confirm').val();
 
 				if (password !== passwordConfirm) {
 					isValid = false;
+					console.log('validateStep: Mots de passe différents');
 					VendorRegister.showNotification('error', 'Les mots de passe ne correspondent pas.');
 				}
 
-				if (!VendorRegister.isPasswordStrong(password)) {
+				if (isValid && !VendorRegister.isPasswordStrong(password)) {
 					isValid = false;
+					console.log('validateStep: Mot de passe pas assez fort');
 					VendorRegister.showNotification('error', 'Le mot de passe ne respecte pas les critères de sécurité.');
 				}
 			}
@@ -759,11 +763,14 @@
 		 */
 		sendOTP: function (e) {
 			e.preventDefault();
+			console.log('sendOTP: Début de la validation étape 1');
 
 			// Valider l'étape 1 avant d'envoyer l'OTP
 			if (!this.validateStep(1)) {
+				console.log('sendOTP: Validation échouée');
 				return;
 			}
+			console.log('sendOTP: Validation réussie, envoi OTP...');
 
 			const $btn = $('#btn_send_otp');
 			const email = $('#vendor_email').val();
@@ -1193,16 +1200,29 @@
 		 */
 		showNotification: function (type, message) {
 			const $notification = $(`.register_notification.${type}`);
+
+			// S'assurer que l'élément existe
+			if ($notification.length === 0) {
+				console.warn('Notification element not found for type:', type);
+				alert(message); // Fallback
+				return;
+			}
+
+			// Cacher les autres notifications
+			$('.register_notification').hide();
+
+			// Afficher la notification
 			$notification.html(message).slideDown(300);
 
+			// Scroll vers le haut du formulaire pour voir la notification
+			$('html, body').animate({
+				scrollTop: $('.register_form_container').offset().top - 120
+			}, 300);
+
+			// Auto-hide après 6 secondes
 			setTimeout(function () {
 				$notification.slideUp(300);
-			}, 5000);
-
-			// Scroll to notification
-			$('html, body').animate({
-				scrollTop: $notification.offset().top - 100
-			}, 300);
+			}, 6000);
 		}
 	};
 
