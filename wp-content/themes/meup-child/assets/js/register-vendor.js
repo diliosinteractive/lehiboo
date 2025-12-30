@@ -678,31 +678,47 @@ console.log('VendorRegister: Script chargé');
 
 			// Validation spécifique step 4 (Documents + CGU + Cloudflare)
 			if (step === 4) {
+				console.log('validateStep: Validation étape 4 - Documents');
+
 				// Vérifier les uploads requis
-				$('.upload_area[data-required="true"]').each(function () {
+				const $requiredUploads = $('.upload_area[data-required="true"]');
+				console.log('validateStep: Nombre uploads requis trouvés:', $requiredUploads.length);
+
+				$requiredUploads.each(function () {
 					const inputId = $(this).data('input');
 					const $fileInput = $('#' + inputId);
-					if (!$fileInput[0].files || $fileInput[0].files.length === 0) {
+					console.log('validateStep: Vérification upload', inputId, '- Files:', $fileInput[0]?.files?.length || 0);
+
+					if (!$fileInput[0] || !$fileInput[0].files || $fileInput[0].files.length === 0) {
 						isValid = false;
 						$(this).addClass('upload_error');
-						VendorRegister.showNotification('error', 'Veuillez télécharger tous les documents obligatoires.');
-						return false;
+						console.log('validateStep: Upload manquant:', inputId);
 					} else {
 						$(this).removeClass('upload_error');
 					}
 				});
 
+				if (!isValid) {
+					VendorRegister.showNotification('error', 'Veuillez télécharger tous les documents obligatoires.');
+					return isValid;
+				}
+
 				// Vérifier CGU
-				if (!$('#vendor_terms').is(':checked')) {
+				const cguChecked = $('#vendor_terms').is(':checked');
+				console.log('validateStep: CGU acceptées:', cguChecked);
+				if (!cguChecked) {
 					isValid = false;
 					VendorRegister.showNotification('error', 'Veuillez accepter les conditions générales d\'utilisation.');
+					return isValid;
 				}
 
 				// Vérifier Cloudflare Turnstile
-				const turnstileResponse = $('.cf-turnstile').find('input[name="cf-turnstile-response"]').val();
+				const turnstileResponse = $('input[name="cf-turnstile-response"]').val();
+				console.log('validateStep: Turnstile response:', turnstileResponse ? 'OK' : 'MANQUANT');
 				if (!turnstileResponse || turnstileResponse.length === 0) {
 					isValid = false;
 					VendorRegister.showNotification('error', 'Veuillez valider le CAPTCHA.');
+					return isValid;
 				}
 			}
 
@@ -1057,10 +1073,13 @@ console.log('VendorRegister: Script chargé');
 		 */
 		handleSubmit: function (e) {
 			e.preventDefault();
+			console.log('handleSubmit: Début, currentStep =', this.currentStep);
 
 			if (!this.validateStep(this.currentStep)) {
+				console.log('handleSubmit: Validation échouée');
 				return;
 			}
+			console.log('handleSubmit: Validation OK, envoi du formulaire...');
 
 			const $form = $('#vendor_register_form');
 			const $submitBtn = $form.find('.btn_submit');
