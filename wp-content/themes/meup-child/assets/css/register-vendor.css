@@ -170,7 +170,7 @@ body:has(.register_header) main {
 }
 
 .register_header_logo .logo_img {
-	height: 44px !important;
+	height: 28px !important;
 	width: auto !important;
 	transition: var(--transition);
 	display: block !important;
@@ -1582,7 +1582,7 @@ body:has(.register_header) main {
 	}
 
 	.register_header_logo .logo_img {
-		height: 36px;
+		height: 20px;
 	}
 
 	.register_header_support span {

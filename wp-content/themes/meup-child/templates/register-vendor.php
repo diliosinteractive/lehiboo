@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		<div class="register_header_support">
 			<i class="fas fa-phone-alt"></i>
 			<span>Besoin d'aide ?</span>
-			<a href="tel:0186761414" class="support_phone">01 86 76 14 14</a>
+			<a href="tel:0327123456" class="support_phone">03 27 12 34 56</a>
 		</div>
 	</div>
 </header>
