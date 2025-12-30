@@ -74,7 +74,7 @@ jQuery(document).ready(function ($) {
                 { name: 'org_forme_juridique', selector: 'select[name="org_forme_juridique"]', points: 1 },
                 { name: 'org_siren', selector: 'input[name="org_siren"]', points: 1 },
                 { name: 'org_date_creation', selector: 'input[name="org_date_creation"]', points: 1 },
-                { name: 'org_nombre_effectifs', selector: 'select[name="org_nombre_effectifs"]', points: 1 }
+                { name: 'org_nombre_effectifs', selector: 'input[name="org_nombre_effectifs"]', points: 1 }
             ],
             totalPoints: 8
         },
@@ -102,7 +102,9 @@ jQuery(document).ready(function ($) {
     // Helper: Vérifier si un champ a une valeur
     function isFieldFilled(field) {
         var $el = $(field.selector);
-        if ($el.length === 0) return false;
+        if ($el.length === 0) {
+            return false;
+        }
 
         // Checkbox - au moins une cochée
         if (field.type === 'checkbox') {
@@ -121,7 +123,21 @@ jQuery(document).ready(function ($) {
             return val.trim().length >= 500;
         }
 
-        // Input/Select standard
+        // Select avec Select2 - vérifier aussi l'option sélectionnée
+        if ($el.is('select')) {
+            var val = $el.val();
+            // Vérifier que la valeur n'est pas vide et n'est pas l'option par défaut
+            if (val === null || val === undefined || val === '') {
+                return false;
+            }
+            // Pour les selects multiples
+            if (Array.isArray(val)) {
+                return val.length > 0 && val[0] !== '';
+            }
+            return true;
+        }
+
+        // Input standard (text, hidden, email, etc.)
         var val = $el.val();
         if (Array.isArray(val)) {
             return val.length > 0 && val[0] !== '';
@@ -197,8 +213,29 @@ jQuery(document).ready(function ($) {
         updateCompletionGauge();
     });
 
-    // Initial check
-    setTimeout(updateCompletionGauge, 500);
+    // Écouter les changements Select2
+    $(document).on('select2:select select2:unselect', 'select', function() {
+        updateCompletionGauge();
+    });
+
+    // Initial check - délai augmenté pour laisser le temps aux composants de se charger
+    setTimeout(updateCompletionGauge, 1000);
+
+    // Recalculer quand TinyMCE est prêt
+    if (typeof tinyMCE !== 'undefined') {
+        $(document).on('tinymce-editor-init', function(event, editor) {
+            if (editor.id === 'description') {
+                updateCompletionGauge();
+                // Écouter les changements dans TinyMCE
+                editor.on('keyup change', function() {
+                    updateCompletionGauge();
+                });
+            }
+        });
+    }
+
+    // Fallback: recalculer après un délai plus long pour s'assurer que tout est chargé
+    setTimeout(updateCompletionGauge, 2500);
 
     /* ==========================================================================
        3. AJAX Save Logic - Global Save
