@@ -693,6 +693,7 @@
     color: #222222 !important;
     margin-top: 0 !important;
     padding: 4px 0 !important;
+    caret-color: #222222 !important;
 }
 
 .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field::placeholder {
@@ -784,6 +785,7 @@
     color: #222222 !important;
     background: #ffffff !important;
     transition: border-color 0.2s ease !important;
+    caret-color: #222222 !important;
 }
 
 .select2-search--dropdown .select2-search__field:focus {
