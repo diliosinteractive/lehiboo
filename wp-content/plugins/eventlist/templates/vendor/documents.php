@@ -174,7 +174,7 @@ foreach ( $document_types as $type ) {
                         <!-- Card Body -->
                         <div class="document_card_body">
                             <?php if ( $type->description ) : ?>
-                                <p class="document_card_description"><?php echo esc_html( $type->description ); ?></p>
+                                <p class="document_card_description"><?php echo nl2br( esc_html( $type->description ) ); ?></p>
                             <?php endif; ?>
 
                             <div class="document_card_specs">
@@ -224,24 +224,21 @@ foreach ( $document_types as $type ) {
                         <!-- Card Footer -->
                         <div class="document_card_footer">
                             <?php if ( $doc ) : ?>
-                                <?php if ( $doc->status === 'rejected' || $doc->status === 'pending' ) : ?>
-                                    <?php if ( $doc->status === 'rejected' ) : ?>
-                                        <button type="button" class="btn_document btn_document--primary btn_replace_document" data-type-id="<?php echo esc_attr( $type->id ); ?>" data-doc-id="<?php echo esc_attr( $doc->id ); ?>">
-                                            <i class="fas fa-sync-alt"></i>
-                                            <?php esc_html_e( 'Remplacer le document', 'eventlist' ); ?>
-                                        </button>
-                                    <?php endif; ?>
-                                    <?php if ( $doc->status === 'pending' ) : ?>
-                                        <button type="button" class="btn_document btn_document--outline btn_delete_document" data-doc-id="<?php echo esc_attr( $doc->id ); ?>">
-                                            <i class="fas fa-trash-alt"></i>
-                                            <?php esc_html_e( 'Annuler', 'eventlist' ); ?>
-                                        </button>
-                                    <?php endif; ?>
-                                <?php else : ?>
+                                <?php // Bouton Remplacer toujours visible (rejected, pending, approved) ?>
+                                <button type="button" class="btn_document btn_document--primary btn_replace_document" data-type-id="<?php echo esc_attr( $type->id ); ?>" data-doc-id="<?php echo esc_attr( $doc->id ); ?>">
+                                    <i class="fas fa-sync-alt"></i>
+                                    <?php esc_html_e( 'Remplacer le document', 'eventlist' ); ?>
+                                </button>
+                                <?php if ( $doc->status === 'approved' ) : ?>
                                     <span class="document_validated">
                                         <i class="fas fa-shield-alt"></i>
                                         <?php esc_html_e( 'Document valide', 'eventlist' ); ?>
                                     </span>
+                                <?php elseif ( $doc->status === 'pending' ) : ?>
+                                    <button type="button" class="btn_document btn_document--outline btn_delete_document" data-doc-id="<?php echo esc_attr( $doc->id ); ?>">
+                                        <i class="fas fa-trash-alt"></i>
+                                        <?php esc_html_e( 'Annuler', 'eventlist' ); ?>
+                                    </button>
                                 <?php endif; ?>
                             <?php else : ?>
                                 <button type="button" class="btn_document btn_document--primary btn_upload_document" data-type-id="<?php echo esc_attr( $type->id ); ?>">
