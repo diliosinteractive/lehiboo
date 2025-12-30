@@ -176,9 +176,10 @@ $base_url = admin_url( 'admin.php?page=el_vendor_documents' );
                         </td>
                         <td>
                             <?php
-                            // Determiner si le fichier peut etre previsualise
-                            $previewable_mimes = array( 'application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp' );
-                            $can_preview = in_array( $doc->mime_type, $previewable_mimes );
+                            // Determiner si le fichier peut etre previsualise (PDF ou images)
+                            $is_pdf = ( $doc->mime_type === 'application/pdf' );
+                            $is_image = ( strpos( $doc->mime_type, 'image/' ) === 0 );
+                            $can_preview = $is_pdf || $is_image;
                             ?>
                             <?php if ( $can_preview ) : ?>
                                 <button type="button" class="button button-small btn_preview_doc" data-doc-id="<?php echo esc_attr( $doc->id ); ?>" data-filename="<?php echo esc_attr( $doc->original_filename ); ?>" data-mime="<?php echo esc_attr( $doc->mime_type ); ?>" title="<?php esc_attr_e( 'Previsualiser', 'eventlist' ); ?>" style="color:#2196F3;">
