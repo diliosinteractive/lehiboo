@@ -345,7 +345,8 @@ class LeHiboo_Vendor_Onboarding {
 	 * Enqueue assets
 	 */
 	public function enqueue_onboarding_assets() {
-		if ( ! is_page() || ! isset( $_GET['vendor'] ) || $_GET['vendor'] !== 'onboarding' ) {
+		// Vérifier si on est sur la page onboarding (vérification plus permissive)
+		if ( ! isset( $_GET['vendor'] ) || $_GET['vendor'] !== 'onboarding' ) {
 			return;
 		}
 
@@ -353,21 +354,12 @@ class LeHiboo_Vendor_Onboarding {
 			'lehiboo-onboarding',
 			get_stylesheet_directory_uri() . '/assets/css/vendor-onboarding.css',
 			array(),
-			'1.0.0'
+			'2.0.0'
 		);
 
-		wp_enqueue_script(
-			'lehiboo-onboarding',
-			get_stylesheet_directory_uri() . '/assets/js/vendor-onboarding.js',
-			array( 'jquery' ),
-			'1.0.0',
-			true
-		);
-
-		wp_localize_script( 'lehiboo-onboarding', 'lehiboo_onboarding', array(
+		wp_localize_script( 'jquery', 'lehiboo_onboarding', array(
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
-			'nonce' => wp_create_nonce( 'lehiboo_onboarding_nonce' ),
-			'stripe_key' => get_option( 'lehiboo_stripe_public_key', '' )
+			'nonce' => wp_create_nonce( 'lehiboo_onboarding_nonce' )
 		) );
 	}
 }

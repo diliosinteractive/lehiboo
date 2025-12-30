@@ -1209,7 +1209,6 @@ console.log('VendorRegister: Script chargé');
 			const $form = $('#vendor_register_form');
 			const $submitBtn = $form.find('.btn_submit');
 			const formData = new FormData($form[0]);
-			const selectedPlan = this.selectedPlan;
 
 			// Add action
 			formData.append('action', 'lehiboo_vendor_register');
@@ -1231,13 +1230,8 @@ console.log('VendorRegister: Script chargé');
 						// Nettoyer les données sauvegardées (inscription réussie)
 						VendorRegister.clearSavedData();
 
-						// Redirection selon le plan choisi
-						let redirectUrl = response.data.redirect_url || '/member-account/';
-
-						// Si plan premium, rediriger vers la page de paiement
-						if (selectedPlan === 'premium' && response.data.payment_url) {
-							redirectUrl = response.data.payment_url;
-						}
+						// Redirection vers onboarding (URL fournie par le serveur)
+						const redirectUrl = response.data.redirect_url || '/member-account/?vendor=onboarding';
 
 						setTimeout(function () {
 							window.location.href = redirectUrl;

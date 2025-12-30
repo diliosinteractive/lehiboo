@@ -1534,8 +1534,10 @@ function lehiboo_handle_vendor_register() {
 	// ========================================
 	// ENVOI DES EMAILS DE BIENVENUE
 	// ========================================
-	// URL du dashboard vendor
-	$dashboard_url = function_exists( 'get_myaccount_page' ) ? get_myaccount_page() : home_url( '/member-account/' );
+	// URL du dashboard vendor - Toujours vers onboarding pour les nouveaux inscrits
+	$dashboard_url = function_exists( 'get_myaccount_page' )
+		? add_query_arg( array( 'vendor' => 'onboarding' ), get_myaccount_page() )
+		: home_url( '/member-account/?vendor=onboarding' );
 
 	// Email au vendor - Bienvenue
 	$subject_vendor = '[Lehiboo Experiences] - Bravo ! Votre compte Organisateur est créé 🎉 !';
@@ -1578,21 +1580,13 @@ function lehiboo_handle_vendor_register() {
 	// Nettoyer les OTP de pré-inscription pour cet email
 	LeHiboo_OTP::delete_email_otps( $email );
 
-	// Préparer la réponse
+	// Préparer la réponse - Toujours rediriger vers l'onboarding
 	$response_data = array(
 		'message' => 'Bienvenue ! Votre compte Organisateur a été créé avec succès.',
 		'redirect_url' => $dashboard_url,
 		'user_id' => $user_id,
 		'subscription_plan' => $subscription_plan
 	);
-
-	// Si plan premium, ajouter l'URL de paiement
-	if ( $subscription_plan === 'premium' ) {
-		// URL vers la page de packages du plugin EventList
-		$payment_url = function_exists( 'get_myaccount_page' ) ? get_myaccount_page() . '?vendor=package' : home_url( '/member-account/?vendor=package' );
-		$response_data['payment_url'] = $payment_url;
-		$response_data['message'] = 'Bienvenue ! Votre compte a été créé. Vous allez être redirigé vers la page de paiement pour activer votre abonnement Premium.';
-	}
 
 	// Retourner succès
 	wp_send_json_success( $response_data );

@@ -233,6 +233,15 @@ class EL_Vendor {
 			}
 			break;
 
+			// V1 Le Hiboo - Onboarding (page bienvenue nouveaux partenaires)
+			case 'onboarding':
+			if( el_is_vendor() ){
+				$template = apply_filters( 'el_shortcode_onboarding_template', 'vendor/onboarding.php' );
+			}else{
+				$template = apply_filters( 'el_shortcode_myaccount_template_profile', 'vendor/profile.php' );
+			}
+			break;
+
 
 		}
 
