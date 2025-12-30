@@ -268,14 +268,8 @@ if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-re
 }
 
 // ========================================
-// V1 Le Hiboo - GESTION DES DOCUMENTS PARTENAIRES
-// ========================================
-if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-documents.php' ) ) {
-	require_once get_stylesheet_directory() . '/includes/class-lehiboo-vendor-documents.php';
-}
-
-// ========================================
 // V1 Le Hiboo - ONBOARDING PARTENAIRES
+// (Les documents sont gérés par le plugin EventList: EL_Vendor_Documents)
 // ========================================
 if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-onboarding.php' ) ) {
 	require_once get_stylesheet_directory() . '/includes/class-lehiboo-vendor-onboarding.php';

@@ -123,21 +123,26 @@ class LeHiboo_Vendor_Onboarding {
 
 	/**
 	 * Vérifier si les documents requis sont uploadés
+	 * Utilise les classes EL_Document_Types et EL_Vendor_Documents du plugin EventList
 	 */
 	public static function are_documents_uploaded( $user_id ) {
-		if ( ! class_exists( 'LeHiboo_Vendor_Documents' ) ) {
+		if ( ! class_exists( 'EL_Document_Types' ) || ! class_exists( 'EL_Vendor_Documents' ) ) {
 			return true; // Pas de système de documents
 		}
 
-		$required = LeHiboo_Vendor_Documents::get_required_documents();
-		if ( empty( $required ) ) {
+		$required_types = EL_Document_Types::get_required();
+		if ( empty( $required_types ) ) {
 			return true;
 		}
 
-		$documents = LeHiboo_Vendor_Documents::get_vendor_documents( $user_id );
+		$documents = EL_Vendor_Documents::get_vendor_documents( $user_id );
+		$uploaded_type_ids = array();
+		foreach ( $documents as $doc ) {
+			$uploaded_type_ids[] = $doc->document_type_id;
+		}
 
-		foreach ( $required as $type ) {
-			if ( ! isset( $documents[ $type ] ) ) {
+		foreach ( $required_types as $type ) {
+			if ( ! in_array( $type->id, $uploaded_type_ids ) ) {
 				return false;
 			}
 		}
@@ -147,13 +152,14 @@ class LeHiboo_Vendor_Onboarding {
 
 	/**
 	 * Vérifier si les documents sont approuvés
+	 * Utilise EL_Vendor_Documents du plugin EventList
 	 */
 	public static function are_documents_approved( $user_id ) {
-		if ( ! class_exists( 'LeHiboo_Vendor_Documents' ) ) {
+		if ( ! class_exists( 'EL_Vendor_Documents' ) ) {
 			return true;
 		}
 
-		return LeHiboo_Vendor_Documents::vendor_has_all_required_approved( $user_id );
+		return EL_Vendor_Documents::vendor_has_all_required_approved( $user_id );
 	}
 
 	/**
@@ -166,6 +172,7 @@ class LeHiboo_Vendor_Onboarding {
 
 	/**
 	 * Vérifier si le vendor peut publier
+	 * Utilise EL_Vendor_Documents du plugin EventList
 	 */
 	public static function can_vendor_publish( $user_id ) {
 		// Vérifier le statut du compte
@@ -173,9 +180,9 @@ class LeHiboo_Vendor_Onboarding {
 			return false;
 		}
 
-		// Vérifier les documents
-		if ( class_exists( 'LeHiboo_Vendor_Documents' ) ) {
-			if ( ! LeHiboo_Vendor_Documents::vendor_can_publish( $user_id ) ) {
+		// Vérifier les documents requis sont approuvés
+		if ( class_exists( 'EL_Vendor_Documents' ) ) {
+			if ( ! EL_Vendor_Documents::vendor_has_all_required_approved( $user_id ) ) {
 				return false;
 			}
 		}
