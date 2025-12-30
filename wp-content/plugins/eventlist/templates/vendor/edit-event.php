@@ -22,7 +22,30 @@ $event_img_url = $event_img_id ? wp_get_attachment_image_url($event_img_id, 'thu
 
     <!-- 2. Main Content Wrapper -->
     <div class="contents">
-        
+
+        <?php
+        // V1 Le Hiboo - Vérifier si les documents sont validés
+        $documents_verified = true;
+        if ( class_exists( 'EL_Vendor_Documents' ) ) {
+            $documents_verified = EL_Vendor_Documents::vendor_has_all_required_approved( get_current_user_id() );
+        }
+
+        if ( ! $documents_verified ) : ?>
+            <div class="el_documents_warning_banner">
+                <div class="warning_content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="warning_text">
+                        <strong><?php esc_html_e( 'Documents non validés', 'eventlist' ); ?></strong>
+                        <p><?php esc_html_e( 'Vos documents obligatoires n\'ont pas encore été validés. Vous ne pourrez pas publier d\'activité tant que vos documents ne seront pas approuvés.', 'eventlist' ); ?></p>
+                    </div>
+                    <a href="<?php echo esc_url( add_query_arg( 'vendor', 'documents', home_url( '/vendor' ) ) ); ?>" class="btn_go_documents">
+                        <i class="fas fa-file-alt"></i>
+                        <?php esc_html_e( 'Mes documents', 'eventlist' ); ?>
+                    </a>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <!-- Sticky Header/Bar (Placed here to span full width of content area) -->
         <div class="profile_sticky_bar">
             <div class="sticky_bar_inner">

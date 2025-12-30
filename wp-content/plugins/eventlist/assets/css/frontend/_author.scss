@@ -965,6 +965,12 @@ $radius-lg: 16px;
 					font-size: 14px;
 				}
 			}
+
+			// V1 Le Hiboo - Badge orange pour documents vérifiés
+			&.verified_badge_orange {
+				background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+				box-shadow: 0 2px 8px rgba($primary-color, 0.4);
+			}
 		}
 	}
 

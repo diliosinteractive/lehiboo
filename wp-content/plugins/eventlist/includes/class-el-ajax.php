@@ -2232,6 +2232,20 @@ if( !class_exists( 'El_Ajax' ) ){
 				$event_status = 'publish';
 			}
 
+			// V1 Le Hiboo - Vérifier que tous les documents requis sont validés avant publication
+			if ( $event_status === 'publish' ) {
+				if ( class_exists( 'EL_Vendor_Documents' ) ) {
+					$documents_verified = EL_Vendor_Documents::vendor_has_all_required_approved( $current_user );
+					if ( ! $documents_verified ) {
+						wp_send_json( array(
+							'status' => 'error',
+							'message' => __( 'Vous ne pouvez pas publier d\'activité tant que vos documents obligatoires n\'ont pas été validés. Veuillez soumettre vos documents dans la section "Mes documents" de votre espace partenaire.', 'eventlist' )
+						) );
+						wp_die();
+					}
+				}
+			}
+
 			// V1 Le Hiboo - Validation minimum 500 caractères DÉSACTIVÉE
 			// (on garde le code commenté pour réactivation future si nécessaire)
 			/*

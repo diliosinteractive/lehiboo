@@ -1,7 +1,93 @@
-/* 
+/*
    Vendor Event Form CSS - Airbnb Style Overhaul
    Based on single-event-airbnb.css
 */
+
+/* ==========================================================================
+   V1 Le Hiboo - Warning Banner Documents
+   ========================================================================== */
+
+.el_documents_warning_banner {
+    background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
+    border: 1px solid #ffc107;
+    border-left: 4px solid #ff6600;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.el_documents_warning_banner .warning_content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.el_documents_warning_banner .warning_content > i {
+    font-size: 32px;
+    color: #ff6600;
+    flex-shrink: 0;
+}
+
+.el_documents_warning_banner .warning_text {
+    flex: 1;
+    min-width: 200px;
+}
+
+.el_documents_warning_banner .warning_text strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.el_documents_warning_banner .warning_text p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.el_documents_warning_banner .btn_go_documents {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #ff6600;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.el_documents_warning_banner .btn_go_documents:hover {
+    background: #e55a00;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+}
+
+.el_documents_warning_banner .btn_go_documents i {
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .el_documents_warning_banner .warning_content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .el_documents_warning_banner .btn_go_documents {
+        width: 100%;
+        justify-content: center;
+    }
+}
 
 /* ==========================================================================
    1. Global & Layout

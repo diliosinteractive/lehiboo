@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class EL_Document_Notifications {
 
     /**
-     * Envoie une notification quand un document est uploade (vers admin)
+     * Envoie une notification quand un document est uploade (vers support + organisateur)
      *
      * @param int $document_id ID du document
      * @return bool
@@ -34,37 +34,85 @@ class EL_Document_Notifications {
             return false;
         }
 
-        // Email admin
-        $admin_email = get_option( 'admin_email' );
-        $site_name = get_bloginfo( 'name' );
+        // Recuperer le nom de l'organisation
+        $org_name = get_user_meta( $document->vendor_id, 'org_display_name', true );
+        if ( empty( $org_name ) ) {
+            $org_name = get_user_meta( $document->vendor_id, 'org_name', true );
+        }
+        if ( empty( $org_name ) ) {
+            $org_name = $vendor->display_name;
+        }
 
-        $subject = sprintf(
-            '[%s] Nouveau document a valider - %s',
-            $site_name,
-            $document_type->name
-        );
+        // 1. Email a support@lehiboo.com
+        self::send_admin_document_notification( $document, $vendor, $document_type, $org_name );
 
+        // 2. Email a l'organisateur (confirmation reception)
+        self::send_vendor_document_received( $document, $vendor, $document_type );
+
+        return true;
+    }
+
+    /**
+     * Envoie l'email de notification admin (document a verifier)
+     */
+    private static function send_admin_document_notification( $document, $vendor, $document_type, $org_name ) {
+        $support_email = 'support@lehiboo.com';
         $admin_url = admin_url( 'admin.php?page=el_vendor_documents&status=pending' );
 
+        $subject = sprintf(
+            'Document a verifier – %s | %s',
+            $document_type->name,
+            $org_name
+        );
+
         $message = self::get_email_header();
-        $message .= '<h2>Nouveau document soumis</h2>';
-        $message .= '<p>Un nouveau document a ete soumis et necessite votre validation.</p>';
-        $message .= '<table style="width:100%;border-collapse:collapse;margin:20px 0;">';
-        $message .= '<tr><td style="padding:10px;border:1px solid #ddd;background:#f9f9f9;"><strong>Partenaire</strong></td>';
-        $message .= '<td style="padding:10px;border:1px solid #ddd;">' . esc_html( $vendor->display_name ) . ' (' . esc_html( $vendor->user_email ) . ')</td></tr>';
+        $message .= '<p>Bonjour,</p>';
+        $message .= '<p>Un nouveau document est en attente de verification sur Le Hiboo.</p>';
+        $message .= '<h3 style="color:#FF6600;margin-top:25px;">Details</h3>';
+        $message .= '<table style="width:100%;border-collapse:collapse;margin:15px 0;">';
+        $message .= '<tr><td style="padding:10px;border:1px solid #ddd;background:#f9f9f9;width:200px;"><strong>Organisation</strong></td>';
+        $message .= '<td style="padding:10px;border:1px solid #ddd;">' . esc_html( $org_name ) . '</td></tr>';
         $message .= '<tr><td style="padding:10px;border:1px solid #ddd;background:#f9f9f9;"><strong>Type de document</strong></td>';
         $message .= '<td style="padding:10px;border:1px solid #ddd;">' . esc_html( $document_type->name ) . '</td></tr>';
-        $message .= '<tr><td style="padding:10px;border:1px solid #ddd;background:#f9f9f9;"><strong>Fichier</strong></td>';
-        $message .= '<td style="padding:10px;border:1px solid #ddd;">' . esc_html( $document->original_filename ) . '</td></tr>';
-        $message .= '<tr><td style="padding:10px;border:1px solid #ddd;background:#f9f9f9;"><strong>Date</strong></td>';
+        $message .= '<tr><td style="padding:10px;border:1px solid #ddd;background:#f9f9f9;"><strong>Date d\'import</strong></td>';
         $message .= '<td style="padding:10px;border:1px solid #ddd;">' . date_i18n( 'j F Y a H:i', strtotime( $document->uploaded_at ) ) . '</td></tr>';
+        $message .= '<tr><td style="padding:10px;border:1px solid #ddd;background:#f9f9f9;"><strong>Statut actuel</strong></td>';
+        $message .= '<td style="padding:10px;border:1px solid #ddd;color:#ffc107;"><strong>En attente de validation</strong></td></tr>';
         $message .= '</table>';
         $message .= '<p style="text-align:center;margin:30px 0;">';
-        $message .= '<a href="' . esc_url( $admin_url ) . '" style="background:#FF6B35;color:#fff;padding:12px 30px;text-decoration:none;border-radius:5px;display:inline-block;">Valider le document</a>';
+        $message .= '<a href="' . esc_url( $admin_url ) . '" style="background:#FF6600;color:#fff;padding:12px 30px;text-decoration:none;border-radius:5px;display:inline-block;">Acceder a l\'espace de verification</a>';
         $message .= '</p>';
+        $message .= '<p style="color:#666;">Merci de proceder a la verification afin de permettre a l\'organisateur de publier ses evenements.</p>';
+        $message .= self::get_email_footer( true );
+
+        return self::send_email( $support_email, $subject, $message );
+    }
+
+    /**
+     * Envoie l'email de confirmation de reception a l'organisateur
+     */
+    private static function send_vendor_document_received( $document, $vendor, $document_type ) {
+        $profile_url = function_exists( 'get_myaccount_page' )
+            ? add_query_arg( 'vendor', 'documents', get_myaccount_page() )
+            : home_url();
+
+        $subject = 'Le Hiboo - Document recu - Validation en cours';
+
+        $message = self::get_email_header();
+        $message .= '<p>Bonjour,</p>';
+        $message .= '<p>Nous avons bien recu le document suivant dans votre espace organisateur Le Hiboo :</p>';
+        $message .= '<div style="background:#f8f9fa;padding:15px;border-radius:5px;margin:20px 0;text-align:center;">';
+        $message .= '<strong style="font-size:16px;">' . esc_html( $document_type->name ) . '</strong>';
+        $message .= '</div>';
+        $message .= '<p>Il est actuellement <strong>en cours de verification</strong> par notre equipe.</p>';
+        $message .= '<p>Vous pouvez suivre l\'etat de vos documents a tout moment depuis votre espace organisateur.</p>';
+        $message .= '<p style="text-align:center;margin:30px 0;">';
+        $message .= '<a href="' . esc_url( $profile_url ) . '" style="background:#FF6600;color:#fff;padding:12px 30px;text-decoration:none;border-radius:5px;display:inline-block;">Acceder a mon espace organisateur</a>';
+        $message .= '</p>';
+        $message .= '<p style="color:#666;font-size:13px;">Si vous avez la moindre question ou un doute sur les documents a fournir, n\'hesitez pas a nous contacter : <a href="mailto:support@lehiboo.com" style="color:#FF6600;">support@lehiboo.com</a></p>';
         $message .= self::get_email_footer();
 
-        return self::send_email( $admin_email, $subject, $message );
+        return self::send_email( $vendor->user_email, $subject, $message );
     }
 
     /**
@@ -87,41 +135,32 @@ class EL_Document_Notifications {
             return false;
         }
 
-        $site_name = get_bloginfo( 'name' );
-
-        $subject = sprintf(
-            '[%s] Votre document "%s" a ete approuve',
-            $site_name,
-            $document_type->name
-        );
+        $subject = 'Le Hiboo - Document valide 🎉';
 
         $profile_url = function_exists( 'get_myaccount_page' )
             ? add_query_arg( 'vendor', 'documents', get_myaccount_page() )
             : home_url();
 
         $message = self::get_email_header();
-        $message .= '<h2>Document approuve</h2>';
-        $message .= '<p>Bonjour ' . esc_html( $vendor->display_name ) . ',</p>';
-        $message .= '<p>Nous avons le plaisir de vous informer que votre document a ete approuve.</p>';
-        $message .= '<table style="width:100%;border-collapse:collapse;margin:20px 0;">';
-        $message .= '<tr><td style="padding:10px;border:1px solid #ddd;background:#f9f9f9;"><strong>Type de document</strong></td>';
-        $message .= '<td style="padding:10px;border:1px solid #ddd;">' . esc_html( $document_type->name ) . '</td></tr>';
-        $message .= '<tr><td style="padding:10px;border:1px solid #ddd;background:#f9f9f9;"><strong>Fichier</strong></td>';
-        $message .= '<td style="padding:10px;border:1px solid #ddd;">' . esc_html( $document->original_filename ) . '</td></tr>';
-        $message .= '<tr><td style="padding:10px;border:1px solid #ddd;background:#f9f9f9;"><strong>Statut</strong></td>';
-        $message .= '<td style="padding:10px;border:1px solid #ddd;color:#28a745;"><strong>Approuve</strong></td></tr>';
-        $message .= '</table>';
+        $message .= '<p>Bonjour,</p>';
+        $message .= '<p>Bonne nouvelle 🎉</p>';
+        $message .= '<p>Le document suivant a ete valide par l\'equipe Le Hiboo :</p>';
+        $message .= '<div style="background:#d4edda;padding:15px;border-radius:5px;margin:20px 0;text-align:center;border:1px solid #c3e6cb;">';
+        $message .= '<strong style="font-size:16px;color:#155724;">' . esc_html( $document_type->name ) . '</strong>';
+        $message .= '</div>';
 
         // Verifier si tous les documents requis sont maintenant approuves
-        if ( EL_Vendor_Documents::vendor_has_all_required_approved( $document->vendor_id ) ) {
-            $message .= '<div style="background:#d4edda;border:1px solid #c3e6cb;padding:15px;border-radius:5px;margin:20px 0;">';
-            $message .= '<p style="color:#155724;margin:0;"><strong>Felicitations !</strong> Tous vos documents requis ont ete valides. Vous pouvez maintenant creer et publier vos activites.</p>';
-            $message .= '</div>';
+        $all_approved = EL_Vendor_Documents::vendor_has_all_required_approved( $document->vendor_id );
+
+        $message .= '<h3 style="color:#FF6600;margin-top:25px;">Et maintenant ?</h3>';
+
+        if ( $all_approved ) {
+            $message .= '<p><strong>Tous les documents requis pour votre compte sont valides</strong>, la creation et la publication de vos evenements et activites sont desormais activees.</p>';
+        } else {
+            $message .= '<p>D\'autres documents sont encore en attente de validation. Une fois tous vos documents valides, vous pourrez creer et publier vos evenements.</p>';
         }
 
-        $message .= '<p style="text-align:center;margin:30px 0;">';
-        $message .= '<a href="' . esc_url( $profile_url ) . '" style="background:#FF6B35;color:#fff;padding:12px 30px;text-decoration:none;border-radius:5px;display:inline-block;">Voir mes documents</a>';
-        $message .= '</p>';
+        $message .= '<p style="color:#666;font-size:13px;margin-top:25px;">Si vous avez la moindre question ou un doute sur les documents a fournir, n\'hesitez pas a nous contacter : <a href="mailto:support@lehiboo.com" style="color:#FF6600;">support@lehiboo.com</a></p>';
         $message .= self::get_email_footer();
 
         return self::send_email( $vendor->user_email, $subject, $message );
@@ -148,30 +187,19 @@ class EL_Document_Notifications {
             return false;
         }
 
-        $site_name = get_bloginfo( 'name' );
-
-        $subject = sprintf(
-            '[%s] Action requise - Votre document "%s" necessite des modifications',
-            $site_name,
-            $document_type->name
-        );
+        $subject = 'Le Hiboo - Document a corriger';
 
         $profile_url = function_exists( 'get_myaccount_page' )
             ? add_query_arg( 'vendor', 'documents', get_myaccount_page() )
             : home_url();
 
         $message = self::get_email_header();
-        $message .= '<h2>Document a modifier</h2>';
-        $message .= '<p>Bonjour ' . esc_html( $vendor->display_name ) . ',</p>';
-        $message .= '<p>Nous avons examine votre document et celui-ci necessite des modifications avant de pouvoir etre approuve.</p>';
-        $message .= '<table style="width:100%;border-collapse:collapse;margin:20px 0;">';
-        $message .= '<tr><td style="padding:10px;border:1px solid #ddd;background:#f9f9f9;"><strong>Type de document</strong></td>';
-        $message .= '<td style="padding:10px;border:1px solid #ddd;">' . esc_html( $document_type->name ) . '</td></tr>';
-        $message .= '<tr><td style="padding:10px;border:1px solid #ddd;background:#f9f9f9;"><strong>Fichier</strong></td>';
-        $message .= '<td style="padding:10px;border:1px solid #ddd;">' . esc_html( $document->original_filename ) . '</td></tr>';
-        $message .= '<tr><td style="padding:10px;border:1px solid #ddd;background:#f9f9f9;"><strong>Statut</strong></td>';
-        $message .= '<td style="padding:10px;border:1px solid #ddd;color:#dc3545;"><strong>A modifier</strong></td></tr>';
-        $message .= '</table>';
+        $message .= '<p>Bonjour,</p>';
+        $message .= '<p>Nous avons bien examine le document suivant dans votre espace organisateur Le Hiboo :</p>';
+        $message .= '<div style="background:#f8f9fa;padding:15px;border-radius:5px;margin:20px 0;text-align:center;">';
+        $message .= '<strong style="font-size:16px;">' . esc_html( $document_type->name ) . '</strong>';
+        $message .= '</div>';
+        $message .= '<p>Apres verification, ce document <strong>n\'a pas pu etre valide</strong>.</p>';
 
         if ( ! empty( $reason ) ) {
             $message .= '<div style="background:#f8d7da;border:1px solid #f5c6cb;padding:15px;border-radius:5px;margin:20px 0;">';
@@ -180,10 +208,12 @@ class EL_Document_Notifications {
             $message .= '</div>';
         }
 
-        $message .= '<p>Merci de soumettre un nouveau document conforme aux exigences.</p>';
+        $message .= '<p>Merci de mettre a jour ou remplacer le document concerne depuis votre espace organisateur.</p>';
+        $message .= '<p>Des qu\'un nouveau document est importe, notre equipe procedera a une nouvelle verification.</p>';
         $message .= '<p style="text-align:center;margin:30px 0;">';
-        $message .= '<a href="' . esc_url( $profile_url ) . '" style="background:#FF6B35;color:#fff;padding:12px 30px;text-decoration:none;border-radius:5px;display:inline-block;">Soumettre un nouveau document</a>';
+        $message .= '<a href="' . esc_url( $profile_url ) . '" style="background:#FF6600;color:#fff;padding:12px 30px;text-decoration:none;border-radius:5px;display:inline-block;">Acces a vos documents</a>';
         $message .= '</p>';
+        $message .= '<p style="color:#666;font-size:13px;">Si vous avez la moindre question ou un doute sur les documents a fournir, n\'hesitez pas a nous contacter : <a href="mailto:support@lehiboo.com" style="color:#FF6600;">support@lehiboo.com</a></p>';
         $message .= self::get_email_footer();
 
         return self::send_email( $vendor->user_email, $subject, $message );
@@ -261,20 +291,11 @@ class EL_Document_Notifications {
      * @return string
      */
     private static function get_email_header() {
-        $site_name = get_bloginfo( 'name' );
-        $logo_url = ''; // A personnaliser si logo disponible
-
         $header = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="font-family:Arial,sans-serif;line-height:1.6;color:#333;max-width:600px;margin:0 auto;padding:20px;">';
-        $header .= '<div style="background:#2c3e50;padding:20px;text-align:center;border-radius:5px 5px 0 0;">';
-
-        if ( $logo_url ) {
-            $header .= '<img src="' . esc_url( $logo_url ) . '" alt="' . esc_attr( $site_name ) . '" style="max-height:50px;">';
-        } else {
-            $header .= '<h1 style="color:#fff;margin:0;font-size:24px;">' . esc_html( $site_name ) . '</h1>';
-        }
-
+        $header .= '<div style="background:linear-gradient(135deg, #FF6600 0%, #FF8533 100%);padding:25px;text-align:center;border-radius:8px 8px 0 0;">';
+        $header .= '<h1 style="color:#fff;margin:0;font-size:28px;font-weight:bold;">Le Hiboo</h1>';
         $header .= '</div>';
-        $header .= '<div style="background:#fff;padding:30px;border:1px solid #ddd;border-top:none;">';
+        $header .= '<div style="background:#fff;padding:30px;border:1px solid #e0e0e0;border-top:none;">';
 
         return $header;
     }
@@ -282,17 +303,29 @@ class EL_Document_Notifications {
     /**
      * Footer commun des emails
      *
+     * @param bool $is_admin_notification Si c'est une notification admin
      * @return string
      */
-    private static function get_email_footer() {
-        $site_name = get_bloginfo( 'name' );
-        $site_url = home_url();
+    private static function get_email_footer( $is_admin_notification = false ) {
+        $footer = '';
 
-        $footer = '</div>';
-        $footer .= '<div style="background:#f8f9fa;padding:20px;text-align:center;border:1px solid #ddd;border-top:none;border-radius:0 0 5px 5px;">';
-        $footer .= '<p style="margin:0;color:#6c757d;font-size:12px;">';
-        $footer .= 'Cet email a ete envoye automatiquement par <a href="' . esc_url( $site_url ) . '" style="color:#FF6B35;">' . esc_html( $site_name ) . '</a><br>';
-        $footer .= 'Merci de ne pas repondre directement a cet email.';
+        if ( ! $is_admin_notification ) {
+            $footer .= '<div style="margin-top:30px;padding-top:20px;border-top:1px solid #eee;">';
+            $footer .= '<p style="margin:0 0 5px 0;">A tres bientot sur Le Hiboo,</p>';
+            $footer .= '<p style="margin:0;font-weight:bold;color:#FF6600;">L\'equipe Le Hiboo</p>';
+            $footer .= '</div>';
+        }
+
+        $footer .= '</div>';
+        $footer .= '<div style="background:#f8f9fa;padding:15px;text-align:center;border:1px solid #e0e0e0;border-top:none;border-radius:0 0 8px 8px;">';
+        $footer .= '<p style="margin:0;color:#999;font-size:11px;">';
+
+        if ( $is_admin_notification ) {
+            $footer .= 'Notification automatique – Le Hiboo';
+        } else {
+            $footer .= 'Cet email est envoye automatiquement.<br>Merci de ne pas repondre a cette adresse.';
+        }
+
         $footer .= '</p>';
         $footer .= '</div>';
         $footer .= '</body></html>';
@@ -311,7 +344,7 @@ class EL_Document_Notifications {
     private static function send_email( $to, $subject, $message ) {
         $headers = array(
             'Content-Type: text/html; charset=UTF-8',
-            'From: ' . get_bloginfo( 'name' ) . ' <' . get_option( 'admin_email' ) . '>',
+            'From: Lehiboo Experiences <no-reply@lehiboo.com>',
         );
 
         return wp_mail( $to, $subject, $message, $headers );

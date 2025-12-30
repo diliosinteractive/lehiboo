@@ -1,4 +1,4 @@
-<?php if ( !defined( 'ABSPATH' ) ) exit();  
+<?php if ( !defined( 'ABSPATH' ) ) exit();
 $vendor = isset( $_GET['vendor'] ) ? $_GET['vendor'] :  apply_filters( 'el_manage_vendor_default_page', 'general' );
 
 $user_id = wp_get_current_user()->ID;
@@ -19,16 +19,27 @@ $display_name = ! empty( $org_display_name ) ? $org_display_name : ( ! empty( $o
 
 $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_ticket','');
 
+// V1 Le Hiboo - Vérifier si tous les documents requis sont validés
+$is_documents_verified = false;
+if ( class_exists( 'EL_Vendor_Documents' ) ) {
+	$is_documents_verified = EL_Vendor_Documents::vendor_has_all_required_approved( $user_id );
+}
+
 
 ?>
 
 <div class="vendor_sidebar">
 	<div class="vendor_sidebar_inner">
-		<!-- V1 Le Hiboo - Photo de profil améliorée avec crayon d'édition -->
+		<!-- V1 Le Hiboo - Photo de profil améliorée avec crayon d'édition et badge vérification -->
 		<div class="vendor_user_profile">
 			<div class="wrap_image_profile">
 				<a href="<?php echo add_query_arg( array( 'vendor' => 'profile' ), get_myaccount_page() ); ?>" class="profile_image_link" title="<?php esc_attr_e( 'Modifier mon profil', 'eventlist' ); ?>">
 					<img class="user_image_rounded" src="<?php echo esc_url($img_path); ?>" alt="<?php echo esc_attr( $display_name ); ?>">
+					<?php if ( $is_documents_verified ) : ?>
+						<span class="verified_badge_orange" title="<?php esc_attr_e( 'Documents vérifiés', 'eventlist' ); ?>">
+							<i class="fas fa-check"></i>
+						</span>
+					<?php endif; ?>
 					<span class="edit_profile_icon" data-tooltip="<?php esc_attr_e( 'Modifier le profil', 'eventlist' ); ?>">
 						<i class="fas fa-pencil-alt"></i>
 					</span>

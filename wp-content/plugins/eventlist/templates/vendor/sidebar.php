@@ -204,12 +204,20 @@ $allow_transfer_ticket = EL()->options->ticket_transfer->get('allow_transfer_tic
 
 			<?php // V1 Le Hiboo - Mes Documents (entre Mon Profil et Deconnexion)
 			if ( el_is_vendor() ) :
-				$missing_docs = class_exists( 'EL_Vendor_Documents' ) ? EL_Vendor_Documents::get_missing_required_documents( get_current_user_id() ) : array();
-				$doc_badge = ! empty( $missing_docs ) ? '<span class="doc_badge" style="background:#dc3545;color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;margin-left:5px;">' . count( $missing_docs ) . '</span>' : '';
+				// Compter les documents manquants + documents rejetés (à corriger)
+				$doc_alert_count = 0;
+				if ( class_exists( 'EL_Vendor_Documents' ) ) {
+					$missing_docs = EL_Vendor_Documents::get_missing_required_documents( get_current_user_id() );
+					$rejected_count = EL_Vendor_Documents::count_vendor_documents( get_current_user_id(), 'rejected' );
+					$doc_alert_count = count( $missing_docs ) + $rejected_count;
+				}
 			?>
 			<li class="menu_vendor_documents <?php if ($vendor == 'documents') echo esc_attr('active');  ?>">
 				<a href="<?php echo add_query_arg( array( 'vendor' => 'documents'), get_myaccount_page() ); ?>">
-					<i class="icon_document"></i><?php esc_html_e( 'Mes Documents', 'eventlist' ); echo $doc_badge; ?>
+					<i class="icon_document"></i><?php esc_html_e( 'Mes Documents', 'eventlist' ); ?>
+					<?php if ( $doc_alert_count > 0 ) : ?>
+						<span class="doc_alert_badge"><?php echo esc_html( $doc_alert_count ); ?></span>
+					<?php endif; ?>
 				</a>
 			</li>
 			<?php endif; ?>

@@ -112,6 +112,12 @@ if( $author_id ){
 	$tracking_context = 'single_event_card';
 	$tracking_context_popup = 'single_event_popup';
 
+	// V1 Le Hiboo - Vérifier si tous les documents requis sont validés
+	$is_documents_verified = false;
+	if ( class_exists( 'EL_Vendor_Documents' ) ) {
+		$is_documents_verified = EL_Vendor_Documents::vendor_has_all_required_approved( $author_id );
+	}
+
 	?>
 
 	<!-- Bloc Organisateur Optimisé UX -->
@@ -121,6 +127,11 @@ if( $author_id ){
 		<div class="organizer_header">
 			<div class="organizer_avatar">
 				<img src="<?php echo esc_url( $img_path ); ?>" alt="<?php echo esc_attr( $org_public_name ? $org_public_name : $display_name ); ?>">
+				<?php if ( $is_documents_verified ) : ?>
+					<span class="verified_badge verified_badge_orange" title="<?php esc_attr_e( 'Documents vérifiés', 'eventlist' ); ?>">
+						<i class="fas fa-check"></i>
+					</span>
+				<?php endif; ?>
 			</div>
 			<div class="organizer_identity">
 				<h3 class="organizer_name">
@@ -300,6 +311,11 @@ if( $author_id ){
 				<div class="popup_header_content">
 					<div class="popup_avatar">
 						<img src="<?php echo esc_url( $img_path ); ?>" alt="<?php echo esc_attr( $org_public_name ? $org_public_name : $display_name ); ?>">
+						<?php if ( $is_documents_verified ) : ?>
+							<span class="verified_badge verified_badge_orange" title="<?php esc_attr_e( 'Documents vérifiés', 'eventlist' ); ?>">
+								<i class="fas fa-check"></i>
+							</span>
+						<?php endif; ?>
 					</div>
 					<div class="popup_identity">
 						<h3><?php echo esc_html( $org_public_name ? $org_public_name : $display_name ); ?></h3>

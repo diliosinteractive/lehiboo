@@ -29,6 +29,12 @@ if ( $author_id_image ) {
 	$avatar_url = EL_PLUGIN_URI.'assets/img/unknow_user.png';
 }
 
+// V1 Le Hiboo - Vérifier si tous les documents requis sont validés
+$is_documents_verified = false;
+if ( class_exists( 'EL_Vendor_Documents' ) ) {
+	$is_documents_verified = EL_Vendor_Documents::vendor_has_all_required_approved( $author_id );
+}
+
 ?>
 
 <?php $global_layout = apply_filters( 'meup_theme_sidebar','' ); ?>
@@ -45,9 +51,11 @@ if ( $author_id_image ) {
 	<div class="hero_content">
 		<div class="hero_avatar">
 			<img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $display_name ); ?>" />
-			<span class="verified_badge" title="<?php esc_attr_e('Verified Organizer', 'eventlist'); ?>">
-				<i class="fas fa-check"></i>
-			</span>
+			<?php if ( $is_documents_verified ) : ?>
+				<span class="verified_badge verified_badge_orange" title="<?php esc_attr_e( 'Documents vérifiés', 'eventlist' ); ?>">
+					<i class="fas fa-check"></i>
+				</span>
+			<?php endif; ?>
 		</div>
 
 		<div class="hero_info">
