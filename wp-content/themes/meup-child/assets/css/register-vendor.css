@@ -1787,6 +1787,12 @@ body:has(.register_header) main {
 		font-size: 14px;
 	}
 }
-.register_form {
-    padding: 0px!important;
+/* Force remove padding from form */
+.register_form,
+.register_form_container .register_form,
+#vendor_register_form,
+#vendor_register_form.register_form,
+form.register_form.multi_step_form {
+    padding: 0 !important;
+    margin: 0 !important;
 }
