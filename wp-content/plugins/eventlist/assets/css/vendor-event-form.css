@@ -2643,3 +2643,28 @@ a.button.remove_social {
         min-height: 240px;
     }
 }
+
+/* ==========================================================================
+   V1 Le Hiboo - Validation Error Styles
+   ========================================================================== */
+
+.field-error,
+input.field-error,
+select.field-error,
+textarea.field-error {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Select2 error state */
+.field-error + .select2-container .select2-selection {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}

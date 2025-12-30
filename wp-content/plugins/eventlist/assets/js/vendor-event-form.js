@@ -304,6 +304,66 @@ jQuery(document).ready(function ($) {
         var $form = $('#el-vendor-event-form');
         var $saveBtn = $('#el-btn-save');
 
+        // V1 Le Hiboo - Validation des champs obligatoires
+        var validationErrors = [];
+        var firstErrorField = null;
+
+        // Titre de l'événement
+        var eventTitle = $form.find('input[name="name_event"], input[name="post_title"]').val();
+        if (!eventTitle || $.trim(eventTitle) === '') {
+            validationErrors.push('Le titre de l\'activité est obligatoire');
+            if (!firstErrorField) firstErrorField = $form.find('input[name="name_event"], input[name="post_title"]').first();
+        }
+
+        // Catégorie
+        var eventCat = $form.find('select[name="event_cat"]').val();
+        if (!eventCat || eventCat === '' || eventCat === '0') {
+            validationErrors.push('La catégorie est obligatoire');
+            if (!firstErrorField) firstErrorField = $form.find('select[name="event_cat"]');
+        }
+
+        // Type d'événement (gratuit/payant)
+        var ticketType = $form.find('select[name*="ticket_global_type"]').val();
+        if (!ticketType || ticketType === '') {
+            validationErrors.push('Veuillez indiquer si l\'événement est gratuit ou payant');
+            if (!firstErrorField) firstErrorField = $form.find('select[name*="ticket_global_type"]');
+        }
+
+        // Type d'entrée
+        var entryType = $form.find('select[name*="entry_type"]').val();
+        if (!entryType || entryType === '') {
+            validationErrors.push('Le type d\'entrée est obligatoire');
+            if (!firstErrorField) firstErrorField = $form.find('select[name*="entry_type"]');
+        }
+
+        // Si des erreurs de validation, afficher le message et ne pas enregistrer
+        if (validationErrors.length > 0) {
+            var errorMessage = 'Veuillez compléter les champs obligatoires :\n\n• ' + validationErrors.join('\n• ');
+
+            if (typeof ToastNotification !== 'undefined') {
+                ToastNotification.error(errorMessage.replace(/\n/g, '<br>'));
+            } else {
+                alert(errorMessage);
+            }
+
+            // Scroll vers le premier champ en erreur
+            if (firstErrorField && firstErrorField.length) {
+                var $section = firstErrorField.closest('.event_section');
+                if ($section.length) {
+                    $('html, body').animate({
+                        scrollTop: $section.offset().top - 150
+                    }, 500);
+                }
+                // Mettre en surbrillance le champ
+                firstErrorField.addClass('field-error');
+                setTimeout(function() {
+                    firstErrorField.removeClass('field-error');
+                }, 3000);
+            }
+
+            return false;
+        }
+
         // Disable button during save
         $saveBtn.prop('disabled', true).addClass('loading');
 
