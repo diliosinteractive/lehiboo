@@ -3,11 +3,6 @@
 $post_id = isset( $_REQUEST['id'] ) ? intval( $_REQUEST['id'] ) : 0;
 $_prefix = OVA_METABOX_EVENT;
 
-// Récupération des données
-$the_post = get_post( $post_id );
-$event_password = $the_post->post_password ?? '';
-$post_status = $the_post->post_status ?? 'draft';
-
 // Vérifier si le vendor peut publier (documents validés)
 $current_vendor_id = get_current_user_id();
 $can_vendor_publish = true;
@@ -15,30 +10,36 @@ if ( class_exists( 'LeHiboo_Vendor_Onboarding' ) ) {
     $can_vendor_publish = LeHiboo_Vendor_Onboarding::can_vendor_publish( $current_vendor_id );
 }
 
-// Déterminer la visibilité (comment l'événement sera visible QUAND il sera en ligne)
-// public = référencé sans password
-// public_protected = référencé avec password
-// private = non référencé (accessible via lien)
-// private_protected = non référencé avec password
-// Par défaut = public (quand l'utilisateur mettra en ligne, ce sera public)
-$visibility = 'public';
+// IMPORTANT: Pour un nouvel événement (pas de post_id), forcer les valeurs par défaut
+if ( empty( $post_id ) || $post_id === 0 ) {
+    $event_password = '';
+    $post_status = 'draft';
+    $is_online = false;
+    $visibility = 'public';
+} else {
+    // Récupération des données pour un événement existant
+    $the_post = get_post( $post_id );
+    $event_password = $the_post->post_password ?? '';
+    $post_status = $the_post->post_status ?? 'draft';
 
-if ( $post_status === 'publish' && ! empty( $event_password ) ) {
-    $visibility = 'public_protected';
-} elseif ( $post_status === 'private' && ! empty( $event_password ) ) {
-    $visibility = 'private_protected';
-} elseif ( $post_status === 'private' ) {
-    $visibility = 'private';
+    // Statut en ligne / hors ligne
+    // En ligne = publish ou private (visible)
+    // Hors ligne = draft, pending, etc.
+    $is_online = in_array( $post_status, array( 'publish', 'private' ) );
+
+    // Déterminer la visibilité
+    $visibility = 'public';
+    if ( $post_status === 'publish' && ! empty( $event_password ) ) {
+        $visibility = 'public_protected';
+    } elseif ( $post_status === 'private' && ! empty( $event_password ) ) {
+        $visibility = 'private_protected';
+    } elseif ( $post_status === 'private' ) {
+        $visibility = 'private';
+    }
 }
 
-// Statut en ligne / hors ligne
-// En ligne = publish ou private (visible)
-// Hors ligne = draft, pending, etc.
-// IMPORTANT: Pour un nouvel événement ou si vendor ne peut pas publier, forcer hors ligne
-$is_online = in_array( $post_status, array( 'publish', 'private' ) );
-
-// Si le vendor ne peut pas publier et l'événement n'est pas déjà en ligne, forcer hors ligne
-if ( ! $can_vendor_publish && ! $is_online ) {
+// Si le vendor ne peut pas publier, forcer hors ligne
+if ( ! $can_vendor_publish ) {
     $is_online = false;
 }
 
@@ -904,6 +905,11 @@ jQuery(document).ready(function($) {
         updateHeaderButton: function() {
             var isOnline = $('input[name="event_online_status"]:checked').val() === 'online';
             var $indicator = $('.event_status_indicator');
+
+            // Si le vendor ne peut pas publier, forcer l'affichage "Hors ligne"
+            if (!canVendorPublish) {
+                isOnline = false;
+            }
 
             if (isOnline) {
                 $indicator.removeClass('offline').addClass('online');
