@@ -86,9 +86,9 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     <!-- Ligne 1 : Gratuit/Payant + Type d'entrée -->
     <div class="billetterie_row_2cols">
         <div class="billetterie_field">
-            <label class="field_label"><strong><?php esc_html_e( 'L\'événement est', 'eventlist' ); ?> :</strong></label>
+            <label class="field_label"><strong><?php esc_html_e( 'L\'événement est', 'eventlist' ); ?> :</strong> <span class="required">*</span></label>
             <div class="select_wrapper">
-                <select name="<?php echo esc_attr( $_prefix.'ticket_global_type' ); ?>" class="billetterie_select" id="ticket_global_type_select">
+                <select name="<?php echo esc_attr( $_prefix.'ticket_global_type' ); ?>" class="billetterie_select" id="ticket_global_type_select" required>
                     <?php foreach ( $price_types as $value => $label ) : ?>
                         <option value="<?php echo esc_attr( $value ); ?>" <?php selected( $ticket_global_type, $value ); ?>>
                             <?php echo esc_html( $label ); ?>
@@ -98,9 +98,9 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
             </div>
         </div>
         <div class="billetterie_field">
-            <label class="field_label"><strong><?php esc_html_e( 'Le type d\'entrée', 'eventlist' ); ?> :</strong></label>
+            <label class="field_label"><strong><?php esc_html_e( 'Le type d\'entrée', 'eventlist' ); ?> :</strong> <span class="required">*</span></label>
             <div class="select_wrapper">
-                <select name="<?php echo esc_attr( $_prefix.'entry_type' ); ?>" class="billetterie_select" id="entry_type_select">
+                <select name="<?php echo esc_attr( $_prefix.'entry_type' ); ?>" class="billetterie_select" id="entry_type_select" required>
                     <?php foreach ( $entry_types as $value => $label ) : ?>
                         <option value="<?php echo esc_attr( $value ); ?>" <?php selected( $entry_type, $value ); ?>>
                             <?php echo esc_html( $label ); ?>
@@ -531,6 +531,11 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     font-size: 14px;
     color: #334155;
     margin-bottom: 10px;
+}
+
+.billetterie_field .field_label .required {
+    color: #ef4444;
+    font-weight: 600;
 }
 
 .billetterie_field .field_hint,
