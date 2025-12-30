@@ -17,6 +17,7 @@ class EL_Vendor_Media_Ajax {
         add_action( 'wp_ajax_el_vendor_create_folder', array( __CLASS__, 'create_folder' ) );
         add_action( 'wp_ajax_el_vendor_update_folder', array( __CLASS__, 'update_folder' ) );
         add_action( 'wp_ajax_el_vendor_delete_folder', array( __CLASS__, 'delete_folder' ) );
+        add_action( 'wp_ajax_el_vendor_get_folder', array( __CLASS__, 'get_folder' ) );
         add_action( 'wp_ajax_el_vendor_get_folders', array( __CLASS__, 'get_folders' ) );
         add_action( 'wp_ajax_el_vendor_move_folder', array( __CLASS__, 'move_folder' ) );
         add_action( 'wp_ajax_el_vendor_get_folder_counts', array( __CLASS__, 'get_folder_counts' ) );
@@ -198,6 +199,38 @@ class EL_Vendor_Media_Ajax {
 
         wp_send_json_success( array(
             'message' => __( 'Dossier supprimé avec succès', 'eventlist' ),
+        ) );
+    }
+
+    /**
+     * Récupérer un dossier par ID
+     */
+    public static function get_folder() {
+        check_ajax_referer( 'el_vendor_media_nonce', 'nonce' );
+
+        if ( ! is_user_logged_in() ) {
+            wp_send_json_error( array( 'message' => __( 'Vous devez être connecté', 'eventlist' ) ) );
+        }
+
+        $folder_id = isset( $_POST['folder_id'] ) ? absint( $_POST['folder_id'] ) : 0;
+
+        if ( ! $folder_id ) {
+            wp_send_json_error( array( 'message' => __( 'ID de dossier manquant', 'eventlist' ) ) );
+        }
+
+        $folder = EL_Vendor_Folders::get_folder( $folder_id );
+
+        if ( ! $folder ) {
+            wp_send_json_error( array( 'message' => __( 'Dossier introuvable', 'eventlist' ) ) );
+        }
+
+        // Vérifier les permissions
+        if ( $folder->user_id != get_current_user_id() && ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => __( 'Permission refusée', 'eventlist' ) ) );
+        }
+
+        wp_send_json_success( array(
+            'folder' => $folder,
         ) );
     }
 

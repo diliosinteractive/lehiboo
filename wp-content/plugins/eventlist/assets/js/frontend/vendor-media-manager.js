@@ -733,11 +733,49 @@
         },
 
         /**
-         * Edit folder
+         * Edit folder - Charger les données et ouvrir le modal d'édition
          */
         editFolder: function(folderId) {
-            // TODO: Load folder data and populate form
-            this.showFolderModal();
+            const self = this;
+            const $modal = $('.modal_folder');
+
+            // Afficher un loader temporaire
+            $modal.find('.modal_title').text('Chargement...');
+            $modal.fadeIn(200);
+
+            // Récupérer les données du dossier via AJAX
+            $.ajax({
+                url: this.config.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'el_vendor_get_folder',
+                    nonce: this.config.nonce,
+                    folder_id: folderId
+                },
+                success: function(response) {
+                    if (response.success && response.data.folder) {
+                        const folder = response.data.folder;
+
+                        // Pré-remplir le formulaire avec les données existantes
+                        $modal.find('input[name="folder_id"]').val(folder.id);
+                        $modal.find('input[name="parent_id"]').val(folder.parent_id);
+                        $modal.find('input[name="name"]').val(folder.name);
+                        $modal.find('textarea[name="description"]').val(folder.description || '');
+                        $modal.find('input[name="color"]').val(folder.color || '#FF6B35');
+
+                        // Modifier le titre et le bouton
+                        $modal.find('.modal_title').text('Modifier le dossier');
+                        $modal.find('button[type="submit"]').text('Enregistrer');
+                    } else {
+                        self.showError(response.data && response.data.message ? response.data.message : 'Erreur lors du chargement du dossier');
+                        $modal.fadeOut(200);
+                    }
+                },
+                error: function() {
+                    self.showError('Erreur lors du chargement du dossier');
+                    $modal.fadeOut(200);
+                }
+            });
         },
 
         /**

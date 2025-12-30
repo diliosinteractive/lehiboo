@@ -12,6 +12,7 @@
         currentCropper: null,
         currentFile: null,
         currentImage: null,
+        hasImageChanges: false, // Track si l'utilisateur a modifié l'image (crop, rotate, etc.)
 
         /**
          * Ouvrir l'éditeur d'image depuis un fichier
@@ -40,6 +41,7 @@
             this.currentAttachmentId = attachmentId;
             this.currentImageData = imageData || {};
             this.callback = callback;
+            this.hasImageChanges = false; // Reset - l'utilisateur n'a pas encore modifié l'image
             this.showEditorModal(imageUrl);
         },
 
@@ -168,8 +170,8 @@
                                             <label for="editor_title">Titre :</label>
                                             <input type="text" id="editor_title" name="title" class="editor_input">
                                         </div>
-                                        <div class="editor_field">
-                                            <label for="editor_folder_id">Dossier :</label>
+                                        <div class="editor_field editor_field_folder">
+                                            <label for="editor_folder_id"><i class="fa fa-folder" style="color: #FF6600; margin-right: 6px;"></i>Dossier :</label>
                                             <select id="editor_folder_id" name="folder_id" class="editor_select">
                                                 ${foldersOptions}
                                             </select>
@@ -259,6 +261,10 @@
                 responsive: true,
                 checkOrientation: true,
                 background: false,
+                cropend: function() {
+                    // L'utilisateur a modifié le cadrage
+                    self.hasImageChanges = true;
+                }
             });
         },
 
@@ -303,6 +309,11 @@
         executeAction: function(action) {
             if (!this.currentCropper) return;
 
+            // Marquer que l'utilisateur a modifié l'image (sauf pour reset)
+            if (action !== 'reset') {
+                this.hasImageChanges = true;
+            }
+
             switch (action) {
                 case 'rotate-left':
                     this.currentCropper.rotate(-90);
@@ -324,6 +335,7 @@
                     break;
                 case 'reset':
                     this.currentCropper.reset();
+                    this.hasImageChanges = false; // Reset = pas de modifications
                     break;
             }
         },
@@ -335,6 +347,13 @@
             if (!this.currentCropper) return;
 
             const self = this;
+
+            // Si c'est une image existante et qu'il n'y a PAS de modifications d'image
+            // (seulement métadonnées changées), on met à jour uniquement les métadonnées
+            if (self.currentAttachmentId && !self.currentFile && !self.hasImageChanges) {
+                self.updateMetadataOnly();
+                return;
+            }
 
             // Obtenir le canvas de l'image éditée
             const canvas = this.currentCropper.getCroppedCanvas({
@@ -366,6 +385,61 @@
                     self.closeEditor();
                 }
             }, self.currentFile ? self.currentFile.type : 'image/jpeg', 0.92);
+        },
+
+        /**
+         * Mettre à jour uniquement les métadonnées (sans modifier le fichier image)
+         */
+        updateMetadataOnly: function() {
+            const self = this;
+
+            // Récupérer les métadonnées du formulaire
+            const title = $('#editor_title').val();
+            const altText = $('#editor_alt_text').val();
+            const folderId = $('#editor_folder_id').val();
+
+            // Désactiver le bouton de sauvegarde
+            const $btn = $('#media_editor_modal .btn_apply_edit');
+            $btn.prop('disabled', true).text('Sauvegarde...');
+
+            $.ajax({
+                url: window.EL_MediaManager.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'el_vendor_update_image',
+                    nonce: window.EL_MediaManager.nonce,
+                    attachment_id: this.currentAttachmentId,
+                    title: title,
+                    alt_text: altText,
+                    folder_id: folderId
+                    // Pas de fichier image envoyé
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Callback avec succès
+                        if (self.callback) {
+                            self.callback(response.data);
+                        }
+                        self.closeEditor();
+                    } else {
+                        var errorMsg = response.data.message || 'Impossible de sauvegarder les modifications';
+                        if (window.ToastNotification) {
+                            window.ToastNotification.error(errorMsg);
+                        } else {
+                            alert('Erreur: ' + errorMsg);
+                        }
+                        $btn.prop('disabled', false).text('Appliquer');
+                    }
+                },
+                error: function() {
+                    if (window.ToastNotification) {
+                        window.ToastNotification.error('Erreur lors de la sauvegarde');
+                    } else {
+                        alert('Erreur lors de la sauvegarde');
+                    }
+                    $btn.prop('disabled', false).text('Appliquer');
+                }
+            });
         },
 
         /**
