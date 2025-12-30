@@ -10,8 +10,20 @@ $event_img_url = $event_img_id ? wp_get_attachment_image_url($event_img_id, 'thu
 
 // Un événement est "en ligne" s'il est publié OU privé (visible mais non référencé)
 // Par défaut (nouvel événement), le statut sera "Hors ligne"
-$post_status = get_post_status($post_id);
-$is_published = in_array($post_status, array('publish', 'private'));
+// IMPORTANT: Pour un nouvel événement (pas de post_id), on force hors ligne
+if ( empty( $post_id ) || ! get_post( $post_id ) ) {
+    $is_published = false;
+} else {
+    $post_status = get_post_status( $post_id );
+    $is_published = in_array( $post_status, array( 'publish', 'private' ) );
+}
+
+// Vérifier si le vendor peut publier (documents validés)
+$current_vendor_id = get_current_user_id();
+$can_vendor_publish = true;
+if ( class_exists( 'LeHiboo_Vendor_Onboarding' ) ) {
+    $can_vendor_publish = LeHiboo_Vendor_Onboarding::can_vendor_publish( $current_vendor_id );
+}
 
 ?>
 

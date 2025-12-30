@@ -8,6 +8,13 @@ $the_post = get_post( $post_id );
 $event_password = $the_post->post_password ?? '';
 $post_status = $the_post->post_status ?? 'draft';
 
+// Vérifier si le vendor peut publier (documents validés)
+$current_vendor_id = get_current_user_id();
+$can_vendor_publish = true;
+if ( class_exists( 'LeHiboo_Vendor_Onboarding' ) ) {
+    $can_vendor_publish = LeHiboo_Vendor_Onboarding::can_vendor_publish( $current_vendor_id );
+}
+
 // Déterminer la visibilité (comment l'événement sera visible QUAND il sera en ligne)
 // public = référencé sans password
 // public_protected = référencé avec password
@@ -27,7 +34,13 @@ if ( $post_status === 'publish' && ! empty( $event_password ) ) {
 // Statut en ligne / hors ligne
 // En ligne = publish ou private (visible)
 // Hors ligne = draft, pending, etc.
+// IMPORTANT: Pour un nouvel événement ou si vendor ne peut pas publier, forcer hors ligne
 $is_online = in_array( $post_status, array( 'publish', 'private' ) );
+
+// Si le vendor ne peut pas publier et l'événement n'est pas déjà en ligne, forcer hors ligne
+if ( ! $can_vendor_publish && ! $is_online ) {
+    $is_online = false;
+}
 
 // Extra Services
 $el_handicap = get_post_meta( $post_id, $_prefix.'el_handicap', true );
@@ -151,6 +164,18 @@ $el_restau   = get_post_meta( $post_id, $_prefix.'el_restau', true );
     <div class="publication_field">
         <label class="field_label"><strong><?php esc_html_e( 'Cet événement est :', 'eventlist' ); ?></strong></label>
 
+        <?php if ( ! $can_vendor_publish ) : ?>
+        <div class="publication_warning">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span><?php esc_html_e( 'Vos documents doivent être validés avant de pouvoir mettre une activité en ligne.', 'eventlist' ); ?></span>
+            <a href="<?php echo esc_url( add_query_arg( 'vendor', 'documents', wc_get_account_endpoint_url( 'vendor' ) ) ); ?>"><?php esc_html_e( 'Voir mes documents', 'eventlist' ); ?></a>
+        </div>
+        <?php endif; ?>
+
         <div class="status_toggle">
             <label class="status_option <?php echo ! $is_online ? 'selected' : ''; ?>">
                 <input type="radio"
@@ -162,12 +187,13 @@ $el_restau   = get_post_meta( $post_id, $_prefix.'el_restau', true );
                 <span class="status_label"><?php esc_html_e( 'Hors ligne', 'eventlist' ); ?></span>
             </label>
 
-            <label class="status_option <?php echo $is_online ? 'selected' : ''; ?>">
+            <label class="status_option <?php echo $is_online ? 'selected' : ''; ?> <?php echo ! $can_vendor_publish ? 'disabled' : ''; ?>">
                 <input type="radio"
                        name="event_online_status"
                        value="online"
                        class="status_radio"
-                       <?php checked( $is_online, true ); ?>>
+                       <?php checked( $is_online, true ); ?>
+                       <?php echo ! $can_vendor_publish ? 'disabled' : ''; ?>>
                 <span class="status_checkmark"></span>
                 <span class="status_label"><?php esc_html_e( 'En ligne', 'eventlist' ); ?></span>
             </label>
@@ -433,6 +459,40 @@ $el_restau   = get_post_meta( $post_id, $_prefix.'el_restau', true );
     margin: 30px 0;
 }
 
+/* Publication Warning */
+.publication_warning {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #92400e;
+}
+
+.publication_warning svg {
+    flex-shrink: 0;
+    color: #f59e0b;
+}
+
+.publication_warning span {
+    flex: 1;
+}
+
+.publication_warning a {
+    color: #d97706;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.publication_warning a:hover {
+    text-decoration: underline;
+}
+
 /* Status Toggle */
 .status_toggle {
     display: flex;
@@ -486,6 +546,22 @@ $el_restau   = get_post_meta( $post_id, $_prefix.'el_restau', true );
     font-size: 15px;
     font-weight: 500;
     color: #334155;
+}
+
+/* Disabled state for status option */
+.status_option.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.status_option.disabled .status_checkmark {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+}
+
+.status_option.disabled .status_label {
+    color: #94a3b8;
 }
 
 /* Services Section */
@@ -667,6 +743,9 @@ $el_restau   = get_post_meta( $post_id, $_prefix.'el_restau', true );
 
 <script>
 jQuery(document).ready(function($) {
+    // Variable globale pour savoir si le vendor peut publier
+    var canVendorPublish = <?php echo $can_vendor_publish ? 'true' : 'false'; ?>;
+
     var PublicationManager = {
         init: function() {
             this.bindEvents();
@@ -715,14 +794,26 @@ jQuery(document).ready(function($) {
         },
 
         toggleOnlineStatus: function() {
+            // Si le vendor ne peut pas publier, ne pas permettre de passer en ligne
+            if (!canVendorPublish) {
+                var isCurrentlyOnline = $('input[name="event_online_status"]:checked').val() === 'online';
+                if (!isCurrentlyOnline) {
+                    // Afficher un message d'alerte
+                    alert('<?php echo esc_js( __( 'Vos documents doivent être validés avant de pouvoir mettre une activité en ligne.', 'eventlist' ) ); ?>');
+                    return;
+                }
+            }
+
             var isCurrentlyOnline = $('input[name="event_online_status"]:checked').val() === 'online';
 
             if (isCurrentlyOnline) {
                 // Passer hors ligne
                 $('input[name="event_online_status"][value="offline"]').prop('checked', true).trigger('change');
             } else {
-                // Passer en ligne
-                $('input[name="event_online_status"][value="online"]').prop('checked', true).trigger('change');
+                // Passer en ligne (seulement si autorisé)
+                if (canVendorPublish) {
+                    $('input[name="event_online_status"][value="online"]').prop('checked', true).trigger('change');
+                }
             }
         },
 
