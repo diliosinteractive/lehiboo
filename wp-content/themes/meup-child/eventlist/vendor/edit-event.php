@@ -8,7 +8,10 @@ if(empty($event_title)) $event_title = __('Nouvel événement', 'eventlist');
 $event_img_id = get_post_thumbnail_id($post_id);
 $event_img_url = $event_img_id ? wp_get_attachment_image_url($event_img_id, 'thumbnail') : EL_PLUGIN_URI . 'assets/img/placeholder.png';
 
-$is_published = (get_post_status($post_id) == 'publish');
+// Un événement est "en ligne" s'il est publié OU privé (visible mais non référencé)
+// Par défaut (nouvel événement), le statut sera "Hors ligne"
+$post_status = get_post_status($post_id);
+$is_published = in_array($post_status, array('publish', 'private'));
 
 ?>
 
@@ -265,7 +268,21 @@ $is_published = (get_post_status($post_id) == 'publish');
                     </div>
 
                     <!-- Preview Button -->
-                    <a href="<?php echo get_permalink($post_id); ?>" target="_blank" class="btn_preview_profile">
+                    <?php
+                    // Pour les posts hors ligne, utiliser l'URL de prévisualisation WordPress
+                    // Pour les posts en ligne, utiliser le permalink normal
+                    if ($is_published) {
+                        $preview_url = get_permalink($post_id);
+                    } else {
+                        // get_preview_post_link() génère une URL sécurisée avec nonce
+                        $preview_url = get_preview_post_link($post_id);
+                        // Fallback si pas de post_id (nouvel événement)
+                        if (empty($preview_url) || empty($post_id)) {
+                            $preview_url = '#';
+                        }
+                    }
+                    ?>
+                    <a href="<?php echo esc_url($preview_url); ?>" target="_blank" class="btn_preview_profile" <?php echo empty($post_id) ? 'style="pointer-events: none; opacity: 0.5;"' : ''; ?>>
                         <!-- Eye Icon -->
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>

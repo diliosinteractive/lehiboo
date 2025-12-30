@@ -61,15 +61,44 @@ if (!is_array($co_organizers)) $co_organizers = array();
                     <?php esc_html_e( 'Catégorie', 'eventlist' ); ?>
                     <span class="el_req">*</span>
                 </label>
-                <select name="event_cat" id="event_cat" class="selectpicker" required>
+                <select name="event_cat" id="event_cat" class="selectpicker" required data-live-search="true">
                     <option value=""><?php esc_html_e( '--- Sélectionner ---', 'eventlist' ); ?></option>
                     <?php
-                    $categories = get_terms(array('taxonomy' => 'event_cat', 'hide_empty' => false));
-                    if (!is_wp_error($categories)) {
+                    // Récupérer les catégories parentes (niveau 0)
+                    $parent_categories = get_terms(array(
+                        'taxonomy' => 'event_cat',
+                        'hide_empty' => false,
+                        'parent' => 0,
+                        'orderby' => 'name',
+                        'order' => 'ASC'
+                    ));
+
+                    if (!is_wp_error($parent_categories)) {
                         $selected_cat = !empty($selected_cats) ? $selected_cats[0] : '';
-                        foreach ($categories as $cat) {
-                            $selected = ($cat->term_id == $selected_cat) ? 'selected' : '';
-                            echo '<option value="' . esc_attr($cat->term_id) . '" ' . $selected . '>' . esc_html($cat->name) . '</option>';
+
+                        foreach ($parent_categories as $parent) {
+                            // Récupérer les sous-catégories
+                            $children = get_terms(array(
+                                'taxonomy' => 'event_cat',
+                                'hide_empty' => false,
+                                'parent' => $parent->term_id,
+                                'orderby' => 'name',
+                                'order' => 'ASC'
+                            ));
+
+                            if (!empty($children) && !is_wp_error($children)) {
+                                // Si le parent a des enfants, créer un optgroup
+                                echo '<optgroup label="' . esc_attr($parent->name) . '">';
+                                foreach ($children as $child) {
+                                    $selected = ($child->term_id == $selected_cat) ? 'selected' : '';
+                                    echo '<option value="' . esc_attr($child->term_id) . '" ' . $selected . '>' . esc_html($child->name) . '</option>';
+                                }
+                                echo '</optgroup>';
+                            } else {
+                                // Si pas d'enfants, afficher le parent comme option directe
+                                $selected = ($parent->term_id == $selected_cat) ? 'selected' : '';
+                                echo '<option value="' . esc_attr($parent->term_id) . '" ' . $selected . '>' . esc_html($parent->name) . '</option>';
+                            }
                         }
                     }
                     ?>
@@ -81,15 +110,44 @@ if (!is_array($co_organizers)) $co_organizers = array();
                 <label for="event_tag">
                     <?php esc_html_e( 'Type d\'événement', 'eventlist' ); ?>
                 </label>
-                <select name="event_tag" id="event_tag" class="selectpicker">
+                <select name="event_tag" id="event_tag" class="selectpicker" data-live-search="true">
                     <option value=""><?php esc_html_e( '--- Sélectionner ---', 'eventlist' ); ?></option>
                     <?php
-                    $terms = get_terms(array('taxonomy' => 'event_tag', 'hide_empty' => false));
-                    if (!is_wp_error($terms)) {
+                    // Récupérer les types d'événements parents (niveau 0)
+                    $parent_tags = get_terms(array(
+                        'taxonomy' => 'event_tag',
+                        'hide_empty' => false,
+                        'parent' => 0,
+                        'orderby' => 'name',
+                        'order' => 'ASC'
+                    ));
+
+                    if (!is_wp_error($parent_tags)) {
                         $selected_tag = !empty($selected_tags) ? $selected_tags[0] : '';
-                        foreach ($terms as $term) {
-                            $selected = ($term->term_id == $selected_tag) ? 'selected' : '';
-                            echo '<option value="' . esc_attr($term->term_id) . '" ' . $selected . '>' . esc_html($term->name) . '</option>';
+
+                        foreach ($parent_tags as $parent) {
+                            // Récupérer les sous-types
+                            $children = get_terms(array(
+                                'taxonomy' => 'event_tag',
+                                'hide_empty' => false,
+                                'parent' => $parent->term_id,
+                                'orderby' => 'name',
+                                'order' => 'ASC'
+                            ));
+
+                            if (!empty($children) && !is_wp_error($children)) {
+                                // Si le parent a des enfants, créer un optgroup
+                                echo '<optgroup label="' . esc_attr($parent->name) . '">';
+                                foreach ($children as $child) {
+                                    $selected = ($child->term_id == $selected_tag) ? 'selected' : '';
+                                    echo '<option value="' . esc_attr($child->term_id) . '" ' . $selected . '>' . esc_html($child->name) . '</option>';
+                                }
+                                echo '</optgroup>';
+                            } else {
+                                // Si pas d'enfants, afficher le parent comme option directe
+                                $selected = ($parent->term_id == $selected_tag) ? 'selected' : '';
+                                echo '<option value="' . esc_attr($parent->term_id) . '" ' . $selected . '>' . esc_html($parent->name) . '</option>';
+                            }
                         }
                     }
                     ?>
@@ -134,13 +192,41 @@ if (!is_array($co_organizers)) $co_organizers = array();
         <div class="el_col_6">
             <div class="vendor_field">
                 <label for="event_thematique"><?php esc_html_e( 'Thématiques', 'eventlist' ); ?></label>
-                <select name="event_thematique[]" id="event_thematique" class="selectpicker" multiple>
+                <select name="event_thematique[]" id="event_thematique" class="selectpicker" multiple data-placeholder="<?php esc_attr_e( 'Sélection multiple possible', 'eventlist' ); ?>" data-live-search="true">
                     <?php
-                    $terms = get_terms(array('taxonomy' => 'event_thematique', 'hide_empty' => false));
-                    if (!is_wp_error($terms)) {
-                        foreach ($terms as $term) {
-                            $selected = in_array($term->term_id, $selected_thematiques) ? 'selected' : '';
-                            echo '<option value="' . esc_attr($term->term_id) . '" ' . $selected . '>' . esc_html($term->name) . '</option>';
+                    // Récupérer les thématiques parentes (niveau 0)
+                    $parent_thematiques = get_terms(array(
+                        'taxonomy' => 'event_thematique',
+                        'hide_empty' => false,
+                        'parent' => 0,
+                        'orderby' => 'name',
+                        'order' => 'ASC'
+                    ));
+
+                    if (!is_wp_error($parent_thematiques)) {
+                        foreach ($parent_thematiques as $parent) {
+                            // Récupérer les sous-thématiques
+                            $children = get_terms(array(
+                                'taxonomy' => 'event_thematique',
+                                'hide_empty' => false,
+                                'parent' => $parent->term_id,
+                                'orderby' => 'name',
+                                'order' => 'ASC'
+                            ));
+
+                            if (!empty($children) && !is_wp_error($children)) {
+                                // Si le parent a des enfants, créer un optgroup
+                                echo '<optgroup label="' . esc_attr($parent->name) . '">';
+                                foreach ($children as $child) {
+                                    $selected = in_array($child->term_id, $selected_thematiques) ? 'selected' : '';
+                                    echo '<option value="' . esc_attr($child->term_id) . '" ' . $selected . '>' . esc_html($child->name) . '</option>';
+                                }
+                                echo '</optgroup>';
+                            } else {
+                                // Si pas d'enfants, afficher le parent comme option directe
+                                $selected = in_array($parent->term_id, $selected_thematiques) ? 'selected' : '';
+                                echo '<option value="' . esc_attr($parent->term_id) . '" ' . $selected . '>' . esc_html($parent->name) . '</option>';
+                            }
                         }
                     }
                     ?>

@@ -5,18 +5,13 @@ $_prefix = OVA_METABOX_EVENT;
 
 // Récupération des données existantes
 $is_free_event = get_post_meta( $post_id, $_prefix.'is_free_event', true );
+$ticket_global_type = get_post_meta( $post_id, $_prefix.'ticket_global_type', true );
 $entry_type = get_post_meta( $post_id, $_prefix.'entry_type', true );
 $contact_email = get_post_meta( $post_id, $_prefix.'contact_email', true );
 $contact_phone = get_post_meta( $post_id, $_prefix.'contact_phone', true );
 
-// Si pas d'email de contact, utiliser l'email de l'organisation
-if ( empty( $contact_email ) ) {
-    $current_user = wp_get_current_user();
-    $contact_email = $current_user->user_email;
-}
-if ( empty( $contact_phone ) ) {
-    $contact_phone = get_user_meta( get_current_user_id(), 'org_phone_contact', true );
-}
+// Ne pas pré-remplir l'email/téléphone pour les nouveaux événements
+// L'utilisateur doit les saisir explicitement
 
 // Mode billetterie
 $ticket_link = get_post_meta( $post_id, $_prefix.'ticket_link', true );
@@ -47,13 +42,21 @@ if ( ! is_array( $tickets ) ) {
     $tickets = array();
 }
 
+// Options Gratuit/Payant
+$price_types = array(
+    '' => __( 'gratuit ou payant ?', 'eventlist' ),
+    'free' => __( 'Gratuit', 'eventlist' ),
+    'paid' => __( 'Payant', 'eventlist' ),
+);
+
 // Types d'entrée disponibles
 $entry_types = array(
-    '' => __( 'À sélectionner', 'eventlist' ),
-    'standard' => __( 'Entrée standard', 'eventlist' ),
-    'vip' => __( 'Entrée VIP', 'eventlist' ),
-    'family' => __( 'Pass famille', 'eventlist' ),
-    'group' => __( 'Groupe', 'eventlist' ),
+    '' => __( 'Sélectionnez le type d\'entrée', 'eventlist' ),
+    'acces_libre' => __( 'Accès libre', 'eventlist' ),
+    'acces_libre_reservation_conseillee' => __( 'Accès libre avec réservation conseillée', 'eventlist' ),
+    'sur_reservation_obligatoire' => __( 'Sur réservation obligatoire', 'eventlist' ),
+    'billetterie_sur_place_uniquement' => __( 'Billetterie sur place uniquement', 'eventlist' ),
+    'sur_invitation_uniquement' => __( 'Sur invitation uniquement', 'eventlist' ),
 );
 
 // Récupérer les créneaux de l'événement pour la sélection
@@ -80,64 +83,57 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
         <p class="section_subtitle"><?php esc_html_e( 'Configurez les billets et tarifs pour votre événement', 'eventlist' ); ?></p>
     </div>
 
-    <!-- Sélection Gratuit/Payant -->
-    <div class="billetterie_field">
-        <label class="field_label"><strong><?php esc_html_e( 'Sélectionnez si l\'événement est :', 'eventlist' ); ?></strong></label>
-        <div class="billetterie_price_choice">
-            <label class="price_choice_card <?php echo $is_free_event === 'yes' ? 'selected' : ''; ?>">
-                <input type="checkbox"
-                       name="<?php echo esc_attr( $_prefix.'is_free_event' ); ?>"
-                       value="yes"
-                       class="price_choice_input is_free_checkbox"
-                       <?php checked( $is_free_event, 'yes' ); ?>>
-                <span class="price_choice_checkmark"></span>
-                <span class="price_choice_label"><?php esc_html_e( 'Gratuit', 'eventlist' ); ?></span>
-            </label>
-            <label class="price_choice_card <?php echo $is_free_event !== 'yes' && !empty($is_free_event) ? 'selected' : ''; ?>">
-                <input type="checkbox"
-                       name="<?php echo esc_attr( $_prefix.'is_paid_event' ); ?>"
-                       value="yes"
-                       class="price_choice_input is_paid_checkbox"
-                       <?php checked( $is_free_event, 'no' ); ?>>
-                <span class="price_choice_checkmark"></span>
-                <span class="price_choice_label"><?php esc_html_e( 'Payant', 'eventlist' ); ?></span>
-            </label>
+    <!-- Ligne 1 : Gratuit/Payant + Type d'entrée -->
+    <div class="billetterie_row_2cols">
+        <div class="billetterie_field">
+            <label class="field_label"><strong><?php esc_html_e( 'L\'événement est', 'eventlist' ); ?> :</strong></label>
+            <div class="select_wrapper">
+                <select name="<?php echo esc_attr( $_prefix.'ticket_global_type' ); ?>" class="billetterie_select" id="ticket_global_type_select">
+                    <?php foreach ( $price_types as $value => $label ) : ?>
+                        <option value="<?php echo esc_attr( $value ); ?>" <?php selected( $ticket_global_type, $value ); ?>>
+                            <?php echo esc_html( $label ); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+        <div class="billetterie_field">
+            <label class="field_label"><strong><?php esc_html_e( 'Le type d\'entrée', 'eventlist' ); ?> :</strong></label>
+            <div class="select_wrapper">
+                <select name="<?php echo esc_attr( $_prefix.'entry_type' ); ?>" class="billetterie_select" id="entry_type_select">
+                    <?php foreach ( $entry_types as $value => $label ) : ?>
+                        <option value="<?php echo esc_attr( $value ); ?>" <?php selected( $entry_type, $value ); ?>>
+                            <?php echo esc_html( $label ); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
         </div>
     </div>
 
-    <!-- Type d'entrée -->
-    <div class="billetterie_field">
-        <label class="field_label"><strong><?php esc_html_e( 'Sélectionnez le type d\'entrée :', 'eventlist' ); ?></strong></label>
-        <div class="select_wrapper">
-            <select name="<?php echo esc_attr( $_prefix.'entry_type' ); ?>" class="billetterie_select" id="entry_type_select">
-                <?php foreach ( $entry_types as $value => $label ) : ?>
-                    <option value="<?php echo esc_attr( $value ); ?>" <?php selected( $entry_type, $value ); ?>>
-                        <?php echo esc_html( $label ); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-    </div>
-
-    <!-- Email et Téléphone de contact -->
-    <div class="billetterie_contact_row">
-        <div class="contact_field">
-            <label class="field_label"><strong><?php esc_html_e( 'Email de contact', 'eventlist' ); ?></strong></label>
-            <p class="field_hint"><?php esc_html_e( 'L\'email de contact', 'eventlist' ); ?></p>
+    <!-- Ligne 2 : Email + Téléphone de contact -->
+    <div class="billetterie_row_2cols">
+        <div class="billetterie_field">
+            <label class="field_label"><strong><?php esc_html_e( 'E-mail de contact', 'eventlist' ); ?> :</strong></label>
             <input type="email"
                    name="<?php echo esc_attr( $_prefix.'contact_email' ); ?>"
                    value="<?php echo esc_attr( $contact_email ); ?>"
                    class="billetterie_input"
                    placeholder="email@exemple.com">
         </div>
-        <div class="contact_field">
-            <label class="field_label"><strong><?php esc_html_e( 'Téléphone de contact', 'eventlist' ); ?></strong></label>
-            <p class="field_hint"><?php esc_html_e( 'Le numéro de téléphone de contact', 'eventlist' ); ?></p>
-            <input type="tel"
-                   name="<?php echo esc_attr( $_prefix.'contact_phone' ); ?>"
-                   value="<?php echo esc_attr( $contact_phone ); ?>"
-                   class="billetterie_input"
-                   placeholder="07 81 45 67 38">
+        <div class="billetterie_field">
+            <label class="field_label"><strong><?php esc_html_e( 'Téléphone de contact', 'eventlist' ); ?> :</strong></label>
+            <div class="phone_input_wrapper">
+                <div class="phone_flag">
+                    <span class="flag_icon">🇫🇷</span>
+                    <span class="flag_arrow">▼</span>
+                </div>
+                <input type="tel"
+                       name="<?php echo esc_attr( $_prefix.'contact_phone' ); ?>"
+                       value="<?php echo esc_attr( $contact_phone ); ?>"
+                       class="billetterie_input phone_input"
+                       placeholder="06 12 34 56 78">
+            </div>
         </div>
     </div>
 
@@ -517,9 +513,17 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     margin: 0;
 }
 
+/* Row Layout - 2 columns */
+.billetterie_row_2cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
 /* Fields */
 .billetterie_field {
-    margin-bottom: 24px;
+    margin-bottom: 0;
 }
 
 .billetterie_field .field_label {
@@ -585,6 +589,51 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     appearance: none;
     padding-right: 40px;
     cursor: pointer;
+}
+
+/* Phone Input with Flag */
+.phone_input_wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+.phone_input_wrapper:focus-within {
+    border-color: #FF6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+}
+
+.phone_flag {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 12px 12px 16px;
+    background: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+    cursor: pointer;
+}
+
+.phone_flag .flag_icon {
+    font-size: 18px;
+}
+
+.phone_flag .flag_arrow {
+    font-size: 10px;
+    color: #64748b;
+}
+
+.phone_input_wrapper .phone_input {
+    border: none;
+    border-radius: 0;
+    flex: 1;
+}
+
+.phone_input_wrapper .phone_input:focus {
+    box-shadow: none;
 }
 
 /* Price Choice Cards (Gratuit/Payant) */
@@ -1408,12 +1457,9 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 
 /* Responsive */
 @media (max-width: 768px) {
-    .billetterie_price_choice {
-        flex-direction: column;
-    }
-
-    .billetterie_contact_row {
+    .billetterie_row_2cols {
         grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     .billetterie_options {
@@ -1464,16 +1510,10 @@ jQuery(document).ready(function($) {
 
         init: function() {
             this.bindEvents();
-            this.updatePriceChoiceState();
         },
 
         bindEvents: function() {
             var self = this;
-
-            // Choix Gratuit/Payant (mutuellement exclusif)
-            $(document).on('change', '.is_free_checkbox, .is_paid_checkbox', function() {
-                self.handlePriceChoice($(this));
-            });
 
             // Choix du mode de billetterie
             $(document).on('change', '.option_radio', function() {
@@ -1527,10 +1567,6 @@ jQuery(document).ready(function($) {
             });
 
             // Update UI states
-            $(document).on('click', '.price_choice_card', function() {
-                self.updatePriceChoiceUI($(this));
-            });
-
             $(document).on('click', '.billetterie_option_card', function() {
                 self.updateOptionCardUI($(this));
             });
@@ -1542,40 +1578,6 @@ jQuery(document).ready(function($) {
             $(document).on('click', '.registration_option', function() {
                 self.updateRegistrationOptionUI($(this));
             });
-        },
-
-        handlePriceChoice: function($checkbox) {
-            var isChecked = $checkbox.is(':checked');
-            var isFree = $checkbox.hasClass('is_free_checkbox');
-
-            if (isChecked) {
-                // Décocher l'autre option
-                if (isFree) {
-                    $('.is_paid_checkbox').prop('checked', false);
-                    $('.is_paid_checkbox').closest('.price_choice_card').removeClass('selected');
-                } else {
-                    $('.is_free_checkbox').prop('checked', false);
-                    $('.is_free_checkbox').closest('.price_choice_card').removeClass('selected');
-                }
-                $checkbox.closest('.price_choice_card').addClass('selected');
-            } else {
-                $checkbox.closest('.price_choice_card').removeClass('selected');
-            }
-        },
-
-        updatePriceChoiceState: function() {
-            $('.price_choice_card').each(function() {
-                var $input = $(this).find('input');
-                if ($input.is(':checked')) {
-                    $(this).addClass('selected');
-                } else {
-                    $(this).removeClass('selected');
-                }
-            });
-        },
-
-        updatePriceChoiceUI: function($card) {
-            // Handled by handlePriceChoice
         },
 
         handleModeChoice: function() {
