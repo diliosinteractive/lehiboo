@@ -1347,12 +1347,24 @@ function lehiboo_handle_vendor_register() {
 	// ÉTAPE 5 : Abonnement
 	$subscription_plan = isset( $_POST['vendor_subscription_plan'] ) ? sanitize_text_field( $_POST['vendor_subscription_plan'] ) : 'free';
 
-	// Validation de base
-	if ( empty( $firstname ) || empty( $lastname ) || empty( $email ) || empty( $password ) ||
-	     empty( $org_name ) || empty( $org_display_name ) || empty( $org_type ) || empty( $org_siret ) ||
-	     empty( $org_address ) || empty( $org_city ) || empty( $org_zipcode ) ||
-	     empty( $types_structure ) || empty( $org_roles ) ) {
-		wp_send_json_error( array( 'message' => 'Veuillez remplir tous les champs obligatoires.' ) );
+	// Validation de base - identifier précisément les champs manquants
+	$missing_fields = array();
+	if ( empty( $firstname ) ) $missing_fields[] = 'Prénom';
+	if ( empty( $lastname ) ) $missing_fields[] = 'Nom';
+	if ( empty( $email ) ) $missing_fields[] = 'Email';
+	if ( empty( $password ) ) $missing_fields[] = 'Mot de passe';
+	if ( empty( $org_name ) ) $missing_fields[] = 'Nom organisation';
+	if ( empty( $org_display_name ) ) $missing_fields[] = 'Nom affiché';
+	if ( empty( $org_type ) ) $missing_fields[] = 'Statut juridique';
+	if ( empty( $org_siret ) ) $missing_fields[] = 'SIRET';
+	if ( empty( $org_address ) ) $missing_fields[] = 'Adresse';
+	if ( empty( $org_city ) ) $missing_fields[] = 'Ville';
+	if ( empty( $org_zipcode ) ) $missing_fields[] = 'Code postal';
+	if ( empty( $types_structure ) ) $missing_fields[] = 'Type de structure';
+	if ( empty( $org_roles ) ) $missing_fields[] = 'Rôle organisation';
+
+	if ( ! empty( $missing_fields ) ) {
+		wp_send_json_error( array( 'message' => 'Champs manquants : ' . implode( ', ', $missing_fields ) ) );
 	}
 
 	// Validation de l'abonnement
