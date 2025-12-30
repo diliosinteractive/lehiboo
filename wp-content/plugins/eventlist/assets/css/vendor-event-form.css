@@ -700,6 +700,14 @@
     font-weight: 400 !important;
 }
 
+/* Placeholder visible pour Select2 multiple quand vide */
+.select2-container--default .select2-selection--multiple .select2-selection__placeholder {
+    color: #717171 !important;
+    font-size: 14px !important;
+    font-style: italic !important;
+    margin-left: 8px !important;
+}
+
 /* ---- Selection Simple ---- */
 .select2-container--default .select2-selection--single {
     height: 48px !important;
@@ -822,15 +830,19 @@
 
 /* ---- Optgroups (Groupes) ---- */
 .select2-results__group {
-    padding: 12px 16px 8px !important;
-    font-size: 12px !important;
-    font-weight: 700 !important;
-    color: #222222 !important;
+    padding: 14px 16px 10px !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    color: #FF6600 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-    background: #F9F9F9 !important;
-    border-top: 1px solid #EEEEEE !important;
-    margin-top: 4px !important;
+    letter-spacing: 0.8px !important;
+    background: linear-gradient(to bottom, #FFF5EB, #FFFFFF) !important;
+    border-top: 2px solid #FF6600 !important;
+    border-bottom: 1px solid #FFE8D6 !important;
+    margin-top: 8px !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1 !important;
 }
 
 .select2-results__group:first-child {
@@ -845,6 +857,8 @@
 
 .select2-results__options--nested .select2-results__option {
     padding-left: 24px !important;
+    border-left: 3px solid #FFE8D6 !important;
+    margin-left: 8px !important;
 }
 
 /* Message "Aucun résultat" */
@@ -2667,4 +2681,29 @@ textarea.field-error {
 .field-error + .select2-container .select2-selection {
     border-color: #ef4444 !important;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}
+
+/* ==========================================================================
+   V1 Le Hiboo - Required for Publication Indicator
+   ========================================================================== */
+
+/* Double asterisk for fields required for publication (not creation) */
+.required-for-publish {
+    color: #FF6600 !important;
+    font-weight: 700 !important;
+    margin-left: 2px;
+    cursor: help;
+}
+
+/* Field note under label */
+.field-note {
+    display: block;
+    font-size: 11px !important;
+    font-weight: 400 !important;
+    color: #717171 !important;
+    font-style: italic;
+    margin-top: -4px;
+    margin-bottom: 8px;
+    text-transform: none !important;
+    letter-spacing: normal !important;
 }

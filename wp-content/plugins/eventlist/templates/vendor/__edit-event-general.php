@@ -139,7 +139,9 @@ if (!is_array($co_organizers)) $co_organizers = array();
             <div class="vendor_field">
                 <label for="event_public">
                     <?php esc_html_e( 'Public visé', 'eventlist' ); ?>
+                    <span class="required-for-publish" title="<?php esc_attr_e( 'Obligatoire pour la mise en ligne', 'eventlist' ); ?>">**</span>
                 </label>
+                <small class="field-note"><?php esc_html_e( 'Obligatoire pour la mise en ligne', 'eventlist' ); ?></small>
                 <select name="event_public[]" id="event_public" class="selectpicker" multiple data-placeholder="<?php esc_attr_e( 'Sélection multiple possible', 'eventlist' ); ?>" data-live-search="true">
                     <?php
                     $publics = get_terms(array('taxonomy' => 'event_public', 'hide_empty' => false, 'parent' => 0));
@@ -396,13 +398,24 @@ jQuery(document).ready(function($) {
         var $this = $(this);
         var placeholder = $this.data('placeholder') || "<?php esc_html_e('Sélectionnez...', 'eventlist'); ?>";
         var liveSearch = $this.data('live-search') || false;
+        var isMultiple = $this.attr('multiple') !== undefined;
 
-        $this.select2({
+        var select2Config = {
             width: '100%',
             placeholder: placeholder,
             allowClear: true,
             minimumResultsForSearch: liveSearch ? 0 : Infinity
-        });
+        };
+
+        // Pour les select multiples, ajouter la config spécifique
+        if (isMultiple) {
+            select2Config.closeOnSelect = false;
+            select2Config.templateSelection = function(data) {
+                return data.text;
+            };
+        }
+
+        $this.select2(select2Config);
     });
 
     // Ajouter un co-organisateur

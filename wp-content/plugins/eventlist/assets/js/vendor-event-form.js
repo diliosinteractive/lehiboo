@@ -1,6 +1,123 @@
 jQuery(document).ready(function ($) {
 
     /* ==========================================================================
+       0. Save Button State Management (Créer / Enregistré / Enregistrer)
+       ========================================================================== */
+
+    var SaveButtonManager = {
+        $btn: null,
+        mode: 'create', // 'create' or 'edit'
+        formInitialState: null,
+        hasUnsavedChanges: false,
+
+        init: function() {
+            this.$btn = $('#el-btn-save');
+            if (!this.$btn.length) return;
+
+            this.mode = this.$btn.data('mode') || 'create';
+
+            // En mode édition, capturer l'état initial du formulaire
+            if (this.mode === 'edit') {
+                // Attendre que tous les composants soient initialisés
+                setTimeout(function() {
+                    SaveButtonManager.captureInitialState();
+                    SaveButtonManager.bindChangeEvents();
+                }, 1000);
+            }
+        },
+
+        captureInitialState: function() {
+            var $form = $('#el-vendor-event-form');
+            if ($form.length) {
+                this.formInitialState = $form.serialize();
+            }
+        },
+
+        bindChangeEvents: function() {
+            var self = this;
+            var $form = $('#el-vendor-event-form');
+
+            // Écouter les changements sur tous les champs du formulaire
+            $form.on('change input', 'input, select, textarea', function() {
+                self.checkForChanges();
+            });
+
+            // Écouter les changements Select2
+            $form.on('select2:select select2:unselect', function() {
+                self.checkForChanges();
+            });
+
+            // Écouter les changements TinyMCE
+            if (typeof tinyMCE !== 'undefined') {
+                setTimeout(function() {
+                    var editor = tinyMCE.get('content_event');
+                    if (editor) {
+                        editor.on('change keyup', function() {
+                            self.checkForChanges();
+                        });
+                    }
+                }, 2000);
+            }
+
+            // Écouter les modifications de galerie
+            $(document).on('click', '.btn_gallery_remove, .btn_remove_featured', function() {
+                setTimeout(function() {
+                    self.markAsUnsaved();
+                }, 100);
+            });
+
+            // Écouter l'ajout d'images
+            $(document).on('el_media_selected', function() {
+                self.markAsUnsaved();
+            });
+        },
+
+        checkForChanges: function() {
+            if (this.mode !== 'edit') return;
+
+            var $form = $('#el-vendor-event-form');
+            var currentState = $form.serialize();
+
+            if (currentState !== this.formInitialState) {
+                this.markAsUnsaved();
+            }
+        },
+
+        markAsUnsaved: function() {
+            if (this.mode !== 'edit' || this.hasUnsavedChanges) return;
+
+            this.hasUnsavedChanges = true;
+            this.$btn.removeClass('saved').addClass('unsaved');
+            this.$btn.find('.btn-text').text(el_save_btn_texts?.unsaved || 'Enregistrer');
+        },
+
+        markAsSaved: function() {
+            if (this.mode !== 'edit') return;
+
+            this.hasUnsavedChanges = false;
+            this.$btn.removeClass('unsaved').addClass('saved');
+            this.$btn.find('.btn-text').text(el_save_btn_texts?.saved || 'Enregistré');
+
+            // Recapturer l'état après sauvegarde
+            this.captureInitialState();
+        },
+
+        setLoading: function(isLoading) {
+            if (isLoading) {
+                this.$btn.addClass('loading');
+            } else {
+                this.$btn.removeClass('loading');
+            }
+        }
+    };
+
+    // Initialiser le gestionnaire
+    SaveButtonManager.init();
+
+    // Exposer globalement pour accès depuis d'autres scripts
+    window.SaveButtonManager = SaveButtonManager;
+
+    /* ==========================================================================
        1. Navigation & ScrollSpy
        ========================================================================== */
 
@@ -336,6 +453,20 @@ jQuery(document).ready(function ($) {
             if (!firstErrorField) firstErrorField = $form.find('select[name*="entry_type"]');
         }
 
+        // V1 Le Hiboo - Vérification du statut de publication
+        var isPublishing = $('#publish_event_input').val() === 'publish';
+        var eventStatus = $form.find('input[name="event_status"]:checked').val();
+        var isGoingOnline = isPublishing || eventStatus === 'publish';
+
+        // Public visé - obligatoire uniquement pour la mise en ligne
+        if (isGoingOnline) {
+            var eventPublic = $form.find('select[name="event_public[]"]').val();
+            if (!eventPublic || eventPublic.length === 0) {
+                validationErrors.push('Le public visé est obligatoire pour la mise en ligne');
+                if (!firstErrorField) firstErrorField = $form.find('select[name="event_public[]"]');
+            }
+        }
+
         // Si des erreurs de validation, afficher le message et ne pas enregistrer
         if (validationErrors.length > 0) {
             var errorMessage = 'Veuillez compléter les champs obligatoires :\n\n• ' + validationErrors.join('\n• ');
@@ -508,6 +639,11 @@ jQuery(document).ready(function ($) {
             }
         });
 
+        // V1 Le Hiboo - Utiliser SaveButtonManager pour l'état loading
+        if (window.SaveButtonManager) {
+            window.SaveButtonManager.setLoading(true);
+        }
+
         // Send AJAX request
         $.ajax({
             url: ajax_object.ajax_url,
@@ -521,23 +657,30 @@ jQuery(document).ready(function ($) {
             success: function (response) {
                 $saveBtn.prop('disabled', false).removeClass('loading');
 
+                // V1 Le Hiboo - Mettre à jour l'état du bouton
+                if (window.SaveButtonManager) {
+                    window.SaveButtonManager.setLoading(false);
+                }
+
                 // Handle successful save
                 if (response.status === 'updated' || response.url) {
+                    // V1 Le Hiboo - Marquer comme enregistré
+                    if (window.SaveButtonManager) {
+                        window.SaveButtonManager.markAsSaved();
+                    }
+
                     if (typeof ToastNotification !== 'undefined') {
                         ToastNotification.success('Événement sauvegardé avec succès !');
                     }
 
-                    // If we have a URL, redirect to it
+                    // If we have a URL, redirect to it (nouvelle création)
                     if (response.url) {
                         setTimeout(function () {
                             window.location.href = response.url;
                         }, 1000);
-                    } else {
-                        // Otherwise just reload the page
-                        setTimeout(function () {
-                            location.reload();
-                        }, 1000);
                     }
+                    // En mode édition, ne pas recharger la page - juste montrer le succès
+                    // L'état "Enregistré" est déjà affiché via markAsSaved()
                 }
                 // Handle errors
                 else if (response.status === 'error' || response.status === 'error_description_too_short') {
@@ -549,18 +692,26 @@ jQuery(document).ready(function ($) {
                 }
                 // Fallback for any other success case
                 else {
+                    // V1 Le Hiboo - Marquer comme enregistré
+                    if (window.SaveButtonManager) {
+                        window.SaveButtonManager.markAsSaved();
+                    }
+
                     if (typeof ToastNotification !== 'undefined') {
                         ToastNotification.success('Événement sauvegardé avec succès !');
                     } else {
                         alert('Événement sauvegardé avec succès!');
                     }
-                    setTimeout(function () {
-                        location.reload();
-                    }, 1000);
                 }
             },
             error: function (xhr, status, error) {
                 $saveBtn.prop('disabled', false).removeClass('loading');
+
+                // V1 Le Hiboo - Mettre à jour l'état du bouton
+                if (window.SaveButtonManager) {
+                    window.SaveButtonManager.setLoading(false);
+                }
+
                 console.error('Save error:', error);
                 if (typeof ToastNotification !== 'undefined') {
                     ToastNotification.error('Erreur lors de la sauvegarde. Veuillez réessayer.');

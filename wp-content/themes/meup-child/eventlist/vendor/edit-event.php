@@ -32,6 +32,16 @@ if ( class_exists( 'LeHiboo_Vendor_Onboarding' ) ) {
 <script src="<?php echo EL_PLUGIN_URI . 'assets/js/vendor-event-form.js?v=' . time(); ?>" defer></script>
 <script src="<?php echo EL_PLUGIN_URI . 'assets/js/frontend/vendor-gallery.js'; ?>" defer></script>
 
+<!-- V1 Le Hiboo - Textes localisés pour le bouton de sauvegarde -->
+<script>
+var el_save_btn_texts = {
+    create: '<?php echo esc_js( __( 'Créer', 'eventlist' ) ); ?>',
+    saved: '<?php echo esc_js( __( 'Enregistré', 'eventlist' ) ); ?>',
+    unsaved: '<?php echo esc_js( __( 'Enregistrer', 'eventlist' ) ); ?>',
+    saving: '<?php echo esc_js( __( 'Enregistrement...', 'eventlist' ) ); ?>'
+};
+</script>
+
 <style>
 /* V1 Le Hiboo - Amélioration des boutons de la barre d'outils */
 .profile_sticky_bar .sticky_bar_right {
@@ -170,14 +180,12 @@ if ( class_exists( 'LeHiboo_Vendor_Onboarding' ) ) {
     display: none;
 }
 
-/* Save Button */
+/* Save Button - Base styles */
 .btn_save_profile {
     display: inline-flex !important;
     align-items: center;
     gap: 8px;
     padding: 10px 20px !important;
-    background: #FF601F !important;
-    color: #fff !important;
     border: none !important;
     border-radius: 10px !important;
     font-size: 14px !important;
@@ -186,47 +194,96 @@ if ( class_exists( 'LeHiboo_Vendor_Onboarding' ) ) {
     transition: all 0.25s ease;
 }
 
-.btn_save_profile:hover {
+.btn_save_profile svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* Hide all icons by default */
+.btn_save_profile .icon-check,
+.btn_save_profile .icon-save,
+.btn_save_profile .icon-loader {
+    display: none;
+}
+
+/* ---- Mode Création (orange avec texte "Créer") ---- */
+.btn_save_profile.create-mode {
+    background: #FF601F !important;
+    color: #fff !important;
+}
+
+.btn_save_profile.create-mode:hover {
     background: #e5561c !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(255, 96, 31, 0.3);
 }
 
-.btn_save_profile .icon-save {
+.btn_save_profile.create-mode .icon-save {
     display: block;
 }
 
-.btn_save_profile .icon-loader {
-    display: none;
-    animation: spin 1s linear infinite;
+/* ---- Mode Édition - État Enregistré (bleu foncé) ---- */
+.btn_save_profile.edit-mode.saved {
+    background: #1e3a5f !important;
+    color: #fff !important;
 }
 
+.btn_save_profile.edit-mode.saved:hover {
+    background: #152a45 !important;
+}
+
+.btn_save_profile.edit-mode.saved .icon-check {
+    display: block;
+}
+
+/* ---- Mode Édition - État Non enregistré (orange) ---- */
+.btn_save_profile.edit-mode.unsaved {
+    background: #FF601F !important;
+    color: #fff !important;
+    animation: pulse-attention 2s ease-in-out infinite;
+}
+
+.btn_save_profile.edit-mode.unsaved:hover {
+    background: #e5561c !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 96, 31, 0.3);
+    animation: none;
+}
+
+.btn_save_profile.edit-mode.unsaved .icon-save {
+    display: block;
+}
+
+@keyframes pulse-attention {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 96, 31, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(255, 96, 31, 0); }
+}
+
+/* ---- État Loading (pour tous les modes) ---- */
 .btn_save_profile.loading {
     opacity: 0.85;
     pointer-events: none;
+    animation: none !important;
 }
 
+.btn_save_profile.loading .icon-check,
 .btn_save_profile.loading .icon-save {
-    display: none;
+    display: none !important;
 }
 
 .btn_save_profile.loading .icon-loader {
-    display: block;
+    display: block !important;
+    animation: spin 1s linear infinite;
 }
 
-.btn_save_profile.loading span {
+.btn_save_profile.loading .btn-text {
     opacity: 0.8;
 }
 
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
-}
-
-.btn_save_profile svg {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
 }
 
 /* Responsive */
@@ -327,17 +384,28 @@ if ( class_exists( 'LeHiboo_Vendor_Onboarding' ) ) {
                     <?php wp_nonce_field( 'el_duplicate_post_nonce', 'el_duplicate_post_nonce' ); ?>
                     <?php endif; ?>
 
-                    <!-- Save Button -->
-                    <button type="button" class="btn_save_profile" id="el-btn-save">
-                        <!-- Save/Check Icon -->
-                        <svg class="icon-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Save Button - Dynamic state based on create/edit mode -->
+                    <?php
+                    $is_create_mode = empty( $post_id ) || ! get_post( $post_id );
+                    $btn_class = $is_create_mode ? 'btn_save_profile create-mode' : 'btn_save_profile edit-mode saved';
+                    $btn_text = $is_create_mode ? __('Créer', 'eventlist') : __('Enregistré', 'eventlist');
+                    ?>
+                    <button type="button" class="<?php echo esc_attr( $btn_class ); ?>" id="el-btn-save" data-mode="<?php echo $is_create_mode ? 'create' : 'edit'; ?>">
+                        <!-- Check Icon (for saved state) -->
+                        <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <!-- Save Icon (for unsaved state) -->
+                        <svg class="icon-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
                         </svg>
                         <!-- Loader Spinner -->
                         <svg class="icon-loader" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"></circle>
                         </svg>
-                        <span><?php esc_html_e('Enregistrer', 'eventlist'); ?></span>
+                        <span class="btn-text"><?php echo esc_html( $btn_text ); ?></span>
                     </button>
                 </div>
             </div>
