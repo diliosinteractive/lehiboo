@@ -1,46 +1,102 @@
 <?php
 /**
  * Template Formulaire d'Inscription Partenaire
- * Version 2.1 - Corrections: Orange #FF601F, API, Cloudflare, Options profil
- * @version 2.1.0
+ * Version 3.0 - Refonte UX/UI avec header simplifié, navigation étapes iconifiée, badges réassurance
+ * @version 3.0.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
 
+<!-- Header simplifié dédié inscription -->
+<header class="register_header">
+	<div class="register_header_inner">
+		<a href="<?php echo home_url(); ?>" class="register_header_logo">
+			<?php
+			$custom_logo_id = get_theme_mod( 'custom_logo' );
+			$logo_url = $custom_logo_id ? wp_get_attachment_image_url( $custom_logo_id, 'medium' ) : get_template_directory_uri() . '/assets/img/logo.png';
+			?>
+			<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" class="logo_img">
+		</a>
+		<div class="register_header_support">
+			<i class="fas fa-phone-alt"></i>
+			<span>Besoin d'aide ?</span>
+			<a href="tel:0186761414" class="support_phone">01 86 76 14 14</a>
+		</div>
+	</div>
+</header>
+
 <div class="lehiboo_register_form_wrapper vendor_register">
 	<div class="container">
 
-		<!-- Steps Navigation (style capture) -->
+		<!-- Badges de réassurance -->
+		<div class="reassurance_badges">
+			<div class="reassurance_badge">
+				<div class="badge_icon">
+					<i class="fas fa-gift"></i>
+				</div>
+				<span class="badge_text">Gratuit pour démarrer</span>
+			</div>
+			<div class="reassurance_badge">
+				<div class="badge_icon">
+					<i class="fas fa-shield-alt"></i>
+				</div>
+				<span class="badge_text">Données sécurisées</span>
+			</div>
+			<div class="reassurance_badge">
+				<div class="badge_icon">
+					<i class="fas fa-bolt"></i>
+				</div>
+				<span class="badge_text">5 min chrono</span>
+			</div>
+			<div class="reassurance_badge">
+				<div class="badge_icon">
+					<i class="fas fa-users"></i>
+				</div>
+				<span class="badge_text">500+ organisateurs</span>
+			</div>
+		</div>
+
+		<!-- Navigation par étapes avec icônes -->
 		<div class="steps_navigation">
-			<div class="step_nav_item active" data-step="1">
-				<div class="step_nav_bar"></div>
-				<div class="step_nav_content">
-					<span class="step_nav_label">Mes informations professionnelles</span>
-				</div>
+			<div class="steps_progress_bar">
+				<div class="progress_fill" id="progress_fill"></div>
 			</div>
-			<div class="step_nav_item" data-step="2">
-				<div class="step_nav_bar"></div>
-				<div class="step_nav_content">
-					<span class="step_nav_label">Vérification email</span>
+			<div class="steps_container">
+				<div class="step_item active" data-step="1">
+					<div class="step_circle">
+						<i class="fas fa-user"></i>
+						<span class="step_check"><i class="fas fa-check"></i></span>
+					</div>
+					<span class="step_label">Infos</span>
 				</div>
-			</div>
-			<div class="step_nav_item" data-step="3">
-				<div class="step_nav_bar"></div>
-				<div class="step_nav_content">
-					<span class="step_nav_label">Mon Organisation</span>
+				<div class="step_item" data-step="2">
+					<div class="step_circle">
+						<i class="fas fa-envelope-open"></i>
+						<span class="step_check"><i class="fas fa-check"></i></span>
+					</div>
+					<span class="step_label">Email</span>
 				</div>
-			</div>
-			<div class="step_nav_item" data-step="4">
-				<div class="step_nav_bar"></div>
-				<div class="step_nav_content">
-					<span class="step_nav_label">Documents</span>
+				<div class="step_item" data-step="3">
+					<div class="step_circle">
+						<i class="fas fa-building"></i>
+						<span class="step_check"><i class="fas fa-check"></i></span>
+					</div>
+					<span class="step_label">Organisation</span>
 				</div>
-			</div>
-			<div class="step_nav_item" data-step="5">
-				<div class="step_nav_bar"></div>
-				<div class="step_nav_content">
-					<span class="step_nav_label">Abonnement</span>
+				<div class="step_item" data-step="4">
+					<div class="step_circle">
+						<i class="fas fa-file-alt"></i>
+						<span class="step_check"><i class="fas fa-check"></i></span>
+					</div>
+					<span class="step_label">Documents</span>
+				</div>
+				<div class="step_item" data-step="5">
+					<div class="step_circle">
+						<i class="fas fa-credit-card"></i>
+						<span class="step_check"><i class="fas fa-check"></i></span>
+					</div>
+					<span class="step_label">Abonnement</span>
 				</div>
 			</div>
 		</div>

@@ -1,7 +1,7 @@
 /**
  * Vendor Registration JavaScript
- * Version 4.0 - OTP Verification avant création user
- * @version 4.0.0
+ * Version 5.0 - Refonte UX/UI avec animations
+ * @version 5.0.0
  */
 
 console.log('VendorRegister: Script chargé');
@@ -30,6 +30,7 @@ console.log('VendorRegister: Script chargé');
 			this.initOTPInputs();
 			this.restoreFormData();
 			this.initAutoSave();
+			this.updateProgressBar(); // Initialize progress bar
 			console.log('VendorRegister: init() terminé');
 		},
 
@@ -634,21 +635,33 @@ console.log('VendorRegister: Script chargé');
 			// Show new step
 			$(`.form_step[data-step="${step}"]`).addClass('active');
 
-			// Update navigation
-			$('.step_nav_item').removeClass('active completed');
+			// Update navigation (new design with .step_item)
+			$('.step_item').removeClass('active completed');
 			for (let i = 1; i < step; i++) {
-				$(`.step_nav_item[data-step="${i}"]`).addClass('completed');
+				$(`.step_item[data-step="${i}"]`).addClass('completed');
 			}
-			$(`.step_nav_item[data-step="${step}"]`).addClass('active');
+			$(`.step_item[data-step="${step}"]`).addClass('active');
 
 			// Update current step
 			this.currentStep = step;
 
+			// Update progress bar
+			this.updateProgressBar();
+
 			// Sauvegarder l'étape actuelle
 			this.saveFormData();
 
-			// Scroll to top
-			$('html, body').animate({ scrollTop: 0 }, 300);
+			// Scroll to top with smooth animation
+			$('html, body').animate({ scrollTop: 0 }, 400);
+		},
+
+		/**
+		 * Update progress bar based on current step
+		 */
+		updateProgressBar: function () {
+			// Calculate progress percentage (0% at step 1, 100% at step 5)
+			const progress = ((this.currentStep - 1) / (this.totalSteps - 1)) * 100;
+			$('#progress_fill').css('width', progress + '%');
 		},
 
 		/**
