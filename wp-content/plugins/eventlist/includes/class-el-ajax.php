@@ -2898,26 +2898,34 @@ if( !class_exists( 'El_Ajax' ) ){
 				/* Custom Taxonomy */
 				if( ! empty( $data_taxonomy ) ){
 					foreach( $data_taxonomy as $slug_taxonomy => $val_taxonomy ) {
-						// Convert term IDs to integers to prevent WP from treating them as slugs
+						// Convert term IDs to integers AND wrap in array
+						// wp_set_post_terms requires an array of integers to properly use term IDs
 						if (is_array($val_taxonomy)) {
-							$val_taxonomy = array_map('intval', $val_taxonomy);
+							$term_ids = array_map('intval', $val_taxonomy);
 						} else {
-							$val_taxonomy = intval($val_taxonomy);
+							$term_ids = array( intval($val_taxonomy) );
 						}
-						wp_set_post_terms( $post_id, $val_taxonomy , $slug_taxonomy );
+						// Filter out any zero/empty values
+						$term_ids = array_filter($term_ids);
+						if ( ! empty( $term_ids ) ) {
+							wp_set_post_terms( $post_id, $term_ids, $slug_taxonomy );
+						}
 					}
 				}
 
 
 				/* Tags (Type d'événement) - Single or array */
 				if( ! empty( $event_tag ) ){
-					// Convert term IDs to integers
+					// Convert term IDs to integers AND wrap in array
 					if (is_array($event_tag)) {
-						$event_tag = array_map('intval', $event_tag);
+						$term_ids = array_map('intval', $event_tag);
 					} else {
-						$event_tag = intval($event_tag);
+						$term_ids = array( intval($event_tag) );
 					}
-					wp_set_post_terms( $post_id, $event_tag , 'event_tag' );
+					$term_ids = array_filter($term_ids);
+					if ( ! empty( $term_ids ) ) {
+						wp_set_post_terms( $post_id, $term_ids, 'event_tag' );
+					}
 				}
 
 				/* Check event_tax exits */
@@ -3045,19 +3053,33 @@ if( !class_exists( 'El_Ajax' ) ){
 				/* Custom Taxonomy */
 				if( ! empty( $data_taxonomy ) ){
 					foreach( $data_taxonomy as $slug_taxonomy => $val_taxonomy ) {
-						// Convert term IDs to integers to prevent WP from treating them as slugs
+						// Convert term IDs to integers AND wrap in array
+						// wp_set_post_terms requires an array of integers to properly use term IDs
 						if (is_array($val_taxonomy)) {
-							$val_taxonomy = array_map('intval', $val_taxonomy);
+							$term_ids = array_map('intval', $val_taxonomy);
 						} else {
-							$val_taxonomy = intval($val_taxonomy);
+							$term_ids = array( intval($val_taxonomy) );
 						}
-						wp_set_post_terms( $new_post_id, $val_taxonomy , $slug_taxonomy );
+						// Filter out any zero/empty values
+						$term_ids = array_filter($term_ids);
+						if ( ! empty( $term_ids ) ) {
+							wp_set_post_terms( $new_post_id, $term_ids, $slug_taxonomy );
+						}
 					}
 				}
 
-				// Tags (Type d'événement) - Already converted to int earlier
+				// Tags (Type d'événement)
 				if( !empty( $event_tag ) ){
-					wp_set_post_terms( $new_post_id, $event_tag , 'event_tag' );
+					// Convert to array of integers
+					if (is_array($event_tag)) {
+						$term_ids = array_map('intval', $event_tag);
+					} else {
+						$term_ids = array( intval($event_tag) );
+					}
+					$term_ids = array_filter($term_ids);
+					if ( ! empty( $term_ids ) ) {
+						wp_set_post_terms( $new_post_id, $term_ids, 'event_tag' );
+					}
 				}
 
 				// Location
