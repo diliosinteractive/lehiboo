@@ -722,6 +722,11 @@
          */
         showFolderModal: function(parentId) {
             const $modal = $('.modal_folder');
+
+            // S'assurer que le loader est caché et le formulaire visible
+            $modal.find('.folder_loader').hide();
+            $modal.find('.folder_form').show();
+
             $modal.find('input[name="folder_id"]').val('');
             $modal.find('input[name="parent_id"]').val(parentId || this.currentFolder);
             $modal.find('input[name="name"]').val('');
@@ -738,9 +743,20 @@
         editFolder: function(folderId) {
             const self = this;
             const $modal = $('.modal_folder');
+            const $modalBody = $modal.find('.modal_body');
+            const $form = $modal.find('.folder_form');
 
-            // Afficher un loader temporaire
-            $modal.find('.modal_title').text('Chargement...');
+            // Afficher le modal avec un loader
+            $modal.find('.modal_title').text('Modifier le dossier');
+            $modal.find('button[type="submit"]').text('Enregistrer');
+
+            // Cacher le formulaire et afficher un loader
+            $form.hide();
+            if (!$modalBody.find('.folder_loader').length) {
+                $modalBody.prepend('<div class="folder_loader" style="text-align: center; padding: 40px 20px;"><i class="fa fa-spinner fa-spin fa-2x" style="color: #FF6600;"></i><p style="margin-top: 15px; color: #666;">Chargement...</p></div>');
+            }
+            $modalBody.find('.folder_loader').show();
+
             $modal.fadeIn(200);
 
             // Récupérer les données du dossier via AJAX
@@ -753,6 +769,9 @@
                     folder_id: folderId
                 },
                 success: function(response) {
+                    // Cacher le loader
+                    $modalBody.find('.folder_loader').hide();
+
                     if (response.success && response.data.folder) {
                         const folder = response.data.folder;
 
@@ -763,15 +782,15 @@
                         $modal.find('textarea[name="description"]').val(folder.description || '');
                         $modal.find('input[name="color"]').val(folder.color || '#FF6B35');
 
-                        // Modifier le titre et le bouton
-                        $modal.find('.modal_title').text('Modifier le dossier');
-                        $modal.find('button[type="submit"]').text('Enregistrer');
+                        // Afficher le formulaire
+                        $form.show();
                     } else {
                         self.showError(response.data && response.data.message ? response.data.message : 'Erreur lors du chargement du dossier');
                         $modal.fadeOut(200);
                     }
                 },
                 error: function() {
+                    $modalBody.find('.folder_loader').hide();
                     self.showError('Erreur lors du chargement du dossier');
                     $modal.fadeOut(200);
                 }
