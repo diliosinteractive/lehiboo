@@ -164,74 +164,37 @@ if (is_wp_error($event_types_taxonomy)) {
 
         <!-- Source de l'adresse -->
         <div class="vendor_field address_source_field">
-            <label class="field_label"><?php esc_html_e( 'Veuillez choisir la source de l\'adresse pour cette localisation :', 'eventlist' ); ?></label>
+            <label for="address_source_select" class="field_label"><?php esc_html_e( 'Veuillez choisir la source de l\'adresse pour cette localisation :', 'eventlist' ); ?></label>
 
-            <div class="address_source_options">
-                <!-- Mon entité -->
-                <div class="address_source_row">
-                    <label class="address_source_option <?php echo ($address_source == 'entity') ? 'active' : ''; ?>" for="address_source_entity">
-                        <input type="radio"
-                               value="entity"
-                               name="<?php echo esc_attr($_prefix.'address_source'); ?>"
-                               id="address_source_entity"
-                               class="address_source_radio"
-                               data-venue="<?php echo esc_attr($user_public_name); ?>"
-                               data-address="<?php echo esc_attr($user_address); ?>"
-                               data-lat="<?php echo esc_attr($user_lat); ?>"
-                               data-lng="<?php echo esc_attr($user_lng); ?>"
-                               <?php checked($address_source, 'entity'); ?>>
-                        <span class="option_checkbox"></span>
-                        <span class="option_label"><?php esc_html_e( 'Mon entité', 'eventlist' ); ?></span>
-                    </label>
-                </div>
-
-                <!-- Une entité co-organisatrice -->
-                <?php if ( !empty($partners) ) : ?>
-                <div class="address_source_row with_select">
-                    <label class="address_source_option <?php echo ($address_source == 'coorg') ? 'active' : ''; ?>" for="address_source_coorg">
-                        <input type="radio"
-                               value="coorg"
-                               name="<?php echo esc_attr($_prefix.'address_source'); ?>"
-                               id="address_source_coorg"
-                               class="address_source_radio"
-                               <?php checked($address_source, 'coorg'); ?>>
-                        <span class="option_checkbox"></span>
-                        <span class="option_label"><?php esc_html_e( 'Une entité co-organisatrice', 'eventlist' ); ?></span>
-                    </label>
-                    <div class="coorg_select_wrapper">
-                        <select name="<?php echo esc_attr($_prefix.'coorg_entity_id'); ?>"
-                                id="coorg_entity_select"
-                                class="coorg_entity_select"
-                                <?php echo ($address_source != 'coorg') ? 'disabled' : ''; ?>>
-                            <option value=""><?php esc_html_e( 'Sélectionnez...', 'eventlist' ); ?></option>
-                            <?php foreach ( $partners as $partner ) : ?>
-                                <option value="<?php echo esc_attr($partner['id']); ?>"
-                                        data-venue="<?php echo esc_attr($partner['venue']); ?>"
-                                        data-address="<?php echo esc_attr($partner['address']); ?>"
-                                        data-lat="<?php echo esc_attr($partner['lat']); ?>"
-                                        data-lng="<?php echo esc_attr($partner['lng']); ?>"
-                                        <?php selected($coorg_entity_id, $partner['id']); ?>>
-                                    <?php echo esc_html($partner['name']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
-                <?php endif; ?>
-
-                <!-- Nouvelle adresse -->
-                <div class="address_source_row">
-                    <label class="address_source_option <?php echo ($address_source == 'new') ? 'active' : ''; ?>" for="address_source_new">
-                        <input type="radio"
-                               value="new"
-                               name="<?php echo esc_attr($_prefix.'address_source'); ?>"
-                               id="address_source_new"
-                               class="address_source_radio"
-                               <?php checked($address_source, 'new'); ?>>
-                        <span class="option_checkbox"></span>
-                        <span class="option_label"><?php esc_html_e( 'Nouvelle adresse', 'eventlist' ); ?></span>
-                    </label>
-                </div>
+            <div class="address_source_select_wrapper">
+                <select name="<?php echo esc_attr($_prefix.'address_source'); ?>"
+                        id="address_source_select"
+                        class="address_source_select">
+                    <option value="entity"
+                            data-address="<?php echo esc_attr($user_address); ?>"
+                            data-lat="<?php echo esc_attr($user_lat); ?>"
+                            data-lng="<?php echo esc_attr($user_lng); ?>"
+                            <?php selected($address_source, 'entity'); ?>>
+                        <?php esc_html_e( 'Mon entité', 'eventlist' ); ?>
+                    </option>
+                    <?php if ( !empty($partners) ) : ?>
+                        <?php foreach ( $partners as $partner ) : ?>
+                            <option value="coorg_<?php echo esc_attr($partner['id']); ?>"
+                                    data-address="<?php echo esc_attr($partner['address']); ?>"
+                                    data-lat="<?php echo esc_attr($partner['lat']); ?>"
+                                    data-lng="<?php echo esc_attr($partner['lng']); ?>"
+                                    data-partner-id="<?php echo esc_attr($partner['id']); ?>"
+                                    <?php echo ($address_source == 'coorg' && $coorg_entity_id == $partner['id']) ? 'selected' : ''; ?>>
+                                <?php echo esc_html($partner['name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                    <option value="new" <?php selected($address_source, 'new'); ?>>
+                        <?php esc_html_e( 'Nouvelle adresse', 'eventlist' ); ?>
+                    </option>
+                </select>
+                <!-- Champ caché pour stocker l'ID du co-org si sélectionné -->
+                <input type="hidden" name="<?php echo esc_attr($_prefix.'coorg_entity_id'); ?>" id="coorg_entity_id" value="<?php echo esc_attr($coorg_entity_id); ?>">
             </div>
         </div>
 
@@ -644,21 +607,9 @@ if (is_wp_error($event_types_taxonomy)) {
                 }
             });
 
-            // Changement de source d'adresse
-            $('.address_source_radio').on('change', function() {
+            // Changement de source d'adresse (select)
+            $('#address_source_select').on('change', function() {
                 self.handleAddressSource();
-            });
-
-            // Changement d'entité co-organisatrice
-            $('#coorg_entity_select').on('change', function() {
-                var $selected = $(this).find(':selected');
-                if ($selected.val()) {
-                    var address = $selected.data('address') || '';
-                    var lat = $selected.data('lat') || '';
-                    var lng = $selected.data('lng') || '';
-
-                    self.fillLocationFields(address, lat, lng, true);
-                }
             });
 
             // Checkboxes de lieu
@@ -689,73 +640,49 @@ if (is_wp_error($event_types_taxonomy)) {
         },
 
         initializeFromSource: function() {
-            var source = $('.address_source_radio:checked').val();
+            var $selected = $('#address_source_select').find(':selected');
+            var sourceValue = $selected.val();
 
             // Si c'est entity ou coorg, pré-remplir les champs
-            if (source === 'entity') {
-                var $entity = $('#address_source_entity');
-                var address = $entity.data('address') || '';
-                var lat = $entity.data('lat') || '';
-                var lng = $entity.data('lng') || '';
+            if (sourceValue !== 'new') {
+                var address = $selected.data('address') || '';
+                var lat = $selected.data('lat') || '';
+                var lng = $selected.data('lng') || '';
 
                 // Ne pré-remplir que si l'adresse est vide
                 if (!$('#location_address').val() && address) {
                     this.fillLocationFields(address, lat, lng, true);
                 }
-            } else if (source === 'coorg') {
-                var $selected = $('#coorg_entity_select').find(':selected');
-                if ($selected.val()) {
-                    var address = $selected.data('address') || '';
-                    var lat = $selected.data('lat') || '';
-                    var lng = $selected.data('lng') || '';
-
-                    if (!$('#location_address').val() && address) {
-                        this.fillLocationFields(address, lat, lng, true);
-                    }
-                }
             }
         },
 
         handleAddressSource: function() {
-            var $checked = $('.address_source_radio:checked');
-            var source = $checked.val();
+            var $select = $('#address_source_select');
+            var $selected = $select.find(':selected');
+            var sourceValue = $selected.val();
             var self = this;
 
-            // Mise à jour visuelle
-            $('.address_source_option').removeClass('active');
-            $checked.closest('.address_source_option').addClass('active');
-
-            // Activer/désactiver le select co-org
-            if (source === 'coorg') {
-                $('#coorg_entity_select').prop('disabled', false);
-                var $selected = $('#coorg_entity_select').find(':selected');
-                if ($selected.val()) {
-                    this.fillLocationFields(
-                        $selected.data('address') || '',
-                        $selected.data('lat') || '',
-                        $selected.data('lng') || '',
-                        true
-                    );
-                }
-                this.setFieldsReadonly(true);
-            } else {
-                $('#coorg_entity_select').prop('disabled', true);
-            }
-
-            // Remplir avec les données de l'entité
-            if (source === 'entity') {
-                var $entity = $('#address_source_entity');
-                var address = $entity.data('address') || '';
-                var lat = $entity.data('lat') || '';
-                var lng = $entity.data('lng') || '';
-                this.fillLocationFields(address, lat, lng, true);
-                this.setFieldsReadonly(true);
-            }
-
             // Nouvelle adresse - vider les champs et les rendre éditables
-            if (source === 'new') {
+            if (sourceValue === 'new') {
                 this.clearLocationFields();
                 this.setFieldsReadonly(false);
+                $('#coorg_entity_id').val('');
+            } else {
+                // Entity ou Co-org - remplir avec les données de l'option sélectionnée
+                var address = $selected.data('address') || '';
+                var lat = $selected.data('lat') || '';
+                var lng = $selected.data('lng') || '';
+
+                this.fillLocationFields(address, lat, lng, true);
+                this.setFieldsReadonly(true);
+
+                // Si c'est un co-org, mettre à jour le champ caché
+                if (sourceValue.indexOf('coorg_') === 0) {
+                    var partnerId = $selected.data('partner-id') || '';
+                    $('#coorg_entity_id').val(partnerId);
+                } else {
+                    $('#coorg_entity_id').val('');
+                }
             }
         },
 
@@ -977,6 +904,49 @@ if (is_wp_error($event_types_taxonomy)) {
     background-color: #f9f9f9 !important;
     color: #666 !important;
     cursor: not-allowed;
+}
+
+/* Select source d'adresse */
+.address_source_field {
+    margin-bottom: 24px;
+}
+
+.address_source_field .field_label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.address_source_select_wrapper {
+    max-width: 400px;
+}
+
+.address_source_select {
+    width: 100%;
+    height: 48px;
+    padding: 0 40px 0 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 14px center;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.address_source_select:hover {
+    border-color: #999;
+}
+
+.address_source_select:focus {
+    border-color: #FF6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+    outline: none;
 }
 
 /* Séparateur localisation */
