@@ -525,21 +525,18 @@ button#el_coorg_add_btn {
     color: #FF601F;
 }
 
-/* Badge de progression onboarding - cercle avec bordure */
+/* Badge de progression onboarding - petit pill discret */
 .onboarding_progress_badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    background: #fff;
-    color: #FF601F;
-    font-size: 9px;
-    font-weight: 700;
-    border-radius: 50%;
+    padding: 2px 7px;
+    background: #27AE60;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 10px;
     margin-left: auto;
-    border: 2px solid #FF601F;
 }
 
 /* Doc badge (documents manquants) */
