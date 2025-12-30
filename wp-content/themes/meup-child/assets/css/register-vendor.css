@@ -1471,15 +1471,16 @@ body:has(.register_header) main {
 
 /* Trial badge - 14 jours gratuits */
 .trial_badge {
-	display: inline-flex;
+	display: flex;
 	align-items: center;
+	justify-content: center;
 	gap: 6px;
 	background: transparent;
 	color: var(--green-success);
 	font-size: 12px;
 	font-weight: 600;
-	padding: 8px 0;
-	margin-top: 12px;
+	padding: 0;
+	margin-bottom: 12px;
 	white-space: nowrap;
 }
 

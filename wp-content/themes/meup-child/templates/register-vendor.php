@@ -650,7 +650,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 									<span class="price_period">/ mois</span>
 								</div>
 								<p class="subscription_card_desc">Pour développer votre activité</p>
-								<div class="trial_badge"><i class="fas fa-gift"></i> 14 jours d'essai gratuit - Toutes les fonctionnalités</div>
 							</div>
 							<div class="subscription_card_body">
 								<p class="features_intro"><i class="fas fa-infinity"></i> Sans limites :</p>
@@ -667,6 +666,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 								</ul>
 							</div>
 							<div class="subscription_card_footer">
+								<div class="trial_badge"><i class="fas fa-gift"></i> 14 jours d'essai gratuit</div>
 								<button type="button" class="btn btn_select_plan btn_premium" data-plan="premium">
 									<span class="btn_text"><i class="fas fa-crown"></i> Choisir Premium</span>
 									<span class="btn_selected"><i class="fas fa-check"></i> Plan sélectionné</span>
