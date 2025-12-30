@@ -204,6 +204,13 @@ jQuery(document).ready(function ($) {
        3. AJAX Save Logic - Global Save
        ========================================================================== */
 
+    // Prevent native form submission (Enter key, etc.)
+    $('#el-vendor-profile-form').on('submit', function (e) {
+        e.preventDefault();
+        saveProfile();
+        return false;
+    });
+
     // Handle Save Button Click
     $('#el-btn-save-profile').on('click', function (e) {
         e.preventDefault();
