@@ -624,12 +624,22 @@ jQuery(document).ready(function ($) {
         // V1 Le Hiboo - Gérer explicitement les checkboxes Services & Accessibilité
         // (les checkboxes non cochées ne sont pas incluses dans serializeArray)
         var serviceCheckboxes = [
+            // Anciens champs (publication)
             'ova_mb_event_el_handicap',
             'ova_mb_event_el_animal',
             'ova_mb_event_el_baby',
             'ova_mb_event_el_wifi',
             'ova_mb_event_el_parking',
-            'ova_mb_event_el_restau'
+            'ova_mb_event_el_restau',
+            // Nouveaux champs (localisation - Services et Accessibilité)
+            'ova_mb_event_event_parking',
+            'ova_mb_event_event_transport',
+            'ova_mb_event_event_pmr',
+            'ova_mb_event_event_wifi',
+            'ova_mb_event_event_animals',
+            'ova_mb_event_event_baby',
+            'ova_mb_event_event_restau',
+            'ova_mb_event_event_boisson'
         ];
         serviceCheckboxes.forEach(function(checkboxName) {
             var cleanKey = checkboxName.replace(/^ova_mb_event_/, '');
