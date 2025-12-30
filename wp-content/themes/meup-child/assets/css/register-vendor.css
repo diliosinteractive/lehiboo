@@ -270,14 +270,22 @@ body:has(.register_header) main {
 .steps_navigation {
 	position: relative !important;
 	padding: 16px 20px 12px !important;
-	background: var(--white) !important;
+	background: transparent !important;
 	max-width: 900px !important;
 	margin: 0 auto !important;
 	display: block !important;
 }
 
 .steps_progress_bar {
-	display: none !important;
+	position: absolute !important;
+	top: 40px !important;
+	left: 10% !important;
+	right: 10% !important;
+	height: 3px !important;
+	background: var(--grey-border) !important;
+	border-radius: 2px !important;
+	z-index: 1 !important;
+	display: block !important;
 }
 
 .progress_fill {

@@ -15,18 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	<div class="register_header_inner">
 		<a href="<?php echo home_url(); ?>" class="register_header_logo">
 			<?php
-			$logo_url = '';
-			// 1. Essayer le logo personnalisé WordPress
-			$custom_logo_id = get_theme_mod( 'custom_logo' );
-			if ( $custom_logo_id ) {
-				$logo_url = wp_get_attachment_image_url( $custom_logo_id, 'medium' );
-			}
-			// 2. Fallback: logo du thème enfant
-			if ( empty( $logo_url ) && file_exists( get_stylesheet_directory() . '/assets/img/logo.png' ) ) {
-				$logo_url = get_stylesheet_directory_uri() . '/assets/img/logo.png';
-			}
-			// 3. Fallback: logo du thème parent
+			// Utiliser le même logo que le header du thème (theme_mod 'logo')
+			$logo_url = get_theme_mod( 'logo', '' );
 			if ( empty( $logo_url ) ) {
+				// Fallback: logo du thème parent
 				$logo_url = get_template_directory_uri() . '/assets/img/logo.png';
 			}
 			?>
