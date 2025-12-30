@@ -163,7 +163,7 @@ $user_meta_field = get_option( 'ova_register_form' );
 			<div class="profile_content_area">
 
 				<!-- Formulaire global pour le profil -->
-				<form action="" method="post" id="el-vendor-profile-form" enctype="multipart/form-data">
+				<form action="javascript:void(0);" method="post" id="el-vendor-profile-form" enctype="multipart/form-data" onsubmit="return false;">
 
 				<!-- Section: Mes informations professionnelles -->
 				<div id="section_profile" class="event_section profile-section active-section">
