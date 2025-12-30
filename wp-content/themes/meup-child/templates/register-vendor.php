@@ -626,8 +626,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 							</div>
 							<div class="subscription_card_body">
 								<ul class="subscription_features">
+									<li class="feature_limited"><i class="fas fa-exclamation-circle"></i> <span><strong>3 activités</strong> publiées par mois maximum</span></li>
 									<li><i class="fas fa-check-circle"></i> <span>Accès au dashboard Organisateur</span></li>
-									<li><i class="fas fa-check-circle"></i> <span>Création et publication d'activités</span></li>
 									<li><i class="fas fa-check-circle"></i> <span>Prévisualisation des fiches</span></li>
 									<li><i class="fas fa-check-circle"></i> <span>Gestion de la page Profil</span></li>
 								</ul>
@@ -650,11 +650,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 									<span class="price_period">/ mois</span>
 								</div>
 								<p class="subscription_card_desc">Pour développer votre activité</p>
+								<div class="trial_badge"><i class="fas fa-gift"></i> 14 jours d'essai gratuit - Toutes les fonctionnalités</div>
 							</div>
 							<div class="subscription_card_body">
-								<p class="features_intro"><i class="fas fa-gift"></i> Tout le plan Gratuit, plus :</p>
+								<p class="features_intro"><i class="fas fa-infinity"></i> Sans limites :</p>
 								<ul class="subscription_features">
-									<li><i class="fas fa-check-circle"></i> <span>Réservations illimitées</span></li>
+									<li class="feature_highlight"><i class="fas fa-check-circle"></i> <span><strong>Activités illimitées</strong></span></li>
+									<li class="feature_highlight"><i class="fas fa-check-circle"></i> <span><strong>Réservations illimitées</strong></span></li>
 									<li><i class="fas fa-check-circle"></i> <span>Application mobile mode Partenaire</span></li>
 									<li><i class="fas fa-check-circle"></i> <span>Scan des billets via l'application</span></li>
 									<li><i class="fas fa-check-circle"></i> <span>Accès étendu aux infos utilisateurs</span></li>
@@ -674,6 +676,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					</div>
 
 					<input type="hidden" id="vendor_subscription_plan" name="vendor_subscription_plan" value="">
+
+					<!-- Message d'erreur abonnement -->
+					<div id="subscription_error" class="subscription_error_message" style="display: none;">
+						<i class="fas fa-exclamation-triangle"></i>
+						<span>Veuillez sélectionner un abonnement pour continuer</span>
+					</div>
 
 					<!-- Checkbox CGU -->
 					<div class="form_group checkbox_group">

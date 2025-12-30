@@ -1469,6 +1469,26 @@ body:has(.register_header) main {
 	line-height: 1.5;
 }
 
+/* Trial badge - 14 jours gratuits */
+.trial_badge {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+	color: var(--white);
+	font-size: 13px;
+	font-weight: 600;
+	padding: 10px 16px;
+	border-radius: 8px;
+	margin-top: 16px;
+	animation: pulse 2s infinite;
+}
+
+.trial_badge i {
+	font-size: 16px;
+}
+
 /* Card body - features list */
 .subscription_card_body {
 	flex: 1;
@@ -1521,6 +1541,45 @@ body:has(.register_header) main {
 
 .subscription_features li span {
 	flex: 1;
+}
+
+/* Feature limited - warning style for free plan limitations */
+.subscription_features li.feature_limited {
+	background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+	border-radius: 8px;
+	padding: 14px 12px;
+	margin: 0 -8px 8px -8px;
+	border: 1px solid #FFD54F;
+	border-bottom: 1px solid #FFD54F;
+}
+
+.subscription_features li.feature_limited i {
+	color: #F57C00;
+	font-size: 18px;
+}
+
+.subscription_features li.feature_limited span {
+	color: #E65100;
+}
+
+/* Feature highlight - emphasized style for Premium benefits */
+.subscription_features li.feature_highlight {
+	background: linear-gradient(135deg, var(--orange-light) 0%, #FFE4D6 100%);
+	border-radius: 8px;
+	padding: 14px 12px;
+	margin: 0 -8px 8px -8px;
+	border: 1px solid var(--orange-primary);
+	border-bottom: 1px solid var(--orange-primary);
+}
+
+.subscription_features li.feature_highlight i {
+	color: var(--orange-primary);
+	font-size: 18px;
+}
+
+.subscription_features li.feature_highlight span {
+	color: var(--orange-primary);
+	font-weight: 600;
 }
 
 /* Card footer - select button */
@@ -1596,6 +1655,34 @@ body:has(.register_header) main {
 	display: flex;
 	align-items: center;
 	gap: 8px;
+}
+
+/* Subscription error message */
+.subscription_error_message {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+	border: 1px solid #EF4444;
+	color: #991B1B;
+	font-size: 14px;
+	font-weight: 500;
+	padding: 14px 20px;
+	border-radius: 10px;
+	margin-bottom: 24px;
+	animation: shake 0.5s ease-in-out;
+}
+
+.subscription_error_message i {
+	font-size: 18px;
+	color: #DC2626;
+}
+
+@keyframes shake {
+	0%, 100% { transform: translateX(0); }
+	10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+	20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
 /* Disabled submit until plan selected */

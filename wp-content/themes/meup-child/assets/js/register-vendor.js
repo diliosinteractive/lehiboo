@@ -96,6 +96,9 @@ console.log('VendorRegister: Script chargé');
 			this.selectedPlan = plan;
 			$('#vendor_subscription_plan').val(plan);
 
+			// Hide subscription error message if shown
+			$('#subscription_error').slideUp(200);
+
 			// Update button text
 			$('.subscription_card .btn_select_plan').each(function () {
 				const cardPlan = $(this).data('plan');
@@ -800,8 +803,11 @@ console.log('VendorRegister: Script chargé');
 				console.log('validateStep: Plan sélectionné:', selectedPlan);
 				if (!selectedPlan) {
 					isValid = false;
+					$('#subscription_error').slideDown(300);
 					VendorRegister.showNotification('error', 'Veuillez sélectionner un abonnement.');
 					return isValid;
+				} else {
+					$('#subscription_error').slideUp(200);
 				}
 
 				// Vérifier CGU
