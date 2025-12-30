@@ -115,7 +115,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 			<div class="register_notification error" style="display: none;"></div>
 
 			<!-- Formulaire d'inscription partenaire -->
-			<form id="vendor_register_form" class="register_form multi_step_form" method="post" enctype="multipart/form-data">
+			<form id="vendor_register_form" class="register_form multi_step_form" method="post" enctype="multipart/form-data" novalidate>
 
 				<!-- ============================================
 				     ÉTAPE 1 : INFORMATIONS PROFESSIONNELLES
