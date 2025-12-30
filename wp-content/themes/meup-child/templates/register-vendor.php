@@ -626,7 +626,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 							</div>
 							<div class="subscription_card_body">
 								<ul class="subscription_features">
-									<li class="feature_limited"><i class="fas fa-exclamation-circle"></i> <span><strong>3 activités</strong> publiées par mois maximum</span></li>
+									<li class="feature_limited"><i class="fas fa-exclamation-circle"></i> <span><strong>5 activités</strong> publiées par mois maximum</span></li>
 									<li><i class="fas fa-check-circle"></i> <span>Accès au dashboard Organisateur</span></li>
 									<li><i class="fas fa-check-circle"></i> <span>Prévisualisation des fiches</span></li>
 									<li><i class="fas fa-check-circle"></i> <span>Gestion de la page Profil</span></li>

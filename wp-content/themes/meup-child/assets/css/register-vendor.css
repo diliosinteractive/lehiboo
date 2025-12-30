@@ -1471,22 +1471,21 @@ body:has(.register_header) main {
 
 /* Trial badge - 14 jours gratuits */
 .trial_badge {
-	display: flex;
+	display: inline-flex;
 	align-items: center;
-	justify-content: center;
-	gap: 8px;
-	background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-	color: var(--white);
-	font-size: 13px;
+	gap: 6px;
+	background: transparent;
+	color: var(--green-success);
+	font-size: 12px;
 	font-weight: 600;
-	padding: 10px 16px;
-	border-radius: 8px;
-	margin-top: 16px;
-	animation: pulse 2s infinite;
+	padding: 8px 0;
+	margin-top: 12px;
+	white-space: nowrap;
 }
 
 .trial_badge i {
-	font-size: 16px;
+	font-size: 14px;
+	color: var(--green-success);
 }
 
 /* Card body - features list */
