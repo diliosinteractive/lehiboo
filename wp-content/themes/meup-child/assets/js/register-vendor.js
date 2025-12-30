@@ -4,8 +4,12 @@
  * @version 4.0.0
  */
 
+console.log('VendorRegister: Script chargé');
+
 (function ($) {
 	'use strict';
+
+	console.log('VendorRegister: IIFE exécutée, jQuery disponible:', typeof $ !== 'undefined');
 
 	const VendorRegister = {
 
@@ -19,23 +23,27 @@
 		 * Initialisation
 		 */
 		init: function () {
+			console.log('VendorRegister: init() appelé');
 			this.bindEvents();
 			this.initAPIs();
 			this.initOTPInputs();
 			this.restoreFormData();
 			this.initAutoSave();
+			console.log('VendorRegister: init() terminé');
 		},
 
 		/**
 		 * Bind events
 		 */
 		bindEvents: function () {
+			console.log('VendorRegister: bindEvents() appelé');
 			// Navigation entre étapes
 			$(document).on('click', '.btn_next', this.nextStep.bind(this));
 			$(document).on('click', '.btn_prev', this.prevStep.bind(this));
 
 			// OTP: Envoi du code
 			$(document).on('click', '#btn_send_otp', this.sendOTP.bind(this));
+			console.log('VendorRegister: Event #btn_send_otp lié');
 
 			// OTP: Vérification du code
 			$(document).on('click', '#btn_verify_otp', this.verifyOTP.bind(this));
