@@ -3045,6 +3045,12 @@ if( !class_exists( 'El_Ajax' ) ){
 				/* Custom Taxonomy */
 				if( ! empty( $data_taxonomy ) ){
 					foreach( $data_taxonomy as $slug_taxonomy => $val_taxonomy ) {
+						// Convert term IDs to integers to prevent WP from treating them as slugs
+						if (is_array($val_taxonomy)) {
+							$val_taxonomy = array_map('intval', $val_taxonomy);
+						} else {
+							$val_taxonomy = intval($val_taxonomy);
+						}
 						wp_set_post_terms( $new_post_id, $val_taxonomy , $slug_taxonomy );
 					}
 				}
