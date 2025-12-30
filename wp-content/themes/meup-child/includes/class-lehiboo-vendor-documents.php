@@ -7,9 +7,6 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-// Alias pour compatibilité avec le code existant qui utilise EL_Vendor_Documents
-class_alias( 'LeHiboo_Vendor_Documents', 'EL_Vendor_Documents' );
-
 class LeHiboo_Vendor_Documents {
 
 	/**
