@@ -276,6 +276,26 @@ if( file_exists( get_stylesheet_directory() . '/includes/class-lehiboo-vendor-on
 }
 
 // ========================================
+// V1 Le Hiboo - ÉTENDRE el_is_vendor() POUR INCLURE el_event_vendor
+// Le plugin EventList ne vérifie que 'el_event_manager', mais nous utilisons 'el_event_vendor'
+// ========================================
+add_filter( 'el_is_vendor', 'lehiboo_extend_is_vendor_check' );
+function lehiboo_extend_is_vendor_check( $is_vendor ) {
+	// Si déjà vendor (admin ou el_event_manager), retourner true
+	if ( $is_vendor ) {
+		return true;
+	}
+
+	// Vérifier aussi le rôle el_event_vendor utilisé par Le Hiboo
+	$user = wp_get_current_user();
+	if ( in_array( 'el_event_vendor', $user->roles ) ) {
+		return true;
+	}
+
+	return false;
+}
+
+// ========================================
 // MASQUER LE MENU PRINCIPAL SUR LES PAGES PARTENAIRES
 // ========================================
 /**
