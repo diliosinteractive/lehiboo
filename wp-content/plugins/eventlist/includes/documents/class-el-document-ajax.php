@@ -37,6 +37,9 @@ class EL_Document_Ajax {
         add_action( 'wp_ajax_el_admin_delete_doc_type', array( __CLASS__, 'admin_delete_doc_type' ) );
         add_action( 'wp_ajax_el_admin_get_doc_types', array( __CLASS__, 'admin_get_doc_types' ) );
         add_action( 'wp_ajax_el_admin_reorder_doc_types', array( __CLASS__, 'admin_reorder_doc_types' ) );
+
+        // Admin - Profil partenaire
+        add_action( 'wp_ajax_el_admin_get_vendor_profile', array( __CLASS__, 'admin_get_vendor_profile' ) );
     }
 
     // =========================================================================
@@ -635,6 +638,144 @@ class EL_Document_Ajax {
         }
 
         wp_send_json_success( array( 'message' => __( 'Ordre mis a jour', 'eventlist' ) ) );
+    }
+
+    // =========================================================================
+    // ADMIN - PROFIL PARTENAIRE
+    // =========================================================================
+
+    /**
+     * Recupere le profil d'un partenaire (admin)
+     */
+    public static function admin_get_vendor_profile() {
+        check_ajax_referer( 'el_admin_document_nonce', 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => __( 'Permission refusee', 'eventlist' ) ) );
+        }
+
+        $vendor_id = isset( $_POST['vendor_id'] ) ? absint( $_POST['vendor_id'] ) : 0;
+
+        if ( ! $vendor_id ) {
+            wp_send_json_error( array( 'message' => __( 'Partenaire non specifie', 'eventlist' ) ) );
+        }
+
+        $user = get_userdata( $vendor_id );
+
+        if ( ! $user ) {
+            wp_send_json_error( array( 'message' => __( 'Partenaire introuvable', 'eventlist' ) ) );
+        }
+
+        // Recuperer les meta de l'utilisateur
+        $first_name = get_user_meta( $vendor_id, 'first_name', true );
+        $last_name = get_user_meta( $vendor_id, 'last_name', true );
+        $user_phone = get_user_meta( $vendor_id, 'user_phone', true );
+
+        // Organisation
+        $org_display_name = get_user_meta( $vendor_id, 'org_display_name', true );
+        $org_name = get_user_meta( $vendor_id, 'org_name', true );
+        $org_type = get_user_meta( $vendor_id, 'org_type', true );
+        $org_roles = get_user_meta( $vendor_id, 'org_roles', true );
+        $org_siren = get_user_meta( $vendor_id, 'org_siren', true );
+        $org_legal_status = get_user_meta( $vendor_id, 'org_legal_status', true );
+        $org_phone = get_user_meta( $vendor_id, 'org_phone_contact', true );
+        $org_web = get_user_meta( $vendor_id, 'org_web', true );
+
+        // Adresse
+        $address_line1 = get_user_meta( $vendor_id, 'user_address_line1', true );
+        $city = get_user_meta( $vendor_id, 'user_city', true );
+        $postcode = get_user_meta( $vendor_id, 'user_postcode', true );
+        $country = get_user_meta( $vendor_id, 'user_country', true );
+
+        // Formater le type d'organisation
+        $org_type_labels = array(
+            'association' => __( 'Association', 'eventlist' ),
+            'entreprise' => __( 'Entreprise', 'eventlist' ),
+            'autoentrepreneur' => __( 'Auto-entrepreneur', 'eventlist' ),
+            'collectivite' => __( 'Collectivite', 'eventlist' ),
+            'autre' => __( 'Autre', 'eventlist' ),
+        );
+
+        // Date inscription
+        $registered = $user->user_registered;
+
+        // Statut vendor
+        $vendor_status = get_user_meta( $vendor_id, 'vendor_status', true );
+
+        // Logo organisation
+        $org_logo_id = get_user_meta( $vendor_id, 'org_logo_id', true );
+        $org_logo_url = '';
+        if ( $org_logo_id ) {
+            $org_logo_url = wp_get_attachment_image_url( $org_logo_id, 'thumbnail' );
+        }
+
+        // Lien vers la page edit user WP
+        $edit_user_url = get_edit_user_link( $vendor_id );
+
+        wp_send_json_success( array(
+            'profile' => array(
+                'id' => $vendor_id,
+                'contact' => array(
+                    'first_name' => $first_name,
+                    'last_name' => $last_name,
+                    'full_name' => trim( $first_name . ' ' . $last_name ),
+                    'email' => $user->user_email,
+                    'phone' => $user_phone,
+                ),
+                'organisation' => array(
+                    'display_name' => $org_display_name ?: $org_name,
+                    'name' => $org_name,
+                    'type' => $org_type,
+                    'type_label' => isset( $org_type_labels[ $org_type ] ) ? $org_type_labels[ $org_type ] : $org_type,
+                    'roles' => $org_roles,
+                    'siren' => $org_siren,
+                    'legal_status' => $org_legal_status,
+                    'phone' => $org_phone,
+                    'website' => $org_web,
+                    'logo_url' => $org_logo_url,
+                ),
+                'address' => array(
+                    'line1' => $address_line1,
+                    'city' => $city,
+                    'postcode' => $postcode,
+                    'country' => $country,
+                    'formatted' => self::format_address( $address_line1, $postcode, $city, $country ),
+                ),
+                'meta' => array(
+                    'registered' => date_i18n( 'j M Y', strtotime( $registered ) ),
+                    'vendor_status' => $vendor_status,
+                    'edit_url' => $edit_user_url,
+                ),
+            ),
+        ) );
+    }
+
+    /**
+     * Formate une adresse
+     */
+    private static function format_address( $line1, $postcode, $city, $country ) {
+        $parts = array();
+
+        if ( $line1 ) {
+            $parts[] = $line1;
+        }
+
+        $city_parts = array();
+        if ( $postcode ) {
+            $city_parts[] = $postcode;
+        }
+        if ( $city ) {
+            $city_parts[] = $city;
+        }
+        if ( ! empty( $city_parts ) ) {
+            $parts[] = implode( ' ', $city_parts );
+        }
+
+        if ( $country ) {
+            $parts[] = $country;
+        }
+
+        return implode( ', ', $parts );
     }
 
     // =========================================================================

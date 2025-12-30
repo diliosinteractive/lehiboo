@@ -130,7 +130,10 @@ $base_url = admin_url( 'admin.php?page=el_vendor_documents' );
                 <?php foreach ( $documents as $doc ) : ?>
                     <tr data-doc-id="<?php echo esc_attr( $doc->id ); ?>">
                         <td>
-                            <strong><?php echo esc_html( $doc->vendor_name ); ?></strong>
+                            <a href="#" class="btn_view_vendor_profile" data-vendor-id="<?php echo esc_attr( $doc->vendor_id ); ?>" style="text-decoration:none;color:inherit;">
+                                <strong style="color:#2196F3;cursor:pointer;"><?php echo esc_html( $doc->vendor_name ); ?></strong>
+                                <span class="dashicons dashicons-external" style="font-size:14px;vertical-align:middle;color:#2196F3;margin-left:3px;"></span>
+                            </a>
                             <br><small style="color:#666;"><?php echo esc_html( $doc->vendor_email ); ?></small>
                         </td>
                         <td><?php echo esc_html( $doc->type_name ); ?></td>
@@ -243,6 +246,36 @@ $base_url = admin_url( 'admin.php?page=el_vendor_documents' );
     </div>
 </div>
 
+<!-- Modal Profil Partenaire -->
+<div id="vendor_profile_modal" class="el-modal" style="display:none;">
+    <div class="el-modal-overlay"></div>
+    <div class="el-modal-content" style="width:650px;">
+        <div class="el-modal-header" style="background:#FF6600;">
+            <h2 style="color:#fff;">
+                <span class="dashicons dashicons-businessperson" style="vertical-align:middle;margin-right:8px;"></span>
+                <?php esc_html_e( 'Fiche Partenaire', 'eventlist' ); ?>
+            </h2>
+            <button type="button" class="el-modal-close" style="color:#fff;">&times;</button>
+        </div>
+        <div class="el-modal-body" id="vendor_profile_content">
+            <!-- Loader -->
+            <div id="vendor_profile_loader" style="text-align:center;padding:40px;">
+                <span class="spinner is-active" style="float:none;margin:0 auto;"></span>
+                <p style="margin-top:10px;color:#666;"><?php esc_html_e( 'Chargement...', 'eventlist' ); ?></p>
+            </div>
+            <!-- Content will be loaded here -->
+            <div id="vendor_profile_data" style="display:none;"></div>
+        </div>
+        <div class="el-modal-footer">
+            <a href="#" id="vendor_edit_link" class="button button-primary" target="_blank" style="float:left;">
+                <span class="dashicons dashicons-edit" style="vertical-align:middle;"></span>
+                <?php esc_html_e( 'Modifier dans WordPress', 'eventlist' ); ?>
+            </a>
+            <button type="button" class="button el-modal-cancel"><?php esc_html_e( 'Fermer', 'eventlist' ); ?></button>
+        </div>
+    </div>
+</div>
+
 <style>
 .el-vendor-documents-admin .wp-heading-inline {
     display: flex;
@@ -314,6 +347,88 @@ $base_url = admin_url( 'admin.php?page=el_vendor_documents' );
 .el-modal-footer .button {
     margin-left: 10px;
 }
+/* Styles pour le modal profil partenaire */
+.vendor-profile-section {
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.vendor-profile-section:last-child {
+    margin-bottom: 0;
+}
+.vendor-profile-section-header {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    border-bottom: 1px solid #e0e0e0;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.vendor-profile-section-header .dashicons {
+    color: #FF6600;
+}
+.vendor-profile-section-content {
+    padding: 15px;
+}
+.vendor-profile-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+.vendor-profile-row:last-child {
+    margin-bottom: 0;
+}
+.vendor-profile-label {
+    width: 140px;
+    font-weight: 500;
+    color: #666;
+    flex-shrink: 0;
+}
+.vendor-profile-value {
+    flex: 1;
+    color: #333;
+    word-break: break-word;
+}
+.vendor-profile-value a {
+    color: #2196F3;
+    text-decoration: none;
+}
+.vendor-profile-value a:hover {
+    text-decoration: underline;
+}
+.vendor-profile-value.empty {
+    color: #999;
+    font-style: italic;
+}
+.vendor-profile-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+}
+.vendor-profile-header-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+.vendor-profile-header-text h3 {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    color: #333;
+}
+.vendor-profile-header-text .vendor-id {
+    color: #999;
+    font-size: 12px;
+}
+.btn_view_vendor_profile:hover strong {
+    text-decoration: underline;
+}
 </style>
 
 <script>
@@ -356,15 +471,132 @@ jQuery(document).ready(function($) {
 
     // Fermer modal
     $('.el-modal-close, .el-modal-cancel, .el-modal-overlay').on('click', function() {
-        $('#reject_modal').fadeOut(200);
+        $('.el-modal').fadeOut(200);
     });
 
     // ESC pour fermer
     $(document).on('keydown', function(e) {
         if (e.key === 'Escape') {
-            $('#reject_modal').fadeOut(200);
+            $('.el-modal').fadeOut(200);
         }
     });
+
+    // ========================================
+    // Modal Profil Partenaire
+    // ========================================
+
+    // Ouvrir modal profil
+    $(document).on('click', '.btn_view_vendor_profile', function(e) {
+        e.preventDefault();
+        var vendorId = $(this).data('vendor-id');
+
+        // Afficher le modal avec le loader
+        $('#vendor_profile_loader').show();
+        $('#vendor_profile_data').hide().empty();
+        $('#vendor_profile_modal').fadeIn(200);
+
+        // Charger les donnees
+        $.post(ajaxUrl, {
+            action: 'el_admin_get_vendor_profile',
+            nonce: adminNonce,
+            vendor_id: vendorId
+        }, function(response) {
+            $('#vendor_profile_loader').hide();
+
+            if (response.success && response.data.profile) {
+                var profile = response.data.profile;
+                var html = buildProfileHtml(profile);
+                $('#vendor_profile_data').html(html).show();
+                $('#vendor_edit_link').attr('href', profile.meta.edit_url);
+            } else {
+                $('#vendor_profile_data').html('<p style="color:#dc3545;text-align:center;">' + (response.data.message || 'Erreur lors du chargement') + '</p>').show();
+            }
+        }).fail(function() {
+            $('#vendor_profile_loader').hide();
+            $('#vendor_profile_data').html('<p style="color:#dc3545;text-align:center;">Erreur de connexion</p>').show();
+        });
+    });
+
+    // Construire le HTML du profil
+    function buildProfileHtml(profile) {
+        var html = '';
+
+        // Header avec logo
+        html += '<div class="vendor-profile-header-info">';
+        if (profile.organisation.logo_url) {
+            html += '<img src="' + escapeHtml(profile.organisation.logo_url) + '" alt="" class="vendor-profile-logo">';
+        } else {
+            html += '<div class="vendor-profile-logo" style="background:#f0f0f0;display:flex;align-items:center;justify-content:center;"><span class="dashicons dashicons-building" style="font-size:30px;color:#999;"></span></div>';
+        }
+        html += '<div class="vendor-profile-header-text">';
+        html += '<h3>' + escapeHtml(profile.organisation.display_name || profile.contact.full_name || 'Sans nom') + '</h3>';
+        html += '<div class="vendor-id">ID: ' + profile.id + ' | Inscrit le ' + escapeHtml(profile.meta.registered) + '</div>';
+        html += '</div>';
+        html += '</div>';
+
+        // Section Contact
+        html += '<div class="vendor-profile-section">';
+        html += '<div class="vendor-profile-section-header"><span class="dashicons dashicons-admin-users"></span> <?php esc_html_e( 'Contact', 'eventlist' ); ?></div>';
+        html += '<div class="vendor-profile-section-content">';
+        html += buildRow('<?php esc_html_e( 'Nom complet', 'eventlist' ); ?>', profile.contact.full_name);
+        html += buildRow('<?php esc_html_e( 'Email', 'eventlist' ); ?>', profile.contact.email, 'email');
+        html += buildRow('<?php esc_html_e( 'Telephone', 'eventlist' ); ?>', profile.contact.phone, 'phone');
+        html += '</div></div>';
+
+        // Section Organisation
+        html += '<div class="vendor-profile-section">';
+        html += '<div class="vendor-profile-section-header"><span class="dashicons dashicons-building"></span> <?php esc_html_e( 'Organisation', 'eventlist' ); ?></div>';
+        html += '<div class="vendor-profile-section-content">';
+        html += buildRow('<?php esc_html_e( 'Nom', 'eventlist' ); ?>', profile.organisation.display_name || profile.organisation.name);
+        html += buildRow('<?php esc_html_e( 'Type', 'eventlist' ); ?>', profile.organisation.type_label);
+        html += buildRow('<?php esc_html_e( 'SIREN', 'eventlist' ); ?>', profile.organisation.siren);
+        html += buildRow('<?php esc_html_e( 'Statut juridique', 'eventlist' ); ?>', profile.organisation.legal_status);
+        html += buildRow('<?php esc_html_e( 'Telephone org.', 'eventlist' ); ?>', profile.organisation.phone, 'phone');
+        if (profile.organisation.website) {
+            html += buildRow('<?php esc_html_e( 'Site web', 'eventlist' ); ?>', profile.organisation.website, 'url');
+        }
+        html += '</div></div>';
+
+        // Section Adresse
+        html += '<div class="vendor-profile-section">';
+        html += '<div class="vendor-profile-section-header"><span class="dashicons dashicons-location"></span> <?php esc_html_e( 'Adresse', 'eventlist' ); ?></div>';
+        html += '<div class="vendor-profile-section-content">';
+        html += buildRow('<?php esc_html_e( 'Adresse', 'eventlist' ); ?>', profile.address.line1);
+        html += buildRow('<?php esc_html_e( 'Code postal', 'eventlist' ); ?>', profile.address.postcode);
+        html += buildRow('<?php esc_html_e( 'Ville', 'eventlist' ); ?>', profile.address.city);
+        html += buildRow('<?php esc_html_e( 'Pays', 'eventlist' ); ?>', profile.address.country);
+        html += '</div></div>';
+
+        return html;
+    }
+
+    // Construire une ligne de donnee
+    function buildRow(label, value, type) {
+        var displayValue = '';
+
+        if (!value || value === '') {
+            displayValue = '<span class="empty">Non renseigne</span>';
+        } else if (type === 'email') {
+            displayValue = '<a href="mailto:' + escapeHtml(value) + '">' + escapeHtml(value) + '</a>';
+        } else if (type === 'phone') {
+            displayValue = '<a href="tel:' + escapeHtml(value) + '">' + escapeHtml(value) + '</a>';
+        } else if (type === 'url') {
+            var url = value.indexOf('http') === 0 ? value : 'https://' + value;
+            displayValue = '<a href="' + escapeHtml(url) + '" target="_blank">' + escapeHtml(value) + '</a>';
+        } else {
+            displayValue = escapeHtml(value);
+        }
+
+        return '<div class="vendor-profile-row"><div class="vendor-profile-label">' + label + '</div><div class="vendor-profile-value">' + displayValue + '</div></div>';
+    }
+
+    // Echapper le HTML
+    function escapeHtml(text) {
+        if (!text) return '';
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(text));
+        return div.innerHTML;
+    }
 
     // Confirmer rejet
     $('#reject_form').on('submit', function(e) {
