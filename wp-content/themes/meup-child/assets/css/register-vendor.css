@@ -1788,5 +1788,5 @@ body:has(.register_header) main {
 	}
 }
 form#vendor_register_form {
-    padding: 0px;
+    padding: 0px!important;
 }
