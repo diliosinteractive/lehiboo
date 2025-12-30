@@ -108,7 +108,12 @@ function meup_child_scripts() {
 
         // Styles et scripts pour le formulaire partenaire
         wp_enqueue_style( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/css/register-vendor.css', array('lehiboo-register-customer'), '2.1.0' );
-        wp_enqueue_script( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/js/register-vendor.js', array('jquery'), '3.2.0', true );
+
+        // Select2 pour les multi-select (formulaire partenaire)
+        wp_enqueue_style( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', array(), '4.1.0' );
+        wp_enqueue_script( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array('jquery'), '4.1.0', true );
+
+        wp_enqueue_script( 'lehiboo-register-vendor', get_stylesheet_directory_uri() . '/assets/js/register-vendor.js', array('jquery', 'select2'), '3.2.0', true );
 
         // Cloudflare Turnstile CAPTCHA pour formulaire partenaire
         wp_enqueue_script( 'cloudflare-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', array(), null, true );
@@ -1317,23 +1322,25 @@ function lehiboo_handle_vendor_register() {
 	$phone = isset( $_POST['vendor_phone'] ) ? sanitize_text_field( $_POST['vendor_phone'] ) : '';
 	$password = isset( $_POST['vendor_password'] ) ? $_POST['vendor_password'] : '';
 
-	// ÉTAPE 2 : Organisation
+	// ÉTAPE 3 : Mon Organisation
 	$org_name = isset( $_POST['vendor_org_name'] ) ? sanitize_text_field( $_POST['vendor_org_name'] ) : '';
+	$org_display_name = isset( $_POST['vendor_org_display_name'] ) ? sanitize_text_field( $_POST['vendor_org_display_name'] ) : '';
+	$types_structure = isset( $_POST['vendor_types_structure'] ) ? array_map( 'sanitize_text_field', $_POST['vendor_types_structure'] ) : array();
+	$org_roles = isset( $_POST['vendor_org_roles'] ) ? array_map( 'sanitize_text_field', $_POST['vendor_org_roles'] ) : array();
 	$org_type = isset( $_POST['vendor_org_type'] ) ? sanitize_text_field( $_POST['vendor_org_type'] ) : '';
 	$org_siret = isset( $_POST['vendor_org_siret'] ) ? sanitize_text_field( $_POST['vendor_org_siret'] ) : '';
+	$org_creation_date = isset( $_POST['vendor_org_creation_date'] ) ? sanitize_text_field( $_POST['vendor_org_creation_date'] ) : '';
+	$org_effectifs = isset( $_POST['vendor_org_effectifs'] ) ? sanitize_text_field( $_POST['vendor_org_effectifs'] ) : '';
 	$org_address = isset( $_POST['vendor_org_address'] ) ? sanitize_text_field( $_POST['vendor_org_address'] ) : '';
 	$org_city = isset( $_POST['vendor_org_city'] ) ? sanitize_text_field( $_POST['vendor_org_city'] ) : '';
 	$org_zipcode = isset( $_POST['vendor_org_zipcode'] ) ? sanitize_text_field( $_POST['vendor_org_zipcode'] ) : '';
-	$org_website = isset( $_POST['vendor_org_website'] ) ? esc_url_raw( $_POST['vendor_org_website'] ) : '';
 	$org_description = isset( $_POST['vendor_org_description'] ) ? sanitize_textarea_field( $_POST['vendor_org_description'] ) : '';
-	$org_roles = isset( $_POST['vendor_org_roles'] ) ? array_map( 'sanitize_text_field', $_POST['vendor_org_roles'] ) : array();
-	$categories = isset( $_POST['vendor_categories'] ) ? array_map( 'sanitize_text_field', $_POST['vendor_categories'] ) : array();
 
 	// Validation de base
 	if ( empty( $firstname ) || empty( $lastname ) || empty( $email ) || empty( $password ) ||
-	     empty( $org_name ) || empty( $org_type ) || empty( $org_siret ) ||
+	     empty( $org_name ) || empty( $org_display_name ) || empty( $org_type ) || empty( $org_siret ) ||
 	     empty( $org_address ) || empty( $org_city ) || empty( $org_zipcode ) ||
-	     empty( $org_description ) || empty( $categories ) ) {
+	     empty( $types_structure ) || empty( $org_roles ) ) {
 		wp_send_json_error( array( 'message' => 'Veuillez remplir tous les champs obligatoires.' ) );
 	}
 
@@ -1347,6 +1354,15 @@ function lehiboo_handle_vendor_register() {
 
 	if ( strlen( $password ) < 8 ) {
 		wp_send_json_error( array( 'message' => 'Le mot de passe doit contenir au moins 8 caractères.' ) );
+	}
+
+	// Vérifier que l'email a été vérifié via OTP
+	$email_verified = isset( $_POST['vendor_email_verified'] ) ? sanitize_text_field( $_POST['vendor_email_verified'] ) : '0';
+	if ( $email_verified !== '1' ) {
+		// Vérifier dans la base de données
+		if ( ! LeHiboo_OTP::is_registration_email_verified( $email ) ) {
+			wp_send_json_error( array( 'message' => 'Veuillez vérifier votre adresse email avant de soumettre votre demande.' ) );
+		}
 	}
 
 	// Générer username unique
@@ -1378,24 +1394,28 @@ function lehiboo_handle_vendor_register() {
 	$user->set_role( 'el_event_vendor' );
 
 	// Sauvegarder les métadonnées organisation
-	update_user_meta( $user_id, 'org_display_name', $org_name );
 	update_user_meta( $user_id, 'org_name', $org_name );
-	update_user_meta( $user_id, 'org_type', $org_type );
+	update_user_meta( $user_id, 'org_display_name', $org_display_name );
+	update_user_meta( $user_id, 'org_types_structure', $types_structure );
+	update_user_meta( $user_id, 'org_roles', $org_roles );
+	update_user_meta( $user_id, 'org_type', $org_type ); // Statut juridique
 	update_user_meta( $user_id, 'org_siret', $org_siret );
+	update_user_meta( $user_id, 'org_creation_date', $org_creation_date );
+	update_user_meta( $user_id, 'org_effectifs', $org_effectifs );
 	update_user_meta( $user_id, 'org_address', $org_address );
 	update_user_meta( $user_id, 'org_city', $org_city );
 	update_user_meta( $user_id, 'org_zipcode', $org_zipcode );
-	update_user_meta( $user_id, 'org_website', $org_website );
 	update_user_meta( $user_id, 'org_description', $org_description );
 	update_user_meta( $user_id, 'user_professional_email', $email );
 	update_user_meta( $user_id, 'user_phone', $phone );
 	update_user_meta( $user_id, 'org_phone', $phone );
-	update_user_meta( $user_id, 'org_roles', $org_roles );
-	update_user_meta( $user_id, 'org_categories', $categories );
 
 	// STATUT : En attente d'approbation
 	update_user_meta( $user_id, 'vendor_status', 'pending_approval' );
 	update_user_meta( $user_id, 'vendor_application_date', current_time( 'mysql' ) );
+
+	// Marquer l'email comme vérifié (OTP déjà validé avant création)
+	update_user_meta( $user_id, 'email_verified', 1 );
 
 	// Gestion des uploads de fichiers
 	require_once( ABSPATH . 'wp-admin/includes/file.php' );
@@ -1435,62 +1455,41 @@ function lehiboo_handle_vendor_register() {
 	}
 
 	// Préparer les données pour l'email de confirmation (envoyé après validation OTP)
-	// On sauvegarde ces infos pour les utiliser après validation OTP
-	update_user_meta( $user_id, 'pending_confirmation_email', array(
-		'firstname' => $firstname,
-		'org_name' => $org_name,
-		'admin_email_data' => array(
-			'subject' => '[Le Hiboo] Nouvelle demande partenaire : ' . $org_name,
-			'message' => "Une nouvelle demande de partenariat a été reçue.\n\n" .
-			             "Organisation : {$org_name}\n" .
-			             "Contact : {$firstname} {$lastname}\n" .
-			             "Email : {$email}\n" .
-			             "Type : {$org_type}\n\n" .
-			             "Accédez à l'administration pour valider cette demande."
-		)
-	) );
-
 	// ========================================
-	// SYSTÈME OTP - VÉRIFICATION EMAIL
+	// ENVOI DES EMAILS DE CONFIRMATION
 	// ========================================
+	// L'email est déjà vérifié via OTP avant soumission du formulaire
+	// On envoie directement les emails de confirmation
 
-	// Créer le code OTP
-	$otp_code = LeHiboo_OTP::create_otp( $user_id, $email );
+	// Email au vendor
+	$subject_vendor = '[Le Hiboo] Votre demande de partenariat a été reçue';
+	$message_vendor = "Bonjour {$firstname},\n\n";
+	$message_vendor .= "Nous avons bien reçu votre demande de partenariat pour {$org_name}.\n\n";
+	$message_vendor .= "Votre dossier est en cours d'examen. Notre équipe reviendra vers vous sous 48h ouvrées.\n\n";
+	$message_vendor .= "Cordialement,\nL'équipe Le Hiboo";
 
-	if ( ! $otp_code ) {
-		error_log( 'LeHiboo Vendor Registration: Échec création OTP pour user_id=' . $user_id . ', email=' . $email );
-		// Supprimer l'utilisateur créé car l'OTP a échoué
-		wp_delete_user( $user_id );
-		wp_send_json_error( array(
-			'message' => 'Erreur lors de la génération du code de vérification. Veuillez réessayer.',
-			'debug' => array(
-				'step' => 'create_otp_failed',
-				'user_id' => $user_id
-			)
-		) );
-	}
+	wp_mail( $email, $subject_vendor, $message_vendor );
 
-	// Envoyer l'email avec le code OTP
-	$otp_sent = LeHiboo_OTP::send_otp_email( $user_id, $email, $otp_code, $firstname );
+	// Email à l'admin
+	$admin_email = get_option( 'admin_email' );
+	$admin_subject = '[Le Hiboo] Nouvelle demande partenaire : ' . $org_name;
+	$admin_message = "Une nouvelle demande de partenariat a été reçue.\n\n";
+	$admin_message .= "Organisation : {$org_name}\n";
+	$admin_message .= "Contact : {$firstname} {$lastname}\n";
+	$admin_message .= "Email : {$email}\n";
+	$admin_message .= "Type : {$org_type}\n\n";
+	$admin_message .= "Accédez à l'administration pour valider cette demande.";
 
-	if ( ! $otp_sent ) {
-		error_log( 'LeHiboo Vendor Registration: Échec envoi email OTP pour user_id=' . $user_id );
-		wp_send_json_error( array(
-			'message' => 'Erreur lors de l\'envoi de l\'email de vérification. Veuillez vérifier votre adresse email.',
-			'debug' => array(
-				'step' => 'send_otp_email_failed',
-				'user_id' => $user_id
-			)
-		) );
-	}
+	wp_mail( $admin_email, $admin_subject, $admin_message );
 
-	// Retourner succès avec OTP requis
-	// Les emails seront envoyés après validation OTP
+	// Nettoyer les OTP de pré-inscription pour cet email
+	LeHiboo_OTP::delete_email_otps( $email );
+
+	// Retourner succès
 	wp_send_json_success( array(
-		'message' => 'Votre demande a été créée ! Un code de vérification a été envoyé à votre email.',
-		'otp_required' => true,
-		'user_id' => $user_id,
-		'show_otp_form' => true
+		'message' => 'Votre demande de partenariat a été envoyée avec succès !',
+		'redirect_url' => home_url( '/vendor-pending/' ),
+		'user_id' => $user_id
 	) );
 }
 
@@ -1660,6 +1659,133 @@ function lehiboo_load_otp_template() {
 	$html = ob_get_clean();
 
 	wp_send_json_success( array( 'html' => $html ) );
+}
+
+// ========================================
+// AJAX HANDLERS - OTP INSCRIPTION (SANS CRÉATION USER)
+// ========================================
+
+/**
+ * AJAX - Envoyer OTP pour l'inscription (avant création du user)
+ */
+add_action( 'wp_ajax_nopriv_lehiboo_send_registration_otp', 'lehiboo_ajax_send_registration_otp' );
+
+function lehiboo_ajax_send_registration_otp() {
+	// Vérifier le nonce
+	check_ajax_referer( 'vendor_register_nonce', 'vendor_register_nonce' );
+
+	// Récupérer les données
+	$email = isset( $_POST['vendor_email'] ) ? sanitize_email( $_POST['vendor_email'] ) : '';
+	$firstname = isset( $_POST['vendor_firstname'] ) ? sanitize_text_field( $_POST['vendor_firstname'] ) : '';
+
+	// Validation
+	if ( empty( $email ) || empty( $firstname ) ) {
+		wp_send_json_error( array( 'message' => 'Email et prénom sont requis.' ) );
+	}
+
+	if ( ! is_email( $email ) ) {
+		wp_send_json_error( array( 'message' => 'Adresse email invalide.' ) );
+	}
+
+	// Vérifier si l'email existe déjà
+	if ( email_exists( $email ) ) {
+		wp_send_json_error( array( 'message' => 'Cette adresse email est déjà utilisée.' ) );
+	}
+
+	// Créer le code OTP
+	$otp_code = LeHiboo_OTP::create_registration_otp( $email );
+
+	if ( ! $otp_code ) {
+		error_log( 'LeHiboo Registration OTP: Échec création OTP pour email=' . $email );
+		wp_send_json_error( array( 'message' => 'Erreur lors de la génération du code de vérification. Veuillez réessayer.' ) );
+	}
+
+	// Envoyer l'email avec le code OTP
+	$otp_sent = LeHiboo_OTP::send_registration_otp_email( $email, $otp_code, $firstname );
+
+	if ( ! $otp_sent ) {
+		error_log( 'LeHiboo Registration OTP: Échec envoi email OTP pour email=' . $email );
+		wp_send_json_error( array( 'message' => 'Erreur lors de l\'envoi de l\'email de vérification. Veuillez vérifier votre adresse email.' ) );
+	}
+
+	wp_send_json_success( array(
+		'message' => 'Un code de vérification a été envoyé à votre adresse email.',
+		'email' => $email
+	) );
+}
+
+/**
+ * AJAX - Vérifier OTP pour l'inscription (par email)
+ */
+add_action( 'wp_ajax_nopriv_lehiboo_verify_registration_otp', 'lehiboo_ajax_verify_registration_otp' );
+
+function lehiboo_ajax_verify_registration_otp() {
+	// Vérifier le nonce
+	check_ajax_referer( 'vendor_register_nonce', 'vendor_register_nonce' );
+
+	// Récupérer les données
+	$email = isset( $_POST['vendor_email'] ) ? sanitize_email( $_POST['vendor_email'] ) : '';
+	$otp_code = isset( $_POST['otp_code'] ) ? sanitize_text_field( $_POST['otp_code'] ) : '';
+
+	// Validation
+	if ( empty( $email ) || empty( $otp_code ) ) {
+		wp_send_json_error( array( 'message' => 'Données manquantes.' ) );
+	}
+
+	if ( strlen( $otp_code ) !== 6 || ! ctype_digit( $otp_code ) ) {
+		wp_send_json_error( array( 'message' => 'Code invalide. Le code doit contenir 6 chiffres.' ) );
+	}
+
+	// Vérifier le code OTP
+	$result = LeHiboo_OTP::verify_registration_otp( $email, $otp_code );
+
+	if ( ! $result['success'] ) {
+		wp_send_json_error( array(
+			'message' => $result['message'],
+			'error_code' => $result['error_code'],
+			'remaining_attempts' => isset( $result['remaining_attempts'] ) ? $result['remaining_attempts'] : null
+		) );
+	}
+
+	wp_send_json_success( array(
+		'message' => 'Email vérifié avec succès !',
+		'email_verified' => true
+	) );
+}
+
+/**
+ * AJAX - Renvoyer OTP pour l'inscription (par email)
+ */
+add_action( 'wp_ajax_nopriv_lehiboo_resend_registration_otp', 'lehiboo_ajax_resend_registration_otp' );
+
+function lehiboo_ajax_resend_registration_otp() {
+	// Vérifier le nonce
+	check_ajax_referer( 'vendor_register_nonce', 'vendor_register_nonce' );
+
+	// Récupérer les données
+	$email = isset( $_POST['vendor_email'] ) ? sanitize_email( $_POST['vendor_email'] ) : '';
+	$firstname = isset( $_POST['vendor_firstname'] ) ? sanitize_text_field( $_POST['vendor_firstname'] ) : '';
+
+	// Validation
+	if ( empty( $email ) ) {
+		wp_send_json_error( array( 'message' => 'Email requis.' ) );
+	}
+
+	// Créer un nouveau code OTP
+	$otp_code = LeHiboo_OTP::create_registration_otp( $email );
+
+	if ( ! $otp_code ) {
+		wp_send_json_error( array( 'message' => 'Erreur lors de la génération du code.' ) );
+	}
+
+	// Envoyer l'email
+	$otp_sent = LeHiboo_OTP::send_registration_otp_email( $email, $otp_code, $firstname );
+
+	if ( ! $otp_sent ) {
+		wp_send_json_error( array( 'message' => 'Erreur lors de l\'envoi de l\'email.' ) );
+	}
+
+	wp_send_json_success( array( 'message' => 'Un nouveau code a été envoyé à votre adresse email.' ) );
 }
 
 /**

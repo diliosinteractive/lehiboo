@@ -679,3 +679,318 @@
 		font-size: 13px;
 	}
 }
+
+/* ========================================
+   OTP VERIFICATION STEP
+======================================== */
+.otp_verification_wrapper {
+	text-align: center;
+	padding: 40px 20px;
+	max-width: 500px;
+	margin: 0 auto;
+}
+
+.otp_icon {
+	width: 80px;
+	height: 80px;
+	background: var(--orange-light);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto 24px;
+}
+
+.otp_icon i {
+	font-size: 36px;
+	color: var(--orange-primary);
+}
+
+.otp_verification_wrapper .form_step_title {
+	font-size: 28px;
+	margin-bottom: 12px;
+	color: var(--grey-dark);
+}
+
+.otp_verification_wrapper .form_step_subtitle {
+	font-size: 16px;
+	color: var(--grey-medium);
+	margin-bottom: 32px;
+}
+
+/* OTP Inputs */
+.otp_inputs_wrapper {
+	display: flex;
+	justify-content: center;
+	gap: 12px;
+	margin-bottom: 24px;
+}
+
+.otp_input {
+	width: 52px;
+	height: 60px;
+	border: 2px solid #E0E4E9;
+	border-radius: 8px;
+	text-align: center;
+	font-size: 24px;
+	font-weight: 600;
+	color: var(--grey-dark);
+	transition: var(--transition);
+	background: var(--white);
+}
+
+.otp_input:focus {
+	outline: none;
+	border-color: var(--orange-primary);
+	box-shadow: 0 0 0 3px rgba(255, 96, 31, 0.1);
+}
+
+.otp_input:not(:placeholder-shown) {
+	border-color: var(--orange-primary);
+	background: var(--orange-light);
+}
+
+/* Animation shake pour erreur */
+.otp_inputs_wrapper.shake {
+	animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+	0%, 100% { transform: translateX(0); }
+	10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+	20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Error message OTP */
+.otp_error_message {
+	color: #E74C3C;
+	font-size: 14px;
+	margin-bottom: 16px;
+	padding: 12px;
+	background: #FDEAEA;
+	border-radius: 6px;
+}
+
+/* Verify button */
+.btn_verify_otp {
+	width: 100%;
+	max-width: 300px;
+	padding: 14px 24px;
+	background: var(--orange-primary);
+	color: white;
+	border: none;
+	border-radius: var(--border-radius);
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: var(--transition);
+	margin-bottom: 24px;
+}
+
+.btn_verify_otp:hover {
+	background: var(--orange-hover);
+	transform: translateY(-2px);
+}
+
+.btn_verify_otp:disabled {
+	opacity: 0.7;
+	cursor: not-allowed;
+	transform: none;
+}
+
+/* Resend wrapper */
+.otp_resend_wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	font-size: 14px;
+	color: var(--grey-medium);
+}
+
+.btn_resend_otp {
+	background: none;
+	border: none;
+	color: var(--orange-primary);
+	font-weight: 600;
+	cursor: pointer;
+	padding: 0;
+	transition: var(--transition);
+}
+
+.btn_resend_otp:hover {
+	text-decoration: underline;
+}
+
+.btn_resend_otp:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+/* Success state */
+.otp_verification_wrapper.verified .otp_icon {
+	background: #E8F8F0;
+}
+
+.otp_verification_wrapper.verified .otp_icon i {
+	color: #27AE60;
+}
+
+.otp_verification_wrapper.verified .otp_icon i::before {
+	content: "\f00c"; /* fa-check */
+}
+
+.otp_verification_wrapper.verified .form_step_title {
+	color: #27AE60;
+}
+
+.otp_verification_wrapper.verified .otp_input {
+	border-color: #27AE60;
+	background: #E8F8F0;
+}
+
+.otp_verification_wrapper.verified .btn_verify_otp,
+.otp_verification_wrapper.verified .otp_resend_wrapper {
+	display: none;
+}
+
+/* OTP Responsive */
+@media (max-width: 576px) {
+	.otp_inputs_wrapper {
+		gap: 8px;
+	}
+
+	.otp_input {
+		width: 44px;
+		height: 52px;
+		font-size: 20px;
+	}
+
+	.otp_icon {
+		width: 64px;
+		height: 64px;
+	}
+
+	.otp_icon i {
+		font-size: 28px;
+	}
+
+	.otp_verification_wrapper .form_step_title {
+		font-size: 22px;
+	}
+
+	.otp_verification_wrapper .form_step_subtitle {
+		font-size: 14px;
+	}
+
+	.btn_verify_otp {
+		max-width: 100%;
+	}
+
+	.otp_resend_wrapper {
+		flex-direction: column;
+		gap: 4px;
+	}
+}
+
+/* ========================================
+   SELECT2 STYLES
+======================================== */
+.select2-container {
+	width: 100% !important;
+}
+
+.select2-container--default .select2-selection--multiple {
+	min-height: 48px;
+	border: 1px solid #E0E4E9;
+	border-radius: var(--border-radius);
+	padding: 6px 12px;
+	background: white;
+	transition: var(--transition);
+}
+
+.select2-container--default .select2-selection--multiple:focus,
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+	border-color: var(--orange-primary);
+	box-shadow: 0 0 0 3px rgba(255, 96, 31, 0.1);
+	outline: none;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+	background: var(--orange-light);
+	border: 1px solid var(--orange-primary);
+	border-radius: 6px;
+	padding: 4px 10px;
+	color: var(--grey-dark);
+	font-size: 13px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+	color: var(--orange-primary);
+	margin-right: 6px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+	color: var(--orange-hover);
+}
+
+.select2-dropdown {
+	border-radius: var(--border-radius);
+	border-color: #E0E4E9;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.select2-results__option--highlighted[aria-selected] {
+	background: var(--orange-primary) !important;
+}
+
+/* Select2 Error State */
+.select2-container.select2-error .select2-selection--multiple {
+	border-color: #E74C3C !important;
+	background: #FFEBEE;
+}
+
+/* ========================================
+   STEP 3 - UPLOAD IMAGES (Cover + Logo)
+======================================== */
+.org_images_row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 24px;
+	margin-top: 24px;
+}
+
+.org_images_row .upload_group {
+	margin-bottom: 0;
+}
+
+.org_images_row .upload_area {
+	padding: 30px 15px;
+}
+
+.org_images_row .upload_area i {
+	font-size: 28px;
+	margin-bottom: 8px;
+}
+
+.org_images_row .upload_area p {
+	font-size: 14px;
+	margin-bottom: 4px;
+}
+
+.org_images_row .upload_hint {
+	font-size: 12px;
+}
+
+.org_images_row .upload_preview img {
+	max-width: 150px;
+	max-height: 120px;
+}
+
+/* Upload responsif */
+@media (max-width: 768px) {
+	.org_images_row {
+		grid-template-columns: 1fr;
+		gap: 16px;
+	}
+}

@@ -1,7 +1,7 @@
 /**
  * Vendor Registration JavaScript
- * Version 3.2 - Auto-save: Sauvegarde automatique dans localStorage
- * @version 3.2.0
+ * Version 4.0 - OTP Verification avant création user
+ * @version 4.0.0
  */
 
 (function ($) {
@@ -10,9 +10,10 @@
 	const VendorRegister = {
 
 		currentStep: 1,
-		totalSteps: 3,
+		totalSteps: 4,
 		storageKey: 'lehiboo_vendor_registration_draft',
 		autoSaveTimer: null,
+		emailVerified: false,
 
 		/**
 		 * Initialisation
@@ -20,6 +21,7 @@
 		init: function () {
 			this.bindEvents();
 			this.initAPIs();
+			this.initOTPInputs();
 			this.restoreFormData();
 			this.initAutoSave();
 		},
@@ -31,6 +33,15 @@
 			// Navigation entre étapes
 			$(document).on('click', '.btn_next', this.nextStep.bind(this));
 			$(document).on('click', '.btn_prev', this.prevStep.bind(this));
+
+			// OTP: Envoi du code
+			$(document).on('click', '#btn_send_otp', this.sendOTP.bind(this));
+
+			// OTP: Vérification du code
+			$(document).on('click', '#btn_verify_otp', this.verifyOTP.bind(this));
+
+			// OTP: Renvoi du code
+			$(document).on('click', '#btn_resend_otp', this.resendOTP.bind(this));
 
 			// Toggle password visibility
 			$(document).on('click', '.toggle_password', this.togglePassword);
@@ -206,6 +217,9 @@
 		 * Initialize APIs (Entreprise + Adresse)
 		 */
 		initAPIs: function () {
+			// Initialiser Select2 pour les multi-select
+			this.initSelect2();
+
 			// API Recherche d'entreprise (SIREN/SIRET)
 			let orgSearchTimeout;
 			$('#vendor_org_name').on('input', function () {
@@ -220,6 +234,15 @@
 				orgSearchTimeout = setTimeout(function () {
 					VendorRegister.searchEntreprise(query);
 				}, 300);
+			});
+
+			// Auto-fill display name when org name is manually entered
+			$('#vendor_org_name').on('change', function () {
+				const orgName = $(this).val().trim();
+				const displayName = $('#vendor_org_display_name').val().trim();
+				if (orgName && !displayName) {
+					$('#vendor_org_display_name').val(orgName);
+				}
 			});
 
 			// API Adresse gouv.fr
@@ -250,6 +273,24 @@
 		},
 
 		/**
+		 * Initialiser Select2 pour les multi-select
+		 */
+		initSelect2: function () {
+			if (typeof $.fn.select2 === 'function') {
+				$('.select2_multi').select2({
+					placeholder: 'Sélectionnez une ou plusieurs options',
+					allowClear: true,
+					width: '100%',
+					language: {
+						noResults: function () {
+							return 'Aucun résultat trouvé';
+						}
+					}
+				});
+			}
+		},
+
+		/**
 		 * API Recherche d'entreprise via API Entreprise/Annuaire
 		 */
 		searchEntreprise: function (query) {
@@ -271,12 +312,30 @@
 						response.results.forEach(function (entreprise) {
 							const nom = entreprise.nom_complet || entreprise.nom_raison_sociale;
 							const siren = entreprise.siren;
-							const adresse = entreprise.siege ?
-								`${entreprise.siege.numero_voie || ''} ${entreprise.siege.type_voie || ''} ${entreprise.siege.libelle_voie || ''}, ${entreprise.siege.code_postal || ''} ${entreprise.siege.libelle_commune || ''}`.trim()
+							const siege = entreprise.siege || {};
+							const adresse = siege ?
+								`${siege.numero_voie || ''} ${siege.type_voie || ''} ${siege.libelle_voie || ''}, ${siege.code_postal || ''} ${siege.libelle_commune || ''}`.trim()
 								: '';
 
+							// Données supplémentaires
+							const dateCreation = entreprise.date_creation || '';
+							const effectifs = siege.tranche_effectif_salarie || '';
+							const natureJuridique = entreprise.nature_juridique || '';
+							const codePostal = siege.code_postal || '';
+							const ville = siege.libelle_commune || '';
+							const rue = siege ? `${siege.numero_voie || ''} ${siege.type_voie || ''} ${siege.libelle_voie || ''}`.trim() : '';
+
 							html += `
-								<div class="suggestion_item" data-siren="${siren}" data-nom="${nom}" data-adresse="${adresse}">
+								<div class="suggestion_item"
+									data-siren="${siren}"
+									data-nom="${nom}"
+									data-adresse="${adresse}"
+									data-rue="${rue}"
+									data-code-postal="${codePostal}"
+									data-ville="${ville}"
+									data-date-creation="${dateCreation}"
+									data-effectifs="${effectifs}"
+									data-nature-juridique="${natureJuridique}">
 									<div class="suggestion_name">${nom}</div>
 									<div class="suggestion_details">
 										<span class="suggestion_siren">SIREN: ${siren}</span>
@@ -289,15 +348,51 @@
 
 						// Click sur une suggestion
 						$('.suggestion_item').on('click', function () {
-							const nom = $(this).data('nom');
-							const siren = $(this).data('siren');
-							const adresse = $(this).data('adresse');
+							const $item = $(this);
+							const nom = $item.data('nom');
+							const siren = $item.data('siren');
+							const rue = $item.data('rue');
+							const codePostal = $item.data('code-postal');
+							const ville = $item.data('ville');
+							const dateCreation = $item.data('date-creation');
+							const effectifs = $item.data('effectifs');
+							const natureJuridique = $item.data('nature-juridique');
 
+							// Remplir les champs
 							$('#vendor_org_name').val(nom);
+							$('#vendor_org_display_name').val(nom);
 							$('#vendor_org_siret').val(siren);
-							if (adresse) {
-								VendorRegister.parseAndFillAddress(adresse);
+
+							// Adresse
+							if (rue) $('#vendor_org_address').val(rue);
+							if (codePostal) $('#vendor_org_zipcode').val(codePostal);
+							if (ville) $('#vendor_org_city').val(ville);
+
+							// Date de création
+							if (dateCreation) {
+								// Format API: YYYY-MM-DD
+								$('#vendor_org_creation_date').val(dateCreation);
 							}
+
+							// Effectifs (convertir la tranche en nombre approximatif)
+							if (effectifs) {
+								const effectifsMap = {
+									'00': 0, '01': 1, '02': 3, '03': 6,
+									'11': 10, '12': 20, '21': 50, '22': 100,
+									'31': 200, '32': 250, '41': 500, '42': 1000,
+									'51': 2000, '52': 5000, '53': 10000
+								};
+								const nbEffectifs = effectifsMap[effectifs] || '';
+								if (nbEffectifs) {
+									$('#vendor_org_effectifs').val(nbEffectifs);
+								}
+							}
+
+							// Nature juridique (mapper vers nos statuts)
+							if (natureJuridique) {
+								VendorRegister.mapNatureJuridique(natureJuridique);
+							}
+
 							$suggestions.hide();
 						});
 					} else {
@@ -308,6 +403,59 @@
 					$suggestions.html('<div class="suggestion_error">Erreur de recherche</div>').show();
 				}
 			});
+		},
+
+		/**
+		 * Mapper la nature juridique INSEE vers nos statuts
+		 */
+		mapNatureJuridique: function (codeNature) {
+			// Codes INSEE des natures juridiques
+			const mapping = {
+				// Associations
+				'9220': 'association_1901',
+				'9221': 'association_1901',
+				'9222': 'association_1901',
+				'9223': 'association_1901',
+				'9224': 'association_utilite_publique',
+				// SARL
+				'5499': 'sarl',
+				'5498': 'sarl',
+				'5485': 'sarl',
+				// SAS
+				'5710': 'sas',
+				'5720': 'sas',
+				// SA
+				'5599': 'sa',
+				'5505': 'sa',
+				// Auto-entrepreneur
+				'1000': 'auto_entrepreneur',
+				// EI
+				'1100': 'ei',
+				'1200': 'ei',
+				'1300': 'ei',
+				// Collectivités
+				'7100': 'collectivite',
+				'7200': 'collectivite',
+				'7300': 'collectivite',
+				'7400': 'collectivite',
+			};
+
+			// Chercher le code ou son préfixe
+			let statutKey = mapping[codeNature];
+			if (!statutKey) {
+				// Essayer avec le préfixe (2 premiers chiffres)
+				const prefix = codeNature.substring(0, 2);
+				if (prefix === '92') statutKey = 'association_1901';
+				else if (prefix === '54') statutKey = 'sarl';
+				else if (prefix === '57') statutKey = 'sas';
+				else if (prefix === '55') statutKey = 'sa';
+				else if (prefix === '10' || prefix === '11' || prefix === '12' || prefix === '13') statutKey = 'ei';
+				else if (prefix === '71' || prefix === '72' || prefix === '73' || prefix === '74') statutKey = 'collectivite';
+			}
+
+			if (statutKey) {
+				$('#vendor_org_type').val(statutKey);
+			}
 		},
 
 		/**
@@ -454,7 +602,7 @@
 				}
 			});
 
-			// Validation spécifique step 1
+			// Validation spécifique step 1 (Informations personnelles)
 			if (step === 1) {
 				const password = $('#vendor_password').val();
 				const passwordConfirm = $('#vendor_password_confirm').val();
@@ -470,17 +618,41 @@
 				}
 			}
 
-			// Validation spécifique step 2
+			// Validation spécifique step 2 (OTP)
 			if (step === 2) {
-				const categoriesChecked = $('input[name="vendor_categories[]"]:checked').length;
-				if (categoriesChecked === 0) {
+				if (!this.emailVerified) {
 					isValid = false;
-					VendorRegister.showNotification('error', 'Veuillez sélectionner au moins une catégorie.');
+					VendorRegister.showNotification('error', 'Veuillez vérifier votre adresse email.');
 				}
 			}
 
-			// Validation spécifique step 3 (fichiers + CGU + Cloudflare)
+			// Validation spécifique step 3 (Mon Organisation)
 			if (step === 3) {
+				// Vérifier Type de structure (Select2 multi-select)
+				const typesStructure = $('#vendor_types_structure').val();
+				if (!typesStructure || typesStructure.length === 0) {
+					isValid = false;
+					$('#vendor_types_structure').next('.select2-container').addClass('select2-error');
+					VendorRegister.showNotification('error', 'Veuillez sélectionner au moins un type de structure.');
+					return isValid;
+				} else {
+					$('#vendor_types_structure').next('.select2-container').removeClass('select2-error');
+				}
+
+				// Vérifier Rôle de l'organisation (Select2 multi-select)
+				const orgRoles = $('#vendor_org_roles').val();
+				if (!orgRoles || orgRoles.length === 0) {
+					isValid = false;
+					$('#vendor_org_roles').next('.select2-container').addClass('select2-error');
+					VendorRegister.showNotification('error', 'Veuillez sélectionner au moins un rôle pour votre organisation.');
+					return isValid;
+				} else {
+					$('#vendor_org_roles').next('.select2-container').removeClass('select2-error');
+				}
+			}
+
+			// Validation spécifique step 4 (Documents + CGU + Cloudflare)
+			if (step === 4) {
 				// Vérifier les uploads requis
 				$('.upload_area[data-required="true"]').each(function () {
 					const inputId = $(this).data('input');
@@ -510,6 +682,230 @@
 			}
 
 			return isValid;
+		},
+
+		/**
+		 * Initialiser les inputs OTP (6 chiffres)
+		 */
+		initOTPInputs: function () {
+			const self = this;
+
+			// Auto-focus sur le premier input
+			$(document).on('focus', '.otp_input:first', function () {
+				$(this).select();
+			});
+
+			// Gestion de la saisie des chiffres OTP
+			$(document).on('input', '.otp_input', function (e) {
+				const $input = $(this);
+				const value = $input.val();
+				const index = parseInt($input.data('index'));
+
+				// Ne garder que les chiffres
+				$input.val(value.replace(/[^0-9]/g, ''));
+
+				// Passer au champ suivant si un chiffre est saisi
+				if (value.length === 1 && index < 5) {
+					$(`.otp_input[data-index="${index + 1}"]`).focus();
+				}
+
+				// Mettre à jour le code OTP complet
+				self.updateOTPCode();
+			});
+
+			// Gestion du copier-coller
+			$(document).on('paste', '.otp_input', function (e) {
+				e.preventDefault();
+				const pastedData = (e.originalEvent.clipboardData || window.clipboardData).getData('text');
+				const digits = pastedData.replace(/[^0-9]/g, '').substring(0, 6);
+
+				if (digits.length > 0) {
+					digits.split('').forEach(function (digit, i) {
+						$(`.otp_input[data-index="${i}"]`).val(digit);
+					});
+					self.updateOTPCode();
+
+					// Focus sur le dernier champ rempli ou le suivant
+					const focusIndex = Math.min(digits.length, 5);
+					$(`.otp_input[data-index="${focusIndex}"]`).focus();
+				}
+			});
+
+			// Gestion de la touche Backspace
+			$(document).on('keydown', '.otp_input', function (e) {
+				const $input = $(this);
+				const index = parseInt($input.data('index'));
+
+				if (e.key === 'Backspace' && $input.val() === '' && index > 0) {
+					$(`.otp_input[data-index="${index - 1}"]`).focus().val('');
+					self.updateOTPCode();
+				}
+			});
+		},
+
+		/**
+		 * Mettre à jour le code OTP complet
+		 */
+		updateOTPCode: function () {
+			let code = '';
+			$('.otp_input').each(function () {
+				code += $(this).val();
+			});
+			$('#vendor_otp_code').val(code);
+		},
+
+		/**
+		 * Envoyer le code OTP
+		 */
+		sendOTP: function (e) {
+			e.preventDefault();
+
+			// Valider l'étape 1 avant d'envoyer l'OTP
+			if (!this.validateStep(1)) {
+				return;
+			}
+
+			const $btn = $('#btn_send_otp');
+			const email = $('#vendor_email').val();
+			const firstname = $('#vendor_firstname').val();
+
+			// Désactiver le bouton
+			$btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Envoi en cours...');
+
+			$.ajax({
+				url: lehiboo_register_ajax.ajax_url,
+				type: 'POST',
+				data: {
+					action: 'lehiboo_send_registration_otp',
+					vendor_register_nonce: $('#vendor_register_nonce').val(),
+					vendor_email: email,
+					vendor_firstname: firstname
+				},
+				dataType: 'json',
+				success: function (response) {
+					if (response.success) {
+						VendorRegister.showNotification('success', response.data.message);
+						// Passer à l'étape 2 (OTP)
+						VendorRegister.goToStep(2);
+						// Focus sur le premier input OTP
+						setTimeout(function () {
+							$('.otp_input[data-index="0"]').focus();
+						}, 400);
+					} else {
+						VendorRegister.showNotification('error', response.data.message);
+					}
+					$btn.prop('disabled', false).html('Continuer <i class="fas fa-arrow-right"></i>');
+				},
+				error: function () {
+					VendorRegister.showNotification('error', 'Une erreur est survenue. Veuillez réessayer.');
+					$btn.prop('disabled', false).html('Continuer <i class="fas fa-arrow-right"></i>');
+				}
+			});
+		},
+
+		/**
+		 * Vérifier le code OTP
+		 */
+		verifyOTP: function (e) {
+			e.preventDefault();
+
+			const $btn = $('#btn_verify_otp');
+			const otpCode = $('#vendor_otp_code').val();
+			const email = $('#vendor_email').val();
+
+			if (otpCode.length !== 6) {
+				VendorRegister.showNotification('error', 'Veuillez entrer le code à 6 chiffres.');
+				return;
+			}
+
+			// Désactiver le bouton
+			$btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Vérification...');
+
+			$.ajax({
+				url: lehiboo_register_ajax.ajax_url,
+				type: 'POST',
+				data: {
+					action: 'lehiboo_verify_registration_otp',
+					vendor_register_nonce: $('#vendor_register_nonce').val(),
+					vendor_email: email,
+					otp_code: otpCode
+				},
+				dataType: 'json',
+				success: function (response) {
+					if (response.success) {
+						VendorRegister.showNotification('success', response.data.message);
+						VendorRegister.emailVerified = true;
+						$('#vendor_email_verified').val('1');
+
+						// Masquer le message d'erreur OTP s'il est visible
+						$('.otp_error_message').hide();
+
+						// Afficher le succès
+						$('.otp_verification_wrapper').addClass('verified');
+
+						// Passer à l'étape 3 après un court délai
+						setTimeout(function () {
+							VendorRegister.goToStep(3);
+						}, 1500);
+					} else {
+						$('.otp_error_message').html(response.data.message).show();
+						VendorRegister.showNotification('error', response.data.message);
+						$btn.prop('disabled', false).html('Vérifier le code');
+
+						// Ajouter l'animation d'erreur
+						$('.otp_inputs_wrapper').addClass('shake');
+						setTimeout(function () {
+							$('.otp_inputs_wrapper').removeClass('shake');
+						}, 500);
+					}
+				},
+				error: function () {
+					VendorRegister.showNotification('error', 'Une erreur est survenue. Veuillez réessayer.');
+					$btn.prop('disabled', false).html('Vérifier le code');
+				}
+			});
+		},
+
+		/**
+		 * Renvoyer le code OTP
+		 */
+		resendOTP: function (e) {
+			e.preventDefault();
+
+			const $btn = $('#btn_resend_otp');
+			const email = $('#vendor_email').val();
+			const firstname = $('#vendor_firstname').val();
+
+			// Désactiver le bouton
+			$btn.prop('disabled', true).text('Envoi en cours...');
+
+			$.ajax({
+				url: lehiboo_register_ajax.ajax_url,
+				type: 'POST',
+				data: {
+					action: 'lehiboo_resend_registration_otp',
+					vendor_register_nonce: $('#vendor_register_nonce').val(),
+					vendor_email: email,
+					vendor_firstname: firstname
+				},
+				dataType: 'json',
+				success: function (response) {
+					if (response.success) {
+						VendorRegister.showNotification('success', response.data.message);
+						// Vider les inputs OTP
+						$('.otp_input').val('');
+						$('#vendor_otp_code').val('');
+						$('.otp_input[data-index="0"]').focus();
+					} else {
+						VendorRegister.showNotification('error', response.data.message);
+					}
+					$btn.prop('disabled', false).text('Renvoyer le code');
+				},
+				error: function () {
+					VendorRegister.showNotification('error', 'Une erreur est survenue. Veuillez réessayer.');
+					$btn.prop('disabled', false).text('Renvoyer le code');
+				}
+			});
 		},
 
 		/**
@@ -659,32 +1055,14 @@
 					if (response.success) {
 						VendorRegister.showNotification('success', response.data.message);
 
-						// Vérifier si l'OTP est requis
-						if (response.data.otp_required && response.data.show_otp_form) {
-							// Nettoyer les données sauvegardées (inscription réussie)
-							VendorRegister.clearSavedData();
+						// Nettoyer les données sauvegardées (inscription réussie)
+						VendorRegister.clearSavedData();
 
-							// Afficher un loader
-							setTimeout(function () {
-								VendorRegister.showNotification('success', '<i class="fas fa-spinner fa-spin"></i> Chargement du formulaire de vérification...');
-							}, 1500);
-
-							// Cacher le formulaire d'inscription
-							$('#vendor_register_form').slideUp(300, function () {
-								$(this).hide();
-							});
-
-							// Charger le script OTP et afficher le formulaire
-							setTimeout(function () {
-								VendorRegister.loadOTPScript();
-								VendorRegister.showOTPForm(response.data.user_id);
-							}, 2500);
-						} else {
-							// Redirection directe si pas d'OTP (cas par défaut, ne devrait plus arriver)
-							setTimeout(function () {
-								window.location.href = '/vendor-pending';
-							}, 2000);
-						}
+						// Redirection vers la page de confirmation
+						const redirectUrl = response.data.redirect_url || '/vendor-pending/';
+						setTimeout(function () {
+							window.location.href = redirectUrl;
+						}, 2000);
 					} else {
 						VendorRegister.showNotification('error', response.data.message);
 						$submitBtn.prop('disabled', false).html('<i class="fas fa-check"></i> Soumettre ma demande');

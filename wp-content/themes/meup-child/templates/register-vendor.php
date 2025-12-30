@@ -22,10 +22,16 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 			<div class="step_nav_item" data-step="2">
 				<div class="step_nav_bar"></div>
 				<div class="step_nav_content">
-					<span class="step_nav_label">Mon Organisation</span>
+					<span class="step_nav_label">Vérification email</span>
 				</div>
 			</div>
 			<div class="step_nav_item" data-step="3">
+				<div class="step_nav_bar"></div>
+				<div class="step_nav_content">
+					<span class="step_nav_label">Mon Organisation</span>
+				</div>
+			</div>
+			<div class="step_nav_item" data-step="4">
 				<div class="step_nav_bar"></div>
 				<div class="step_nav_content">
 					<span class="step_nav_label">Documents</span>
@@ -80,31 +86,33 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 						</div>
 					</div>
 
-					<div class="form_group">
-						<label for="vendor_email" class="form_label">
-							Email de connexion <span class="required">*</span>
-						</label>
-						<input
-							type="email"
-							id="vendor_email"
-							name="vendor_email"
-							class="form_input"
-							placeholder="Mettez votre e-mail professionnel"
-							required
-						>
-					</div>
+					<div class="form_row">
+						<div class="form_group">
+							<label for="vendor_email" class="form_label">
+								Email de connexion <span class="required">*</span>
+							</label>
+							<input
+								type="email"
+								id="vendor_email"
+								name="vendor_email"
+								class="form_input"
+								placeholder="Mettez votre e-mail professionnel"
+								required
+							>
+						</div>
 
-					<div class="form_group">
-						<label for="vendor_phone" class="form_label">
-							Téléphone
-						</label>
-						<input
-							type="tel"
-							id="vendor_phone"
-							name="vendor_phone"
-							class="form_input"
-							placeholder="Mettez les chiffres sans espaces"
-						>
+						<div class="form_group">
+							<label for="vendor_phone" class="form_label">
+								Téléphone
+							</label>
+							<input
+								type="tel"
+								id="vendor_phone"
+								name="vendor_phone"
+								class="form_input"
+								placeholder="Mettez les chiffres sans espaces"
+							>
+						</div>
 					</div>
 
 					<div class="form_row">
@@ -152,66 +160,196 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 					<div class="form_group">
 						<label for="vendor_poste" class="form_label">
-							Poste <span class="required">*</span>
+							Poste
 						</label>
-						<select id="vendor_poste" name="vendor_poste" class="form_input" required>
+						<select id="vendor_poste" name="vendor_poste" class="form_input">
 							<option value="">Indiquez le poste que vous occupez au sein de la structure qui organise les activités</option>
-							<option value="presente">Présidente</option>
-							<option value="president">Président</option>
-							<option value="directrice">Directrice</option>
-							<option value="directeur">Directeur</option>
-							<option value="responsable">Responsable</option>
-							<option value="animatrice">Animatrice</option>
-							<option value="animateur">Animateur</option>
-							<option value="benevole">Bénévole</option>
+							<?php
+							// Charger les postes depuis les options admin
+							$postes = get_option( 'el_postes_list', array(
+								'Directeur / Directrice',
+								'Responsable événementiel',
+								'Chargé(e) de communication',
+								'Président(e)',
+								'Gérant(e)',
+							) );
+							foreach ( $postes as $poste ) :
+								$slug = sanitize_title( $poste );
+							?>
+								<option value="<?php echo esc_attr( $slug ); ?>"><?php echo esc_html( $poste ); ?></option>
+							<?php endforeach; ?>
 							<option value="autre">Autre</option>
 						</select>
 					</div>
 
 					<div class="form_actions">
 						<button type="button" class="btn btn_secondary" onclick="window.location.href='<?php echo home_url('/inscription'); ?>'">Retour</button>
-						<button type="button" class="btn btn_primary btn_next" data-next="2">Suivant</button>
+						<button type="button" class="btn btn_primary btn_send_otp" id="btn_send_otp">Suivant</button>
 					</div>
 				</div>
 
 				<!-- ============================================
-				     ÉTAPE 2 : MON ORGANISATION
+				     ÉTAPE 2 : VÉRIFICATION EMAIL (OTP)
 				============================================= -->
 				<div class="form_step" data-step="2">
-					<h2 class="form_step_title">Mon Organisation</h2>
-					<p class="form_step_subtitle">Ces informations administratives sont nécessaires pour identifier votre structure.</p>
+					<div class="otp_verification_wrapper">
+						<div class="otp_icon">
+							<i class="fas fa-envelope"></i>
+						</div>
+						<h2 class="form_step_title">Vérification de votre email</h2>
+						<p class="form_step_subtitle">Entrez le code à 6 chiffres envoyé à votre adresse email</p>
 
-					<div class="form_group" style="position: relative;">
-						<label for="vendor_org_name" class="form_label">
-							Nom de l'Organisation <span class="required">*</span>
-							<button type="button" class="btn_icon_help" title="Ce nom sera affiché publiquement">
-								<i class="fas fa-eye"></i>
-							</button>
-						</label>
-						<input
-							type="text"
-							id="vendor_org_name"
-							name="vendor_org_name"
-							class="form_input"
-							placeholder="Nom de la structure qui organise"
-							required
-							autocomplete="off"
-						>
-						<div id="org_suggestions" class="autocomplete_suggestions" style="display: none;"></div>
+						<div class="otp_inputs_wrapper">
+							<input type="text" class="otp_input" maxlength="1" data-index="0" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code">
+							<input type="text" class="otp_input" maxlength="1" data-index="1" inputmode="numeric" pattern="[0-9]">
+							<input type="text" class="otp_input" maxlength="1" data-index="2" inputmode="numeric" pattern="[0-9]">
+							<input type="text" class="otp_input" maxlength="1" data-index="3" inputmode="numeric" pattern="[0-9]">
+							<input type="text" class="otp_input" maxlength="1" data-index="4" inputmode="numeric" pattern="[0-9]">
+							<input type="text" class="otp_input" maxlength="1" data-index="5" inputmode="numeric" pattern="[0-9]">
+						</div>
+						<input type="hidden" id="vendor_otp_code" name="vendor_otp_code" value="">
+						<input type="hidden" id="vendor_email_verified" name="vendor_email_verified" value="0">
+
+						<div class="otp_error_message" style="display: none;"></div>
+
+						<button type="button" class="btn btn_primary btn_verify_otp" id="btn_verify_otp">Vérifier le code</button>
+
+						<div class="otp_resend_wrapper">
+							<span>Vous n'avez pas reçu le code ?</span>
+							<button type="button" class="btn_resend_otp" id="btn_resend_otp">Renvoyer le code</button>
+						</div>
+
+						<div class="otp_timer" id="otp_timer" style="display: none;">
+							<span>Nouveau code disponible dans <strong id="otp_countdown">60</strong>s</span>
+						</div>
 					</div>
 
+					<div class="form_actions">
+						<button type="button" class="btn btn_secondary btn_prev" data-prev="1">Retour</button>
+					</div>
+				</div>
+
+				<!-- ============================================
+				     ÉTAPE 3 : MON ORGANISATION
+				============================================= -->
+				<?php
+				// Charger les options depuis WP Admin
+				$types_structure = get_option( 'el_types_structure_list', array(
+					'culturel' => 'Centre culturel / associatif / d\'activités',
+					'sportif' => 'Lieu sportif',
+					'educatif' => 'Établissement éducatif',
+					'loisirs' => 'Parc de loisirs',
+					'artistique' => 'Lieu artistique / créatif',
+					'autre' => 'Autre',
+				) );
+
+				$org_roles = get_option( 'el_org_roles_list', array(
+					'prestataire_evenementiel' => 'Prestataire de services événementiels',
+					'structure_culturelle' => 'Structure culturelle / artistique',
+					'producteur' => 'Producteur / Porteur de projets',
+					'office_tourisme' => 'Office de tourisme / Structure territoriale',
+				) );
+
+				$statuts_juridiques = get_option( 'el_statuts_juridiques_list', array(
+					'association_1901' => 'Association loi 1901',
+					'association_utilite_publique' => 'Association loi 1901 reconnue d\'utilité publique',
+					'sarl' => 'SARL',
+					'sas' => 'SAS / SASU',
+					'auto_entrepreneur' => 'Auto-entrepreneur / Micro-entreprise',
+					'eirl' => 'EIRL',
+					'sa' => 'SA',
+					'ei' => 'Entreprise Individuelle',
+					'collectivite' => 'Collectivité territoriale',
+					'autre' => 'Autre',
+				) );
+				?>
+				<div class="form_step" data-step="3">
+					<h2 class="form_step_title">Mon Organisation</h2>
+					<p class="form_step_subtitle">Ces informations administratives sont nécessaires pour identifier et valider votre structure.</p>
+
+					<!-- Ligne 1 : Nom de l'Organisation + Nom à afficher -->
+					<div class="form_row">
+						<div class="form_group" style="position: relative;">
+							<label for="vendor_org_name" class="form_label">
+								Nom de l'Organisation <span class="required">*</span>
+							</label>
+							<input
+								type="text"
+								id="vendor_org_name"
+								name="vendor_org_name"
+								class="form_input"
+								placeholder="Recherchez votre organisation"
+								required
+								autocomplete="off"
+							>
+							<div id="org_suggestions" class="autocomplete_suggestions" style="display: none;"></div>
+							<div class="field_hint">Recherchez votre organisation pour pré-remplir automatiquement les informations ci-dessous.</div>
+						</div>
+
+						<div class="form_group">
+							<label for="vendor_org_display_name" class="form_label">
+								Nom à afficher <span class="required">*</span>
+							</label>
+							<input
+								type="text"
+								id="vendor_org_display_name"
+								name="vendor_org_display_name"
+								class="form_input"
+								placeholder="Ce nom sera visible sur votre profil public"
+								required
+							>
+							<div class="field_hint">Ce nom sera visible sur votre profil public.</div>
+						</div>
+					</div>
+
+					<!-- Ligne 2 : Type de structure + Rôle de l'organisation (multi-select) -->
+					<div class="form_row">
+						<div class="form_group">
+							<label for="vendor_types_structure" class="form_label">
+								Type de structure <span class="required">*</span>
+							</label>
+							<select
+								id="vendor_types_structure"
+								name="vendor_types_structure[]"
+								class="form_input select2_multi"
+								multiple="multiple"
+								required
+							>
+								<?php foreach ( $types_structure as $key => $label ) : ?>
+									<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+
+						<div class="form_group">
+							<label for="vendor_org_roles" class="form_label">
+								Rôle de votre organisation <span class="required">*</span>
+							</label>
+							<select
+								id="vendor_org_roles"
+								name="vendor_org_roles[]"
+								class="form_input select2_multi"
+								multiple="multiple"
+								required
+							>
+								<?php foreach ( $org_roles as $key => $label ) : ?>
+									<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+					</div>
+
+					<!-- Ligne 3 : Statut juridique + SIREN -->
 					<div class="form_row">
 						<div class="form_group">
 							<label for="vendor_org_type" class="form_label">
-								Statut de juridique <span class="required">*</span>
+								Statut juridique <span class="required">*</span>
 							</label>
 							<select id="vendor_org_type" name="vendor_org_type" class="form_input" required>
 								<option value="">Sélectionnez votre statut juridique</option>
-								<option value="association">Association</option>
-								<option value="entreprise">Entreprise</option>
-								<option value="autoentrepreneur">Auto-entrepreneur</option>
-								<option value="collectivite">Collectivité</option>
-								<option value="autre">Autre</option>
+								<?php foreach ( $statuts_juridiques as $key => $label ) : ?>
+									<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></option>
+								<?php endforeach; ?>
 							</select>
 						</div>
 
@@ -228,102 +366,39 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 								maxlength="14"
 								required
 							>
-							<div class="field_hint">Recherchez votre entreprise ci-dessus pour pré-remplir</div>
 						</div>
 					</div>
 
-					<h3 class="section_subtitle">Rôle de l'Organisation <span class="required">*</span></h3>
-					<p class="section_description">Plusieurs choix possibles</p>
+					<!-- Ligne 4 : Date de création + Nombre d'effectifs (non obligatoires) -->
+					<div class="form_row">
+						<div class="form_group">
+							<label for="vendor_org_creation_date" class="form_label">
+								Date de création de l'entité
+							</label>
+							<input
+								type="date"
+								id="vendor_org_creation_date"
+								name="vendor_org_creation_date"
+								class="form_input"
+							>
+						</div>
 
-					<div class="checkbox_group_wrapper">
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_org_roles[]" value="organisateur">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Organisateur</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_org_roles[]" value="lieu_accueil">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Lieu d'accueil</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_org_roles[]" value="prestataire">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Prestataire</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_org_roles[]" value="autre">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Autre</span>
-						</label>
+						<div class="form_group">
+							<label for="vendor_org_effectifs" class="form_label">
+								Nombre d'effectifs
+							</label>
+							<input
+								type="number"
+								id="vendor_org_effectifs"
+								name="vendor_org_effectifs"
+								class="form_input"
+								placeholder="Ex: 5"
+								min="0"
+							>
+						</div>
 					</div>
 
-					<h3 class="section_subtitle">Type de structure <span class="required">*</span></h3>
-					<p class="section_description">Plusieurs choix possibles</p>
-
-					<div class="checkbox_group_wrapper">
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_categories[]" value="cinema">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Cinéma</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_categories[]" value="centre_culturel">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Centre culturel</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_categories[]" value="theatre">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Théâtre</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_categories[]" value="musee">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Musée</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_categories[]" value="salle_concert">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Salle de concert</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_categories[]" value="galerie_art">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Galerie d'art</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_categories[]" value="bibliotheque">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Bibliothèque</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_categories[]" value="espace_sportif">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Espace sportif</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_categories[]" value="parc_loisirs">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Parc de loisirs</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_categories[]" value="association">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Association</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_categories[]" value="collectivite">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Collectivité</span>
-						</label>
-						<label class="checkbox_label">
-							<input type="checkbox" name="vendor_categories[]" value="autre">
-							<span class="checkbox_custom"></span>
-							<span class="checkbox_text">Autre</span>
-						</label>
-					</div>
-
+					<!-- Section Adresse -->
 					<div class="form_group" style="position: relative;">
 						<label for="vendor_org_address" class="form_label">
 							Adresse <span class="required">*</span>
@@ -371,22 +446,35 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 						</div>
 					</div>
 
-					<div class="form_group">
-						<label for="vendor_org_website" class="form_label">
-							Site web
-						</label>
-						<input
-							type="url"
-							id="vendor_org_website"
-							name="vendor_org_website"
-							class="form_input"
-							placeholder="https://www.exemple.com"
-						>
+					<!-- Section Image de couverture + Logo (non obligatoires) -->
+					<div class="org_images_row">
+						<div class="upload_group">
+							<label class="upload_label">Image de couverture</label>
+							<div class="upload_area upload_area_cover" data-input="vendor_cover">
+								<i class="fas fa-cloud-upload-alt"></i>
+								<p>Glissez vos fichiers ici</p>
+								<span class="upload_hint">JPG, PNG - 1200x400px recommandé - Max 10 MO</span>
+								<input type="file" id="vendor_cover" name="vendor_cover" accept="image/*" hidden>
+								<div class="upload_preview" style="display: none;"></div>
+							</div>
+						</div>
+
+						<div class="upload_group">
+							<label class="upload_label">Logo</label>
+							<div class="upload_area upload_area_logo" data-input="vendor_logo">
+								<i class="fas fa-image"></i>
+								<p>Cliquez pour ajouter votre logo</p>
+								<span class="upload_hint">JPG, PNG - Max 5 MO</span>
+								<input type="file" id="vendor_logo" name="vendor_logo" accept="image/*" hidden>
+								<div class="upload_preview" style="display: none;"></div>
+							</div>
+						</div>
 					</div>
 
+					<!-- Description (non obligatoire) -->
 					<div class="form_group">
 						<label for="vendor_org_description" class="form_label">
-							Description de l'activité <span class="required">*</span>
+							Description de votre Organisation
 						</label>
 						<textarea
 							id="vendor_org_description"
@@ -394,44 +482,21 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 							class="form_textarea"
 							rows="5"
 							placeholder="Décrivez brièvement votre organisation et vos activités..."
-							required
 						></textarea>
 					</div>
 
 					<div class="form_actions">
-						<button type="button" class="btn btn_secondary btn_prev" data-prev="1">Retour</button>
-						<button type="button" class="btn btn_primary btn_next" data-next="3">Suivant</button>
+						<button type="button" class="btn btn_secondary btn_prev" data-prev="2">Retour</button>
+						<button type="button" class="btn btn_primary btn_next" data-next="4">Suivant</button>
 					</div>
 				</div>
 
 				<!-- ============================================
-				     ÉTAPE 3 : DOCUMENTS
+				     ÉTAPE 4 : DOCUMENTS
 				============================================= -->
-				<div class="form_step" data-step="3">
+				<div class="form_step" data-step="4">
 					<h2 class="form_step_title">Documents</h2>
 					<p class="form_step_subtitle">Téléchargez les documents requis pour valider votre profil</p>
-
-					<div class="upload_group">
-						<label class="upload_label">Logo de l'organisation <span class="required">*</span></label>
-						<div class="upload_area" data-input="vendor_logo" data-required="true">
-							<i class="fas fa-cloud-upload-alt"></i>
-							<p>Glissez-déposez ou cliquez pour télécharger</p>
-							<span class="upload_hint">PNG, JPG (max 2 MB)</span>
-							<input type="file" id="vendor_logo" name="vendor_logo" accept="image/*" hidden>
-							<div class="upload_preview" style="display: none;"></div>
-						</div>
-					</div>
-
-					<div class="upload_group">
-						<label class="upload_label">Image de couverture</label>
-						<div class="upload_area" data-input="vendor_cover">
-							<i class="fas fa-cloud-upload-alt"></i>
-							<p>Glissez-déposez ou cliquez pour télécharger</p>
-							<span class="upload_hint">PNG, JPG (max 5 MB)</span>
-							<input type="file" id="vendor_cover" name="vendor_cover" accept="image/*" hidden>
-							<div class="upload_preview" style="display: none;"></div>
-						</div>
-					</div>
 
 					<div class="upload_group">
 						<label class="upload_label">Kbis ou statuts association <span class="required">*</span></label>
@@ -471,7 +536,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					</div>
 
 					<div class="form_actions">
-						<button type="button" class="btn btn_secondary btn_prev" data-prev="2">Retour</button>
+						<button type="button" class="btn btn_secondary btn_prev" data-prev="3">Retour</button>
 						<button type="submit" class="btn btn_primary btn_submit">
 							<i class="fas fa-check"></i>
 							Soumettre ma demande

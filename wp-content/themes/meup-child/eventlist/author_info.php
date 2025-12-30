@@ -437,54 +437,6 @@ if( $author_id ){
 					</div>
 				</div>
 
-				<!-- Réseaux sociaux -->
-				<?php
-				$has_social = false;
-				if ( is_singular('event') ) {
-					$has_social = ( $social_organizer && $info_organizer == 'checked' ) || ( $user_profile_social && $info_organizer == '' );
-				} elseif ( !is_singular('event') && $user_profile_social ) {
-					$has_social = true;
-				}
-				?>
-
-				<?php if ( $has_social ) : ?>
-					<div class="popup_section popup_social">
-						<h4 class="popup_section_title">
-							<i class="fas fa-share-nodes"></i>
-							<?php esc_html_e( 'Réseaux sociaux', 'eventlist' ); ?>
-						</h4>
-						<div class="popup_social_links">
-							<?php if ( is_singular('event') ) : ?>
-								<?php if ( $social_organizer && $info_organizer == 'checked' ) : ?>
-									<?php foreach ($social_organizer as $k_social => $v_social) :
-										if ($v_social['link_social'] != '') : ?>
-											<a href="<?php echo esc_attr($v_social['link_social']); ?>" target="_blank" class="social_link" rel="nofollow">
-												<i class="<?php echo esc_html($v_social['icon_social']); ?>"></i>
-											</a>
-										<?php endif;
-									endforeach; ?>
-								<?php elseif ( $user_profile_social && $info_organizer == '' ) : ?>
-									<?php foreach ($user_profile_social as $k_social => $v_social) :
-										if ( ! empty( $v_social['link'] ) ) : ?>
-											<a href="<?php echo esc_attr($v_social['link']); ?>" target="_blank" class="social_link" rel="nofollow">
-												<i class="<?php echo esc_html($v_social['icon']); ?>"></i>
-											</a>
-										<?php endif;
-									endforeach; ?>
-								<?php endif; ?>
-							<?php elseif ( !is_singular('event') && $user_profile_social ) : ?>
-								<?php foreach ($user_profile_social as $k_social => $v_social) :
-									if ( ! empty( $v_social['link'] ) ) : ?>
-										<a href="<?php echo esc_attr($v_social['link']); ?>" target="_blank" class="social_link" rel="nofollow">
-											<i class="<?php echo esc_html($v_social['icon']); ?>"></i>
-										</a>
-									<?php endif;
-								endforeach; ?>
-							<?php endif; ?>
-						</div>
-					</div>
-				<?php endif; ?>
-
 				<!-- CTA vers page organisateur -->
 				<div class="popup_footer_cta">
 					<a href="<?php echo esc_url( $organizer_page_url ); ?>" class="btn_view_full_profile">

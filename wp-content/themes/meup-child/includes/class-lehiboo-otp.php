@@ -362,6 +362,220 @@ class LeHiboo_OTP {
 			'expired' => $wpdb->get_var( "SELECT COUNT(*) FROM $table WHERE verified = 0 AND expires_at < NOW()" ),
 		);
 	}
+
+	/**
+	 * Créer un OTP pour l'inscription (avant création du user)
+	 * Utilise user_id = 0 pour les OTP pré-inscription
+	 *
+	 * @param string $email Email à vérifier
+	 * @return string|false Code OTP ou false en cas d'erreur
+	 */
+	public static function create_registration_otp( $email ) {
+		global $wpdb;
+		$table = $wpdb->prefix . self::$table_name;
+
+		// Vérifier si la table existe, sinon la créer
+		$table_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$table}'" );
+		if ( $table_exists != $table ) {
+			self::create_table();
+
+			$table_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$table}'" );
+			if ( $table_exists != $table ) {
+				error_log( 'LeHiboo OTP: Impossible de créer la table ' . $table );
+				return false;
+			}
+		}
+
+		// Supprimer les anciens codes non utilisés pour cet email
+		self::delete_email_otps( $email );
+
+		// Générer le code
+		$otp_code = self::generate_code();
+
+		// Calculer l'expiration
+		$created_at = current_time( 'mysql' );
+		$expires_at = date( 'Y-m-d H:i:s', strtotime( $created_at . ' +' . self::$otp_validity . ' minutes' ) );
+
+		// Insérer dans la base (user_id = 0 pour pré-inscription)
+		$inserted = $wpdb->insert(
+			$table,
+			array(
+				'user_id'    => 0,
+				'email'      => $email,
+				'otp_code'   => $otp_code,
+				'attempts'   => 0,
+				'created_at' => $created_at,
+				'expires_at' => $expires_at,
+				'verified'   => 0,
+			),
+			array( '%d', '%s', '%s', '%d', '%s', '%s', '%d' )
+		);
+
+		if ( $inserted ) {
+			return $otp_code;
+		}
+
+		if ( $wpdb->last_error ) {
+			error_log( 'LeHiboo OTP: Erreur insertion registration OTP - ' . $wpdb->last_error );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Vérifier un code OTP pour l'inscription (par email)
+	 *
+	 * @param string $email Email
+	 * @param string $otp_code Code OTP à vérifier
+	 * @return array Résultat de la vérification
+	 */
+	public static function verify_registration_otp( $email, $otp_code ) {
+		global $wpdb;
+		$table = $wpdb->prefix . self::$table_name;
+
+		// Récupérer le code OTP par email (user_id = 0)
+		$otp = $wpdb->get_row( $wpdb->prepare(
+			"SELECT * FROM $table
+			WHERE email = %s
+			AND user_id = 0
+			AND verified = 0
+			ORDER BY created_at DESC
+			LIMIT 1",
+			$email
+		) );
+
+		if ( ! $otp ) {
+			return array(
+				'success' => false,
+				'message' => 'Aucun code de vérification trouvé pour cet email.',
+				'error_code' => 'no_otp'
+			);
+		}
+
+		// Vérifier si le code a expiré
+		if ( strtotime( $otp->expires_at ) < current_time( 'timestamp' ) ) {
+			return array(
+				'success' => false,
+				'message' => 'Le code de vérification a expiré. Veuillez en demander un nouveau.',
+				'error_code' => 'expired'
+			);
+		}
+
+		// Incrémenter le nombre de tentatives
+		$wpdb->update(
+			$table,
+			array( 'attempts' => $otp->attempts + 1 ),
+			array( 'id' => $otp->id ),
+			array( '%d' ),
+			array( '%d' )
+		);
+
+		// Vérifier le nombre de tentatives
+		if ( $otp->attempts >= self::$max_attempts ) {
+			return array(
+				'success' => false,
+				'message' => 'Nombre maximal de tentatives atteint. Veuillez demander un nouveau code.',
+				'error_code' => 'max_attempts'
+			);
+		}
+
+		// Vérifier le code
+		if ( $otp->otp_code !== $otp_code ) {
+			$remaining = self::$max_attempts - ( $otp->attempts + 1 );
+			return array(
+				'success' => false,
+				'message' => sprintf( 'Code incorrect. %d tentative(s) restante(s).', max( 0, $remaining ) ),
+				'error_code' => 'invalid_code',
+				'remaining_attempts' => max( 0, $remaining )
+			);
+		}
+
+		// Code valide ! Marquer comme vérifié
+		$wpdb->update(
+			$table,
+			array( 'verified' => 1 ),
+			array( 'id' => $otp->id ),
+			array( '%d' ),
+			array( '%d' )
+		);
+
+		return array(
+			'success' => true,
+			'message' => 'Email vérifié avec succès !',
+			'error_code' => null
+		);
+	}
+
+	/**
+	 * Envoyer l'email OTP pour l'inscription Organisateur
+	 *
+	 * @param string $email Email
+	 * @param string $otp_code Code OTP
+	 * @param string $firstname Prénom
+	 * @return bool Succès ou échec de l'envoi
+	 */
+	public static function send_registration_otp_email( $email, $otp_code, $firstname ) {
+		$subject = '[Lehiboo Experiences] - Confirmez votre adresse email pour activer votre compte Organisateur';
+
+		$message = "Bonjour {$firstname},\n\n";
+		$message .= "Merci pour votre inscription en tant qu'Organisateur sur Lehiboo Experiences !\n\n";
+		$message .= "Pour confirmer votre adresse email et finaliser votre inscription, veuillez utiliser le code de vérification ci-dessous :\n\n";
+		$message .= "══════════════════════════════════════\n";
+		$message .= "   VOTRE CODE DE VÉRIFICATION : {$otp_code}\n";
+		$message .= "══════════════════════════════════════\n\n";
+		$message .= "Ce code est valable pendant " . self::$otp_validity . " minutes.\n\n";
+		$message .= "Si vous n'avez pas demandé ce code, vous pouvez ignorer cet email.\n\n";
+		$message .= "Cordialement,\n";
+		$message .= "L'équipe Lehiboo Experiences";
+
+		$headers = array(
+			'Content-Type: text/plain; charset=UTF-8',
+			'From: Lehiboo Experiences <no-reply@lehiboo.com>'
+		);
+
+		return wp_mail( $email, $subject, $message, $headers );
+	}
+
+	/**
+	 * Supprimer les OTP par email (pour pré-inscription)
+	 *
+	 * @param string $email Email
+	 */
+	public static function delete_email_otps( $email ) {
+		global $wpdb;
+		$table = $wpdb->prefix . self::$table_name;
+
+		$wpdb->delete(
+			$table,
+			array(
+				'email' => $email,
+				'user_id' => 0
+			),
+			array( '%s', '%d' )
+		);
+	}
+
+	/**
+	 * Vérifier si un email a un OTP vérifié (pour l'inscription)
+	 *
+	 * @param string $email Email
+	 * @return bool
+	 */
+	public static function is_registration_email_verified( $email ) {
+		global $wpdb;
+		$table = $wpdb->prefix . self::$table_name;
+
+		$verified = $wpdb->get_var( $wpdb->prepare(
+			"SELECT COUNT(*) FROM $table
+			WHERE email = %s
+			AND user_id = 0
+			AND verified = 1
+			AND expires_at > NOW()",
+			$email
+		) );
+
+		return (int) $verified > 0;
+	}
 }
 
 // Initialiser la classe

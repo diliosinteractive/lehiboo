@@ -63,15 +63,15 @@ if ( $registration_type === 'customer' ) {
 						<h2 class="card_title">Je suis un Organisateur d'activités</h2>
 					</div>
 					<p class="card_description">
-						Créez et gérez vos événements, ateliers et activités.
+						Créez et gérez vos événements, ateliers et activités.<br>
 						Touchez une large audience et développez votre activité.
 					</p>
 
 					<ul class="card_features">
-						<li><i class="fas fa-check"></i> Publiez vos événements</li>
-						<li><i class="fas fa-check"></i> Gérez vos réservations</li>
-						<li><i class="fas fa-check"></i> Statistiques détaillées</li>
-						<li><i class="fas fa-check"></i> Messagerie intégrée</li>
+						<li><i class="fas fa-check"></i> Publiez et gérez vos activités</li>
+						<li><i class="fas fa-check"></i> Centralisez vos inscriptions</li>
+						<li><i class="fas fa-check"></i> Suivez vos performances</li>
+						<li><i class="fas fa-check"></i> Communiquez avec vos participants</li>
 					</ul>
 
 					<a href="<?php echo esc_url( add_query_arg( 'type', 'vendor', get_permalink() ) ); ?>" class="card_button vendor_button">

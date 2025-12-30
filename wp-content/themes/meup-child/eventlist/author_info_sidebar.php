@@ -190,53 +190,6 @@ if( $author_id ){
 				<?php } ?>
 			</div>
 		</div>
-		<!-- Social Media Section -->
-		<?php
-		$has_social = false;
-		if ( is_singular('event') ) {
-			$has_social = ( $social_organizer && $info_organizer == 'checked' ) || ( $user_profile_social && $info_organizer == '' );
-		} elseif ( !is_singular('event') && $user_profile_social ) {
-			$has_social = true;
-		}
-		?>
-
-		<?php if ( $has_social ) : ?>
-			<div class="info_section social_section">
-				<h3 class="section_title_sidebar">
-					<i class="fas fa-share-nodes"></i>
-					<?php esc_html_e( 'Réseaux sociaux', 'eventlist' ); ?>
-				</h3>
-				<div class="social_links">
-					<?php if ( is_singular('event') ) : ?>
-						<?php if ( $social_organizer && $info_organizer == 'checked' ) : ?>
-							<?php foreach ($social_organizer as $k_social => $v_social) :
-								if ($v_social['link_social'] != '') : ?>
-									<a href="<?php echo esc_attr($v_social['link_social']); ?>" target="_blank" class="social_link" rel="nofollow">
-										<i class="<?php echo esc_html($v_social['icon_social']); ?>"></i>
-									</a>
-								<?php endif;
-							endforeach; ?>
-						<?php elseif ( $user_profile_social && $info_organizer == '' ) : ?>
-							<?php foreach ($user_profile_social as $k_social => $v_social) :
-								if ( ! empty( $v_social['link'] ) ) : ?>
-									<a href="<?php echo esc_attr($v_social['link']); ?>" target="_blank" class="social_link" rel="nofollow">
-										<i class="<?php echo esc_html($v_social['icon']); ?>"></i>
-									</a>
-								<?php endif;
-							endforeach; ?>
-						<?php endif; ?>
-					<?php elseif ( !is_singular('event') && $user_profile_social ) : ?>
-						<?php foreach ($user_profile_social as $k_social => $v_social) :
-							if ( ! empty( $v_social['link'] ) ) : ?>
-								<a href="<?php echo esc_attr($v_social['link']); ?>" target="_blank" class="social_link" rel="nofollow">
-									<i class="<?php echo esc_html($v_social['icon']); ?>"></i>
-								</a>
-							<?php endif;
-						endforeach; ?>
-					<?php endif; ?>
-				</div>
-			</div>
-		<?php endif; ?>
 
 		<!-- Contact Form Section -->
 		<?php if( apply_filters( 'el_single_event_show_send_message_btn', true ) ){ ?>
