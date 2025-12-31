@@ -2452,13 +2452,17 @@ if( !class_exists( 'El_Ajax' ) ){
 				}
 			}
 
-			if( isset( $post_data_sanitize[$_prefix.'calendar'] ) && $post_data_sanitize[$_prefix.'calendar'] ){
+			if( isset( $post_data_sanitize[$_prefix.'calendar'] ) && $post_data_sanitize[$_prefix.'calendar'] && is_array($post_data_sanitize[$_prefix.'calendar']) ){
 				foreach ($post_data_sanitize[$_prefix.'calendar'] as $key => $value) {
-					if ($value['calendar_id'] == '') {
+					// S'assurer que $value est un tableau avant d'accéder aux clés
+					if (!is_array($value)) {
+						continue;
+					}
+					if (!isset($value['calendar_id']) || $value['calendar_id'] == '') {
 						$post_data_sanitize[$_prefix.'calendar'][$key]['calendar_id'] = FLOOR(microtime(true)) + $k;
 						$k++;
 					}
-					if ($value['date'] == '') {
+					if (!isset($value['date']) || $value['date'] == '') {
 						unset($post_data_sanitize[$_prefix.'calendar'][$key]);
 					}
 				}
