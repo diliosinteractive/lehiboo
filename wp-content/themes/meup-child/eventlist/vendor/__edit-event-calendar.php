@@ -118,7 +118,7 @@ $arr_recurrence_byweekno = array(
                     <div class="form_group_inputs">
                         <input type="text"
                                class="creneaux_input creneaux_new_start_date"
-                               placeholder="DD/MM/AAAA"
+                               placeholder="JJ/MM/AAAA"
                                data-format="dd/mm/yy"
                                data-firstday="<?php echo esc_attr( $first_day ); ?>"
                                autocomplete="off">
@@ -133,7 +133,7 @@ $arr_recurrence_byweekno = array(
                     <div class="form_group_inputs">
                         <input type="text"
                                class="creneaux_input creneaux_new_end_date"
-                               placeholder="DD/MM/AAAA"
+                               placeholder="JJ/MM/AAAA"
                                data-format="dd/mm/yy"
                                data-firstday="<?php echo esc_attr( $first_day ); ?>"
                                autocomplete="off">
@@ -162,13 +162,13 @@ $arr_recurrence_byweekno = array(
                     <span class="filter_label"><?php esc_html_e( 'Filtrer par date, de', 'eventlist' ); ?></span>
                     <input type="text"
                            class="creneaux_filter_input creneaux_filter_start"
-                           placeholder="DD/MM/AAAA"
+                           placeholder="JJ/MM/AAAA"
                            data-format="dd/mm/yy"
                            data-firstday="<?php echo esc_attr( $first_day ); ?>">
                     <span class="filter_separator"><?php esc_html_e( 'à', 'eventlist' ); ?></span>
                     <input type="text"
                            class="creneaux_filter_input creneaux_filter_end"
-                           placeholder="DD/MM/AAAA"
+                           placeholder="JJ/MM/AAAA"
                            data-format="dd/mm/yy"
                            data-firstday="<?php echo esc_attr( $first_day ); ?>">
                     <button type="button" class="btn_filter_creneaux">
@@ -297,7 +297,7 @@ $arr_recurrence_byweekno = array(
                            class="creneaux_input calendar_start_date calendar_auto_start_date"
                            name="<?php echo esc_attr( $_prefix.'calendar_start_date' ); ?>"
                            value="<?php echo esc_attr( $calendar_start_date ); ?>"
-                           placeholder="DD/MM/AAAA"
+                           placeholder="JJ/MM/AAAA"
                            data-format="dd/mm/yy"
                            data-firstday="<?php echo esc_attr( $first_day ); ?>"
                            autocomplete="off"
@@ -309,7 +309,7 @@ $arr_recurrence_byweekno = array(
                            class="creneaux_input calendar_end_date calendar_auto_end_date"
                            name="<?php echo esc_attr( $_prefix.'calendar_end_date' ); ?>"
                            value="<?php echo esc_attr( $calendar_end_date ); ?>"
-                           placeholder="DD/MM/AAAA"
+                           placeholder="JJ/MM/AAAA"
                            data-format="dd/mm/yy"
                            data-firstday="<?php echo esc_attr( $first_day ); ?>"
                            autocomplete="off"
@@ -555,14 +555,14 @@ $arr_recurrence_byweekno = array(
                     <span class="disable_label"><?php esc_html_e( 'Du', 'eventlist' ); ?></span>
                     <input type="text"
                            class="creneaux_input new_disable_start_date"
-                           placeholder="DD/MM/AAAA"
+                           placeholder="JJ/MM/AAAA"
                            data-format="dd/mm/yy"
                            data-firstday="<?php echo esc_attr( $first_day ); ?>"
                            autocomplete="off">
                     <span class="disable_label"><?php esc_html_e( 'au', 'eventlist' ); ?></span>
                     <input type="text"
                            class="creneaux_input new_disable_end_date"
-                           placeholder="DD/MM/AAAA"
+                           placeholder="JJ/MM/AAAA"
                            data-format="dd/mm/yy"
                            data-firstday="<?php echo esc_attr( $first_day ); ?>"
                            autocomplete="off">
@@ -2698,7 +2698,7 @@ $arr_recurrence_byweekno = array(
             if (dateStr.includes('/')) {
                 var parts = dateStr.split('/');
                 if (parts[2] && parts[2].length === 4) {
-                    // Format dd/mm/yyyy ou mm/dd/yyyy
+                    // Format jj/mm/aaaa ou mm/jj/aaaa
                     date = new Date(parts[2], parts[1] - 1, parts[0]);
                 } else {
                     date = new Date(dateStr);
@@ -2722,7 +2722,7 @@ $arr_recurrence_byweekno = array(
             return dayName + ' ' + day + ' ' + month + ' ' + year;
         },
 
-        // Convertir DD/MM/YYYY vers YYYY-MM-DD (format ISO pour PHP strtotime)
+        // Convertir JJ/MM/AAAA vers YYYY-MM-DD (format ISO pour PHP strtotime)
         convertToISODate: function(dateStr) {
             if (!dateStr) return '';
 
@@ -2731,7 +2731,7 @@ $arr_recurrence_byweekno = array(
                 return dateStr;
             }
 
-            // Convertir DD/MM/YYYY vers YYYY-MM-DD
+            // Convertir JJ/MM/AAAA vers YYYY-MM-DD
             if (dateStr.includes('/')) {
                 var parts = dateStr.split('/');
                 if (parts.length === 3 && parts[2].length === 4) {
@@ -3039,7 +3039,7 @@ $arr_recurrence_byweekno = array(
                 return;
             }
 
-            // Convertir les dates du filtre (format dd/mm/yyyy) en objets Date
+            // Convertir les dates du filtre (format jj/mm/aaaa) en objets Date
             var filterStart = null;
             var filterEnd = null;
 
@@ -3091,7 +3091,7 @@ $arr_recurrence_byweekno = array(
             this.updateSelectAllForVisibleItems();
         },
 
-        // Parser une date au format dd/mm/yyyy
+        // Parser une date au format jj/mm/aaaa
         parseDateFromFilter: function(dateStr) {
             if (!dateStr) return null;
 

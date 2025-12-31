@@ -2512,11 +2512,11 @@ if( !class_exists( 'El_Ajax' ) ){
 				$ts_end 	= [];
 
 				if ( isset( $post_data_sanitize[$_prefix.'ts_start'] ) && $post_data_sanitize[$_prefix.'ts_start'] && is_array( $post_data_sanitize[$_prefix.'ts_start'] ) ) {
-					foreach ( $post_data_sanitize[$_prefix.'ts_start'] as $item_ts_star ) {
+					foreach ( $post_data_sanitize[$_prefix.'ts_start'] as $day_key => $item_ts_star ) {
 						if ( ! empty( $item_ts_star ) && is_array( $item_ts_star ) ) {
 							foreach ( $item_ts_star as $k => $item_times ) {
-								if ( ! empty( $item_times ) && is_array( $item_times ) ) {
-									$ts_start[$k] = $item_times;
+								if ( ! empty( $item_times ) ) {
+									$ts_start[$day_key][$k] = $item_times;
 								}
 							}
 						}
@@ -2524,11 +2524,11 @@ if( !class_exists( 'El_Ajax' ) ){
 				}
 
 				if ( isset( $post_data_sanitize[$_prefix.'ts_end'] ) && $post_data_sanitize[$_prefix.'ts_end'] && is_array( $post_data_sanitize[$_prefix.'ts_end'] ) ) {
-					foreach ( $post_data_sanitize[$_prefix.'ts_end'] as $item_ts_end ) {
+					foreach ( $post_data_sanitize[$_prefix.'ts_end'] as $day_key => $item_ts_end ) {
 						if ( ! empty( $item_ts_end ) && is_array( $item_ts_end ) ) {
 							foreach ( $item_ts_end as $k => $item_times ) {
-								if ( ! empty( $item_times ) && is_array( $item_times ) ) {
-									$ts_end[$k] = $item_times;
+								if ( ! empty( $item_times ) ) {
+									$ts_end[$day_key][$k] = $item_times;
 								}
 							}
 						}

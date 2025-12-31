@@ -1329,8 +1329,20 @@ if ( ! function_exists( 'el_get_time_int_by_date_and_hour' ) ) {
 if ( ! function_exists( 'get_recurrence_days' ) ) {
 	function get_recurrence_days( $recurrence_freq, $recurrence_interval, $recurrence_bydays, $recurrence_byweekno, $recurrence_byday, $start_date, $end_date ){
 		/* get timestampes for start and end dates, both at 12AM */
-		$start_date = (new DateTime($start_date))->setTime(0,0,0);
-		$end_date = (new DateTime($end_date))->setTime(0,0,0);
+		/* Support both JJ/MM/AAAA (French) and Y-m-d (ISO) formats */
+		if ( strpos( $start_date, '/' ) !== false ) {
+			$start_date = DateTime::createFromFormat( 'd/m/Y', $start_date );
+		} else {
+			$start_date = new DateTime( $start_date );
+		}
+		$start_date->setTime( 0, 0, 0 );
+
+		if ( strpos( $end_date, '/' ) !== false ) {
+			$end_date = DateTime::createFromFormat( 'd/m/Y', $end_date );
+		} else {
+			$end_date = new DateTime( $end_date );
+		}
+		$end_date->setTime( 0, 0, 0 );
 		$start_date_str = $start_date->getTimestamp();
 		$end_date_str = $end_date->getTimestamp();
 		$weekdays = $recurrence_bydays; //what days of the week (or if monthly, one value at index 0)
@@ -3901,9 +3913,28 @@ function el_getDatesFromRange($start, $end, $format = 'Y-m-d') {
 // placeholder dateformat
 function el_placeholder_dateformat(){
 
-	$time = el_calendar_time_format();
 	$format = el_date_time_format_js();
-	return apply_filters( 'el_placeholder_dateformat', el_date_time_format_js_reverse($format) );
+
+	// Convert to French-readable placeholder format
+	switch ( $format ) {
+		case 'dd-mm-yy':
+		case 'dd/mm/yy':
+			$placeholder = 'JJ/MM/AAAA';
+			break;
+		case 'mm/dd/yy':
+		case 'mm-dd-yy':
+			$placeholder = 'MM/JJ/AAAA';
+			break;
+		case 'yy/mm/dd':
+		case 'yy-mm-dd':
+			$placeholder = 'AAAA/MM/JJ';
+			break;
+		default:
+			$placeholder = 'JJ/MM/AAAA';
+			break;
+	}
+
+	return apply_filters( 'el_placeholder_dateformat', $placeholder );
 
 }
 
