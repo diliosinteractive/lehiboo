@@ -1168,6 +1168,7 @@ $arr_recurrence_byweekno = array(
 .creneaux_table_header .header_times_wrapper {
     display: flex;
     align-items: center;
+        justify-content: space-around;
 }
 
 .creneaux_table_header .header_start_time {
