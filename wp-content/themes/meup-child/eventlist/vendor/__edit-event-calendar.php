@@ -808,15 +808,16 @@ $arr_recurrence_byweekno = array(
 }
 
 /* Bouton Ajouter créneau - Style outline vert */
+/* !important pour overrider le sélecteur générique [class*=add_] du thème */
 .btn_add_creneaux_manual {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     padding: 12px 24px;
-    background: #fff;
-    border: 2px solid #10B981;
+    background: #fff !important;
+    border: 2px solid #10B981 !important;
     border-radius: 8px;
-    color: #10B981;
+    color: #10B981 !important;
     font-weight: 600;
     font-size: 14px;
     cursor: pointer;
@@ -825,8 +826,8 @@ $arr_recurrence_byweekno = array(
 }
 
 .btn_add_creneaux_manual:hover {
-    background: #10B981;
-    color: #fff;
+    background: #10B981 !important;
+    color: #fff !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
