@@ -287,63 +287,95 @@ $arr_recurrence_byweekno = array(
     <!-- ================================================== -->
     <div class="creneaux_auto_section auto" style="<?php echo ($option_calendar == 'auto') ? 'display: block;' : 'display: none;'; ?>">
 
-        <!-- Sélection de la période -->
-        <div class="vendor_field creneaux_periode_field">
-            <label class="field_label"><?php esc_html_e( 'Sélectionnez la période :', 'eventlist' ); ?></label>
-            <div class="creneaux_periode_row">
-                <div class="creneaux_periode_col">
-                    <span class="periode_label"><?php esc_html_e( 'Date de début', 'eventlist' ); ?></span>
-                    <input type="text"
-                           class="creneaux_input calendar_start_date calendar_auto_start_date"
-                           name="<?php echo esc_attr( $_prefix.'calendar_start_date' ); ?>"
-                           value="<?php echo esc_attr( $calendar_start_date ); ?>"
-                           placeholder="JJ/MM/AAAA"
-                           data-format="dd/mm/yy"
-                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
-                           autocomplete="off"
-                           <?php if ( $option_calendar == 'auto' ) echo 'required'; ?>>
-                </div>
-                <div class="creneaux_periode_col">
-                    <span class="periode_label"><?php esc_html_e( 'Date de fin', 'eventlist' ); ?></span>
-                    <input type="text"
-                           class="creneaux_input calendar_end_date calendar_auto_end_date"
-                           name="<?php echo esc_attr( $_prefix.'calendar_end_date' ); ?>"
-                           value="<?php echo esc_attr( $calendar_end_date ); ?>"
-                           placeholder="JJ/MM/AAAA"
-                           data-format="dd/mm/yy"
-                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
-                           autocomplete="off"
-                           <?php if ( $option_calendar == 'auto' ) echo 'required'; ?>>
+        <!-- ÉTAPE 1 : Sélection de la période -->
+        <div class="creneaux_step_section creneaux_periode_field">
+            <div class="step_header">
+                <span class="step_number">1</span>
+                <label class="step_label">
+                    <?php esc_html_e( 'Définissez la période de récurrence', 'eventlist' ); ?>
+                    <span class="required">*</span>
+                </label>
+                <button type="button" class="step_info_btn" data-tooltip="<?php esc_attr_e( 'La période définit les dates de début et de fin pendant lesquelles votre événement sera programmé. Par exemple, du 1er janvier au 31 mars pour un trimestre.', 'eventlist' ); ?>">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+            </div>
+            <div class="step_content">
+                <div class="creneaux_periode_row">
+                    <div class="creneaux_periode_col">
+                        <span class="periode_label"><?php esc_html_e( 'Date de début', 'eventlist' ); ?></span>
+                        <input type="text"
+                               class="creneaux_input calendar_start_date calendar_auto_start_date"
+                               name="<?php echo esc_attr( $_prefix.'calendar_start_date' ); ?>"
+                               value="<?php echo esc_attr( $calendar_start_date ); ?>"
+                               placeholder="JJ/MM/AAAA"
+                               data-format="dd/mm/yy"
+                               data-firstday="<?php echo esc_attr( $first_day ); ?>"
+                               autocomplete="off"
+                               required>
+                    </div>
+                    <div class="creneaux_periode_col">
+                        <span class="periode_label"><?php esc_html_e( 'Date de fin', 'eventlist' ); ?></span>
+                        <input type="text"
+                               class="creneaux_input calendar_end_date calendar_auto_end_date"
+                               name="<?php echo esc_attr( $_prefix.'calendar_end_date' ); ?>"
+                               value="<?php echo esc_attr( $calendar_end_date ); ?>"
+                               placeholder="JJ/MM/AAAA"
+                               data-format="dd/mm/yy"
+                               data-firstday="<?php echo esc_attr( $first_day ); ?>"
+                               autocomplete="off"
+                               required>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Sélection de la fréquence -->
-        <div class="vendor_field creneaux_frequence_field">
-            <label class="field_label"><?php esc_html_e( 'Sélectionnez la fréquence :', 'eventlist' ); ?></label>
-            <div class="creneaux_frequence_row">
-                <span class="frequence_label"><?php esc_html_e( 'Chaque', 'eventlist' ); ?></span>
-                <select id="recurrence-frequency" name="<?php echo esc_attr( $_prefix.'recurrence_frequency' ); ?>" class="creneaux_select">
-                    <option value="daily" <?php selected( $recurrence_frequency, 'daily' ); ?>><?php esc_html_e( 'jour', 'eventlist' ); ?></option>
-                    <option value="weekly" <?php selected( $recurrence_frequency, 'weekly' ); ?>><?php esc_html_e( 'semaine', 'eventlist' ); ?></option>
-                    <option value="monthly" <?php selected( $recurrence_frequency, 'monthly' ); ?>><?php esc_html_e( 'mois', 'eventlist' ); ?></option>
-                </select>
-                <span class="frequence_label"><?php esc_html_e( 'tous les', 'eventlist' ); ?></span>
-                <input type="number"
-                       id="recurrence-interval"
-                       name="<?php echo esc_attr( $_prefix.'recurrence_interval' ); ?>"
-                       class="creneaux_input creneaux_interval_input"
-                       value="<?php echo esc_attr( $recurrence_interval ); ?>"
-                       min="1">
-                <span class="interval_desc" id="interval-daily"><?php esc_html_e( 'jour(s)', 'eventlist' ); ?></span>
-                <span class="interval_desc" id="interval-weekly"><?php esc_html_e( 'semaine(s)', 'eventlist' ); ?></span>
-                <span class="interval_desc" id="interval-monthly"><?php esc_html_e( 'mois', 'eventlist' ); ?></span>
+        <!-- ÉTAPE 2 : Sélection de la fréquence -->
+        <div class="creneaux_step_section creneaux_frequence_field">
+            <div class="step_header">
+                <span class="step_number">2</span>
+                <label class="step_label">
+                    <?php esc_html_e( 'Choisissez la fréquence de répétition', 'eventlist' ); ?>
+                    <span class="required">*</span>
+                </label>
+                <button type="button" class="step_info_btn" data-tooltip="<?php esc_attr_e( 'La fréquence détermine à quel rythme votre événement se répète : tous les jours, toutes les semaines ou tous les mois. L\'intervalle permet d\'espacer les répétitions (ex: tous les 2 jours).', 'eventlist' ); ?>">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+            </div>
+            <div class="step_content">
+                <div class="creneaux_frequence_row">
+                    <span class="frequence_label"><?php esc_html_e( 'Chaque', 'eventlist' ); ?></span>
+                    <select id="recurrence-frequency" name="<?php echo esc_attr( $_prefix.'recurrence_frequency' ); ?>" class="creneaux_select">
+                        <option value="daily" <?php selected( $recurrence_frequency, 'daily' ); ?>><?php esc_html_e( 'jour', 'eventlist' ); ?></option>
+                        <option value="weekly" <?php selected( $recurrence_frequency, 'weekly' ); ?>><?php esc_html_e( 'semaine', 'eventlist' ); ?></option>
+                        <option value="monthly" <?php selected( $recurrence_frequency, 'monthly' ); ?>><?php esc_html_e( 'mois', 'eventlist' ); ?></option>
+                    </select>
+                    <span class="frequence_label"><?php esc_html_e( 'tous les', 'eventlist' ); ?></span>
+                    <input type="number"
+                           id="recurrence-interval"
+                           name="<?php echo esc_attr( $_prefix.'recurrence_interval' ); ?>"
+                           class="creneaux_input creneaux_interval_input"
+                           value="<?php echo esc_attr( $recurrence_interval ); ?>"
+                           min="1">
+                    <span class="interval_desc" id="interval-daily"><?php esc_html_e( 'jour(s)', 'eventlist' ); ?></span>
+                    <span class="interval_desc" id="interval-weekly"><?php esc_html_e( 'semaine(s)', 'eventlist' ); ?></span>
+                    <span class="interval_desc" id="interval-monthly"><?php esc_html_e( 'mois', 'eventlist' ); ?></span>
+                </div>
             </div>
         </div>
 
-        <!-- Section hebdomadaire - Design en cartes par jour -->
-        <div class="creneaux_weekly_section alternate-selector" id="weekly-selector" style="<?php echo ($recurrence_frequency == 'weekly') ? 'display: block;' : 'display: none;'; ?>">
-            <label class="field_label"><?php esc_html_e( 'Sélectionnez les jours et horaires de récurrence', 'eventlist' ); ?></label>
+        <!-- ÉTAPE 3 : Section hebdomadaire - Design en cartes par jour -->
+        <div class="creneaux_step_section creneaux_weekly_section alternate-selector" id="weekly-selector" style="<?php echo ($recurrence_frequency == 'weekly') ? 'display: block;' : 'display: none;'; ?>">
+            <div class="step_header">
+                <span class="step_number">3</span>
+                <label class="step_label">
+                    <?php esc_html_e( 'Sélectionnez les jours et horaires', 'eventlist' ); ?>
+                    <span class="required">*</span>
+                </label>
+                <button type="button" class="step_info_btn" data-tooltip="<?php esc_attr_e( 'Activez les jours où votre événement aura lieu, puis ajoutez les créneaux horaires pour chaque jour. Vous pouvez avoir plusieurs horaires différents par jour.', 'eventlist' ); ?>">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+            </div>
+            <div class="step_content">
 
             <div class="weekly_days_grid ts-weekly">
                 <?php foreach ( $days_of_the_week as $day_key => $day_name ):
@@ -421,10 +453,22 @@ $arr_recurrence_byweekno = array(
                     </div>
                 <?php endforeach; ?>
             </div>
+            </div><!-- End .step_content for weekly -->
         </div>
 
-        <!-- Section mensuelle - Design en carte -->
-        <div class="creneaux_monthly_section alternate-selector" id="monthly-selector" style="<?php echo ($recurrence_frequency == 'monthly') ? 'display: block;' : 'display: none;'; ?>">
+        <!-- ÉTAPE 3 (alternative) : Section mensuelle - Design en carte -->
+        <div class="creneaux_step_section creneaux_monthly_section alternate-selector" id="monthly-selector" style="<?php echo ($recurrence_frequency == 'monthly') ? 'display: block;' : 'display: none;'; ?>">
+            <div class="step_header">
+                <span class="step_number">3</span>
+                <label class="step_label">
+                    <?php esc_html_e( 'Configurez la récurrence mensuelle', 'eventlist' ); ?>
+                    <span class="required">*</span>
+                </label>
+                <button type="button" class="step_info_btn" data-tooltip="<?php esc_attr_e( 'Choisissez quel jour du mois votre événement se répète (ex: le 1er lundi, le 2ème mardi, etc.) et ajoutez les horaires souhaités.', 'eventlist' ); ?>">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+            </div>
+            <div class="step_content">
             <div class="monthly_config_card">
                 <!-- En-tête avec sélection du jour -->
                 <div class="monthly_config_header">
@@ -466,10 +510,23 @@ $arr_recurrence_byweekno = array(
                 <!-- Message de confirmation -->
                 <div class="monthly_rule_display" style="display: none;"></div>
             </div>
+            </div><!-- End .step_content for monthly -->
         </div>
 
-        <!-- Section Daily - Carte horaires (pour daily et monthly) -->
-        <div class="daily_schedules_card" style="<?php if ( $recurrence_frequency == 'weekly' ) echo 'display: none;'; ?>">
+        <!-- ÉTAPE 3 (alternative) : Section Daily - Carte horaires (pour daily) -->
+        <div class="creneaux_step_section creneaux_daily_section" id="daily-selector" style="<?php echo ($recurrence_frequency == 'daily') ? 'display: block;' : 'display: none;'; ?>">
+            <div class="step_header">
+                <span class="step_number">3</span>
+                <label class="step_label">
+                    <?php esc_html_e( 'Définissez les horaires quotidiens', 'eventlist' ); ?>
+                    <span class="required">*</span>
+                </label>
+                <button type="button" class="step_info_btn" data-tooltip="<?php esc_attr_e( 'Ajoutez un ou plusieurs créneaux horaires qui se répéteront chaque jour de la période définie.', 'eventlist' ); ?>">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+            </div>
+            <div class="step_content">
+        <div class="daily_schedules_card">
             <div class="daily_card_header">
                 <span class="daily_card_title"><?php esc_html_e( 'Horaires programmés', 'eventlist' ); ?></span>
                 <span class="daily_slots_count"><?php
@@ -545,13 +602,21 @@ $arr_recurrence_byweekno = array(
                 </div>
             </div>
         </div>
+            </div><!-- End .step_content for daily -->
+        </div>
 
-        <!-- Prévisualisation des créneaux générés -->
-        <div class="creneaux_preview_section">
-            <!-- Titre de section -->
-            <div class="creneaux_list_title">
-                <?php esc_html_e( 'Les créneaux', 'eventlist' ); ?>
+        <!-- ÉTAPE 4 : Prévisualisation des créneaux générés -->
+        <div class="creneaux_step_section creneaux_preview_section">
+            <div class="step_header">
+                <span class="step_number">4</span>
+                <label class="step_label">
+                    <?php esc_html_e( 'Prévisualisation des créneaux', 'eventlist' ); ?>
+                </label>
+                <button type="button" class="step_info_btn" data-tooltip="<?php esc_attr_e( 'Visualisez tous les créneaux qui seront générés selon votre configuration. Cliquez sur \"Générer\" pour actualiser la prévisualisation.', 'eventlist' ); ?>">
+                    <i class="fa fa-info-circle"></i>
+                </button>
             </div>
+            <div class="step_content">
 
             <!-- Filtre par date -->
             <div class="creneaux_filter_row">
@@ -611,9 +676,10 @@ $arr_recurrence_byweekno = array(
                 </button>
                 <span class="preview_count"></span>
             </div>
+            </div><!-- End .step_content for preview -->
         </div>
 
-        <!-- Désactivation de créneaux -->
+        <!-- ÉTAPE 5 : Désactivation de créneaux -->
         <div class="vendor_field creneaux_disable_field disable_date">
             <label class="field_label"><?php esc_html_e( 'Désactivez un créneau :', 'eventlist' ); ?></label>
 
@@ -712,6 +778,177 @@ $arr_recurrence_byweekno = array(
 .ui-timepicker-list {
     display: none !important;
     visibility: hidden !important;
+}
+
+/* ==========================================================================
+   Step Sections - Configuration par étapes
+   ========================================================================== */
+
+.creneaux_step_section {
+    margin-bottom: 28px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.creneaux_step_section:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Step Header */
+.step_header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Step Number Badge */
+.step_number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #FF6600 0%, #e55a00 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(255, 102, 0, 0.3);
+}
+
+/* Step Label */
+.step_label {
+    flex: 1;
+    font-weight: 600;
+    font-size: 15px;
+    color: #1f2937;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.step_label .required {
+    color: #ef4444;
+    font-weight: 700;
+    margin-left: 4px;
+}
+
+/* Step Info Button (Tooltip) */
+.step_info_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.step_info_btn:hover {
+    background: #FF6600;
+    border-color: #FF6600;
+    color: #fff;
+}
+
+.step_info_btn i {
+    font-size: 14px;
+}
+
+/* Tooltip Popover */
+.step_info_btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: 12px;
+    padding: 12px 16px;
+    background: #1f2937;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.5;
+    border-radius: 8px;
+    width: 280px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.step_info_btn::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: 4px;
+    border: 6px solid transparent;
+    border-left-color: #1f2937;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 101;
+}
+
+.step_info_btn:hover::after,
+.step_info_btn:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Step Content */
+.step_content {
+    /* Contenu des étapes */
+}
+
+/* Responsive - Tooltip en dessous sur mobile */
+@media (max-width: 768px) {
+    .step_header {
+        flex-wrap: wrap;
+    }
+
+    .step_label {
+        flex: 0 0 calc(100% - 80px);
+        font-size: 14px;
+    }
+
+    .step_info_btn::after {
+        right: auto;
+        left: 50%;
+        top: 100%;
+        transform: translateX(-50%);
+        margin-right: 0;
+        margin-top: 12px;
+        width: 250px;
+    }
+
+    .step_info_btn::before {
+        right: auto;
+        left: 50%;
+        top: 100%;
+        transform: translateX(-50%);
+        margin-right: 0;
+        margin-top: 0;
+        border: 6px solid transparent;
+        border-bottom-color: #1f2937;
+        border-left-color: transparent;
+    }
 }
 
 /* Support de l'ancienne structure .ts-item avant conversion */
@@ -1526,7 +1763,7 @@ $arr_recurrence_byweekno = array(
 
 /* Période - Horizontal sur une ligne */
 .creneaux_periode_field {
-    margin-bottom: 20px;
+    /* Margin géré par creneaux_step_section */
 }
 
 .creneaux_periode_row {
@@ -1553,7 +1790,7 @@ $arr_recurrence_byweekno = array(
 
 /* Fréquence - Tout sur une ligne */
 .creneaux_frequence_field {
-    margin-bottom: 20px;
+    /* Margin géré par creneaux_step_section */
 }
 
 .creneaux_frequence_row {
@@ -1592,7 +1829,7 @@ $arr_recurrence_byweekno = array(
    Section hebdomadaire - Design en cartes
    ========================================================================== */
 .creneaux_weekly_section {
-    margin-bottom: 24px;
+    /* Margin géré par creneaux_step_section */
 }
 
 .weekly_days_grid {
@@ -2260,16 +2497,11 @@ $arr_recurrence_byweekno = array(
    Section Prévisualisation des créneaux récurrents
    ========================================================================== */
 .creneaux_preview_section {
-    margin-top: 32px;
-    padding-top: 24px;
-    border-top: 1px solid #e5e7eb;
+    /* Styles gérés par creneaux_step_section */
 }
 
 .creneaux_preview_section .creneaux_list_title {
-    font-size: 15px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 16px;
+    display: none; /* Maintenant dans step_header */
 }
 
 .creneaux_preview_section .creneaux_table_header,
@@ -2555,21 +2787,17 @@ $arr_recurrence_byweekno = array(
             $('#recurrence-frequency').on('change', function() {
                 var freq = $(this).val();
 
-                // Cacher toutes les sections
-                $('#weekly-selector, #monthly-selector').hide();
+                // Cacher toutes les sections étape 3 alternatives
+                $('#weekly-selector, #monthly-selector, #daily-selector').hide();
 
                 // Afficher la section appropriée
                 if (freq === 'weekly') {
                     $('#weekly-selector').slideDown(200);
-                    // Cacher la carte des horaires daily
-                    $('.daily_schedules_card').hide();
                 } else if (freq === 'monthly') {
                     $('#monthly-selector').slideDown(200);
-                    // Afficher la carte des horaires daily pour le mode mensuel
-                    $('.daily_schedules_card').show();
                 } else {
-                    // Mode daily - afficher la carte des horaires
-                    $('.daily_schedules_card').show();
+                    // Mode daily - afficher la section daily
+                    $('#daily-selector').slideDown(200);
                 }
 
                 self.updateIntervalDesc();
@@ -2912,25 +3140,32 @@ $arr_recurrence_byweekno = array(
             this.initPickers();
         },
 
-        formatDateReadable: function(dateStr) {
+        formatDateReadable: function(dateInput) {
             // Convertir une date (format variable) en format lisible
             var date;
 
-            // Essayer différents formats de parsing
-            if (dateStr.includes('/')) {
-                var parts = dateStr.split('/');
-                if (parts[2] && parts[2].length === 4) {
-                    // Format jj/mm/aaaa ou mm/jj/aaaa
-                    date = new Date(parts[2], parts[1] - 1, parts[0]);
+            // Si c'est déjà un objet Date
+            if (dateInput instanceof Date) {
+                date = dateInput;
+            } else if (typeof dateInput === 'string') {
+                // Essayer différents formats de parsing
+                if (dateInput.includes('/')) {
+                    var parts = dateInput.split('/');
+                    if (parts[2] && parts[2].length === 4) {
+                        // Format jj/mm/aaaa ou mm/jj/aaaa
+                        date = new Date(parts[2], parts[1] - 1, parts[0]);
+                    } else {
+                        date = new Date(dateInput);
+                    }
                 } else {
-                    date = new Date(dateStr);
+                    date = new Date(dateInput);
                 }
             } else {
-                date = new Date(dateStr);
+                return String(dateInput);
             }
 
             if (isNaN(date.getTime())) {
-                return dateStr; // Retourner la date originale si parsing échoue
+                return String(dateInput); // Retourner la date originale si parsing échoue
             }
 
             var days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
