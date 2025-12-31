@@ -1202,6 +1202,7 @@ var EL_ServicesData = {
 .service_header {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 12px;
     margin-bottom: 10px;
 }
@@ -1210,7 +1211,6 @@ var EL_ServicesData = {
     font-size: 14px;
     font-weight: 600;
     color: #333;
-    flex: 1;
 }
 
 .service_info_input {
