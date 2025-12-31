@@ -551,11 +551,23 @@ $arr_recurrence_byweekno = array(
 
             <!-- Barre d'actions groupées (cachée par défaut) -->
             <div class="creneaux_unified_bulk_actions" style="display: none;">
-                <span class="bulk_count"><span class="count_number">0</span> <?php esc_html_e( 'sélectionné(s)', 'eventlist' ); ?></span>
-                <button type="button" class="btn_unified_bulk_delete">
-                    <i class="fa fa-trash"></i>
-                    <?php esc_html_e( 'Supprimer la sélection', 'eventlist' ); ?>
-                </button>
+                <div class="bulk_actions_left">
+                    <span class="bulk_count"><span class="count_number">0</span> <?php esc_html_e( 'sélectionné(s)', 'eventlist' ); ?></span>
+                </div>
+                <div class="bulk_actions_right">
+                    <button type="button" class="btn_unified_bulk_toggle" title="<?php esc_attr_e( 'Activer/Désactiver les créneaux sélectionnés', 'eventlist' ); ?>">
+                        <i class="fa fa-eye-slash"></i>
+                        <?php esc_html_e( 'Désactiver', 'eventlist' ); ?>
+                    </button>
+                    <button type="button" class="btn_unified_bulk_enable" title="<?php esc_attr_e( 'Activer les créneaux sélectionnés', 'eventlist' ); ?>">
+                        <i class="fa fa-eye"></i>
+                        <?php esc_html_e( 'Activer', 'eventlist' ); ?>
+                    </button>
+                    <button type="button" class="btn_unified_bulk_delete" title="<?php esc_attr_e( 'Supprimer les créneaux sélectionnés', 'eventlist' ); ?>">
+                        <i class="fa fa-trash"></i>
+                        <?php esc_html_e( 'Supprimer', 'eventlist' ); ?>
+                    </button>
+                </div>
             </div>
 
             <!-- En-têtes de colonnes -->
@@ -1658,6 +1670,143 @@ $arr_recurrence_byweekno = array(
 
 .btn_bulk_delete i {
     font-size: 14px;
+}
+
+/* Barre d'actions groupées unifiée - Style amélioré */
+.creneaux_unified_bulk_actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 1px solid #7dd3fc;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.1);
+    animation: slideDown 0.25s ease-out;
+}
+
+.creneaux_unified_bulk_actions .bulk_actions_left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.creneaux_unified_bulk_actions .bulk_count {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0369a1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.creneaux_unified_bulk_actions .bulk_count::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #0ea5e9;
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.creneaux_unified_bulk_actions .count_number {
+    font-weight: 700;
+    color: #0284c7;
+    font-size: 16px;
+}
+
+.creneaux_unified_bulk_actions .bulk_actions_right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Boutons de la barre bulk unifiée */
+.btn_unified_bulk_toggle,
+.btn_unified_bulk_enable,
+.btn_unified_bulk_delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn_unified_bulk_toggle {
+    background: #64748b;
+    color: #fff;
+}
+
+.btn_unified_bulk_toggle:hover {
+    background: #475569;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
+}
+
+.btn_unified_bulk_enable {
+    background: #10b981;
+    color: #fff;
+}
+
+.btn_unified_bulk_enable:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn_unified_bulk_delete {
+    background: #ef4444;
+    color: #fff;
+}
+
+.btn_unified_bulk_delete:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn_unified_bulk_toggle i,
+.btn_unified_bulk_enable i,
+.btn_unified_bulk_delete i {
+    font-size: 14px;
+}
+
+/* Responsive pour la barre bulk */
+@media (max-width: 768px) {
+    .creneaux_unified_bulk_actions {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 16px;
+    }
+
+    .creneaux_unified_bulk_actions .bulk_actions_right {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn_unified_bulk_toggle,
+    .btn_unified_bulk_enable,
+    .btn_unified_bulk_delete {
+        flex: 1;
+        justify-content: center;
+        min-width: 100px;
+        padding: 10px 12px;
+        font-size: 12px;
+    }
 }
 
 /* En-têtes de colonnes du tableau - utiliser grid pour alignement parfait */
@@ -3406,6 +3555,64 @@ $arr_recurrence_byweekno = array(
                     // Décocher "sélectionner tout"
                     $('.creneaux_unified_select_all').prop('checked', false);
                 }
+            });
+
+            // Désactivation groupée dans le tableau unifié
+            $(document).on('click', '.btn_unified_bulk_toggle', function() {
+                var selectedCount = $('.creneaux_unified_item_checkbox:checked').length;
+                if (selectedCount === 0) return;
+
+                $('.creneaux_unified_item_checkbox:checked').each(function() {
+                    var $item = $(this).closest('.creneaux_item');
+                    var $btn = $item.find('.btn_toggle_creneaux');
+                    var $icon = $btn.find('i');
+                    var $hiddenInput = $item.find('.calendar_is_disabled');
+
+                    // Désactiver le créneau
+                    $item.addClass('is-disabled');
+                    $hiddenInput.val('yes');
+                    $icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                    $btn.attr('title', '<?php echo esc_js(__("Activer", "eventlist")); ?>');
+                });
+
+                // Message de confirmation
+                if (typeof ToastNotification !== 'undefined') {
+                    ToastNotification.success(selectedCount + ' <?php echo esc_js(__("créneau(x) désactivé(s)", "eventlist")); ?>');
+                }
+
+                // Décocher les checkboxes et cacher la barre
+                $('.creneaux_unified_item_checkbox').prop('checked', false);
+                $('.creneaux_unified_select_all').prop('checked', false);
+                self.updateUnifiedBulkActionsBar();
+            });
+
+            // Activation groupée dans le tableau unifié
+            $(document).on('click', '.btn_unified_bulk_enable', function() {
+                var selectedCount = $('.creneaux_unified_item_checkbox:checked').length;
+                if (selectedCount === 0) return;
+
+                $('.creneaux_unified_item_checkbox:checked').each(function() {
+                    var $item = $(this).closest('.creneaux_item');
+                    var $btn = $item.find('.btn_toggle_creneaux');
+                    var $icon = $btn.find('i');
+                    var $hiddenInput = $item.find('.calendar_is_disabled');
+
+                    // Activer le créneau
+                    $item.removeClass('is-disabled');
+                    $hiddenInput.val('');
+                    $icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                    $btn.attr('title', '<?php echo esc_js(__("Désactiver", "eventlist")); ?>');
+                });
+
+                // Message de confirmation
+                if (typeof ToastNotification !== 'undefined') {
+                    ToastNotification.success(selectedCount + ' <?php echo esc_js(__("créneau(x) activé(s)", "eventlist")); ?>');
+                }
+
+                // Décocher les checkboxes et cacher la barre
+                $('.creneaux_unified_item_checkbox').prop('checked', false);
+                $('.creneaux_unified_select_all').prop('checked', false);
+                self.updateUnifiedBulkActionsBar();
             });
 
             // Validation en temps réel des horaires existants
