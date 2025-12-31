@@ -546,6 +546,73 @@ $arr_recurrence_byweekno = array(
             </div>
         </div>
 
+        <!-- Prévisualisation des créneaux générés -->
+        <div class="creneaux_preview_section">
+            <!-- Titre de section -->
+            <div class="creneaux_list_title">
+                <?php esc_html_e( 'Les créneaux', 'eventlist' ); ?>
+            </div>
+
+            <!-- Filtre par date -->
+            <div class="creneaux_filter_row">
+                <div class="creneaux_filter">
+                    <span class="filter_label"><?php esc_html_e( 'Filtrer par date, de', 'eventlist' ); ?></span>
+                    <input type="text"
+                           class="creneaux_filter_input creneaux_preview_filter_start"
+                           placeholder="JJ/MM/AAAA"
+                           data-format="dd/mm/yy"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
+                    <span class="filter_separator"><?php esc_html_e( 'à', 'eventlist' ); ?></span>
+                    <input type="text"
+                           class="creneaux_filter_input creneaux_preview_filter_end"
+                           placeholder="JJ/MM/AAAA"
+                           data-format="dd/mm/yy"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
+                    <button type="button" class="btn_filter_creneaux btn_filter_preview">
+                        <?php esc_html_e( 'Filtrer', 'eventlist' ); ?>
+                    </button>
+                    <button type="button" class="btn_reset_filter_creneaux btn_reset_preview_filter" style="display: none;">
+                        <?php esc_html_e( 'Réinitialiser', 'eventlist' ); ?>
+                    </button>
+                </div>
+            </div>
+
+            <!-- En-têtes de colonnes -->
+            <div class="creneaux_table_header">
+                <label class="creneaux_select_all_label">
+                    <input type="checkbox" class="creneaux_preview_select_all">
+                    <span class="option_checkbox"></span>
+                </label>
+                <span class="header_col header_date"><?php esc_html_e( 'Date de début', 'eventlist' ); ?></span>
+                <div class="header_times_wrapper">
+                    <span class="header_col header_start_time"><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?></span>
+                    <span class="header_col header_end_time"><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?></span>
+                </div>
+                <span class="header_col header_actions"></span>
+            </div>
+
+            <!-- Liste des créneaux générés -->
+            <div class="creneaux_list creneaux_preview_list">
+                <!-- Peuplé par JavaScript -->
+            </div>
+
+            <!-- État vide -->
+            <div class="creneaux_preview_empty_state">
+                <i class="fa fa-calendar-alt"></i>
+                <p><?php esc_html_e( 'Aucun créneau généré', 'eventlist' ); ?></p>
+                <span><?php esc_html_e( 'Configurez la période, la fréquence et les horaires ci-dessus pour voir les créneaux générés', 'eventlist' ); ?></span>
+            </div>
+
+            <!-- Bouton générer/rafraîchir -->
+            <div class="creneaux_preview_actions">
+                <button type="button" class="btn_generate_preview">
+                    <i class="fa fa-sync-alt"></i>
+                    <?php esc_html_e( 'Générer la prévisualisation', 'eventlist' ); ?>
+                </button>
+                <span class="preview_count"></span>
+            </div>
+        </div>
+
         <!-- Désactivation de créneaux -->
         <div class="vendor_field creneaux_disable_field disable_date">
             <label class="field_label"><?php esc_html_e( 'Désactivez un créneau :', 'eventlist' ); ?></label>
@@ -2188,6 +2255,129 @@ $arr_recurrence_byweekno = array(
         flex-wrap: wrap;
     }
 }
+
+/* ==========================================================================
+   Section Prévisualisation des créneaux récurrents
+   ========================================================================== */
+.creneaux_preview_section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.creneaux_preview_section .creneaux_list_title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.creneaux_preview_section .creneaux_table_header,
+.creneaux_preview_section .creneaux_list {
+    margin-top: 0;
+}
+
+.creneaux_preview_empty_state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    background: #fafafa;
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    margin-top: 16px;
+}
+
+.creneaux_preview_empty_state i {
+    font-size: 40px;
+    color: #ccc;
+    margin-bottom: 12px;
+}
+
+.creneaux_preview_empty_state p {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 6px;
+}
+
+.creneaux_preview_empty_state span {
+    font-size: 13px;
+    color: #888;
+}
+
+.creneaux_preview_actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.btn_generate_preview {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #FF6600;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn_generate_preview:hover {
+    background: #e55b00;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+}
+
+.btn_generate_preview i {
+    font-size: 14px;
+}
+
+.btn_generate_preview.loading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.preview_count {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.preview_count strong {
+    color: #FF6600;
+}
+
+/* Masquer le tableau et état vide selon le contexte */
+.creneaux_preview_section.has-items .creneaux_preview_empty_state {
+    display: none;
+}
+
+.creneaux_preview_section:not(.has-items) .creneaux_table_header,
+.creneaux_preview_section:not(.has-items) .creneaux_preview_list,
+.creneaux_preview_section:not(.has-items) .creneaux_filter_row {
+    display: none;
+}
+
+/* Item de prévisualisation avec style légèrement différent */
+.creneaux_preview_list .creneaux_item {
+    background: #fefefe;
+}
+
+.creneaux_preview_list .creneaux_item:hover {
+    background: #f8f9fa;
+}
 </style>
 
 <script>
@@ -2598,14 +2788,46 @@ $arr_recurrence_byweekno = array(
                 }
             });
 
-            // Filtrer les créneaux
-            $(document).on('click', '.btn_filter_creneaux', function() {
+            // Filtrer les créneaux (manuel)
+            $(document).on('click', '.btn_filter_creneaux:not(.btn_filter_preview)', function() {
                 self.filterSlots();
             });
 
-            // Réinitialiser le filtre
-            $(document).on('click', '.btn_reset_filter_creneaux', function() {
+            // Réinitialiser le filtre (manuel)
+            $(document).on('click', '.btn_reset_filter_creneaux:not(.btn_reset_preview_filter)', function() {
                 self.resetFilter();
+            });
+
+            // Générer la prévisualisation des créneaux récurrents
+            $(document).on('click', '.btn_generate_preview', function() {
+                self.generatePreview();
+            });
+
+            // Filtrer la prévisualisation
+            $(document).on('click', '.btn_filter_preview', function() {
+                self.filterPreview();
+            });
+
+            // Réinitialiser le filtre de prévisualisation
+            $(document).on('click', '.btn_reset_preview_filter', function() {
+                self.resetPreviewFilter();
+            });
+
+            // Sélectionner tout dans la prévisualisation
+            $(document).on('change', '.creneaux_preview_select_all', function() {
+                var checked = $(this).is(':checked');
+                $('.creneaux_preview_list .creneaux_item_checkbox').prop('checked', checked);
+            });
+
+            // Auto-régénérer la prévisualisation quand la config change
+            $(document).on('change', '.calendar_auto_start_date, .calendar_auto_end_date, #recurrence-frequency, #recurrence-interval', function() {
+                // Régénérer après un délai pour éviter les appels multiples
+                clearTimeout(self.previewTimeout);
+                self.previewTimeout = setTimeout(function() {
+                    if ($('.creneaux_auto_section').is(':visible')) {
+                        self.generatePreview();
+                    }
+                }, 500);
             });
 
             // Init date/time pickers si disponibles
@@ -3143,6 +3365,365 @@ $arr_recurrence_byweekno = array(
                     $select.append('<option value="' + key + '">' + startTime + ' - ' + endTime + '</option>');
                 }
             });
+        },
+
+        // ========================================
+        // Prévisualisation des créneaux récurrents
+        // ========================================
+
+        previewTimeout: null,
+        previewData: [],
+
+        generatePreview: function() {
+            var self = this;
+            var $section = $('.creneaux_preview_section');
+            var $list = $('.creneaux_preview_list');
+            var $btn = $('.btn_generate_preview');
+            var $count = $('.preview_count');
+
+            // Récupérer les paramètres de récurrence
+            var startDateStr = $('.calendar_auto_start_date').val();
+            var endDateStr = $('.calendar_auto_end_date').val();
+            var frequency = $('#recurrence-frequency').val();
+            var interval = parseInt($('#recurrence-interval').val()) || 1;
+
+            // Vérifier que les dates sont remplies
+            if (!startDateStr || !endDateStr) {
+                $section.removeClass('has-items');
+                $count.html('');
+                return;
+            }
+
+            // Animation de chargement
+            $btn.addClass('loading');
+
+            // Récupérer les horaires selon la fréquence
+            var timeSlots = this.getRecurringTimeSlots(frequency);
+
+            // Si pas d'horaires configurés
+            if (timeSlots.length === 0) {
+                $section.removeClass('has-items');
+                $list.empty();
+                $count.html('<?php echo esc_js(__("Ajoutez des horaires pour voir les créneaux", "eventlist")); ?>');
+                $btn.removeClass('loading');
+                return;
+            }
+
+            // Convertir les dates
+            var startDate = this.parseDate(startDateStr);
+            var endDate = this.parseDate(endDateStr);
+
+            if (!startDate || !endDate || startDate > endDate) {
+                $section.removeClass('has-items');
+                $count.html('<?php echo esc_js(__("Dates invalides", "eventlist")); ?>');
+                $btn.removeClass('loading');
+                return;
+            }
+
+            // Générer les dates selon la fréquence
+            var generatedDates = [];
+
+            switch (frequency) {
+                case 'daily':
+                    generatedDates = this.generateDailyDates(startDate, endDate, interval, timeSlots);
+                    break;
+                case 'weekly':
+                    generatedDates = this.generateWeeklyDates(startDate, endDate, interval, timeSlots);
+                    break;
+                case 'monthly':
+                    generatedDates = this.generateMonthlyDates(startDate, endDate, interval, timeSlots);
+                    break;
+            }
+
+            // Stocker les données pour le filtrage
+            this.previewData = generatedDates;
+
+            // Afficher les créneaux
+            this.renderPreviewSlots(generatedDates);
+
+            // Mettre à jour le compteur
+            var total = generatedDates.length;
+            $count.html('<strong>' + total + '</strong> <?php echo esc_js(__("créneau(x) généré(s)", "eventlist")); ?>');
+
+            $btn.removeClass('loading');
+        },
+
+        getRecurringTimeSlots: function(frequency) {
+            var slots = [];
+
+            if (frequency === 'weekly') {
+                // Pour weekly, récupérer les horaires par jour
+                $('.weekly_day_card.is-active').each(function() {
+                    var dayKey = $(this).data('day');
+                    $(this).find('.day_slot_item').each(function() {
+                        var startTime = $(this).find('.calendar_recurrence_ts_start').val();
+                        var endTime = $(this).find('.calendar_recurrence_ts_end').val();
+                        if (startTime && endTime) {
+                            slots.push({
+                                day: parseInt(dayKey),
+                                start: startTime,
+                                end: endTime
+                            });
+                        }
+                    });
+                });
+            } else {
+                // Pour daily et monthly, utiliser les horaires programmés
+                $('.daily_slot_item').each(function() {
+                    var startTime = $(this).find('.start_time').val();
+                    var endTime = $(this).find('.end_time').val();
+                    if (startTime && endTime) {
+                        slots.push({
+                            start: startTime,
+                            end: endTime
+                        });
+                    }
+                });
+            }
+
+            return slots;
+        },
+
+        parseDate: function(dateStr) {
+            if (!dateStr) return null;
+
+            // Format JJ/MM/AAAA
+            if (dateStr.includes('/')) {
+                var parts = dateStr.split('/');
+                if (parts.length === 3 && parts[2].length === 4) {
+                    return new Date(parts[2], parts[1] - 1, parts[0]);
+                }
+            }
+
+            // Format YYYY-MM-DD
+            if (dateStr.includes('-')) {
+                return new Date(dateStr);
+            }
+
+            return null;
+        },
+
+        generateDailyDates: function(startDate, endDate, interval, timeSlots) {
+            var dates = [];
+            var current = new Date(startDate);
+            var maxDates = 365; // Limite de sécurité
+            var count = 0;
+
+            while (current <= endDate && count < maxDates) {
+                timeSlots.forEach(function(slot) {
+                    dates.push({
+                        date: new Date(current),
+                        startTime: slot.start,
+                        endTime: slot.end
+                    });
+                });
+
+                current.setDate(current.getDate() + interval);
+                count++;
+            }
+
+            return dates;
+        },
+
+        generateWeeklyDates: function(startDate, endDate, interval, timeSlots) {
+            var dates = [];
+            var current = new Date(startDate);
+            var maxDates = 365;
+            var count = 0;
+            var weekCount = 0;
+            var lastWeek = -1;
+
+            while (current <= endDate && count < maxDates) {
+                var dayOfWeek = current.getDay(); // 0 = Dimanche
+
+                // Vérifier si on a un slot pour ce jour
+                var daySlots = timeSlots.filter(function(slot) {
+                    return slot.day === dayOfWeek;
+                });
+
+                if (daySlots.length > 0) {
+                    // Calculer le numéro de semaine depuis le début
+                    var weekNum = Math.floor((current - startDate) / (7 * 24 * 60 * 60 * 1000));
+
+                    // N'ajouter que si on est dans la bonne semaine selon l'intervalle
+                    if (weekNum % interval === 0) {
+                        daySlots.forEach(function(slot) {
+                            dates.push({
+                                date: new Date(current),
+                                startTime: slot.start,
+                                endTime: slot.end
+                            });
+                        });
+                    }
+                }
+
+                current.setDate(current.getDate() + 1);
+                count++;
+            }
+
+            return dates;
+        },
+
+        generateMonthlyDates: function(startDate, endDate, interval, timeSlots) {
+            var dates = [];
+            var byweekno = parseInt($('#monthly-modifier').val()) || 1;
+            var byday = parseInt($('#recurrence-weekday').val()) || 0;
+            var maxDates = 52;
+            var count = 0;
+
+            var current = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+
+            while (current <= endDate && count < maxDates) {
+                // Trouver le jour correspondant dans ce mois
+                var targetDate = this.findMonthlyOccurrence(current.getFullYear(), current.getMonth(), byweekno, byday);
+
+                if (targetDate && targetDate >= startDate && targetDate <= endDate) {
+                    var self = this;
+                    timeSlots.forEach(function(slot) {
+                        dates.push({
+                            date: new Date(targetDate),
+                            startTime: slot.start,
+                            endTime: slot.end
+                        });
+                    });
+                }
+
+                // Passer au mois suivant selon l'intervalle
+                current.setMonth(current.getMonth() + interval);
+                count++;
+            }
+
+            return dates;
+        },
+
+        findMonthlyOccurrence: function(year, month, weekno, dayOfWeek) {
+            var date;
+
+            if (weekno === -1) {
+                // Dernier jour du type dans le mois
+                date = new Date(year, month + 1, 0); // Dernier jour du mois
+
+                while (date.getDay() !== dayOfWeek) {
+                    date.setDate(date.getDate() - 1);
+                }
+            } else {
+                // N-ième jour du type dans le mois
+                date = new Date(year, month, 1);
+
+                // Trouver le premier jour du type
+                while (date.getDay() !== dayOfWeek) {
+                    date.setDate(date.getDate() + 1);
+                }
+
+                // Avancer au N-ième
+                date.setDate(date.getDate() + (weekno - 1) * 7);
+
+                // Vérifier qu'on est toujours dans le bon mois
+                if (date.getMonth() !== month) {
+                    return null;
+                }
+            }
+
+            return date;
+        },
+
+        renderPreviewSlots: function(dates) {
+            var self = this;
+            var $section = $('.creneaux_preview_section');
+            var $list = $('.creneaux_preview_list');
+
+            $list.empty();
+
+            if (dates.length === 0) {
+                $section.removeClass('has-items');
+                return;
+            }
+
+            $section.addClass('has-items');
+
+            dates.forEach(function(item, index) {
+                var formattedDate = self.formatDateReadable(item.date);
+                var isoDate = self.formatDateISO(item.date);
+
+                var html = `
+                    <div class="creneaux_item preview_item" data-index="${index}" data-date="${isoDate}">
+                        <label class="creneaux_item_select">
+                            <input type="checkbox" class="creneaux_item_checkbox">
+                            <span class="option_checkbox"></span>
+                        </label>
+                        <div class="creneaux_item_date_display">
+                            <span class="date_text">${formattedDate}</span>
+                        </div>
+                        <div class="creneaux_item_time">
+                            <span class="time_label"><?php esc_html_e("De", "eventlist"); ?></span>
+                            <input type="time" class="creneaux_input creneaux_time_native" value="${item.startTime}" readonly step="900">
+                            <span class="time_label"><?php esc_html_e("À", "eventlist"); ?></span>
+                            <input type="time" class="creneaux_input creneaux_time_native" value="${item.endTime}" readonly step="900">
+                        </div>
+                        <div class="creneaux_item_actions">
+                            <button type="button" class="btn_edit_creneaux" title="<?php esc_attr_e("Modifier", "eventlist"); ?>">
+                                <i class="fa fa-pencil-alt"></i>
+                            </button>
+                            <button type="button" class="btn_remove_creneaux btn_remove_preview_item" title="<?php esc_attr_e("Supprimer", "eventlist"); ?>">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                $list.append(html);
+            });
+        },
+
+        formatDateISO: function(date) {
+            var year = date.getFullYear();
+            var month = String(date.getMonth() + 1).padStart(2, '0');
+            var day = String(date.getDate()).padStart(2, '0');
+            return year + '-' + month + '-' + day;
+        },
+
+        filterPreview: function() {
+            var startDateStr = $('.creneaux_preview_filter_start').val();
+            var endDateStr = $('.creneaux_preview_filter_end').val();
+
+            if (!startDateStr && !endDateStr) {
+                return;
+            }
+
+            var startFilter = startDateStr ? this.parseDate(startDateStr) : null;
+            var endFilter = endDateStr ? this.parseDate(endDateStr) : null;
+
+            $('.creneaux_preview_list .creneaux_item').each(function() {
+                var dateStr = $(this).data('date');
+                var itemDate = new Date(dateStr);
+
+                var show = true;
+
+                if (startFilter && itemDate < startFilter) {
+                    show = false;
+                }
+
+                if (endFilter && itemDate > endFilter) {
+                    show = false;
+                }
+
+                $(this).toggle(show);
+            });
+
+            // Afficher le bouton reset
+            $('.btn_reset_preview_filter').show();
+        },
+
+        resetPreviewFilter: function() {
+            // Vider les champs de filtre
+            $('.creneaux_preview_filter_start').val('');
+            $('.creneaux_preview_filter_end').val('');
+
+            // Afficher tous les créneaux
+            $('.creneaux_preview_list .creneaux_item').show();
+
+            // Cacher le bouton reset
+            $('.btn_reset_preview_filter').hide();
         },
 
         initPickers: function() {
