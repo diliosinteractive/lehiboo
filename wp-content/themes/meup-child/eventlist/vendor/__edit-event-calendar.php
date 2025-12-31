@@ -814,10 +814,10 @@ $arr_recurrence_byweekno = array(
     align-items: center;
     gap: 6px;
     padding: 12px 24px;
-    background: #fff !important;
-    border: 2px solid #10B981 !important;
+    background: #ff601f !important;
+    border: 2px solid #ff601f !important;
     border-radius: 8px;
-    color: #10B981 !important;
+    color: #ffffff !important;
     font-weight: 600;
     font-size: 14px;
     cursor: pointer;
@@ -826,7 +826,8 @@ $arr_recurrence_byweekno = array(
 }
 
 .btn_add_creneaux_manual:hover {
-    background: #10B981 !important;
+    background: #ff601f !important;
+    border: 2px solid #ff601f !important;
     color: #fff !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
@@ -928,12 +929,14 @@ $arr_recurrence_byweekno = array(
     align-items: flex-end;
     gap: 24px;
     flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 .creneaux_form_group {
     display: flex;
     flex-direction: column;
     gap: 8px;
+        width: 40%;
 }
 
 .form_group_label {
