@@ -177,6 +177,15 @@ $arr_recurrence_byweekno = array(
                 </div>
             </div>
 
+            <!-- Barre d'actions groupées (cachée par défaut) -->
+            <div class="creneaux_bulk_actions" style="display: none;">
+                <span class="bulk_count"><span class="count_number">0</span> <?php esc_html_e( 'sélectionné(s)', 'eventlist' ); ?></span>
+                <button type="button" class="btn_bulk_delete">
+                    <i class="fa fa-trash"></i>
+                    <?php esc_html_e( 'Supprimer la sélection', 'eventlist' ); ?>
+                </button>
+            </div>
+
             <!-- En-têtes de colonnes -->
             <div class="creneaux_table_header">
                 <label class="creneaux_select_all_label">
@@ -1069,6 +1078,66 @@ $arr_recurrence_byweekno = array(
 
 .btn_filter_creneaux:hover {
     background: #e55b00;
+}
+
+/* Barre d'actions groupées */
+.creneaux_bulk_actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.creneaux_bulk_actions .bulk_count {
+    font-size: 14px;
+    font-weight: 600;
+    color: #92400e;
+}
+
+.creneaux_bulk_actions .count_number {
+    font-weight: 700;
+    color: #d97706;
+}
+
+.btn_bulk_delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #ef4444;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn_bulk_delete:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn_bulk_delete i {
+    font-size: 14px;
 }
 
 /* En-têtes de colonnes du tableau - utiliser grid pour alignement parfait */
@@ -2096,6 +2165,37 @@ $arr_recurrence_byweekno = array(
             $('.creneaux_select_all').on('change', function() {
                 var checked = $(this).is(':checked');
                 $('.creneaux_item_checkbox').prop('checked', checked);
+                self.updateBulkActionsBar();
+            });
+
+            // Sélection individuelle - mettre à jour la barre d'actions
+            $(document).on('change', '.creneaux_item_checkbox', function() {
+                self.updateBulkActionsBar();
+                // Mettre à jour le "sélectionner tout" si nécessaire
+                var allChecked = $('.creneaux_item_checkbox:checked').length === $('.creneaux_item_checkbox').length;
+                $('.creneaux_select_all').prop('checked', allChecked && $('.creneaux_item_checkbox').length > 0);
+            });
+
+            // Suppression groupée
+            $(document).on('click', '.btn_bulk_delete', function() {
+                var selectedCount = $('.creneaux_item_checkbox:checked').length;
+                if (selectedCount === 0) return;
+
+                var confirmMsg = selectedCount === 1
+                    ? '<?php echo esc_js( __("Êtes-vous sûr de vouloir supprimer ce créneau ?", "eventlist") ); ?>'
+                    : '<?php echo esc_js( __("Êtes-vous sûr de vouloir supprimer ces", "eventlist") ); ?> ' + selectedCount + ' <?php echo esc_js( __("créneaux ?", "eventlist") ); ?>';
+
+                if (confirm(confirmMsg)) {
+                    $('.creneaux_item_checkbox:checked').each(function() {
+                        $(this).closest('.creneaux_item').fadeOut(200, function() {
+                            $(this).remove();
+                            self.updateBulkActionsBar();
+                            self.updateEmptyState();
+                        });
+                    });
+                    // Décocher "sélectionner tout"
+                    $('.creneaux_select_all').prop('checked', false);
+                }
             });
 
             // Auto-remplir date de fin quand date de début est sélectionnée
@@ -2384,6 +2484,19 @@ $arr_recurrence_byweekno = array(
                 $('.creneaux_empty_state').hide();
             } else {
                 $('.creneaux_empty_state').show();
+            }
+        },
+
+        // Mettre à jour la barre d'actions groupées
+        updateBulkActionsBar: function() {
+            var selectedCount = $('.creneaux_item_checkbox:checked').length;
+            var $bulkBar = $('.creneaux_bulk_actions');
+
+            if (selectedCount > 0) {
+                $bulkBar.find('.count_number').text(selectedCount);
+                $bulkBar.slideDown(200);
+            } else {
+                $bulkBar.slideUp(200);
             }
         },
 
