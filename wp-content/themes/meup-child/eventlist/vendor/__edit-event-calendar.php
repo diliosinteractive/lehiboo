@@ -341,181 +341,208 @@ $arr_recurrence_byweekno = array(
             </div>
         </div>
 
-        <!-- Section hebdomadaire - Jours de la semaine -->
+        <!-- Section hebdomadaire - Design en cartes par jour -->
         <div class="creneaux_weekly_section alternate-selector" id="weekly-selector" style="<?php echo ($recurrence_frequency == 'weekly') ? 'display: block;' : 'display: none;'; ?>">
-            <label class="field_label"><?php esc_html_e( 'Sélectionnez le(s) jour(s) de semaine et indiquez l(es) horaire(s).', 'eventlist' ); ?></label>
+            <label class="field_label"><?php esc_html_e( 'Sélectionnez les jours et horaires de récurrence', 'eventlist' ); ?></label>
 
-            <div class="creneaux_weekly_days ts-weekly">
-                <?php foreach ( $days_of_the_week as $day_key => $day_name ): ?>
-                    <div class="creneaux_day_block ts_recurrence_bydays" data-day="<?php echo esc_attr($day_key); ?>">
-                        <!-- Créneaux ajoutés pour ce jour -->
-                        <div class="creneaux_day_slots ts-list">
-                            <?php if ( isset( $ts_start[$day_key] ) && is_array( $ts_start[$day_key] ) ):
-                                foreach ( $ts_start[$day_key] as $k_ts => $v_ts_start ):
-                                    if ( isset( $ts_end[$day_key][$k_ts] ) && $ts_end[$day_key][$k_ts] ): ?>
-                                        <div class="creneaux_day_row creneaux_time_slot ts-item" data-key="<?php echo esc_attr($day_key); ?>">
-                                            <label class="creneaux_day_checkbox">
-                                                <input type="checkbox"
-                                                       name="<?php echo esc_attr( $_prefix.'recurrence_bydays[]' ); ?>"
-                                                       value="<?php echo esc_attr($day_key); ?>"
-                                                       checked
-                                                       class="slot_day_checkbox">
-                                                <span class="option_checkbox"></span>
-                                                <span class="day_name"><?php echo esc_html($day_name); ?></span>
-                                            </label>
-                                            <span class="time_label"><?php esc_html_e( 'De :', 'eventlist' ); ?></span>
-                                            <input type="time"
-                                                   class="creneaux_input creneaux_time_native calendar_recurrence_ts_start"
-                                                   value="<?php echo esc_attr( $v_ts_start ); ?>"
-                                                   name="<?php echo esc_attr( $_prefix.'ts_start['.$day_key.']['.$k_ts.']' ); ?>"
-                                                   step="900">
-                                            <span class="time_label"><?php esc_html_e( 'À :', 'eventlist' ); ?></span>
-                                            <input type="time"
-                                                   class="creneaux_input creneaux_time_native calendar_recurrence_ts_end"
-                                                   value="<?php echo esc_attr( $ts_end[$day_key][$k_ts] ); ?>"
-                                                   name="<?php echo esc_attr( $_prefix.'ts_end['.$day_key.']['.$k_ts.']' ); ?>"
-                                                   step="900">
-                                            <button type="button" class="btn_remove_time_slot close">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    <?php endif;
-                                endforeach;
-                            endif; ?>
+            <div class="weekly_days_grid ts-weekly">
+                <?php foreach ( $days_of_the_week as $day_key => $day_name ):
+                    $has_slots = isset( $ts_start[$day_key] ) && is_array( $ts_start[$day_key] ) && !empty( $ts_start[$day_key] );
+                    $is_active = $has_slots || in_array( $day_key, $recurrence_bydays );
+                ?>
+                    <div class="weekly_day_card ts_recurrence_bydays <?php echo $is_active ? 'is-active' : ''; ?>" data-day="<?php echo esc_attr($day_key); ?>">
+                        <!-- En-tête du jour avec toggle -->
+                        <div class="day_card_header">
+                            <label class="day_toggle">
+                                <input type="checkbox"
+                                       id="day_toggle_<?php echo $day_key; ?>"
+                                       class="day_toggle_checkbox"
+                                       <?php echo $is_active ? 'checked' : ''; ?>>
+                                <span class="day_toggle_slider"></span>
+                            </label>
+                            <span class="day_card_name"><?php echo esc_html($day_name); ?></span>
+                            <span class="day_slots_count"><?php
+                                if ($has_slots) {
+                                    $count = count($ts_start[$day_key]);
+                                    echo $count . ' ' . _n('horaire', 'horaires', $count, 'eventlist');
+                                }
+                            ?></span>
                         </div>
 
-                        <!-- Formulaire d'ajout (toujours visible) -->
-                        <div class="creneaux_day_row creneaux_add_time_slot">
-                            <label class="creneaux_day_checkbox">
-                                <input type="checkbox"
-                                       id="recurrence_bydays<?php echo $day_key; ?>"
-                                       name="<?php echo esc_attr( $_prefix.'recurrence_bydays[]' ); ?>"
-                                       value="<?php echo esc_attr($day_key); ?>"
-                                       <?php if ( in_array( $day_key, $recurrence_bydays ) && !isset($ts_start[$day_key]) ) echo 'checked'; ?>
-                                       class="main_day_checkbox">
-                                <span class="option_checkbox"></span>
-                                <span class="day_name"><?php echo esc_html($day_name); ?></span>
-                            </label>
-                            <span class="time_label"><?php esc_html_e( 'De :', 'eventlist' ); ?></span>
-                            <input type="time"
-                                   class="creneaux_input creneaux_time_native new_ts_start"
-                                   step="900"
-                                   placeholder="HH:MM">
-                            <span class="time_label"><?php esc_html_e( 'À :', 'eventlist' ); ?></span>
-                            <input type="time"
-                                   class="creneaux_input creneaux_time_native new_ts_end"
-                                   step="900"
-                                   placeholder="HH:MM">
-                            <button type="button" class="btn_add_time_slot add_time_slot"
-                                    data-key="<?php echo esc_attr($day_key); ?>">
-                                <?php esc_html_e( 'Ajouter', 'eventlist' ); ?>
-                            </button>
+                        <!-- Corps de la carte (caché si inactif) -->
+                        <div class="day_card_body" style="<?php echo $is_active ? '' : 'display: none;'; ?>">
+                            <!-- Liste des créneaux existants -->
+                            <div class="day_slots_list ts-list">
+                                <?php if ( $has_slots ):
+                                    foreach ( $ts_start[$day_key] as $k_ts => $v_ts_start ):
+                                        if ( isset( $ts_end[$day_key][$k_ts] ) && $ts_end[$day_key][$k_ts] ): ?>
+                                            <div class="day_slot_item" data-key="<?php echo esc_attr($day_key); ?>">
+                                                <input type="hidden"
+                                                       name="<?php echo esc_attr( $_prefix.'recurrence_bydays[]' ); ?>"
+                                                       value="<?php echo esc_attr($day_key); ?>">
+                                                <div class="slot_time_display">
+                                                    <input type="time"
+                                                           class="slot_time_input calendar_recurrence_ts_start"
+                                                           value="<?php echo esc_attr( $v_ts_start ); ?>"
+                                                           name="<?php echo esc_attr( $_prefix.'ts_start['.$day_key.']['.$k_ts.']' ); ?>"
+                                                           step="900">
+                                                    <span class="slot_time_separator">-</span>
+                                                    <input type="time"
+                                                           class="slot_time_input calendar_recurrence_ts_end"
+                                                           value="<?php echo esc_attr( $ts_end[$day_key][$k_ts] ); ?>"
+                                                           name="<?php echo esc_attr( $_prefix.'ts_end['.$day_key.']['.$k_ts.']' ); ?>"
+                                                           step="900">
+                                                </div>
+                                                <button type="button" class="slot_remove_btn btn_remove_time_slot">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </div>
+                                        <?php endif;
+                                    endforeach;
+                                endif; ?>
+                            </div>
+
+                            <!-- Formulaire d'ajout inline -->
+                            <div class="day_add_slot_form">
+                                <input type="time"
+                                       class="slot_time_input new_ts_start"
+                                       step="900"
+                                       placeholder="--:--">
+                                <span class="slot_time_separator">-</span>
+                                <input type="time"
+                                       class="slot_time_input new_ts_end"
+                                       step="900"
+                                       placeholder="--:--">
+                                <button type="button" class="slot_add_btn btn_add_time_slot" data-key="<?php echo esc_attr($day_key); ?>">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
         </div>
 
-        <!-- Section mensuelle -->
+        <!-- Section mensuelle - Design en carte -->
         <div class="creneaux_monthly_section alternate-selector" id="monthly-selector" style="<?php echo ($recurrence_frequency == 'monthly') ? 'display: block;' : 'display: none;'; ?>">
-            <div class="creneaux_monthly_row">
-                <span class="monthly_label"><?php esc_html_e( 'Le', 'eventlist' ); ?></span>
-                <select id="monthly-modifier" name="<?php echo esc_attr( $_prefix.'recurrence_byweekno' ); ?>" class="creneaux_select">
-                    <?php foreach ( $arr_recurrence_byweekno as $key => $value ): ?>
-                        <option value="<?php echo esc_attr($key); ?>" <?php selected( $recurrence_byweekno, $key ); ?>><?php echo esc_html($value); ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <select id="recurrence-weekday" name="<?php echo esc_attr( $_prefix.'recurrence_byday' ); ?>" class="creneaux_select">
-                    <?php foreach ( $days_of_the_week as $key => $value ): ?>
-                        <option value="<?php echo esc_attr($key); ?>" <?php selected( $recurrence_byday, $key ); ?>><?php echo esc_html($value); ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <!-- Horaires pour le mode mensuel -->
-            <div class="creneaux_monthly_time_row">
-                <label class="field_label"><?php esc_html_e( 'Sélectionnez l\'horaire :', 'eventlist' ); ?></label>
-                <div class="monthly_time_inputs">
-                    <div class="monthly_time_field">
-                        <span class="monthly_time_label"><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?></span>
-                        <input type="time"
-                               class="creneaux_input creneaux_time_native monthly_start_time"
-                               step="900">
+            <div class="monthly_config_card">
+                <!-- En-tête avec sélection du jour -->
+                <div class="monthly_config_header">
+                    <span class="monthly_config_label"><?php esc_html_e( 'Répéter le', 'eventlist' ); ?></span>
+                    <div class="monthly_selectors">
+                        <select id="monthly-modifier" name="<?php echo esc_attr( $_prefix.'recurrence_byweekno' ); ?>" class="monthly_select">
+                            <?php foreach ( $arr_recurrence_byweekno as $key => $value ): ?>
+                                <option value="<?php echo esc_attr($key); ?>" <?php selected( $recurrence_byweekno, $key ); ?>><?php echo esc_html($value); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <select id="recurrence-weekday" name="<?php echo esc_attr( $_prefix.'recurrence_byday' ); ?>" class="monthly_select">
+                            <?php foreach ( $days_of_the_week as $key => $value ): ?>
+                                <option value="<?php echo esc_attr($key); ?>" <?php selected( $recurrence_byday, $key ); ?>><?php echo esc_html($value); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <span class="monthly_config_suffix"><?php esc_html_e( 'de chaque mois', 'eventlist' ); ?></span>
                     </div>
-                    <div class="monthly_time_field">
-                        <span class="monthly_time_label"><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?></span>
-                        <input type="time"
-                               class="creneaux_input creneaux_time_native monthly_end_time"
-                               step="900">
-                    </div>
-                    <button type="button" class="btn_add_monthly_slot"><?php esc_html_e( 'Ajouter', 'eventlist' ); ?></button>
                 </div>
+
+                <!-- Formulaire d'ajout d'horaire -->
+                <div class="monthly_add_slot">
+                    <span class="monthly_add_label"><?php esc_html_e( 'Ajouter un horaire', 'eventlist' ); ?></span>
+                    <div class="monthly_add_form">
+                        <input type="time"
+                               class="slot_time_input monthly_start_time"
+                               step="900"
+                               placeholder="--:--">
+                        <span class="slot_time_separator">-</span>
+                        <input type="time"
+                               class="slot_time_input monthly_end_time"
+                               step="900"
+                               placeholder="--:--">
+                        <button type="button" class="slot_add_btn btn_add_monthly_slot">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Message de confirmation -->
+                <div class="monthly_rule_display" style="display: none;"></div>
             </div>
         </div>
 
-        <!-- Sélection de l'horaire (pour daily uniquement - caché en mode weekly et monthly) -->
-        <div class="vendor_field creneaux_horaire_field time-range" style="<?php if ( $schedules_time || $recurrence_frequency == 'weekly' || $recurrence_frequency == 'monthly' ) echo 'display: none;'; ?>">
-            <label class="field_label"><?php esc_html_e( 'Sélectionnez l\'horaire :', 'eventlist' ); ?></label>
-            <div class="creneaux_horaire_row">
-                <span class="horaire_label"><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?></span>
-                <input type="time"
-                       class="creneaux_input creneaux_time_native calendar_recurrence_start_time"
-                       name="<?php echo esc_attr( $_prefix.'calendar_recurrence_start_time' ); ?>"
-                       value="<?php echo esc_attr( $calendar_recurrence_start_time ); ?>"
-                       step="900"
-                       <?php if ( ( $option_calendar == 'auto' ) && ! $schedules_time ) echo 'required'; ?>>
-                <span class="horaire_label"><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?></span>
-                <input type="time"
-                       class="creneaux_input creneaux_time_native calendar_recurrence_end_time"
-                       name="<?php echo esc_attr( $_prefix.'calendar_recurrence_end_time' ); ?>"
-                       value="<?php echo esc_attr( $calendar_recurrence_end_time ); ?>"
-                       step="900"
-                       <?php if ( ( $option_calendar == 'auto' ) && ! $schedules_time ) echo 'required'; ?>>
-                <button type="button" class="btn_add_horaire add_schedules_time"><?php esc_html_e( 'Ajouter', 'eventlist' ); ?></button>
+        <!-- Section Daily - Carte horaires (pour daily et monthly) -->
+        <div class="daily_schedules_card" style="<?php if ( $recurrence_frequency == 'weekly' ) echo 'display: none;'; ?>">
+            <div class="daily_card_header">
+                <span class="daily_card_title"><?php esc_html_e( 'Horaires programmés', 'eventlist' ); ?></span>
+                <span class="daily_slots_count"><?php
+                    if ($schedules_time && is_array($schedules_time)) {
+                        $count = count($schedules_time);
+                        echo $count . ' ' . _n('horaire', 'horaires', $count, 'eventlist');
+                    }
+                ?></span>
             </div>
 
-            <!-- Hidden field pour book before -->
-            <input type="hidden"
-                   name="<?php echo esc_attr($_prefix.'calendar_recurrence_book_before' ); ?>"
-                   class="calendar_recurrence_time_book_before"
-                   value="<?php echo esc_attr( $calendar_recurrence_book_before ); ?>">
-        </div>
+            <div class="daily_card_body">
+                <!-- Liste des horaires existants -->
+                <div class="daily_slots_list wrap_schedules_time">
+                    <?php if ( $schedules_time ):
+                        foreach ( $schedules_time as $key => $value ):
+                            if ( !empty($value['start_time']) ): ?>
+                                <div class="daily_slot_item item_schedules_time" data-key="<?php echo esc_attr($key); ?>">
+                                    <div class="slot_time_display">
+                                        <input type="time"
+                                               class="slot_time_input start_time"
+                                               name="<?php echo esc_attr( $_prefix.'schedules_time['.$key.'][start_time]' ); ?>"
+                                               value="<?php echo esc_attr( $value['start_time'] ); ?>"
+                                               step="900">
+                                        <span class="slot_time_separator">-</span>
+                                        <input type="time"
+                                               class="slot_time_input end_time"
+                                               name="<?php echo esc_attr( $_prefix.'schedules_time['.$key.'][end_time]' ); ?>"
+                                               value="<?php echo esc_attr( $value['end_time'] ); ?>"
+                                               step="900">
+                                    </div>
+                                    <input type="hidden"
+                                           name="<?php echo esc_attr( $_prefix.'schedules_time['.$key.'][book_before]' ); ?>"
+                                           value="<?php echo esc_attr( isset($value['book_before']) ? $value['book_before'] : '0' ); ?>">
+                                    <button type="button" class="slot_remove_btn remove_schedules_time">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </div>
+                            <?php endif;
+                        endforeach;
+                    endif; ?>
+                </div>
 
-        <!-- Liste des horaires programmés (caché en mode weekly) -->
-        <div class="creneaux_schedules_section schedules_time" style="<?php if ( $recurrence_frequency == 'weekly' ) echo 'display: none;'; ?>">
-            <label class="field_label"><?php esc_html_e( 'Horaires programmés', 'eventlist' ); ?></label>
-            <div class="wrap_schedules_time">
-                <?php if ( $schedules_time ):
-                    foreach ( $schedules_time as $key => $value ):
-                        if ( !empty($value['start_time']) ): ?>
-                            <div class="creneaux_schedule_item item_schedules_time" data-key="<?php echo esc_attr($key); ?>">
-                                <span class="schedule_time">
-                                    <?php esc_html_e( 'De :', 'eventlist' ); ?>
-                                    <input type="time"
-                                           class="creneaux_input creneaux_time_native start_time"
-                                           name="<?php echo esc_attr( $_prefix.'schedules_time['.$key.'][start_time]' ); ?>"
-                                           value="<?php echo esc_attr( $value['start_time'] ); ?>"
-                                           step="900"
-                                           <?php if ( $option_calendar == 'auto' ) echo 'required'; ?>>
-                                </span>
-                                <span class="schedule_time">
-                                    <?php esc_html_e( 'À :', 'eventlist' ); ?>
-                                    <input type="time"
-                                           class="creneaux_input creneaux_time_native end_time"
-                                           name="<?php echo esc_attr( $_prefix.'schedules_time['.$key.'][end_time]' ); ?>"
-                                           value="<?php echo esc_attr( $value['end_time'] ); ?>"
-                                           step="900"
-                                           <?php if ( $option_calendar == 'auto' ) echo 'required'; ?>>
-                                </span>
-                                <input type="hidden"
-                                       name="<?php echo esc_attr( $_prefix.'schedules_time['.$key.'][book_before]' ); ?>"
-                                       value="<?php echo esc_attr( isset($value['book_before']) ? $value['book_before'] : '0' ); ?>">
-                                <button type="button" class="btn_remove_schedule remove_schedules_time">
-                                    <i class="fa fa-times"></i>
-                                </button>
-                            </div>
-                        <?php endif;
-                    endforeach;
-                endif; ?>
+                <!-- Formulaire d'ajout d'horaire -->
+                <div class="daily_add_slot_form creneaux_horaire_field">
+                    <input type="time"
+                           class="slot_time_input calendar_recurrence_start_time"
+                           name="<?php echo esc_attr( $_prefix.'calendar_recurrence_start_time' ); ?>"
+                           value="<?php echo esc_attr( $calendar_recurrence_start_time ); ?>"
+                           step="900"
+                           placeholder="--:--">
+                    <span class="slot_time_separator">-</span>
+                    <input type="time"
+                           class="slot_time_input calendar_recurrence_end_time"
+                           name="<?php echo esc_attr( $_prefix.'calendar_recurrence_end_time' ); ?>"
+                           value="<?php echo esc_attr( $calendar_recurrence_end_time ); ?>"
+                           step="900"
+                           placeholder="--:--">
+                    <button type="button" class="slot_add_btn add_schedules_time">
+                        <i class="fa fa-plus"></i>
+                    </button>
+
+                    <!-- Hidden field pour book before -->
+                    <input type="hidden"
+                           name="<?php echo esc_attr($_prefix.'calendar_recurrence_book_before' ); ?>"
+                           class="calendar_recurrence_time_book_before"
+                           value="<?php echo esc_attr( $calendar_recurrence_book_before ); ?>">
+                </div>
+
+                <!-- État vide -->
+                <div class="daily_empty_state" <?php echo !empty($schedules_time) ? 'style="display:none;"' : ''; ?>>
+                    <i class="fa fa-clock"></i>
+                    <span><?php esc_html_e( 'Ajoutez des horaires avec le formulaire ci-dessus', 'eventlist' ); ?></span>
+                </div>
             </div>
         </div>
 
@@ -1485,323 +1512,481 @@ $arr_recurrence_byweekno = array(
     display: inline;
 }
 
+/* ==========================================================================
+   NOUVEAU DESIGN - Sections Récurrentes (Weekly/Monthly/Daily)
+   ========================================================================== */
+
 /* Sections alternatives (weekly/monthly) */
 .alternate-selector {
     overflow: visible;
 }
 
-/* Section hebdomadaire */
+/* ==========================================================================
+   Section hebdomadaire - Design en cartes
+   ========================================================================== */
 .creneaux_weekly_section {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
-.creneaux_weekly_days {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    margin-top: 12px;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    overflow: hidden;
+.weekly_days_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
 }
 
-/* Bloc pour chaque jour */
-.creneaux_day_block {
+/* Carte de jour */
+.weekly_day_card {
     background: #fff;
-    border-bottom: 1px solid #eee;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s ease;
 }
 
-.creneaux_day_block:last-child {
-    border-bottom: none;
+.weekly_day_card:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-/* Container des créneaux ajoutés */
-.creneaux_day_slots {
-    display: flex;
-    flex-direction: column;
+.weekly_day_card.is-active {
+    border-color: #FF6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
 }
 
-/* Ligne (formulaire ou créneau) */
-.creneaux_day_row {
+/* En-tête de carte jour */
+.day_card_header {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 14px 16px;
-}
-
-/* Ligne de créneau ajouté */
-.creneaux_day_row.creneaux_time_slot {
-    background: #fff;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-/* Formulaire d'ajout */
-.creneaux_day_row.creneaux_add_time_slot {
-    background: #fff;
-}
-
-/* Cacher la checkbox sur les créneaux ajoutés (on garde juste le nom) */
-.creneaux_time_slot .creneaux_day_checkbox .option_checkbox {
-    display: none;
-}
-
-.creneaux_day_checkbox {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    background: #f9fafb;
+    border-bottom: 1px solid transparent;
     cursor: pointer;
-    min-width: 130px;
+    transition: background 0.2s;
+}
+
+.weekly_day_card.is-active .day_card_header {
+    border-bottom-color: #e5e7eb;
+}
+
+.day_card_header:hover {
+    background: #f3f4f6;
+}
+
+/* Toggle switch jour */
+.day_toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
     flex-shrink: 0;
 }
 
-.creneaux_day_checkbox input[type="checkbox"] {
-    position: absolute;
+.day_toggle_checkbox {
     opacity: 0;
     width: 0;
     height: 0;
+    position: absolute;
 }
 
-.creneaux_day_checkbox .option_checkbox {
-    width: 24px;
-    height: 24px;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    background: #fff;
-    transition: all 0.15s ease;
-    flex-shrink: 0;
+.day_toggle_slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #d1d5db;
+    border-radius: 24px;
+    transition: all 0.3s ease;
 }
 
-.creneaux_day_checkbox:hover .option_checkbox {
-    border-color: #FF6600;
+.day_toggle_slider::before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-.creneaux_day_checkbox input:checked + .option_checkbox {
-    background: #FF6600;
-    border-color: #FF6600;
+.day_toggle_checkbox:checked + .day_toggle_slider {
+    background-color: #FF6600;
 }
 
-.day_name {
-    font-size: 14px;
+.day_toggle_checkbox:checked + .day_toggle_slider::before {
+    transform: translateX(20px);
+}
+
+/* Nom du jour */
+.day_card_name {
+    font-size: 15px;
     font-weight: 600;
-    color: #333;
-    min-width: 80px;
+    color: #1f2937;
+    flex: 1;
 }
 
-/* Labels De/À */
-.creneaux_day_row .time_label {
-    font-size: 14px;
-    color: #666;
-    min-width: 25px;
+/* Compteur d'horaires */
+.day_slots_count {
+    font-size: 12px;
+    color: #6b7280;
+    background: #e5e7eb;
+    padding: 2px 8px;
+    border-radius: 10px;
 }
 
-/* Inputs time */
-.creneaux_day_row .creneaux_time_native {
-    width: 130px;
+.weekly_day_card.is-active .day_slots_count {
+    background: #fff2e8;
+    color: #FF6600;
+}
+
+/* Corps de la carte */
+.day_card_body {
+    padding: 12px 16px 16px;
+}
+
+/* Liste des créneaux */
+.day_slots_list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+/* Item créneau */
+.day_slot_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 10px 12px;
-    border: 1px solid #ddd;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.slot_time_display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.slot_time_input {
+    width: 100px;
+    height: 38px;
+    padding: 0 10px;
+    border: 1px solid #e5e7eb;
     border-radius: 6px;
     font-size: 14px;
+    color: #1f2937;
+    background: #fff;
+    text-align: center;
+    transition: all 0.2s;
 }
 
-.creneaux_day_row .creneaux_time_native:focus {
+.slot_time_input:focus {
     outline: none;
     border-color: #FF6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
 }
 
-/* Bouton Ajouter */
-.btn_add_time_slot {
-    padding: 10px 22px;
+.slot_time_separator {
+    color: #9ca3af;
     font-size: 14px;
-    font-weight: 600;
-    margin-left: auto;
+    font-weight: 500;
+}
+
+/* Bouton supprimer */
+.slot_remove_btn {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 6px;
+    background: #fef2f2;
+    color: #ef4444;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s;
     flex-shrink: 0;
 }
 
-/* Bouton supprimer time slot - rouge */
-.btn_remove_time_slot {
-    width: 42px;
-    height: 42px;
+.slot_remove_btn:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* Formulaire d'ajout inline */
+.day_add_slot_form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px dashed #d1d5db;
+    border-radius: 8px;
+}
+
+/* Bouton ajouter */
+.slot_add_btn {
+    width: 38px;
+    height: 38px;
     border: none;
     border-radius: 6px;
-    background: #e74c3c;
+    background: #FF6600;
     color: #fff;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 14px;
     transition: all 0.2s;
-    margin-left: auto;
     flex-shrink: 0;
 }
 
-.btn_remove_time_slot:hover {
-    background: #c0392b;
+.slot_add_btn:hover {
+    background: #e55b00;
+    transform: translateY(-1px);
 }
 
-/* Style pour jours avec créneaux */
-/* Quand il y a des créneaux, cacher la checkbox du formulaire d'ajout */
-.creneaux_day_block.has_slots .creneaux_add_time_slot .creneaux_day_checkbox {
-    visibility: hidden;
-}
-
-/* Afficher la checkbox sur le premier créneau seulement */
-.creneaux_day_block .creneaux_time_slot .creneaux_day_checkbox {
-    visibility: hidden;
-}
-
-.creneaux_day_block .creneaux_day_slots .creneaux_time_slot:first-child .creneaux_day_checkbox {
-    visibility: visible;
-}
-
-/* Garder l'espace pour aligner les inputs quand checkbox cachée */
-.creneaux_time_slot .creneaux_day_checkbox {
-    min-width: 130px;
-}
-
-/* Section mensuelle - Une ligne */
+/* ==========================================================================
+   Section mensuelle - Design en carte
+   ========================================================================== */
 .creneaux_monthly_section {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     overflow: visible;
 }
 
-.creneaux_monthly_row {
+.monthly_config_card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.monthly_config_header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.monthly_config_label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.monthly_selectors {
     display: flex;
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
 }
 
-.creneaux_monthly_row .creneaux_select {
-    min-width: 120px;
-    max-width: 160px;
-}
-
-.monthly_label {
-    font-size: 13px;
-    color: #666;
-    white-space: nowrap;
-}
-
-/* Section horaires mensuelle */
-.creneaux_monthly_time_row {
-    margin-top: 20px;
-}
-
-.creneaux_monthly_time_row .field_label {
-    display: block;
+.monthly_select {
+    height: 42px;
+    padding: 0 36px 0 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
     font-size: 14px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 12px;
+    color: #1f2937;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 12px center;
+    cursor: pointer;
+    -webkit-appearance: none;
+    transition: all 0.2s;
+    min-width: 130px;
 }
 
-.monthly_time_inputs {
-    display: flex;
-    align-items: flex-end;
-    gap: 20px;
-    flex-wrap: wrap;
+.monthly_select:focus {
+    outline: none;
+    border-color: #FF6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
 }
 
-.monthly_time_field {
+.monthly_config_suffix {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Formulaire d'ajout horaire mensuel */
+.monthly_add_slot {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 12px;
 }
 
-.monthly_time_label {
-    font-size: 13px;
-    color: #666;
+.monthly_add_label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
 }
 
-.monthly_time_field .creneaux_input {
-    width: 140px;
-}
-
-.btn_add_monthly_slot {
-    display: inline-flex;
+.monthly_add_form {
+    display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 10px 18px;
-    background: #FF6600;
-    border: none;
-    border-radius: 6px;
-    color: #fff;
-    font-weight: 600;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    height: 42px;
-}
-
-.btn_add_monthly_slot:hover {
-    background: #e55b00;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+    gap: 10px;
+    padding: 12px 14px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px dashed #d1d5db;
 }
 
 /* Confirmation de règle mensuelle */
 .monthly_rule_display {
-    margin-top: 12px;
-    padding: 10px 14px;
-    background: #f0f9f0;
-    border: 1px solid #d4edda;
-    border-radius: 6px;
-    color: #155724;
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    color: #166534;
     font-size: 13px;
+    display: flex;
+    align-items: center;
 }
 
 .monthly_rule_display i {
-    margin-right: 8px;
-    color: #28a745;
+    margin-right: 10px;
+    color: #22c55e;
 }
 
-/* Horaires - Tout sur une ligne avec 2 colonnes */
-.creneaux_horaire_field {
-    margin-bottom: 20px;
+/* ==========================================================================
+   Section Daily - Carte horaires programmés
+   ========================================================================== */
+.daily_schedules_card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    overflow: hidden;
 }
 
-.creneaux_horaire_row {
+.daily_card_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.daily_card_title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.daily_slots_count {
+    font-size: 12px;
+    color: #6b7280;
+    background: #e5e7eb;
+    padding: 3px 10px;
+    border-radius: 10px;
+}
+
+.daily_card_body {
+    padding: 16px 20px;
+}
+
+/* Liste des horaires daily */
+.daily_slots_list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.daily_slot_item {
     display: flex;
     align-items: center;
     gap: 10px;
+    padding: 10px 14px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
 }
 
-.horaire_label {
+/* Formulaire d'ajout daily */
+.daily_add_slot_form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px dashed #d1d5db;
+    border-radius: 8px;
+}
+
+/* État vide daily */
+.daily_empty_state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    color: #9ca3af;
+    text-align: center;
+}
+
+.daily_empty_state i {
+    font-size: 28px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+}
+
+.daily_empty_state span {
     font-size: 13px;
-    color: #666;
-    white-space: nowrap;
 }
 
-/* Liste des horaires programmés */
-.creneaux_schedules_section {
-    margin-bottom: 20px;
+/* Compatibilité anciennes classes */
+.creneaux_horaire_field {
+    margin-bottom: 0;
 }
 
 .wrap_schedules_time {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 10px;
 }
 
-.creneaux_schedule_item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 6px;
+.creneaux_schedules_section {
+    display: none;
 }
 
-.schedule_time {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: #666;
+/* Responsive */
+@media (max-width: 768px) {
+    .weekly_days_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .monthly_selectors {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .monthly_select {
+        width: 100%;
+    }
+
+    .day_add_slot_form,
+    .monthly_add_form,
+    .daily_add_slot_form {
+        flex-wrap: wrap;
+    }
+
+    .slot_time_input {
+        flex: 1;
+        min-width: 80px;
+    }
 }
 
 /* Désactivation de créneaux - Tout sur une ligne */
@@ -2162,22 +2347,42 @@ $arr_recurrence_byweekno = array(
                 // Afficher la section appropriée
                 if (freq === 'weekly') {
                     $('#weekly-selector').slideDown(200);
-                    // Cacher la section horaire pour le mode hebdomadaire (horaires par jour)
-                    $('.creneaux_horaire_field').hide();
-                    $('.creneaux_schedules_section').hide();
+                    // Cacher la carte des horaires daily
+                    $('.daily_schedules_card').hide();
                 } else if (freq === 'monthly') {
                     $('#monthly-selector').slideDown(200);
-                    // Cacher l'ancienne section horaire (on utilise les inputs intégrés)
-                    $('.creneaux_horaire_field').hide();
-                    // Mais afficher la section des horaires programmés
-                    $('.creneaux_schedules_section').show();
+                    // Afficher la carte des horaires daily pour le mode mensuel
+                    $('.daily_schedules_card').show();
                 } else {
-                    // Mode daily - afficher la section horaire
-                    $('.creneaux_horaire_field').show();
-                    $('.creneaux_schedules_section').show();
+                    // Mode daily - afficher la carte des horaires
+                    $('.daily_schedules_card').show();
                 }
 
                 self.updateIntervalDesc();
+            });
+
+            // Toggle jour en mode weekly (nouveau design en cartes)
+            $(document).on('change', '.day_toggle_checkbox', function() {
+                var $card = $(this).closest('.weekly_day_card');
+                var $body = $card.find('.day_card_body');
+
+                if ($(this).is(':checked')) {
+                    $card.addClass('is-active');
+                    $body.slideDown(200);
+                } else {
+                    $card.removeClass('is-active');
+                    $body.slideUp(200);
+                }
+            });
+
+            // Clic sur l'en-tête de carte jour pour toggle
+            $(document).on('click', '.day_card_header', function(e) {
+                // Éviter le double déclenchement si on clique sur le toggle
+                if ($(e.target).closest('.day_toggle').length) {
+                    return;
+                }
+                var $checkbox = $(this).find('.day_toggle_checkbox');
+                $checkbox.prop('checked', !$checkbox.prop('checked')).trigger('change');
             });
 
             // Changement d'intervalle
@@ -2227,18 +2432,23 @@ $arr_recurrence_byweekno = array(
                 self.addTimeSlot($(this));
             });
 
-            // Suppression de time slot
+            // Suppression de time slot weekly (via btn_remove_time_slot)
             $(document).on('click', '.btn_remove_time_slot', function() {
-                var $slot = $(this).closest('.creneaux_time_slot, .ts-item');
-                var $dayBlock = $slot.closest('.creneaux_day_block');
+                var $slot = $(this).closest('.day_slot_item, .creneaux_time_slot, .ts-item');
+                var $card = $slot.closest('.weekly_day_card');
 
                 $slot.fadeOut(200, function() {
                     $(this).remove();
 
-                    // Vérifier s'il reste des créneaux pour ce jour
-                    var remainingSlots = $dayBlock.find('.creneaux_time_slot').length;
-                    if (remainingSlots === 0) {
-                        $dayBlock.removeClass('has_slots');
+                    // Mettre à jour le compteur
+                    if ($card.length) {
+                        var remainingSlots = $card.find('.day_slot_item').length;
+                        var $counter = $card.find('.day_slots_count');
+                        if (remainingSlots > 0) {
+                            $counter.text(remainingSlots + ' ' + (remainingSlots > 1 ? 'horaires' : 'horaire'));
+                        } else {
+                            $counter.text('');
+                        }
                     }
                 });
             });
@@ -2248,10 +2458,23 @@ $arr_recurrence_byweekno = array(
                 self.addSchedule();
             });
 
-            // Suppression d'horaire programmé
+            // Suppression d'horaire programmé daily/monthly (via remove_schedules_time)
             $(document).on('click', '.btn_remove_schedule, .remove_schedules_time', function() {
-                $(this).closest('.creneaux_schedule_item, .item_schedules_time').fadeOut(200, function() {
+                var $item = $(this).closest('.daily_slot_item, .creneaux_schedule_item, .item_schedules_time');
+                $item.fadeOut(200, function() {
                     $(this).remove();
+
+                    // Mettre à jour le compteur
+                    var slotsCount = $('.daily_slots_list .daily_slot_item').length;
+                    if (slotsCount > 0) {
+                        $('.daily_slots_count').text(slotsCount + ' ' + (slotsCount > 1 ? 'horaires' : 'horaire'));
+                    } else {
+                        $('.daily_slots_count').text('');
+                        $('.daily_empty_state').show();
+                    }
+
+                    // Mettre à jour le select des désactivations
+                    self.updateDisableSelect();
                 });
             });
 
@@ -2455,20 +2678,18 @@ $arr_recurrence_byweekno = array(
         },
 
         addTimeSlot: function($button) {
-            var $dayBlock = $button.closest('.creneaux_day_block, .ts_recurrence_bydays');
-            // Récupérer dayKey depuis le bouton ou depuis le bloc parent
+            // Nouveau design en cartes
+            var $card = $button.closest('.weekly_day_card, .ts_recurrence_bydays');
             var dayKey = $button.data('key');
             if (dayKey === undefined || dayKey === null) {
-                dayKey = $dayBlock.data('day');
+                dayKey = $card.data('day');
             }
 
-            var $addForm = $dayBlock.find('.creneaux_add_time_slot');
-            var $slotsContainer = $dayBlock.find('.creneaux_day_slots, .ts-list');
+            // Trouver le formulaire et la liste des slots
+            var $addForm = $card.find('.day_add_slot_form');
+            var $slotsList = $card.find('.day_slots_list, .ts-list');
             var startTime = $addForm.find('.new_ts_start').val();
             var endTime = $addForm.find('.new_ts_end').val();
-
-            // Utiliser le lookup avec fallback robuste
-            var dayName = this.dayNames[String(dayKey)] || $addForm.find('.day_name').text() || '';
 
             if (!startTime || !endTime) {
                 alert('<?php esc_html_e("Veuillez remplir les horaires", "eventlist"); ?>');
@@ -2478,27 +2699,28 @@ $arr_recurrence_byweekno = array(
             var prefix = '<?php echo $_prefix; ?>';
             var tsKey = Date.now();
 
+            // Nouveau HTML pour le design en cartes
             var html = `
-                <div class="creneaux_day_row creneaux_time_slot ts-item" data-key="${dayKey}">
-                    <label class="creneaux_day_checkbox">
-                        <input type="checkbox" name="${prefix}recurrence_bydays[]" value="${dayKey}" checked class="slot_day_checkbox">
-                        <span class="option_checkbox"></span>
-                        <span class="day_name">${dayName}</span>
-                    </label>
-                    <span class="time_label"><?php esc_html_e("De :", "eventlist"); ?></span>
-                    <input type="time" class="creneaux_input creneaux_time_native calendar_recurrence_ts_start" value="${startTime}" name="${prefix}ts_start[${dayKey}][${tsKey}]" step="900">
-                    <span class="time_label"><?php esc_html_e("À :", "eventlist"); ?></span>
-                    <input type="time" class="creneaux_input creneaux_time_native calendar_recurrence_ts_end" value="${endTime}" name="${prefix}ts_end[${dayKey}][${tsKey}]" step="900">
-                    <button type="button" class="btn_remove_time_slot close"><i class="fa fa-times"></i></button>
+                <div class="day_slot_item" data-key="${dayKey}">
+                    <input type="hidden" name="${prefix}recurrence_bydays[]" value="${dayKey}">
+                    <div class="slot_time_display">
+                        <input type="time" class="slot_time_input calendar_recurrence_ts_start" value="${startTime}" name="${prefix}ts_start[${dayKey}][${tsKey}]" step="900">
+                        <span class="slot_time_separator">-</span>
+                        <input type="time" class="slot_time_input calendar_recurrence_ts_end" value="${endTime}" name="${prefix}ts_end[${dayKey}][${tsKey}]" step="900">
+                    </div>
+                    <button type="button" class="slot_remove_btn btn_remove_time_slot">
+                        <i class="fa fa-times"></i>
+                    </button>
                 </div>
             `;
 
-            $slotsContainer.append(html);
+            $slotsList.append(html);
             $addForm.find('.new_ts_start, .new_ts_end').val('');
 
-            // Ajouter la classe has_slots et décocher la checkbox principale
-            $dayBlock.addClass('has_slots');
-            $addForm.find('.main_day_checkbox').prop('checked', false);
+            // Mettre à jour le compteur
+            var slotsCount = $slotsList.find('.day_slot_item').length;
+            var $counter = $card.find('.day_slots_count');
+            $counter.text(slotsCount + ' ' + (slotsCount > 1 ? 'horaires' : 'horaire'));
 
             // Désactiver le timepicker jQuery sur les nouveaux éléments
             this.disableJqueryTimepicker();
@@ -2517,22 +2739,26 @@ $arr_recurrence_byweekno = array(
             var key = this.scheduleIndex++;
 
             var html = `
-                <div class="creneaux_schedule_item item_schedules_time" data-key="${key}">
-                    <span class="schedule_time">
-                        <?php esc_html_e("De :", "eventlist"); ?>
-                        <input type="time" class="creneaux_input creneaux_time_native start_time" name="${prefix}schedules_time[${key}][start_time]" value="${startTime}" step="900">
-                    </span>
-                    <span class="schedule_time">
-                        <?php esc_html_e("À :", "eventlist"); ?>
-                        <input type="time" class="creneaux_input creneaux_time_native end_time" name="${prefix}schedules_time[${key}][end_time]" value="${endTime}" step="900">
-                    </span>
+                <div class="daily_slot_item item_schedules_time" data-key="${key}">
+                    <div class="slot_time_display">
+                        <input type="time" class="slot_time_input start_time" name="${prefix}schedules_time[${key}][start_time]" value="${startTime}" step="900">
+                        <span class="slot_time_separator">-</span>
+                        <input type="time" class="slot_time_input end_time" name="${prefix}schedules_time[${key}][end_time]" value="${endTime}" step="900">
+                    </div>
                     <input type="hidden" name="${prefix}schedules_time[${key}][book_before]" value="0">
-                    <button type="button" class="btn_remove_schedule remove_schedules_time"><i class="fa fa-times"></i></button>
+                    <button type="button" class="slot_remove_btn remove_schedules_time"><i class="fa fa-times"></i></button>
                 </div>
             `;
 
-            $('.wrap_schedules_time').append(html);
+            $('.daily_slots_list').append(html);
             $('.calendar_recurrence_start_time, .calendar_recurrence_end_time').val('');
+
+            // Cacher l'état vide
+            $('.daily_empty_state').hide();
+
+            // Mettre à jour le compteur
+            var slotsCount = $('.daily_slots_list .daily_slot_item').length;
+            $('.daily_slots_count').text(slotsCount + ' ' + (slotsCount > 1 ? 'horaires' : 'horaire'));
 
             // Mettre à jour le select des désactivations
             this.updateDisableSelect();
@@ -2580,25 +2806,29 @@ $arr_recurrence_byweekno = array(
             var key = this.scheduleIndex++;
 
             var html = `
-                <div class="creneaux_schedule_item item_schedules_time" data-key="${key}">
-                    <span class="schedule_time">
-                        <?php esc_html_e("De :", "eventlist"); ?>
-                        <input type="time" class="creneaux_input creneaux_time_native start_time" name="${prefix}schedules_time[${key}][start_time]" value="${startTime}" step="900">
-                    </span>
-                    <span class="schedule_time">
-                        <?php esc_html_e("À :", "eventlist"); ?>
-                        <input type="time" class="creneaux_input creneaux_time_native end_time" name="${prefix}schedules_time[${key}][end_time]" value="${endTime}" step="900">
-                    </span>
+                <div class="daily_slot_item item_schedules_time" data-key="${key}">
+                    <div class="slot_time_display">
+                        <input type="time" class="slot_time_input start_time" name="${prefix}schedules_time[${key}][start_time]" value="${startTime}" step="900">
+                        <span class="slot_time_separator">-</span>
+                        <input type="time" class="slot_time_input end_time" name="${prefix}schedules_time[${key}][end_time]" value="${endTime}" step="900">
+                    </div>
                     <input type="hidden" name="${prefix}schedules_time[${key}][book_before]" value="0">
-                    <button type="button" class="btn_remove_schedule remove_schedules_time"><i class="fa fa-times"></i></button>
+                    <button type="button" class="slot_remove_btn remove_schedules_time"><i class="fa fa-times"></i></button>
                 </div>
             `;
 
-            // Ajouter à la liste des horaires programmés
-            $('.wrap_schedules_time').append(html);
+            // Ajouter à la liste des horaires programmés (utilise la même liste que daily)
+            $('.daily_slots_list').append(html);
 
-            // Afficher la section des horaires programmés si cachée
-            $('.creneaux_schedules_section').show();
+            // Afficher la carte des horaires programmés si cachée
+            $('.daily_schedules_card').show();
+
+            // Cacher l'état vide
+            $('.daily_empty_state').hide();
+
+            // Mettre à jour le compteur
+            var slotsCount = $('.daily_slots_list .daily_slot_item').length;
+            $('.daily_slots_count').text(slotsCount + ' ' + (slotsCount > 1 ? 'horaires' : 'horaire'));
 
             // Vider les champs
             $('.monthly_start_time, .monthly_end_time').val('');
@@ -2612,11 +2842,8 @@ $arr_recurrence_byweekno = array(
             var message = '<?php esc_html_e("Horaire ajouté :", "eventlist"); ?> ' + startTime + ' - ' + endTime + ' (<?php esc_html_e("le", "eventlist"); ?> ' + byweeknoText + ' ' + bydayText + ')';
 
             var $monthlySection = $('.creneaux_monthly_section');
-            if (!$monthlySection.find('.monthly_rule_display').length) {
-                $monthlySection.append('<div class="monthly_rule_display"></div>');
-            }
-            $monthlySection.find('.monthly_rule_display')
-                .html('<i class="fa fa-check-circle" style="margin-right: 8px;"></i>' + message);
+            var $ruleDisplay = $monthlySection.find('.monthly_rule_display');
+            $ruleDisplay.html('<i class="fa fa-check-circle" style="margin-right: 8px;"></i>' + message).show();
         },
 
         addDisableDate: function() {
@@ -2792,7 +3019,8 @@ $arr_recurrence_byweekno = array(
             var $select = $('.new_disable_schedule');
             $select.find('option:not(:first)').remove();
 
-            $('.creneaux_schedule_item').each(function() {
+            // Utiliser les nouveaux sélecteurs pour les horaires daily/monthly
+            $('.daily_slot_item, .creneaux_schedule_item').each(function() {
                 var key = $(this).data('key');
                 var startTime = $(this).find('.start_time').val();
                 var endTime = $(this).find('.end_time').val();
