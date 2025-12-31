@@ -78,6 +78,8 @@ class El_Admin_Menus{
 
 		add_submenu_page( 'eventlist', esc_html__( 'Villes', 'eventlist' ), esc_html__( 'Villes', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_loc&post_type=event' );
 
+		add_submenu_page( 'eventlist', esc_html__( 'Types d\'entrée', 'eventlist' ), esc_html__( 'Types d\'entrée', 'eventlist' ), 'manage_options', 'edit-tags.php?taxonomy=event_entry_type&post_type=event' );
+
 		add_submenu_page( 'eventlist', esc_html__( 'Venues', 'eventlist' ), esc_html__( 'Venues', 'eventlist' ), 'manage_options', 'edit.php?post_type=venue' );
 
 

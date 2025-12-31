@@ -49,15 +49,31 @@ $price_types = array(
     'paid' => __( 'Payant', 'eventlist' ),
 );
 
-// Types d'entrée disponibles
+// Types d'entrée disponibles - depuis la taxonomie event_entry_type
+$entry_types_terms = get_terms( array(
+    'taxonomy'   => 'event_entry_type',
+    'hide_empty' => false,
+    'orderby'    => 'term_order',
+    'order'      => 'ASC',
+) );
+
 $entry_types = array(
     '' => __( 'Sélectionnez le type d\'entrée', 'eventlist' ),
-    'acces_libre' => __( 'Accès libre', 'eventlist' ),
-    'acces_libre_reservation_conseillee' => __( 'Accès libre avec réservation conseillée', 'eventlist' ),
-    'sur_reservation_obligatoire' => __( 'Sur réservation obligatoire', 'eventlist' ),
-    'billetterie_sur_place_uniquement' => __( 'Billetterie sur place uniquement', 'eventlist' ),
-    'sur_invitation_uniquement' => __( 'Sur invitation uniquement', 'eventlist' ),
 );
+
+if ( ! is_wp_error( $entry_types_terms ) && ! empty( $entry_types_terms ) ) {
+    foreach ( $entry_types_terms as $term ) {
+        $entry_types[ $term->slug ] = $term->name;
+    }
+} else {
+    // Fallback si la taxonomie est vide - valeurs par défaut
+    $entry_types['acces_libre'] = __( 'Accès libre', 'eventlist' );
+    $entry_types['acces_libre_reservation_conseillee'] = __( 'Accès libre avec réservation conseillée', 'eventlist' );
+    $entry_types['sur_reservation_obligatoire'] = __( 'Sur réservation obligatoire', 'eventlist' );
+    $entry_types['billetterie_sur_place_uniquement'] = __( 'Billetterie sur place uniquement', 'eventlist' );
+    $entry_types['sur_invitation_uniquement'] = __( 'Sur invitation uniquement', 'eventlist' );
+    $entry_types['non_specifie'] = __( 'Non spécifié', 'eventlist' );
+}
 
 // Récupérer les créneaux de l'événement pour la sélection
 $event_slots = array();

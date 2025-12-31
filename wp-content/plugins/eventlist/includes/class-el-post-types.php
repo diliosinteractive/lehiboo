@@ -822,6 +822,37 @@ class EL_Post_Types{
 		$args = apply_filters( 'el_register_tax_event_emotion', $args );
 		register_taxonomy( 'event_emotion', array( 'event' ), $args );
 
+
+		// Taxonomy : Type d'entrée (Billetterie)
+		$labels = array(
+			'name'              => _x( 'Types d\'entrée', 'taxonomy general name', 'eventlist' ),
+			'singular_name'     => _x( 'Type d\'entrée', 'taxonomy singular name', 'eventlist' ),
+			'search_items'      => __( 'Rechercher un type d\'entrée', 'eventlist' ),
+			'all_items'         => __( 'Tous les types d\'entrée', 'eventlist' ),
+			'parent_item'       => null,
+			'parent_item_colon' => null,
+			'edit_item'         => __( 'Modifier le type d\'entrée', 'eventlist' ),
+			'update_item'       => __( 'Mettre à jour le type d\'entrée', 'eventlist' ),
+			'add_new_item'      => __( 'Ajouter un type d\'entrée', 'eventlist' ),
+			'new_item_name'     => __( 'Nouveau type d\'entrée', 'eventlist' ),
+			'menu_name'         => __( 'Types d\'entrée', 'eventlist' )
+		);
+
+		$args = array(
+			'hierarchical'      => false,
+			'public'            => false,
+			'labels'            => $labels,
+			'show_ui'           => true,
+			'show_admin_column' => false,
+			'query_var'         => false,
+			'capabilities'      => array ( 'post' ),
+			'show_in_rest'      => true,
+			'rewrite'           => false,
+		);
+
+		$args = apply_filters( 'el_register_tax_event_entry_type', $args );
+		register_taxonomy( 'event_entry_type', array( 'event' ), $args );
+
 		// Fin V1 Le Hiboo - Nouvelles taxonomies
 
 
@@ -1084,4 +1115,75 @@ function el_colorpicker_init_inline() {
 
 }
 add_action( 'admin_print_scripts', 'el_colorpicker_init_inline', 30 );
+
+/**
+ * V1 Le Hiboo - Créer les types d'entrée par défaut si la taxonomie est vide
+ */
+function el_create_default_entry_types() {
+    // Vérifier si la taxonomie existe
+    if ( ! taxonomy_exists( 'event_entry_type' ) ) {
+        return;
+    }
+
+    // Vérifier si des termes existent déjà
+    $existing_terms = get_terms( array(
+        'taxonomy'   => 'event_entry_type',
+        'hide_empty' => false,
+        'number'     => 1,
+    ) );
+
+    if ( ! is_wp_error( $existing_terms ) && ! empty( $existing_terms ) ) {
+        return; // Des termes existent déjà, ne rien faire
+    }
+
+    // Types d'entrée par défaut avec descriptions
+    $default_entry_types = array(
+        array(
+            'name'        => __( 'Accès libre', 'eventlist' ),
+            'slug'        => 'acces-libre',
+            'description' => __( 'Pas besoin de billet, accès libre', 'eventlist' ),
+        ),
+        array(
+            'name'        => __( 'Accès libre avec réservation conseillée', 'eventlist' ),
+            'slug'        => 'acces-libre-reservation-conseillee',
+            'description' => __( 'Accès sans obligation, mais réservation conseillée pour garantir une place', 'eventlist' ),
+        ),
+        array(
+            'name'        => __( 'Sur réservation obligatoire', 'eventlist' ),
+            'slug'        => 'sur-reservation-obligatoire',
+            'description' => __( 'La réservation est obligatoire pour participer', 'eventlist' ),
+        ),
+        array(
+            'name'        => __( 'Billetterie sur place uniquement', 'eventlist' ),
+            'slug'        => 'billetterie-sur-place-uniquement',
+            'description' => __( 'Achat de billets directement sur place, sans réservation préalable', 'eventlist' ),
+        ),
+        array(
+            'name'        => __( 'Sur invitation uniquement', 'eventlist' ),
+            'slug'        => 'sur-invitation-uniquement',
+            'description' => __( 'Accessible uniquement sur invitation', 'eventlist' ),
+        ),
+        array(
+            'name'        => __( 'Non spécifié', 'eventlist' ),
+            'slug'        => 'non-specifie',
+            'description' => __( 'Type d\'entrée non spécifié', 'eventlist' ),
+        ),
+    );
+
+    // Créer les termes
+    foreach ( $default_entry_types as $entry_type ) {
+        if ( ! term_exists( $entry_type['slug'], 'event_entry_type' ) ) {
+            wp_insert_term(
+                $entry_type['name'],
+                'event_entry_type',
+                array(
+                    'slug'        => $entry_type['slug'],
+                    'description' => $entry_type['description'],
+                )
+            );
+        }
+    }
+}
+add_action( 'init', 'el_create_default_entry_types', 20 );
+
 new EL_Post_Types();
