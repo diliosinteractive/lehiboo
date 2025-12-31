@@ -108,10 +108,19 @@ $arr_recurrence_byweekno = array(
     <!-- ================================================== -->
     <div class="creneaux_manual_section" style="<?php echo ($option_calendar == 'manual') ? 'display: block;' : 'display: none;'; ?>">
 
-        <!-- Formulaire d'ajout de créneau -->
-        <div class="creneaux_add_form">
-            <label class="creneaux_add_form_title"><?php esc_html_e( 'Ajout d\'un créneau', 'eventlist' ); ?></label>
-            <div class="creneaux_form_inline">
+        <!-- ÉTAPE 1 : Formulaire d'ajout de créneau -->
+        <div class="creneaux_step_section creneaux_add_form_section">
+            <div class="step_header">
+                <span class="step_number">1</span>
+                <label class="step_label">
+                    <?php esc_html_e( 'Ajoutez un créneau', 'eventlist' ); ?>
+                </label>
+                <button type="button" class="step_info_btn" data-tooltip="<?php esc_attr_e( 'Renseignez la date et les horaires de début et de fin pour chaque créneau. Vous pouvez ajouter autant de créneaux que nécessaire.', 'eventlist' ); ?>">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+            </div>
+            <div class="step_content">
+                <div class="creneaux_form_inline">
                 <!-- Date et horaire de début -->
                 <div class="creneaux_form_group">
                     <span class="form_group_label"><?php esc_html_e( 'Date et horaire de début', 'eventlist' ); ?></span>
@@ -146,15 +155,22 @@ $arr_recurrence_byweekno = array(
                 <button type="button" class="btn_add_creneaux_manual">
                     <?php esc_html_e( 'Ajouter', 'eventlist' ); ?>
                 </button>
+                </div>
             </div>
         </div>
 
-        <!-- Liste des créneaux -->
-        <div class="creneaux_list_section">
-            <!-- Titre de section -->
-            <div class="creneaux_list_title">
-                <?php esc_html_e( 'Les créneaux', 'eventlist' ); ?>
+        <!-- ÉTAPE 2 : Liste des créneaux -->
+        <div class="creneaux_step_section creneaux_list_section">
+            <div class="step_header">
+                <span class="step_number">2</span>
+                <label class="step_label">
+                    <?php esc_html_e( 'Récapitulatif des créneaux', 'eventlist' ); ?>
+                </label>
+                <button type="button" class="step_info_btn" data-tooltip="<?php esc_attr_e( 'Visualisez et gérez tous les créneaux que vous avez ajoutés. Vous pouvez les modifier ou les supprimer individuellement ou en lot.', 'eventlist' ); ?>">
+                    <i class="fa fa-info-circle"></i>
+                </button>
             </div>
+            <div class="step_content">
 
             <!-- Filtre par date -->
             <div class="creneaux_filter_row">
@@ -279,8 +295,10 @@ $arr_recurrence_byweekno = array(
                 <p><?php esc_html_e( 'Aucun créneau configuré', 'eventlist' ); ?></p>
                 <span><?php esc_html_e( 'Utilisez le formulaire ci-dessus pour ajouter des créneaux', 'eventlist' ); ?></span>
             </div>
-        </div>
-    </div>
+
+            </div> <!-- End .step_content -->
+        </div> <!-- End .creneaux_step_section -->
+    </div> <!-- End .creneaux_manual_section -->
 
     <!-- ================================================== -->
     <!-- SECTION RÉCURRENT (auto) -->
