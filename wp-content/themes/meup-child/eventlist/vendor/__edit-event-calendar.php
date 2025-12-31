@@ -506,90 +506,6 @@ $arr_recurrence_byweekno = array(
             </div>
         </div>
 
-        <!-- ÉTAPE 5 : Désactivation de créneaux -->
-        <div class="vendor_field creneaux_disable_field disable_date">
-            <label class="field_label"><?php esc_html_e( 'Désactivez un créneau :', 'eventlist' ); ?></label>
-
-            <div class="creneaux_disable_form">
-                <div class="creneaux_disable_row">
-                    <span class="disable_label"><?php esc_html_e( 'Du', 'eventlist' ); ?></span>
-                    <input type="text"
-                           class="creneaux_input new_disable_start_date"
-                           placeholder="JJ/MM/AAAA"
-                           data-format="dd/mm/yy"
-                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
-                           autocomplete="off">
-                    <span class="disable_label"><?php esc_html_e( 'au', 'eventlist' ); ?></span>
-                    <input type="text"
-                           class="creneaux_input new_disable_end_date"
-                           placeholder="JJ/MM/AAAA"
-                           data-format="dd/mm/yy"
-                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
-                           autocomplete="off">
-                    <span class="disable_label"><?php esc_html_e( 'Créneau', 'eventlist' ); ?></span>
-                    <select class="creneaux_select new_disable_schedule">
-                        <option value=""><?php esc_html_e( 'Tous', 'eventlist' ); ?></option>
-                        <?php if ( $schedules_time ):
-                            foreach ( $schedules_time as $key => $value ): ?>
-                                <option value="<?php echo esc_attr($key); ?>">
-                                    <?php echo esc_html($value['start_time'] . ' - ' . $value['end_time']); ?>
-                                </option>
-                            <?php endforeach;
-                        endif; ?>
-                    </select>
-                    <button type="button" class="btn_add_disable add_disable_date"><?php esc_html_e( 'Ajouter', 'eventlist' ); ?></button>
-                </div>
-            </div>
-
-            <!-- Liste des dates désactivées -->
-            <div class="creneaux_disable_list wrap_disable_date">
-                <?php if ( $disable_date ):
-                    foreach ( $disable_date as $key => $value ):
-                        if ( !empty($value['start_date']) ): ?>
-                            <div class="creneaux_disable_item item_disable_date">
-                                <span class="disable_info">
-                                    <?php esc_html_e( 'Du', 'eventlist' ); ?>
-                                    <input type="text"
-                                           class="creneaux_input start_date"
-                                           name="<?php echo esc_attr( $_prefix.'disable_date['.$key.'][start_date]' ); ?>"
-                                           value="<?php echo esc_attr( $value['start_date'] ); ?>"
-                                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-                                           data-format="<?php echo esc_attr( $format ); ?>"
-                                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
-                                           autocomplete="off"
-                                           readonly>
-                                    <?php esc_html_e( 'au', 'eventlist' ); ?>
-                                    <input type="text"
-                                           class="creneaux_input end_date"
-                                           name="<?php echo esc_attr( $_prefix.'disable_date['.$key.'][end_date]' ); ?>"
-                                           value="<?php echo esc_attr( isset($value['end_date']) ? $value['end_date'] : '' ); ?>"
-                                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-                                           data-format="<?php echo esc_attr( $format ); ?>"
-                                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
-                                           autocomplete="off"
-                                           readonly>
-                                </span>
-                                <?php if ( $schedules_time ): ?>
-                                    <select name="<?php echo esc_attr( $_prefix.'disable_date['.$key.'][schedules_time]' ); ?>" class="creneaux_select schedules_time">
-                                        <option value=""><?php esc_html_e( 'Tous', 'eventlist' ); ?></option>
-                                        <?php foreach ( $schedules_time as $s_key => $s_value ):
-                                            $disable_time = isset( $value['schedules_time'] ) ? $value['schedules_time'] : ''; ?>
-                                            <option value="<?php echo esc_attr($s_key); ?>" <?php selected( $s_key, $disable_time ); ?>>
-                                                <?php echo esc_html($s_value['start_time'] . ' - ' . $s_value['end_time']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                <?php endif; ?>
-                                <button type="button" class="btn_remove_disable remove_disable_date">
-                                    <i class="fa fa-times"></i>
-                                </button>
-                            </div>
-                        <?php endif;
-                    endforeach;
-                endif; ?>
-            </div>
-        </div>
-
     </div>
 
     <!-- ================================================== -->
@@ -667,7 +583,10 @@ $arr_recurrence_byweekno = array(
                             // Déterminer le type (ponctuel par défaut pour les données existantes)
                             $slot_type = isset($value['slot_type']) ? $value['slot_type'] : 'ponctuel';
                             ?>
-                            <div class="creneaux_item item_calendar" data-key="<?php echo esc_attr($key); ?>" data-type="<?php echo esc_attr($slot_type); ?>">
+                            <?php
+                            $is_disabled = isset($value['is_disabled']) && $value['is_disabled'] === 'yes';
+                            ?>
+                            <div class="creneaux_item item_calendar <?php echo $is_disabled ? 'is-disabled' : ''; ?>" data-key="<?php echo esc_attr($key); ?>" data-type="<?php echo esc_attr($slot_type); ?>">
                                 <label class="creneaux_item_select">
                                     <input type="checkbox" class="creneaux_unified_item_checkbox">
                                     <span class="option_checkbox"></span>
@@ -677,6 +596,12 @@ $arr_recurrence_byweekno = array(
                                        class="calendar_id"
                                        name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][calendar_id]' ); ?>"
                                        value="<?php echo esc_attr( isset( $value['calendar_id'] ) ? $value['calendar_id'] : '' ); ?>">
+
+                                <!-- Statut désactivé -->
+                                <input type="hidden"
+                                       class="calendar_is_disabled"
+                                       name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][is_disabled]' ); ?>"
+                                       value="<?php echo $is_disabled ? 'yes' : ''; ?>">
 
                                 <!-- Type indicator (dot coloré) -->
                                 <span class="creneaux_type_indicator type_<?php echo esc_attr($slot_type); ?>" title="<?php echo $slot_type === 'ponctuel' ? esc_attr__('Créneau ponctuel', 'eventlist') : esc_attr__('Créneau récurrent', 'eventlist'); ?>"></span>
@@ -725,6 +650,9 @@ $arr_recurrence_byweekno = array(
                                        value="<?php echo esc_attr( isset($value['book_before_minutes']) ? $value['book_before_minutes'] : '0' ); ?>">
 
                                 <div class="creneaux_item_actions">
+                                    <button type="button" class="btn_toggle_creneaux" title="<?php echo $is_disabled ? esc_attr__('Activer', 'eventlist') : esc_attr__('Désactiver', 'eventlist'); ?>">
+                                        <i class="fa <?php echo $is_disabled ? 'fa-eye-slash' : 'fa-eye'; ?>"></i>
+                                    </button>
                                     <button type="button" class="btn_edit_creneaux" title="<?php esc_attr_e( 'Modifier', 'eventlist' ); ?>">
                                         <i class="fa fa-pencil-alt"></i>
                                     </button>
@@ -904,7 +832,7 @@ $arr_recurrence_byweekno = array(
 
 /* Tooltip Popover - Attaché au body via JS pour éviter les problèmes d'overflow */
 .el_tooltip_popup {
-    position: fixed;
+    position: fixed !important;
     padding: 12px 16px;
     background: #1f2937;
     color: #fff;
@@ -912,7 +840,8 @@ $arr_recurrence_byweekno = array(
     font-weight: 400;
     line-height: 1.5;
     border-radius: 8px;
-    max-width: 300px;
+    width: 280px !important;
+    max-width: 300px !important;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -1066,7 +995,7 @@ $arr_recurrence_byweekno = array(
     }
 
     .el_tooltip_popup {
-        width: 260px;
+        width: 260px !important;
     }
 }
 
@@ -1372,6 +1301,66 @@ $arr_recurrence_byweekno = array(
 
 .btn_remove_creneaux:hover {
     background: #c0392b;
+}
+
+/* Bouton toggle activer/désactiver */
+.btn_toggle_creneaux {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 8px;
+    background: #3b82f6;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s;
+}
+
+.btn_toggle_creneaux:hover {
+    background: #2563eb;
+}
+
+/* État désactivé - bouton gris */
+.creneaux_item.is-disabled .btn_toggle_creneaux {
+    background: #94a3b8;
+}
+
+.creneaux_item.is-disabled .btn_toggle_creneaux:hover {
+    background: #64748b;
+}
+
+/* Style visuel pour un créneau désactivé */
+.creneaux_item.is-disabled {
+    opacity: 0.6;
+    background: #f8fafc !important;
+}
+
+.creneaux_item.is-disabled .date_text,
+.creneaux_item.is-disabled .time_label,
+.creneaux_item.is-disabled .creneaux_input {
+    color: #94a3b8 !important;
+}
+
+.creneaux_item.is-disabled .creneaux_type_indicator {
+    opacity: 0.5;
+}
+
+/* Badge désactivé optionnel */
+.creneaux_item.is-disabled::after {
+    content: 'Désactivé';
+    position: absolute;
+    top: 50%;
+    right: 160px;
+    transform: translateY(-50%);
+    font-size: 11px;
+    font-weight: 600;
+    color: #ef4444;
+    background: #fee2e2;
+    padding: 2px 8px;
+    border-radius: 4px;
 }
 
 /* Autres boutons de suppression */
@@ -3236,6 +3225,28 @@ $arr_recurrence_byweekno = array(
                 });
             });
 
+            // Toggle activer/désactiver créneau
+            $(document).on('click', '.btn_toggle_creneaux', function() {
+                var $item = $(this).closest('.creneaux_item');
+                var $btn = $(this);
+                var $icon = $btn.find('i');
+                var $hiddenInput = $item.find('.calendar_is_disabled');
+
+                if ($item.hasClass('is-disabled')) {
+                    // Activer le créneau
+                    $item.removeClass('is-disabled');
+                    $hiddenInput.val('');
+                    $icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                    $btn.attr('title', '<?php echo esc_js(__("Désactiver", "eventlist")); ?>');
+                } else {
+                    // Désactiver le créneau
+                    $item.addClass('is-disabled');
+                    $hiddenInput.val('yes');
+                    $icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                    $btn.attr('title', '<?php echo esc_js(__("Activer", "eventlist")); ?>');
+                }
+            });
+
             // Suppression d'un créneau de la prévisualisation
             $(document).on('click', '.btn_remove_preview_item', function() {
                 var $item = $(this).closest('.creneaux_item');
@@ -3586,6 +3597,7 @@ $arr_recurrence_byweekno = array(
                         <span class="option_checkbox"></span>
                     </label>
                     <input type="hidden" class="calendar_id" name="${prefix}calendar[${key}][calendar_id]" value="">
+                    <input type="hidden" class="calendar_is_disabled" name="${prefix}calendar[${key}][is_disabled]" value="">
                     <span class="creneaux_type_indicator type_ponctuel" title="<?php esc_attr_e("Créneau ponctuel", "eventlist"); ?>"></span>
                     <div class="creneaux_item_date_display">
                         <span class="date_text">${formattedDate}</span>
@@ -3601,6 +3613,9 @@ $arr_recurrence_byweekno = array(
                     <input type="hidden" class="slot_type" value="ponctuel" name="${prefix}calendar[${key}][slot_type]">
                     <input type="hidden" name="${prefix}calendar[${key}][book_before_minutes]" value="0">
                     <div class="creneaux_item_actions">
+                        <button type="button" class="btn_toggle_creneaux" title="<?php esc_attr_e("Désactiver", "eventlist"); ?>">
+                            <i class="fa fa-eye"></i>
+                        </button>
                         <button type="button" class="btn_edit_creneaux" title="<?php esc_attr_e("Valider", "eventlist"); ?>">
                             <i class="fa fa-check"></i>
                         </button>
@@ -4264,7 +4279,11 @@ $arr_recurrence_byweekno = array(
                         <input type="hidden" class="calendar_end_date" value="${isoDate}" name="${prefix}calendar[${key}][end_date]">
                         <input type="hidden" class="slot_type" value="recurrent" name="${prefix}calendar[${key}][slot_type]">
                         <input type="hidden" name="${prefix}calendar[${key}][book_before_minutes]" value="0">
+                        <input type="hidden" class="calendar_is_disabled" name="${prefix}calendar[${key}][is_disabled]" value="">
                         <div class="creneaux_item_actions">
+                            <button type="button" class="btn_toggle_creneaux" title="<?php esc_attr_e("Désactiver", "eventlist"); ?>">
+                                <i class="fa fa-eye"></i>
+                            </button>
                             <button type="button" class="btn_edit_creneaux" title="<?php esc_attr_e("Modifier", "eventlist"); ?>">
                                 <i class="fa fa-pencil-alt"></i>
                             </button>
