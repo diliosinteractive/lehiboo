@@ -220,16 +220,18 @@ $arr_recurrence_byweekno = array(
                                 <div class="creneaux_item_time">
                                     <span class="time_label"><?php esc_html_e( 'De', 'eventlist' ); ?></span>
                                     <input type="time"
-                                           class="creneaux_input creneaux_time_native calendar_start_time"
+                                           class="creneaux_input creneaux_time_native calendar_start_time readonly"
                                            value="<?php echo esc_attr( $value['start_time'] ); ?>"
                                            name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][start_time]' ); ?>"
-                                           step="900">
+                                           step="900"
+                                           readonly>
                                     <span class="time_label"><?php esc_html_e( 'À', 'eventlist' ); ?></span>
                                     <input type="time"
-                                           class="creneaux_input creneaux_time_native calendar_end_time"
+                                           class="creneaux_input creneaux_time_native calendar_end_time readonly"
                                            value="<?php echo esc_attr( $value['end_time'] ); ?>"
                                            name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][end_time]' ); ?>"
-                                           step="900">
+                                           step="900"
+                                           readonly>
                                 </div>
 
                                 <!-- Date de fin cachée -->
@@ -838,7 +840,7 @@ $arr_recurrence_byweekno = array(
 }
 
 /* Boutons modifier/supprimer */
-/* Bouton éditer - style avec bordure comme la maquette */
+/* Bouton éditer/valider - style avec bordure comme la maquette */
 .btn_edit_creneaux {
     width: 42px;
     height: 42px;
@@ -857,6 +859,18 @@ $arr_recurrence_byweekno = array(
 .btn_edit_creneaux:hover {
     background: #f5f5f5;
     border-color: #000;
+}
+
+/* Bouton en mode édition (affiche check) - fond vert */
+.btn_edit_creneaux .fa-check {
+    color: #10B981;
+}
+
+/* Inputs readonly - style grisé/validé */
+.creneaux_input.readonly {
+    background: #f5f5f5;
+    color: #666;
+    cursor: default;
 }
 
 /* Bouton supprimer - rouge comme la maquette */
@@ -2121,8 +2135,8 @@ $arr_recurrence_byweekno = array(
                     <input type="hidden" class="calendar_end_date" value="${endDate}" name="${prefix}calendar[${key}][end_date]">
                     <input type="hidden" name="${prefix}calendar[${key}][book_before_minutes]" value="0">
                     <div class="creneaux_item_actions">
-                        <button type="button" class="btn_edit_creneaux" title="<?php esc_attr_e("Modifier", "eventlist"); ?>">
-                            <i class="fa fa-pencil-alt"></i>
+                        <button type="button" class="btn_edit_creneaux" title="<?php esc_attr_e("Valider", "eventlist"); ?>">
+                            <i class="fa fa-check"></i>
                         </button>
                         <button type="button" class="btn_remove_creneaux remove_calendar" title="<?php esc_attr_e("Supprimer", "eventlist"); ?>">
                             <i class="fa fa-times"></i>
