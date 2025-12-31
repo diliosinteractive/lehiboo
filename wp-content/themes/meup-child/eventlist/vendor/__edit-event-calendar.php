@@ -1831,12 +1831,16 @@ $arr_recurrence_byweekno = array(
     display: flex;
     align-items: center;
     gap: 20px;
+        justify-content: flex-start;
+    flex-direction: row;
+    flex-wrap: nowrap;
 }
 
 .creneaux_periode_col {
     display: flex;
     align-items: center;
     gap: 10px;
+    width: 50%;
 }
 
 .periode_label {
@@ -4328,6 +4332,11 @@ $arr_recurrence_byweekno = array(
     // Initialiser au chargement
     $(document).ready(function() {
         CreneauxManager.init();
+
+        // Auto-refresh de la prévisualisation si le mode auto est actif
+        if ($('.creneaux_auto_section').is(':visible')) {
+            CreneauxManager.generatePreview();
+        }
     });
 
 })(jQuery);
