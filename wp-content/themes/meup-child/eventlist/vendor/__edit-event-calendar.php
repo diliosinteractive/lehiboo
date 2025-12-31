@@ -76,7 +76,7 @@ $arr_recurrence_byweekno = array(
 
     <!-- Type de créneau: Ponctuel ou Récurrent -->
     <div class="vendor_field creneaux_type_field">
-        <label class="field_label"><?php esc_html_e( 'Sélectionnez si l\'événement est', 'eventlist' ); ?> <span class="el_req">*</span> :</label>
+        <label class="field_label"><?php esc_html_e( 'L\'événement est :', 'eventlist' ); ?></label>
 
         <div class="creneaux_type_options">
             <label class="creneaux_type_option <?php echo ($option_calendar == 'manual') ? 'active' : ''; ?>" for="option_calendar_manual">
@@ -110,42 +110,43 @@ $arr_recurrence_byweekno = array(
 
         <!-- Formulaire d'ajout de créneau -->
         <div class="creneaux_add_form">
-            <div class="creneaux_form_grid">
-                <div class="creneaux_form_col">
-                    <label><?php esc_html_e( 'Date de début', 'eventlist' ); ?> <span class="el_req">*</span></label>
-                    <input type="text"
-                           class="creneaux_input creneaux_new_start_date"
-                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-                           data-format="<?php echo esc_attr( $format ); ?>"
-                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
-                           autocomplete="off">
+            <label class="creneaux_add_form_title"><?php esc_html_e( 'Ajout d\'un créneau', 'eventlist' ); ?></label>
+            <div class="creneaux_form_inline">
+                <!-- Date et horaire de début -->
+                <div class="creneaux_form_group">
+                    <span class="form_group_label"><?php esc_html_e( 'Date et horaire de début', 'eventlist' ); ?></span>
+                    <div class="form_group_inputs">
+                        <input type="text"
+                               class="creneaux_input creneaux_new_start_date"
+                               placeholder="DD/MM/AAAA"
+                               data-format="dd/mm/yy"
+                               data-firstday="<?php echo esc_attr( $first_day ); ?>"
+                               autocomplete="off">
+                        <input type="time"
+                               class="creneaux_input creneaux_time_native creneaux_new_start_time"
+                               step="900">
+                    </div>
                 </div>
-                <div class="creneaux_form_col">
-                    <label><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?> <span class="el_req">*</span></label>
-                    <input type="time"
-                           class="creneaux_input creneaux_time_native creneaux_new_start_time"
-                           step="900">
+                <!-- Date et horaire de fin -->
+                <div class="creneaux_form_group">
+                    <span class="form_group_label"><?php esc_html_e( 'Date et horaire de fin', 'eventlist' ); ?></span>
+                    <div class="form_group_inputs">
+                        <input type="text"
+                               class="creneaux_input creneaux_new_end_date"
+                               placeholder="DD/MM/AAAA"
+                               data-format="dd/mm/yy"
+                               data-firstday="<?php echo esc_attr( $first_day ); ?>"
+                               autocomplete="off">
+                        <input type="time"
+                               class="creneaux_input creneaux_time_native creneaux_new_end_time"
+                               step="900">
+                    </div>
                 </div>
-                <div class="creneaux_form_col">
-                    <label><?php esc_html_e( 'Date de fin', 'eventlist' ); ?> <span class="el_req">*</span></label>
-                    <input type="text"
-                           class="creneaux_input creneaux_new_end_date"
-                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-                           data-format="<?php echo esc_attr( $format ); ?>"
-                           data-firstday="<?php echo esc_attr( $first_day ); ?>"
-                           autocomplete="off">
-                </div>
-                <div class="creneaux_form_col">
-                    <label><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?> <span class="el_req">*</span></label>
-                    <input type="time"
-                           class="creneaux_input creneaux_time_native creneaux_new_end_time"
-                           step="900">
-                </div>
+                <!-- Bouton Ajouter -->
+                <button type="button" class="btn_add_creneaux_manual">
+                    <?php esc_html_e( 'Ajouter', 'eventlist' ); ?>
+                </button>
             </div>
-            <button type="button" class="btn_add_creneaux_manual">
-                <i class="fa fa-plus"></i>
-                <?php esc_html_e( 'Ajouter un créneau', 'eventlist' ); ?>
-            </button>
         </div>
 
         <!-- Liste des créneaux -->
@@ -870,10 +871,53 @@ $arr_recurrence_byweekno = array(
     background: #f9f9f9;
     border: 1px solid #eee;
     border-radius: 10px;
-    padding: 18px;
+    padding: 18px 20px;
     margin-bottom: 24px;
 }
 
+.creneaux_add_form_title {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 14px;
+}
+
+/* Layout inline: tout sur une ligne */
+.creneaux_form_inline {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.creneaux_form_group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form_group_label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+}
+
+.form_group_inputs {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.form_group_inputs .creneaux_input {
+    width: 130px;
+}
+
+.form_group_inputs .creneaux_time_native {
+    width: 100px;
+}
+
+/* Ancien style pour compatibilité */
 .creneaux_form_grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -1549,6 +1593,31 @@ $arr_recurrence_byweekno = array(
         gap: 8px;
     }
 
+    .creneaux_form_inline {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .creneaux_form_group {
+        width: 100%;
+    }
+
+    .form_group_inputs {
+        flex-wrap: wrap;
+    }
+
+    .form_group_inputs .creneaux_input,
+    .form_group_inputs .creneaux_time_native {
+        flex: 1;
+        min-width: 100px;
+    }
+
+    .btn_add_creneaux_manual {
+        width: 100%;
+        justify-content: center;
+    }
+
     .creneaux_form_grid {
         grid-template-columns: 1fr;
     }
@@ -1907,6 +1976,17 @@ $arr_recurrence_byweekno = array(
                 $('.creneaux_item_checkbox').prop('checked', checked);
             });
 
+            // Auto-remplir date de fin quand date de début est sélectionnée
+            $(document).on('change', '.creneaux_new_start_date', function() {
+                var startDateVal = $(this).val();
+                var $endDate = $('.creneaux_new_end_date');
+
+                // Si date de fin est vide, copier automatiquement la date de début
+                if (startDateVal && !$endDate.val()) {
+                    $endDate.val(startDateVal);
+                }
+            });
+
             // Init date/time pickers si disponibles
             this.initPickers();
         },
@@ -2178,7 +2258,28 @@ $arr_recurrence_byweekno = array(
 
             // Initialiser les date pickers seulement
             if (typeof $.fn.datepicker !== 'undefined') {
-                $('.creneaux_input[data-format]').each(function() {
+                // Initialiser le date picker pour la date de début avec auto-remplissage de la date de fin
+                $('.creneaux_new_start_date').each(function() {
+                    if (!$(this).hasClass('hasDatepicker')) {
+                        var format = $(this).attr('data-format') || 'dd/mm/yy';
+                        var firstDay = parseInt($(this).attr('data-firstday')) || 1;
+
+                        $(this).datepicker({
+                            dateFormat: format,
+                            firstDay: firstDay,
+                            onSelect: function(dateText) {
+                                var $endDate = $('.creneaux_new_end_date');
+                                // Auto-remplir date de fin si vide
+                                if (!$endDate.val()) {
+                                    $endDate.val(dateText);
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // Initialiser les autres date pickers normalement
+                $('.creneaux_input[data-format]:not(.creneaux_new_start_date)').each(function() {
                     if (!$(this).hasClass('hasDatepicker')) {
                         var format = $(this).attr('data-format') || 'dd/mm/yy';
                         var firstDay = parseInt($(this).attr('data-firstday')) || 1;

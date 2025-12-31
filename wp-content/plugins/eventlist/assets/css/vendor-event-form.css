@@ -336,7 +336,7 @@
 
 .service_item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     padding: 16px;
     background: #fff;
     border: 1px solid #B0B0B0;

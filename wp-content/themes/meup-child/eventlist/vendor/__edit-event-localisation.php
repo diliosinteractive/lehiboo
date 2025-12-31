@@ -471,7 +471,7 @@ $services_toggle_open = !empty($event_services_enabled) || !empty($event_parking
                                class="service_info_input"
                                value="<?php echo esc_attr($event_restau_info); ?>"
                                placeholder="<?php esc_attr_e( 'Ex : Cafétéria disponible ...', 'eventlist' ); ?>">
-                        <p class="service_hint"><?php esc_html_e( 'Cochez si la structure permet l\'accès aux Personnes à Mobilité Réduite, et informez sur les services disponibles.', 'eventlist' ); ?></p>
+                        <p class="service_hint"><?php esc_html_e( 'Cochez si une restauration est disponible sur place, et donnez les informations utiles (cafétéria, snacks, etc.).', 'eventlist' ); ?></p>
                     </div>
 
                     <!-- Boisson sur place -->
@@ -494,7 +494,7 @@ $services_toggle_open = !empty($event_services_enabled) || !empty($event_parking
                                class="service_info_input"
                                value="<?php echo esc_attr($event_boisson_info); ?>"
                                placeholder="<?php esc_attr_e( 'Ex : Soft disponible à la cafétéria...', 'eventlist' ); ?>">
-                        <p class="service_hint"><?php esc_html_e( 'Cochez si le lieu est accessible par les transports en commun, et donnez toutes les informations nécessaires.', 'eventlist' ); ?></p>
+                        <p class="service_hint"><?php esc_html_e( 'Cochez si des boissons sont disponibles sur place, et donnez les informations utiles.', 'eventlist' ); ?></p>
                     </div>
                 </div>
             </div>
