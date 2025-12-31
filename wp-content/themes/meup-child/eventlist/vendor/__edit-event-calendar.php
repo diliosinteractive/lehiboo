@@ -2562,11 +2562,7 @@ $arr_recurrence_byweekno = array(
 
                         $(this).datepicker({
                             dateFormat: format,
-                            firstDay: firstDay,
-                            onSelect: function() {
-                                // Déclencher le filtrage après sélection d'une date
-                                self.filterSlots();
-                            }
+                            firstDay: firstDay
                         });
                     }
                 });
