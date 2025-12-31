@@ -2552,6 +2552,23 @@ $arr_recurrence_byweekno = array(
                         });
                     }
                 });
+
+                // Initialiser les date pickers pour les champs de filtre
+                $('.creneaux_filter_input').each(function() {
+                    if (!$(this).hasClass('hasDatepicker')) {
+                        var format = $(this).attr('data-format') || 'dd/mm/yy';
+                        var firstDay = parseInt($(this).attr('data-firstday')) || 1;
+
+                        $(this).datepicker({
+                            dateFormat: format,
+                            firstDay: firstDay,
+                            onSelect: function() {
+                                // Déclencher le filtrage après sélection d'une date
+                                self.filterSlots();
+                            }
+                        });
+                    }
+                });
             }
 
             // Les time pickers utilisent le type="time" HTML5 natif
