@@ -922,7 +922,7 @@ $arr_recurrence_byweekno = array(
     font-weight: 400;
     line-height: 1.5;
     border-radius: 8px;
-    width: 320px;
+    width: 280px;
     max-width: calc(100vw - 40px);
     opacity: 0;
     visibility: hidden;
@@ -939,15 +939,16 @@ $arr_recurrence_byweekno = array(
     visibility: visible;
 }
 
+/* Flèche en bas du tooltip (pointe vers le bouton) */
 .el_tooltip_popup::before {
     content: '';
     position: absolute;
     left: 50%;
-    top: -8px;
+    bottom: -8px;
     transform: translateX(-50%);
     border: 8px solid transparent;
-    border-bottom-color: #1f2937;
-    border-top: none;
+    border-top-color: #1f2937;
+    border-bottom: none;
 }
 
 /* Step Content */
@@ -2808,10 +2809,21 @@ $arr_recurrence_byweekno = array(
 
                 $tooltip.text(text);
 
-                // Positionner en dessous du bouton, centré
-                var tooltipWidth = 320;
+                // Positionner au-dessus du bouton, centré
+                var tooltipWidth = 280;
+
+                // D'abord afficher le tooltip pour calculer sa hauteur
+                $tooltip.css({
+                    visibility: 'hidden',
+                    opacity: 0,
+                    display: 'block',
+                    width: tooltipWidth + 'px'
+                });
+
+                var tooltipHeight = $tooltip.outerHeight();
+
                 var left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-                var top = rect.bottom + 12;
+                var top = rect.top - tooltipHeight - 12;
 
                 // S'assurer que le tooltip ne dépasse pas à gauche
                 if (left < 10) {
@@ -2825,7 +2837,9 @@ $arr_recurrence_byweekno = array(
                 $tooltip.css({
                     left: left + 'px',
                     top: top + 'px',
-                    width: tooltipWidth + 'px'
+                    width: tooltipWidth + 'px',
+                    visibility: '',
+                    display: ''
                 });
 
                 $tooltip.addClass('visible');
