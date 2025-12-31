@@ -670,6 +670,23 @@ $arr_recurrence_byweekno = array(
                 <!-- Peuplé par JavaScript -->
             </div>
 
+            <!-- Pagination -->
+            <div class="creneaux_pagination" style="display: none;">
+                <button type="button" class="pagination_btn pagination_prev" disabled>
+                    <i class="fa fa-chevron-left"></i>
+                    <?php esc_html_e( 'Précédent', 'eventlist' ); ?>
+                </button>
+                <div class="pagination_info">
+                    <span class="pagination_current">1</span>
+                    <span class="pagination_separator">/</span>
+                    <span class="pagination_total">1</span>
+                </div>
+                <button type="button" class="pagination_btn pagination_next">
+                    <?php esc_html_e( 'Suivant', 'eventlist' ); ?>
+                    <i class="fa fa-chevron-right"></i>
+                </button>
+            </div>
+
             <!-- État vide -->
             <div class="creneaux_preview_empty_state">
                 <i class="fa fa-calendar-alt"></i>
@@ -2642,6 +2659,68 @@ $arr_recurrence_byweekno = array(
     margin-left: auto;
 }
 
+/* Pagination */
+.creneaux_pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+    padding: 16px 0;
+    border-top: 1px solid #e5e7eb;
+}
+
+.pagination_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination_btn:hover:not(:disabled) {
+    background: #f9fafb;
+    border-color: #FF6600;
+    color: #FF6600;
+}
+
+.pagination_btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f3f4f6;
+}
+
+.pagination_btn i {
+    font-size: 12px;
+}
+
+.pagination_info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #f3f4f6;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.pagination_current {
+    color: #FF6600;
+}
+
+.pagination_separator {
+    color: #9ca3af;
+}
+
 /* Masquer le tableau et état vide selon le contexte */
 .creneaux_preview_section.has-items .creneaux_preview_empty_state {
     display: none;
@@ -2671,6 +2750,11 @@ $arr_recurrence_byweekno = array(
         calendarIndex: <?php echo !empty($calendar) ? max(array_keys($calendar)) + 1 : 0; ?>,
         scheduleIndex: <?php echo !empty($schedules_time) ? max(array_keys($schedules_time)) + 1 : 0; ?>,
         disableIndex: <?php echo !empty($disable_date) ? max(array_keys($disable_date)) + 1 : 0; ?>,
+
+        // Pagination
+        previewCurrentPage: 1,
+        previewItemsPerPage: 20,
+        previewAllItems: [], // Stocke tous les éléments générés
 
         // Noms des jours de la semaine pour le lookup
         dayNames: {
@@ -2889,11 +2973,37 @@ $arr_recurrence_byweekno = array(
             });
 
             // Suppression de créneau
-            $(document).on('click', '.btn_remove_creneaux, .remove_calendar', function() {
+            $(document).on('click', '.btn_remove_creneaux:not(.btn_remove_preview_item), .remove_calendar', function() {
                 $(this).closest('.creneaux_item, .item_calendar').fadeOut(200, function() {
                     $(this).remove();
                     self.updateEmptyState();
                 });
+            });
+
+            // Suppression d'un créneau de la prévisualisation
+            $(document).on('click', '.btn_remove_preview_item', function() {
+                var $item = $(this).closest('.creneaux_item');
+                var index = parseInt($item.data('index'));
+
+                // Supprimer du tableau
+                self.previewAllItems.splice(index, 1);
+
+                // Ajuster la page courante si nécessaire
+                var totalPages = Math.ceil(self.previewAllItems.length / self.previewItemsPerPage);
+                if (self.previewCurrentPage > totalPages && totalPages > 0) {
+                    self.previewCurrentPage = totalPages;
+                }
+
+                // Re-rendre la page
+                if (self.previewAllItems.length > 0) {
+                    self.renderCurrentPage();
+                } else {
+                    $('.creneaux_preview_list').empty();
+                    $('.creneaux_preview_section').removeClass('has-items');
+                    self.updatePagination();
+                }
+
+                self.updatePreviewCount();
             });
 
             // Édition de créneau
@@ -3082,6 +3192,23 @@ $arr_recurrence_byweekno = array(
                 self.generatePreview();
             });
 
+            // Pagination - Page précédente
+            $(document).on('click', '.pagination_prev', function() {
+                if (self.previewCurrentPage > 1) {
+                    self.previewCurrentPage--;
+                    self.renderCurrentPage();
+                }
+            });
+
+            // Pagination - Page suivante
+            $(document).on('click', '.pagination_next', function() {
+                var totalPages = Math.ceil(self.previewAllItems.length / self.previewItemsPerPage);
+                if (self.previewCurrentPage < totalPages) {
+                    self.previewCurrentPage++;
+                    self.renderCurrentPage();
+                }
+            });
+
             // Filtrer la prévisualisation
             $(document).on('click', '.btn_filter_preview', function() {
                 self.filterPreview();
@@ -3116,14 +3243,37 @@ $arr_recurrence_byweekno = array(
                 confirmMsg = confirmMsg.replace('{count}', selectedCount);
 
                 if (confirm(confirmMsg)) {
+                    // Collecter les indices à supprimer
+                    var indicesToRemove = [];
                     $('.creneaux_preview_list .creneaux_item_checkbox:checked').each(function() {
-                        $(this).closest('.creneaux_item').fadeOut(200, function() {
-                            $(this).remove();
-                            self.updatePreviewBulkActionsBar();
-                            self.updatePreviewCount();
-                        });
+                        var index = parseInt($(this).closest('.creneaux_item').data('index'));
+                        indicesToRemove.push(index);
                     });
-                    // Décocher "sélectionner tout"
+
+                    // Trier en ordre décroissant pour supprimer sans décaler les indices
+                    indicesToRemove.sort(function(a, b) { return b - a; });
+
+                    // Supprimer du tableau
+                    indicesToRemove.forEach(function(index) {
+                        self.previewAllItems.splice(index, 1);
+                    });
+
+                    // Ajuster la page courante si nécessaire
+                    var totalPages = Math.ceil(self.previewAllItems.length / self.previewItemsPerPage);
+                    if (self.previewCurrentPage > totalPages && totalPages > 0) {
+                        self.previewCurrentPage = totalPages;
+                    }
+
+                    // Re-rendre la page
+                    if (self.previewAllItems.length > 0) {
+                        self.renderCurrentPage();
+                    } else {
+                        $('.creneaux_preview_list').empty();
+                        $('.creneaux_preview_section').removeClass('has-items');
+                        self.updatePagination();
+                    }
+
+                    self.updatePreviewCount();
                     $('.creneaux_preview_select_all').prop('checked', false);
                 }
             });
@@ -3579,7 +3729,8 @@ $arr_recurrence_byweekno = array(
 
         // Mettre à jour le compteur de la prévisualisation
         updatePreviewCount: function() {
-            var count = $('.creneaux_preview_list .creneaux_item').length;
+            // Utiliser le tableau complet pour le total, pas seulement les éléments affichés
+            var count = this.previewAllItems ? this.previewAllItems.length : 0;
             var $countSpan = $('.preview_count');
             if (count > 0) {
                 $countSpan.html('<strong>' + count + '</strong> <?php echo esc_js( __( 'créneau(x) généré(s)', 'eventlist' ) ); ?>');
@@ -3970,23 +4121,43 @@ $arr_recurrence_byweekno = array(
         renderPreviewSlots: function(dates) {
             var self = this;
             var $section = $('.creneaux_preview_section');
-            var $list = $('.creneaux_preview_list');
-
-            $list.empty();
 
             if (dates.length === 0) {
                 $section.removeClass('has-items');
+                this.previewAllItems = [];
+                this.updatePagination();
                 return;
             }
 
             $section.addClass('has-items');
 
-            dates.forEach(function(item, index) {
+            // Stocker tous les éléments et réinitialiser la page
+            this.previewAllItems = dates;
+            this.previewCurrentPage = 1;
+
+            // Rendre la première page
+            this.renderCurrentPage();
+        },
+
+        // Rendre la page courante de la prévisualisation
+        renderCurrentPage: function() {
+            var self = this;
+            var $list = $('.creneaux_preview_list');
+
+            $list.empty();
+
+            // Calculer les indices de début et fin
+            var startIndex = (this.previewCurrentPage - 1) * this.previewItemsPerPage;
+            var endIndex = Math.min(startIndex + this.previewItemsPerPage, this.previewAllItems.length);
+            var pageItems = this.previewAllItems.slice(startIndex, endIndex);
+
+            pageItems.forEach(function(item, localIndex) {
+                var globalIndex = startIndex + localIndex;
                 var formattedDate = self.formatDateReadable(item.date);
                 var isoDate = self.formatDateISO(item.date);
 
                 var html = `
-                    <div class="creneaux_item preview_item" data-index="${index}" data-date="${isoDate}">
+                    <div class="creneaux_item preview_item" data-index="${globalIndex}" data-date="${isoDate}">
                         <label class="creneaux_item_select">
                             <input type="checkbox" class="creneaux_item_checkbox">
                             <span class="option_checkbox"></span>
@@ -4013,6 +4184,36 @@ $arr_recurrence_byweekno = array(
 
                 $list.append(html);
             });
+
+            // Mettre à jour la pagination
+            this.updatePagination();
+
+            // Réinitialiser les checkboxes
+            $('.creneaux_preview_select_all').prop('checked', false);
+            this.updatePreviewBulkActionsBar();
+        },
+
+        // Mettre à jour l'affichage de la pagination
+        updatePagination: function() {
+            var $pagination = $('.creneaux_pagination');
+            var totalItems = this.previewAllItems.length;
+            var totalPages = Math.ceil(totalItems / this.previewItemsPerPage);
+
+            if (totalItems <= this.previewItemsPerPage) {
+                // Pas besoin de pagination
+                $pagination.hide();
+                return;
+            }
+
+            $pagination.show();
+
+            // Mettre à jour les numéros de page
+            $('.pagination_current').text(this.previewCurrentPage);
+            $('.pagination_total').text(totalPages);
+
+            // Activer/désactiver les boutons
+            $('.pagination_prev').prop('disabled', this.previewCurrentPage <= 1);
+            $('.pagination_next').prop('disabled', this.previewCurrentPage >= totalPages);
         },
 
         formatDateISO: function(date) {
