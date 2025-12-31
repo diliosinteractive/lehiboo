@@ -2081,12 +2081,12 @@ $arr_recurrence_byweekno = array(
         },
 
         addManualSlot: function() {
-            var startDate = $('.creneaux_new_start_date').val();
+            var startDateInput = $('.creneaux_new_start_date').val();
             var startTime = $('.creneaux_new_start_time').val();
-            var endDate = $('.creneaux_new_end_date').val();
+            var endDateInput = $('.creneaux_new_end_date').val();
             var endTime = $('.creneaux_new_end_time').val();
 
-            if (!startDate || !startTime || !endDate || !endTime) {
+            if (!startDateInput || !startTime || !endDateInput || !endTime) {
                 alert('<?php esc_html_e("Veuillez remplir tous les champs", "eventlist"); ?>');
                 return;
             }
@@ -2094,8 +2094,12 @@ $arr_recurrence_byweekno = array(
             var prefix = '<?php echo $_prefix; ?>';
             var key = this.calendarIndex++;
 
-            // Formater la date de manière lisible
-            var formattedDate = this.formatDateReadable(startDate);
+            // Formater la date de manière lisible (pour l'affichage)
+            var formattedDate = this.formatDateReadable(startDateInput);
+
+            // Convertir les dates au format ISO pour PHP (YYYY-MM-DD)
+            var startDate = this.convertToISODate(startDateInput);
+            var endDate = this.convertToISODate(endDateInput);
 
             var html = `
                 <div class="creneaux_item item_calendar" data-key="${key}">
@@ -2166,6 +2170,29 @@ $arr_recurrence_byweekno = array(
             var year = date.getFullYear();
 
             return dayName + ' ' + day + ' ' + month + ' ' + year;
+        },
+
+        // Convertir DD/MM/YYYY vers YYYY-MM-DD (format ISO pour PHP strtotime)
+        convertToISODate: function(dateStr) {
+            if (!dateStr) return '';
+
+            // Si déjà au format ISO (YYYY-MM-DD), retourner tel quel
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                return dateStr;
+            }
+
+            // Convertir DD/MM/YYYY vers YYYY-MM-DD
+            if (dateStr.includes('/')) {
+                var parts = dateStr.split('/');
+                if (parts.length === 3 && parts[2].length === 4) {
+                    var day = parts[0].padStart(2, '0');
+                    var month = parts[1].padStart(2, '0');
+                    var year = parts[2];
+                    return year + '-' + month + '-' + day;
+                }
+            }
+
+            return dateStr; // Retourner tel quel si format non reconnu
         },
 
         addTimeSlot: function($button) {
