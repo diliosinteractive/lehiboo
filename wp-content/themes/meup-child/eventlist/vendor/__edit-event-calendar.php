@@ -912,8 +912,7 @@ $arr_recurrence_byweekno = array(
     font-weight: 400;
     line-height: 1.5;
     border-radius: 8px;
-    width: 280px;
-    max-width: calc(100vw - 40px);
+    max-width: 300px;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -2931,10 +2930,14 @@ $arr_recurrence_byweekno = array(
         scheduleIndex: <?php echo !empty($schedules_time) ? max(array_keys($schedules_time)) + 1 : 0; ?>,
         disableIndex: <?php echo !empty($disable_date) ? max(array_keys($disable_date)) + 1 : 0; ?>,
 
-        // Pagination
+        // Pagination preview
         previewCurrentPage: 1,
         previewItemsPerPage: 20,
         previewAllItems: [], // Stocke tous les éléments générés
+
+        // Pagination tableau unifié
+        unifiedCurrentPage: 1,
+        unifiedItemsPerPage: 20,
 
         // Noms des jours de la semaine pour le lookup
         dayNames: {
@@ -2956,6 +2959,8 @@ $arr_recurrence_byweekno = array(
             this.updateEmptyState();
             this.initWeeklySlots();
             this.initTooltips();
+            this.updateUnifiedPagination();
+            this.updateRecapCount();
 
             // Réappliquer la désactivation après un délai (au cas où d'autres scripts s'initialisent)
             setTimeout(function() {
@@ -3219,6 +3224,15 @@ $arr_recurrence_byweekno = array(
                 $(this).closest('.creneaux_item, .item_calendar').fadeOut(200, function() {
                     $(this).remove();
                     self.updateEmptyState();
+                    self.updateRecapCount();
+
+                    // Ajuster la page courante si nécessaire
+                    var totalItems = $('.creneaux_unified_list .creneaux_item').length;
+                    var totalPages = Math.ceil(totalItems / self.unifiedItemsPerPage);
+                    if (self.unifiedCurrentPage > totalPages && totalPages > 0) {
+                        self.unifiedCurrentPage = totalPages;
+                    }
+                    self.renderUnifiedPage();
                 });
             });
 
@@ -3435,20 +3449,21 @@ $arr_recurrence_byweekno = array(
                 self.generatePreview();
             });
 
-            // Pagination - Page précédente
+            // Pagination tableau unifié - Page précédente
             $(document).on('click', '.pagination_prev', function() {
-                if (self.previewCurrentPage > 1) {
-                    self.previewCurrentPage--;
-                    self.renderCurrentPage();
+                if (self.unifiedCurrentPage > 1) {
+                    self.unifiedCurrentPage--;
+                    self.renderUnifiedPage();
                 }
             });
 
-            // Pagination - Page suivante
+            // Pagination tableau unifié - Page suivante
             $(document).on('click', '.pagination_next', function() {
-                var totalPages = Math.ceil(self.previewAllItems.length / self.previewItemsPerPage);
-                if (self.previewCurrentPage < totalPages) {
-                    self.previewCurrentPage++;
-                    self.renderCurrentPage();
+                var totalItems = $('.creneaux_unified_list .creneaux_item').length;
+                var totalPages = Math.ceil(totalItems / self.unifiedItemsPerPage);
+                if (self.unifiedCurrentPage < totalPages) {
+                    self.unifiedCurrentPage++;
+                    self.renderUnifiedPage();
                 }
             });
 
@@ -3519,17 +3534,6 @@ $arr_recurrence_byweekno = array(
                     self.updatePreviewCount();
                     $('.creneaux_preview_select_all').prop('checked', false);
                 }
-            });
-
-            // Auto-régénérer la prévisualisation quand la config change
-            $(document).on('change', '.calendar_auto_start_date, .calendar_auto_end_date, #recurrence-frequency, #recurrence-interval', function() {
-                // Régénérer après un délai pour éviter les appels multiples
-                clearTimeout(self.previewTimeout);
-                self.previewTimeout = setTimeout(function() {
-                    if ($('.creneaux_auto_section').is(':visible')) {
-                        self.generatePreview();
-                    }
-                }, 500);
             });
 
             // Init date/time pickers si disponibles
@@ -3615,6 +3619,7 @@ $arr_recurrence_byweekno = array(
 
             this.updateEmptyState();
             this.updateRecapCount();
+            this.updateUnifiedPagination();
             this.initPickers();
         },
 
@@ -4272,6 +4277,9 @@ $arr_recurrence_byweekno = array(
 
                 $list.append(html);
             });
+
+            // Mettre à jour la pagination après ajout des récurrents
+            this.updateUnifiedPagination();
         },
 
         getRecurringTimeSlots: function(frequency) {
@@ -4549,6 +4557,48 @@ $arr_recurrence_byweekno = array(
             // Activer/désactiver les boutons
             $('.pagination_prev').prop('disabled', this.previewCurrentPage <= 1);
             $('.pagination_next').prop('disabled', this.previewCurrentPage >= totalPages);
+        },
+
+        // Rendre la page courante du tableau unifié
+        renderUnifiedPage: function() {
+            var $items = $('.creneaux_unified_list .creneaux_item');
+            var totalItems = $items.length;
+
+            // Calculer les indices de début et fin
+            var startIndex = (this.unifiedCurrentPage - 1) * this.unifiedItemsPerPage;
+            var endIndex = Math.min(startIndex + this.unifiedItemsPerPage, totalItems);
+
+            // Masquer tous les éléments puis afficher ceux de la page courante
+            $items.hide();
+            $items.slice(startIndex, endIndex).show();
+
+            // Mettre à jour la pagination
+            this.updateUnifiedPagination();
+        },
+
+        // Mettre à jour l'affichage de la pagination du tableau unifié
+        updateUnifiedPagination: function() {
+            var $pagination = $('.creneaux_pagination');
+            var totalItems = $('.creneaux_unified_list .creneaux_item').length;
+            var totalPages = Math.ceil(totalItems / this.unifiedItemsPerPage);
+
+            if (totalItems <= this.unifiedItemsPerPage) {
+                // Pas besoin de pagination
+                $pagination.hide();
+                // S'assurer que tous les éléments sont visibles
+                $('.creneaux_unified_list .creneaux_item').show();
+                return;
+            }
+
+            $pagination.show();
+
+            // Mettre à jour les numéros de page
+            $pagination.find('.pagination_current').text(this.unifiedCurrentPage);
+            $pagination.find('.pagination_total').text(totalPages);
+
+            // Activer/désactiver les boutons
+            $pagination.find('.pagination_prev').prop('disabled', this.unifiedCurrentPage <= 1);
+            $pagination.find('.pagination_next').prop('disabled', this.unifiedCurrentPage >= totalPages);
         },
 
         formatDateISO: function(date) {
