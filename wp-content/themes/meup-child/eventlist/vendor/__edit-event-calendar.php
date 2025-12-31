@@ -894,14 +894,9 @@ $arr_recurrence_byweekno = array(
     font-size: 14px;
 }
 
-/* Tooltip Popover - Affichage en dessous pour éviter le débordement */
-.step_info_btn::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    left: 50%;
-    top: 100%;
-    transform: translateX(-50%);
-    margin-top: 12px;
+/* Tooltip Popover - Attaché au body via JS pour éviter les problèmes d'overflow */
+.el_tooltip_popup {
+    position: fixed;
     padding: 12px 16px;
     background: #1f2937;
     color: #fff;
@@ -913,33 +908,28 @@ $arr_recurrence_byweekno = array(
     max-width: calc(100vw - 40px);
     opacity: 0;
     visibility: hidden;
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
     pointer-events: none;
-    z-index: 1000;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    z-index: 99999;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     text-align: left;
     white-space: normal;
 }
 
-.step_info_btn::before {
+.el_tooltip_popup.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.el_tooltip_popup::before {
     content: '';
     position: absolute;
     left: 50%;
-    top: 100%;
+    top: -8px;
     transform: translateX(-50%);
-    margin-top: 0;
     border: 8px solid transparent;
     border-bottom-color: #1f2937;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.2s ease;
-    z-index: 1001;
-}
-
-.step_info_btn:hover::after,
-.step_info_btn:hover::before {
-    opacity: 1;
-    visibility: visible;
+    border-top: none;
 }
 
 /* Step Content */
@@ -958,17 +948,8 @@ $arr_recurrence_byweekno = array(
         font-size: 14px;
     }
 
-    .step_info_btn::after {
+    .el_tooltip_popup {
         width: 260px;
-        left: auto;
-        right: -10px;
-        transform: none;
-    }
-
-    .step_info_btn::before {
-        left: auto;
-        right: 8px;
-        transform: none;
     }
 }
 
@@ -2779,6 +2760,7 @@ $arr_recurrence_byweekno = array(
             this.updateIntervalDesc();
             this.updateEmptyState();
             this.initWeeklySlots();
+            this.initTooltips();
 
             // Réappliquer la désactivation après un délai (au cas où d'autres scripts s'initialisent)
             setTimeout(function() {
@@ -2787,6 +2769,54 @@ $arr_recurrence_byweekno = array(
             setTimeout(function() {
                 self.disableJqueryTimepicker();
             }, 1500);
+        },
+
+        // Initialiser les tooltips attachés au body
+        initTooltips: function() {
+            // Créer le conteneur tooltip s'il n'existe pas
+            if ($('#el_tooltip_popup').length === 0) {
+                $('body').append('<div id="el_tooltip_popup" class="el_tooltip_popup"></div>');
+            }
+
+            var $tooltip = $('#el_tooltip_popup');
+
+            // Afficher le tooltip au survol
+            $(document).on('mouseenter', '.step_info_btn[data-tooltip]', function() {
+                var text = $(this).data('tooltip');
+                if (!text) return;
+
+                var $btn = $(this);
+                var rect = $btn[0].getBoundingClientRect();
+
+                $tooltip.text(text);
+
+                // Positionner en dessous du bouton, centré
+                var tooltipWidth = 320;
+                var left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+                var top = rect.bottom + 12;
+
+                // S'assurer que le tooltip ne dépasse pas à gauche
+                if (left < 10) {
+                    left = 10;
+                }
+                // S'assurer que le tooltip ne dépasse pas à droite
+                if (left + tooltipWidth > window.innerWidth - 10) {
+                    left = window.innerWidth - tooltipWidth - 10;
+                }
+
+                $tooltip.css({
+                    left: left + 'px',
+                    top: top + 'px',
+                    width: tooltipWidth + 'px'
+                });
+
+                $tooltip.addClass('visible');
+            });
+
+            // Masquer le tooltip
+            $(document).on('mouseleave', '.step_info_btn[data-tooltip]', function() {
+                $tooltip.removeClass('visible');
+            });
         },
 
         // Corriger les noms de jours "undefined" et convertir l'ancienne structure
