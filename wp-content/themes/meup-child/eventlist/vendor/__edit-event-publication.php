@@ -42,14 +42,6 @@ if ( empty( $post_id ) || $post_id === 0 ) {
 if ( ! $can_vendor_publish ) {
     $is_online = false;
 }
-
-// Extra Services
-$el_handicap = get_post_meta( $post_id, $_prefix.'el_handicap', true );
-$el_animal   = get_post_meta( $post_id, $_prefix.'el_animal', true );
-$el_baby     = get_post_meta( $post_id, $_prefix.'el_baby', true );
-$el_wifi     = get_post_meta( $post_id, $_prefix.'el_wifi', true );
-$el_parking  = get_post_meta( $post_id, $_prefix.'el_parking', true );
-$el_restau   = get_post_meta( $post_id, $_prefix.'el_restau', true );
 ?>
 
 <div class="publication_section">
@@ -204,82 +196,6 @@ $el_restau   = get_post_meta( $post_id, $_prefix.'el_restau', true );
     <!-- Champs cachés pour synchroniser avec le formulaire principal -->
     <input type="hidden" name="event_password" id="event_password_hidden" value="<?php echo esc_attr( $event_password ); ?>">
     <input type="hidden" name="event_status" id="event_status_hidden" value="<?php echo esc_attr( $is_online ? ($visibility === 'private' || $visibility === 'private_protected' ? 'private' : 'publish') : 'draft' ); ?>">
-</div>
-
-<!-- Services & Accessibilité -->
-<div class="services_section">
-    <div class="section_header">
-        <h4 class="section_title"><?php esc_html_e( 'Services & Accessibilité', 'eventlist' ); ?></h4>
-        <p class="section_subtitle"><?php esc_html_e( 'Informez vos participants sur les services disponibles', 'eventlist' ); ?></p>
-    </div>
-
-    <div class="services_grid">
-        <label class="service_item">
-            <input type="checkbox"
-                   name="<?php echo esc_attr( $_prefix.'el_handicap' ); ?>"
-                   value="yes"
-                   class="service_checkbox"
-                   <?php checked( $el_handicap, 'yes' ); ?>>
-            <span class="service_checkmark"></span>
-            <span class="service_icon">♿</span>
-            <span class="service_label"><?php esc_html_e( 'Accessible Handicap', 'eventlist' ); ?></span>
-        </label>
-
-        <label class="service_item">
-            <input type="checkbox"
-                   name="<?php echo esc_attr( $_prefix.'el_animal' ); ?>"
-                   value="yes"
-                   class="service_checkbox"
-                   <?php checked( $el_animal, 'yes' ); ?>>
-            <span class="service_checkmark"></span>
-            <span class="service_icon">🐾</span>
-            <span class="service_label"><?php esc_html_e( 'Animaux acceptés', 'eventlist' ); ?></span>
-        </label>
-
-        <label class="service_item">
-            <input type="checkbox"
-                   name="<?php echo esc_attr( $_prefix.'el_baby' ); ?>"
-                   value="yes"
-                   class="service_checkbox"
-                   <?php checked( $el_baby, 'yes' ); ?>>
-            <span class="service_checkmark"></span>
-            <span class="service_icon">👶</span>
-            <span class="service_label"><?php esc_html_e( 'Adapté aux bébés', 'eventlist' ); ?></span>
-        </label>
-
-        <label class="service_item">
-            <input type="checkbox"
-                   name="<?php echo esc_attr( $_prefix.'el_wifi' ); ?>"
-                   value="yes"
-                   class="service_checkbox"
-                   <?php checked( $el_wifi, 'yes' ); ?>>
-            <span class="service_checkmark"></span>
-            <span class="service_icon">📶</span>
-            <span class="service_label"><?php esc_html_e( 'Wifi gratuit', 'eventlist' ); ?></span>
-        </label>
-
-        <label class="service_item">
-            <input type="checkbox"
-                   name="<?php echo esc_attr( $_prefix.'el_parking' ); ?>"
-                   value="yes"
-                   class="service_checkbox"
-                   <?php checked( $el_parking, 'yes' ); ?>>
-            <span class="service_checkmark"></span>
-            <span class="service_icon">🅿️</span>
-            <span class="service_label"><?php esc_html_e( 'Parking sur place', 'eventlist' ); ?></span>
-        </label>
-
-        <label class="service_item">
-            <input type="checkbox"
-                   name="<?php echo esc_attr( $_prefix.'el_restau' ); ?>"
-                   value="yes"
-                   class="service_checkbox"
-                   <?php checked( $el_restau, 'yes' ); ?>>
-            <span class="service_checkmark"></span>
-            <span class="service_icon">🍽️</span>
-            <span class="service_label"><?php esc_html_e( 'Restauration', 'eventlist' ); ?></span>
-        </label>
-    </div>
 </div>
 
 <style>
@@ -565,110 +481,8 @@ $el_restau   = get_post_meta( $post_id, $_prefix.'el_restau', true );
     color: #94a3b8;
 }
 
-/* Services Section */
-.services_section {
-    margin-top: 50px;
-    padding-top: 40px;
-    border-top: 1px solid #e2e8f0;
-}
-
-.services_section .section_header {
-    margin-bottom: 24px;
-}
-
-.services_section .section_title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #1e293b;
-    margin: 0 0 8px;
-}
-
-.services_section .section_subtitle {
-    font-size: 14px;
-    color: #64748b;
-    margin: 0;
-}
-
-/* Services Grid */
-.services_grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-}
-
-.service_item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 16px;
-    background: #f8fafc;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 2px solid transparent;
-}
-
-.service_item:hover {
-    background: #f1f5f9;
-}
-
-.service_item.selected,
-.service_item:has(.service_checkbox:checked) {
-    background: #fff8f5;
-    border-color: #FF6600;
-}
-
-.service_checkbox {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.service_checkmark {
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
-    border: 2px solid #d1d5db;
-    border-radius: 5px;
-    background: #fff;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.service_item:has(.service_checkbox:checked) .service_checkmark {
-    background: #FF6600;
-    border-color: #FF6600;
-}
-
-.service_item:has(.service_checkbox:checked) .service_checkmark::after {
-    content: '';
-    display: block;
-    width: 5px;
-    height: 8px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-    margin-bottom: 2px;
-}
-
-.service_icon {
-    font-size: 20px;
-}
-
-.service_label {
-    font-size: 14px;
-    font-weight: 500;
-    color: #334155;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
-    .services_grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
     .status_toggle {
         flex-direction: column;
         gap: 16px;
@@ -676,12 +490,6 @@ $el_restau   = get_post_meta( $post_id, $_prefix.'el_restau', true );
 
     .password_field_wrapper {
         margin-left: 0;
-    }
-}
-
-@media (max-width: 480px) {
-    .services_grid {
-        grid-template-columns: 1fr;
     }
 }
 
@@ -775,16 +583,6 @@ jQuery(document).ready(function($) {
             // Synchroniser le mot de passe
             $(document).on('input', '.password_input', function() {
                 self.syncPassword();
-            });
-
-            // Services checkbox
-            $(document).on('change', '.service_checkbox', function() {
-                var $item = $(this).closest('.service_item');
-                if ($(this).is(':checked')) {
-                    $item.addClass('selected');
-                } else {
-                    $item.removeClass('selected');
-                }
             });
 
             // Clic sur le bouton de statut dans la barre flottante
@@ -922,11 +720,6 @@ jQuery(document).ready(function($) {
     };
 
     PublicationManager.init();
-
-    // Initialiser les checkboxes de services qui sont cochées
-    $('.service_checkbox:checked').each(function() {
-        $(this).closest('.service_item').addClass('selected');
-    });
 
     // Synchroniser le mot de passe, le statut et le bouton au chargement
     PublicationManager.syncPassword();
