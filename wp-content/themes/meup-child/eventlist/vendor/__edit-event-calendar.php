@@ -297,8 +297,8 @@ $arr_recurrence_byweekno = array(
                            class="creneaux_input calendar_start_date calendar_auto_start_date"
                            name="<?php echo esc_attr( $_prefix.'calendar_start_date' ); ?>"
                            value="<?php echo esc_attr( $calendar_start_date ); ?>"
-                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-                           data-format="<?php echo esc_attr( $format ); ?>"
+                           placeholder="DD/MM/AAAA"
+                           data-format="dd/mm/yy"
                            data-firstday="<?php echo esc_attr( $first_day ); ?>"
                            autocomplete="off"
                            <?php if ( $option_calendar == 'auto' ) echo 'required'; ?>>
@@ -309,8 +309,8 @@ $arr_recurrence_byweekno = array(
                            class="creneaux_input calendar_end_date calendar_auto_end_date"
                            name="<?php echo esc_attr( $_prefix.'calendar_end_date' ); ?>"
                            value="<?php echo esc_attr( $calendar_end_date ); ?>"
-                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-                           data-format="<?php echo esc_attr( $format ); ?>"
+                           placeholder="DD/MM/AAAA"
+                           data-format="dd/mm/yy"
                            data-firstday="<?php echo esc_attr( $first_day ); ?>"
                            autocomplete="off"
                            <?php if ( $option_calendar == 'auto' ) echo 'required'; ?>>
@@ -430,13 +430,30 @@ $arr_recurrence_byweekno = array(
                         <option value="<?php echo esc_attr($key); ?>" <?php selected( $recurrence_byday, $key ); ?>><?php echo esc_html($value); ?></option>
                     <?php endforeach; ?>
                 </select>
-                <span class="monthly_label"><?php esc_html_e( 'de chaque mois', 'eventlist' ); ?></span>
-                <button type="button" class="btn_add_monthly_rule"><?php esc_html_e( 'Ajouter', 'eventlist' ); ?></button>
+            </div>
+            <!-- Horaires pour le mode mensuel -->
+            <div class="creneaux_monthly_time_row">
+                <label class="field_label"><?php esc_html_e( 'Sélectionnez l\'horaire :', 'eventlist' ); ?></label>
+                <div class="monthly_time_inputs">
+                    <div class="monthly_time_field">
+                        <span class="monthly_time_label"><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?></span>
+                        <input type="time"
+                               class="creneaux_input creneaux_time_native monthly_start_time"
+                               step="900">
+                    </div>
+                    <div class="monthly_time_field">
+                        <span class="monthly_time_label"><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?></span>
+                        <input type="time"
+                               class="creneaux_input creneaux_time_native monthly_end_time"
+                               step="900">
+                    </div>
+                    <button type="button" class="btn_add_monthly_slot"><?php esc_html_e( 'Ajouter', 'eventlist' ); ?></button>
+                </div>
             </div>
         </div>
 
-        <!-- Sélection de l'horaire (pour daily/monthly) -->
-        <div class="vendor_field creneaux_horaire_field time-range" style="<?php if ( $schedules_time ) echo 'display: none;'; ?>">
+        <!-- Sélection de l'horaire (pour daily uniquement - caché en mode weekly et monthly) -->
+        <div class="vendor_field creneaux_horaire_field time-range" style="<?php if ( $schedules_time || $recurrence_frequency == 'weekly' || $recurrence_frequency == 'monthly' ) echo 'display: none;'; ?>">
             <label class="field_label"><?php esc_html_e( 'Sélectionnez l\'horaire :', 'eventlist' ); ?></label>
             <div class="creneaux_horaire_row">
                 <span class="horaire_label"><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?></span>
@@ -463,8 +480,8 @@ $arr_recurrence_byweekno = array(
                    value="<?php echo esc_attr( $calendar_recurrence_book_before ); ?>">
         </div>
 
-        <!-- Liste des horaires programmés -->
-        <div class="creneaux_schedules_section schedules_time">
+        <!-- Liste des horaires programmés (caché en mode weekly) -->
+        <div class="creneaux_schedules_section schedules_time" style="<?php if ( $recurrence_frequency == 'weekly' ) echo 'display: none;'; ?>">
             <label class="field_label"><?php esc_html_e( 'Horaires programmés', 'eventlist' ); ?></label>
             <div class="wrap_schedules_time">
                 <?php if ( $schedules_time ):
@@ -511,15 +528,15 @@ $arr_recurrence_byweekno = array(
                     <span class="disable_label"><?php esc_html_e( 'Du', 'eventlist' ); ?></span>
                     <input type="text"
                            class="creneaux_input new_disable_start_date"
-                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-                           data-format="<?php echo esc_attr( $format ); ?>"
+                           placeholder="DD/MM/AAAA"
+                           data-format="dd/mm/yy"
                            data-firstday="<?php echo esc_attr( $first_day ); ?>"
                            autocomplete="off">
                     <span class="disable_label"><?php esc_html_e( 'au', 'eventlist' ); ?></span>
                     <input type="text"
                            class="creneaux_input new_disable_end_date"
-                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-                           data-format="<?php echo esc_attr( $format ); ?>"
+                           placeholder="DD/MM/AAAA"
+                           data-format="dd/mm/yy"
                            data-firstday="<?php echo esc_attr( $first_day ); ?>"
                            autocomplete="off">
                     <span class="disable_label"><?php esc_html_e( 'Créneau', 'eventlist' ); ?></span>
@@ -1666,6 +1683,64 @@ $arr_recurrence_byweekno = array(
     white-space: nowrap;
 }
 
+/* Section horaires mensuelle */
+.creneaux_monthly_time_row {
+    margin-top: 20px;
+}
+
+.creneaux_monthly_time_row .field_label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.monthly_time_inputs {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.monthly_time_field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.monthly_time_label {
+    font-size: 13px;
+    color: #666;
+}
+
+.monthly_time_field .creneaux_input {
+    width: 140px;
+}
+
+.btn_add_monthly_slot {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    background: #FF6600;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    height: 42px;
+}
+
+.btn_add_monthly_slot:hover {
+    background: #e55b00;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+}
+
 /* Confirmation de règle mensuelle */
 .monthly_rule_display {
     margin-top: 12px;
@@ -2087,8 +2162,19 @@ $arr_recurrence_byweekno = array(
                 // Afficher la section appropriée
                 if (freq === 'weekly') {
                     $('#weekly-selector').slideDown(200);
+                    // Cacher la section horaire pour le mode hebdomadaire (horaires par jour)
+                    $('.creneaux_horaire_field').hide();
+                    $('.creneaux_schedules_section').hide();
                 } else if (freq === 'monthly') {
                     $('#monthly-selector').slideDown(200);
+                    // Cacher l'ancienne section horaire (on utilise les inputs intégrés)
+                    $('.creneaux_horaire_field').hide();
+                    // Mais afficher la section des horaires programmés
+                    $('.creneaux_schedules_section').show();
+                } else {
+                    // Mode daily - afficher la section horaire
+                    $('.creneaux_horaire_field').show();
+                    $('.creneaux_schedules_section').show();
                 }
 
                 self.updateIntervalDesc();
@@ -2174,9 +2260,14 @@ $arr_recurrence_byweekno = array(
                 self.addDisableDate();
             });
 
-            // Ajout de règle mensuelle
+            // Ajout de règle mensuelle (ancien bouton - gardé pour compatibilité)
             $(document).on('click', '.btn_add_monthly_rule', function() {
                 self.addMonthlyRule();
+            });
+
+            // Ajout de créneau mensuel (nouveau bouton avec horaire intégré)
+            $(document).on('click', '.btn_add_monthly_slot', function() {
+                self.addMonthlySlot();
             });
 
             // Suppression de date désactivée
@@ -2364,14 +2455,20 @@ $arr_recurrence_byweekno = array(
         },
 
         addTimeSlot: function($button) {
+            var $dayBlock = $button.closest('.creneaux_day_block, .ts_recurrence_bydays');
+            // Récupérer dayKey depuis le bouton ou depuis le bloc parent
             var dayKey = $button.data('key');
-            var $dayBlock = $button.closest('.creneaux_day_block');
+            if (dayKey === undefined || dayKey === null) {
+                dayKey = $dayBlock.data('day');
+            }
+
             var $addForm = $dayBlock.find('.creneaux_add_time_slot');
-            var $slotsContainer = $dayBlock.find('.creneaux_day_slots');
+            var $slotsContainer = $dayBlock.find('.creneaux_day_slots, .ts-list');
             var startTime = $addForm.find('.new_ts_start').val();
             var endTime = $addForm.find('.new_ts_end').val();
-            // Utiliser le lookup au lieu du DOM pour éviter les problèmes de sélecteur
-            var dayName = this.dayNames[String(dayKey)] || '';
+
+            // Utiliser le lookup avec fallback robuste
+            var dayName = this.dayNames[String(dayKey)] || $addForm.find('.day_name').text() || '';
 
             if (!startTime || !endTime) {
                 alert('<?php esc_html_e("Veuillez remplir les horaires", "eventlist"); ?>');
@@ -2467,6 +2564,59 @@ $arr_recurrence_byweekno = array(
                 $monthlySection.append('<div class="monthly_rule_display" style="margin-top: 10px; padding: 10px 14px; background: #f0f9f0; border: 1px solid #d4edda; border-radius: 6px; color: #155724; font-size: 13px;"><i class="fa fa-check-circle" style="margin-right: 8px;"></i><span class="rule_text"></span></div>');
             }
             $monthlySection.find('.monthly_rule_display .rule_text').text(message);
+        },
+
+        // Nouvelle fonction pour ajouter un créneau mensuel avec horaire intégré
+        addMonthlySlot: function() {
+            var startTime = $('.monthly_start_time').val();
+            var endTime = $('.monthly_end_time').val();
+
+            if (!startTime || !endTime) {
+                alert('<?php esc_html_e("Veuillez remplir les horaires de début et de fin", "eventlist"); ?>');
+                return;
+            }
+
+            var prefix = '<?php echo $_prefix; ?>';
+            var key = this.scheduleIndex++;
+
+            var html = `
+                <div class="creneaux_schedule_item item_schedules_time" data-key="${key}">
+                    <span class="schedule_time">
+                        <?php esc_html_e("De :", "eventlist"); ?>
+                        <input type="time" class="creneaux_input creneaux_time_native start_time" name="${prefix}schedules_time[${key}][start_time]" value="${startTime}" step="900">
+                    </span>
+                    <span class="schedule_time">
+                        <?php esc_html_e("À :", "eventlist"); ?>
+                        <input type="time" class="creneaux_input creneaux_time_native end_time" name="${prefix}schedules_time[${key}][end_time]" value="${endTime}" step="900">
+                    </span>
+                    <input type="hidden" name="${prefix}schedules_time[${key}][book_before]" value="0">
+                    <button type="button" class="btn_remove_schedule remove_schedules_time"><i class="fa fa-times"></i></button>
+                </div>
+            `;
+
+            // Ajouter à la liste des horaires programmés
+            $('.wrap_schedules_time').append(html);
+
+            // Afficher la section des horaires programmés si cachée
+            $('.creneaux_schedules_section').show();
+
+            // Vider les champs
+            $('.monthly_start_time, .monthly_end_time').val('');
+
+            // Mettre à jour le select des désactivations
+            this.updateDisableSelect();
+
+            // Afficher un message de confirmation
+            var byweeknoText = $('#monthly-modifier option:selected').text();
+            var bydayText = $('#recurrence-weekday option:selected').text();
+            var message = '<?php esc_html_e("Horaire ajouté :", "eventlist"); ?> ' + startTime + ' - ' + endTime + ' (<?php esc_html_e("le", "eventlist"); ?> ' + byweeknoText + ' ' + bydayText + ')';
+
+            var $monthlySection = $('.creneaux_monthly_section');
+            if (!$monthlySection.find('.monthly_rule_display').length) {
+                $monthlySection.append('<div class="monthly_rule_display"></div>');
+            }
+            $monthlySection.find('.monthly_rule_display')
+                .html('<i class="fa fa-check-circle" style="margin-right: 8px;"></i>' + message);
         },
 
         addDisableDate: function() {
