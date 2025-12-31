@@ -762,8 +762,7 @@ $arr_recurrence_byweekno = array(
     outline: none;
 }
 
-/* Boutons d'action - Orange */
-.btn_add_creneaux_manual,
+/* Boutons d'action */
 .btn_add_horaire,
 .btn_add_time_slot,
 .btn_add_monthly_rule,
@@ -783,7 +782,6 @@ $arr_recurrence_byweekno = array(
     white-space: nowrap;
 }
 
-.btn_add_creneaux_manual:hover,
 .btn_add_horaire:hover,
 .btn_add_time_slot:hover,
 .btn_add_monthly_rule:hover,
@@ -791,6 +789,29 @@ $arr_recurrence_byweekno = array(
     background: #e55b00;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+}
+
+/* Bouton Ajouter créneau - Vert */
+.btn_add_creneaux_manual {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 24px;
+    background: #10B981;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn_add_creneaux_manual:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .btn_add_creneaux_manual i {
@@ -1131,7 +1152,7 @@ $arr_recurrence_byweekno = array(
     align-items: center;
     justify-content: center;
     padding: 14px 28px;
-    background: #FF6600;
+    background: #10B981;
     border: none;
     border-radius: 8px;
     color: #fff;
@@ -1143,9 +1164,9 @@ $arr_recurrence_byweekno = array(
 }
 
 .creneaux_list_section > .btn_add_creneaux_manual:hover {
-    background: #e55b00;
+    background: #059669;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 /* État vide */
