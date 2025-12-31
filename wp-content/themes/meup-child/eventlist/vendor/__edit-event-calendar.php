@@ -159,145 +159,6 @@ $arr_recurrence_byweekno = array(
             </div>
         </div>
 
-        <!-- ÉTAPE 2 : Liste des créneaux -->
-        <div class="creneaux_step_section creneaux_list_section">
-            <div class="step_header">
-                <span class="step_number">2</span>
-                <label class="step_label">
-                    <?php esc_html_e( 'Récapitulatif des créneaux', 'eventlist' ); ?>
-                </label>
-                <button type="button" class="step_info_btn" data-tooltip="<?php esc_attr_e( 'Visualisez et gérez tous les créneaux que vous avez ajoutés. Vous pouvez les modifier ou les supprimer individuellement ou en lot.', 'eventlist' ); ?>">
-                    <i class="fa fa-info-circle"></i>
-                </button>
-            </div>
-            <div class="step_content">
-
-            <!-- Filtre par date -->
-            <div class="creneaux_filter_row">
-                <div class="creneaux_filter">
-                    <span class="filter_label"><?php esc_html_e( 'Filtrer par date, de', 'eventlist' ); ?></span>
-                    <input type="text"
-                           class="creneaux_filter_input creneaux_filter_start"
-                           placeholder="JJ/MM/AAAA"
-                           data-format="dd/mm/yy"
-                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
-                    <span class="filter_separator"><?php esc_html_e( 'à', 'eventlist' ); ?></span>
-                    <input type="text"
-                           class="creneaux_filter_input creneaux_filter_end"
-                           placeholder="JJ/MM/AAAA"
-                           data-format="dd/mm/yy"
-                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
-                    <button type="button" class="btn_filter_creneaux">
-                        <?php esc_html_e( 'Filtrer', 'eventlist' ); ?>
-                    </button>
-                    <button type="button" class="btn_reset_filter_creneaux" style="display: none;">
-                        <?php esc_html_e( 'Réinitialiser', 'eventlist' ); ?>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Barre d'actions groupées (cachée par défaut) -->
-            <div class="creneaux_bulk_actions" style="display: none;">
-                <span class="bulk_count"><span class="count_number">0</span> <?php esc_html_e( 'sélectionné(s)', 'eventlist' ); ?></span>
-                <button type="button" class="btn_bulk_delete">
-                    <i class="fa fa-trash"></i>
-                    <?php esc_html_e( 'Supprimer la sélection', 'eventlist' ); ?>
-                </button>
-            </div>
-
-            <!-- En-têtes de colonnes -->
-            <div class="creneaux_table_header">
-                <label class="creneaux_select_all_label">
-                    <input type="checkbox" class="creneaux_select_all">
-                    <span class="option_checkbox"></span>
-                </label>
-                <span class="header_col header_date"><?php esc_html_e( 'Date de début', 'eventlist' ); ?></span>
-                <div class="header_times_wrapper">
-                    <span class="header_col header_start_time"><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?></span>
-                    <span class="header_col header_end_time"><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?></span>
-                </div>
-                <span class="header_col header_actions"></span>
-            </div>
-
-            <div class="creneaux_list list_calendar">
-                <?php if ( $calendar ):
-                    foreach ( $calendar as $key => $value ):
-                        if ( !empty($value['date']) ):
-                            // Formater la date de manière lisible
-                            $date_timestamp = strtotime($value['date']);
-                            $formatted_date = date_i18n('l j M Y', $date_timestamp);
-                            ?>
-                            <div class="creneaux_item item_calendar" data-key="<?php echo esc_attr($key); ?>">
-                                <label class="creneaux_item_select">
-                                    <input type="checkbox" class="creneaux_item_checkbox">
-                                    <span class="option_checkbox"></span>
-                                </label>
-
-                                <input type="hidden"
-                                       class="calendar_id"
-                                       name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][calendar_id]' ); ?>"
-                                       value="<?php echo esc_attr( isset( $value['calendar_id'] ) ? $value['calendar_id'] : '' ); ?>">
-
-                                <!-- Date affichée en texte lisible -->
-                                <div class="creneaux_item_date_display">
-                                    <span class="date_text"><?php echo esc_html( ucfirst($formatted_date) ); ?></span>
-                                    <input type="hidden"
-                                           class="calendar_date"
-                                           value="<?php echo esc_attr( $value['date'] ); ?>"
-                                           name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][date]' ); ?>">
-                                </div>
-
-                                <div class="creneaux_item_time">
-                                    <span class="time_label"><?php esc_html_e( 'De', 'eventlist' ); ?></span>
-                                    <input type="time"
-                                           class="creneaux_input creneaux_time_native calendar_start_time readonly"
-                                           value="<?php echo esc_attr( $value['start_time'] ); ?>"
-                                           name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][start_time]' ); ?>"
-                                           step="900"
-                                           readonly>
-                                    <span class="time_label"><?php esc_html_e( 'À', 'eventlist' ); ?></span>
-                                    <input type="time"
-                                           class="creneaux_input creneaux_time_native calendar_end_time readonly"
-                                           value="<?php echo esc_attr( $value['end_time'] ); ?>"
-                                           name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][end_time]' ); ?>"
-                                           step="900"
-                                           readonly>
-                                </div>
-
-                                <!-- Date de fin cachée -->
-                                <input type="hidden"
-                                       class="calendar_end_date"
-                                       value="<?php echo esc_attr( isset($value['end_date']) ? $value['end_date'] : '' ); ?>"
-                                       name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][end_date]' ); ?>">
-
-                                <!-- Booking before cachée -->
-                                <input type="hidden"
-                                       name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][book_before_minutes]' ); ?>"
-                                       value="<?php echo esc_attr( isset($value['book_before_minutes']) ? $value['book_before_minutes'] : '0' ); ?>">
-
-                                <div class="creneaux_item_actions">
-                                    <button type="button" class="btn_edit_creneaux" title="<?php esc_attr_e( 'Modifier', 'eventlist' ); ?>">
-                                        <i class="fa fa-pencil-alt"></i>
-                                    </button>
-                                    <button type="button" class="btn_remove_creneaux remove_calendar" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
-                                        <i class="fa fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        <?php endif;
-                    endforeach;
-                endif; ?>
-            </div>
-
-            <!-- État vide -->
-            <div class="creneaux_empty_state" <?php echo !empty($calendar) ? 'style="display:none;"' : ''; ?>>
-                <i class="fa fa-calendar-alt"></i>
-                <p><?php esc_html_e( 'Aucun créneau configuré', 'eventlist' ); ?></p>
-                <span><?php esc_html_e( 'Utilisez le formulaire ci-dessus pour ajouter des créneaux', 'eventlist' ); ?></span>
-            </div>
-
-            </div> <!-- End .step_content -->
-        </div> <!-- End .creneaux_step_section -->
     </div> <!-- End .creneaux_manual_section -->
 
     <!-- ================================================== -->
@@ -623,105 +484,26 @@ $arr_recurrence_byweekno = array(
             </div><!-- End .step_content for daily -->
         </div>
 
-        <!-- ÉTAPE 4 : Prévisualisation des créneaux générés -->
-        <div class="creneaux_step_section creneaux_preview_section">
+        <!-- ÉTAPE 4 : Générer les créneaux récurrents -->
+        <div class="creneaux_step_section creneaux_generate_section">
             <div class="step_header">
                 <span class="step_number">4</span>
                 <label class="step_label">
-                    <?php esc_html_e( 'Prévisualisation des créneaux', 'eventlist' ); ?>
+                    <?php esc_html_e( 'Générer les créneaux', 'eventlist' ); ?>
                 </label>
-                <button type="button" class="step_info_btn" data-tooltip="<?php esc_attr_e( 'Visualisez tous les créneaux qui seront générés selon votre configuration. Cliquez sur \"Générer\" pour actualiser la prévisualisation.', 'eventlist' ); ?>">
+                <button type="button" class="step_info_btn" data-tooltip="<?php esc_attr_e( 'Cliquez sur le bouton pour générer tous les créneaux selon votre configuration. Ils apparaîtront dans le récapitulatif ci-dessous.', 'eventlist' ); ?>">
                     <i class="fa fa-info-circle"></i>
                 </button>
             </div>
             <div class="step_content">
-
-            <!-- Filtre par date -->
-            <div class="creneaux_filter_row">
-                <div class="creneaux_filter">
-                    <span class="filter_label"><?php esc_html_e( 'Filtrer par date, de', 'eventlist' ); ?></span>
-                    <input type="text"
-                           class="creneaux_filter_input creneaux_preview_filter_start"
-                           placeholder="JJ/MM/AAAA"
-                           data-format="dd/mm/yy"
-                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
-                    <span class="filter_separator"><?php esc_html_e( 'à', 'eventlist' ); ?></span>
-                    <input type="text"
-                           class="creneaux_filter_input creneaux_preview_filter_end"
-                           placeholder="JJ/MM/AAAA"
-                           data-format="dd/mm/yy"
-                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
-                    <button type="button" class="btn_filter_creneaux btn_filter_preview">
-                        <?php esc_html_e( 'Filtrer', 'eventlist' ); ?>
+                <div class="generate_creneaux_actions">
+                    <button type="button" class="btn_generate_preview" title="<?php esc_attr_e( 'Génère les créneaux récurrents et les ajoute au récapitulatif', 'eventlist' ); ?>">
+                        <i class="fa fa-magic"></i>
+                        <?php esc_html_e( 'Générer les créneaux récurrents', 'eventlist' ); ?>
                     </button>
-                    <button type="button" class="btn_reset_filter_creneaux btn_reset_preview_filter" style="display: none;">
-                        <?php esc_html_e( 'Réinitialiser', 'eventlist' ); ?>
-                    </button>
+                    <span class="generate_hint"><?php esc_html_e( 'Les créneaux générés apparaîtront dans le récapitulatif en orange', 'eventlist' ); ?></span>
                 </div>
             </div>
-
-            <!-- Barre d'actions groupées pour la prévisualisation (cachée par défaut) -->
-            <div class="creneaux_preview_bulk_actions" style="display: none;">
-                <span class="bulk_count"><span class="count_number">0</span> <?php esc_html_e( 'sélectionné(s)', 'eventlist' ); ?></span>
-                <button type="button" class="btn_preview_bulk_delete">
-                    <i class="fa fa-trash"></i>
-                    <?php esc_html_e( 'Supprimer la sélection', 'eventlist' ); ?>
-                </button>
-            </div>
-
-            <!-- En-têtes de colonnes -->
-            <div class="creneaux_table_header">
-                <label class="creneaux_select_all_label">
-                    <input type="checkbox" class="creneaux_preview_select_all">
-                    <span class="option_checkbox"></span>
-                </label>
-                <span class="header_col header_date"><?php esc_html_e( 'Date de début', 'eventlist' ); ?></span>
-                <div class="header_times_wrapper">
-                    <span class="header_col header_start_time"><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?></span>
-                    <span class="header_col header_end_time"><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?></span>
-                </div>
-                <span class="header_col header_actions"></span>
-            </div>
-
-            <!-- Liste des créneaux générés -->
-            <div class="creneaux_list creneaux_preview_list">
-                <!-- Peuplé par JavaScript -->
-            </div>
-
-            <!-- Pagination -->
-            <div class="creneaux_pagination" style="display: none;">
-                <button type="button" class="pagination_btn pagination_prev" disabled>
-                    <i class="fa fa-chevron-left"></i>
-                    <?php esc_html_e( 'Précédent', 'eventlist' ); ?>
-                </button>
-                <div class="pagination_info">
-                    <span class="pagination_current">1</span>
-                    <span class="pagination_separator">/</span>
-                    <span class="pagination_total">1</span>
-                </div>
-                <button type="button" class="pagination_btn pagination_next">
-                    <?php esc_html_e( 'Suivant', 'eventlist' ); ?>
-                    <i class="fa fa-chevron-right"></i>
-                </button>
-            </div>
-
-            <!-- État vide -->
-            <div class="creneaux_preview_empty_state">
-                <i class="fa fa-calendar-alt"></i>
-                <p><?php esc_html_e( 'Aucun créneau généré', 'eventlist' ); ?></p>
-                <span><?php esc_html_e( 'Configurez la période, la fréquence et les horaires ci-dessus pour voir les créneaux générés', 'eventlist' ); ?></span>
-            </div>
-
-            <!-- Bouton générer/rafraîchir -->
-            <div class="creneaux_preview_actions">
-                <button type="button" class="btn_generate_preview" title="<?php esc_attr_e( 'Actualise la liste des créneaux en fonction de votre configuration ci-dessus', 'eventlist' ); ?>">
-                    <i class="fa fa-sync-alt"></i>
-                    <?php esc_html_e( 'Actualiser', 'eventlist' ); ?>
-                </button>
-                <span class="preview_count"></span>
-                <span class="preview_hint"><?php esc_html_e( 'Modifiez un créneau ou supprimez-le avec la croix', 'eventlist' ); ?></span>
-            </div>
-            </div><!-- End .step_content for preview -->
         </div>
 
         <!-- ÉTAPE 5 : Désactivation de créneaux -->
@@ -809,6 +591,197 @@ $arr_recurrence_byweekno = array(
         </div>
 
     </div>
+
+    <!-- ================================================== -->
+    <!-- SECTION RÉCAPITULATIF UNIFIÉ (visible dans les deux modes) -->
+    <!-- ================================================== -->
+    <div class="creneaux_step_section creneaux_unified_recap_section">
+        <div class="step_header">
+            <span class="step_icon">
+                <i class="fa fa-calendar-alt"></i>
+            </span>
+            <label class="step_label">
+                <?php esc_html_e( 'Récapitulatif des créneaux', 'eventlist' ); ?>
+            </label>
+            <button type="button" class="step_info_btn" data-tooltip="<?php esc_attr_e( 'Tous vos créneaux sont listés ici. Les créneaux ponctuels sont en bleu, les créneaux récurrents en orange. Vous pouvez mixer les deux types pour créer des exceptions.', 'eventlist' ); ?>">
+                <i class="fa fa-info-circle"></i>
+            </button>
+        </div>
+        <div class="step_content">
+
+            <!-- Légende des types -->
+            <div class="creneaux_type_legend">
+                <span class="legend_item legend_ponctuel">
+                    <span class="legend_dot"></span>
+                    <?php esc_html_e( 'Ponctuel', 'eventlist' ); ?>
+                </span>
+                <span class="legend_item legend_recurrent">
+                    <span class="legend_dot"></span>
+                    <?php esc_html_e( 'Récurrent', 'eventlist' ); ?>
+                </span>
+            </div>
+
+            <!-- Filtre par date -->
+            <div class="creneaux_filter_row">
+                <div class="creneaux_filter">
+                    <span class="filter_label"><?php esc_html_e( 'Filtrer par date, de', 'eventlist' ); ?></span>
+                    <input type="text"
+                           class="creneaux_filter_input creneaux_unified_filter_start"
+                           placeholder="JJ/MM/AAAA"
+                           data-format="dd/mm/yy"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
+                    <span class="filter_separator"><?php esc_html_e( 'à', 'eventlist' ); ?></span>
+                    <input type="text"
+                           class="creneaux_filter_input creneaux_unified_filter_end"
+                           placeholder="JJ/MM/AAAA"
+                           data-format="dd/mm/yy"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
+                    <button type="button" class="btn_filter_unified">
+                        <?php esc_html_e( 'Filtrer', 'eventlist' ); ?>
+                    </button>
+                    <button type="button" class="btn_reset_unified_filter" style="display: none;">
+                        <?php esc_html_e( 'Réinitialiser', 'eventlist' ); ?>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Barre d'actions groupées (cachée par défaut) -->
+            <div class="creneaux_unified_bulk_actions" style="display: none;">
+                <span class="bulk_count"><span class="count_number">0</span> <?php esc_html_e( 'sélectionné(s)', 'eventlist' ); ?></span>
+                <button type="button" class="btn_unified_bulk_delete">
+                    <i class="fa fa-trash"></i>
+                    <?php esc_html_e( 'Supprimer la sélection', 'eventlist' ); ?>
+                </button>
+            </div>
+
+            <!-- En-têtes de colonnes -->
+            <div class="creneaux_table_header">
+                <label class="creneaux_select_all_label">
+                    <input type="checkbox" class="creneaux_unified_select_all">
+                    <span class="option_checkbox"></span>
+                </label>
+                <span class="header_col header_date"><?php esc_html_e( 'Date de début', 'eventlist' ); ?></span>
+                <div class="header_times_wrapper">
+                    <span class="header_col header_start_time"><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?></span>
+                    <span class="header_col header_end_time"><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?></span>
+                </div>
+                <span class="header_col header_actions"></span>
+            </div>
+
+            <!-- Liste unifiée des créneaux -->
+            <div class="creneaux_list creneaux_unified_list list_calendar">
+                <?php if ( $calendar ):
+                    foreach ( $calendar as $key => $value ):
+                        if ( !empty($value['date']) ):
+                            // Formater la date de manière lisible
+                            $date_timestamp = strtotime($value['date']);
+                            $formatted_date = date_i18n('l j M Y', $date_timestamp);
+                            // Déterminer le type (ponctuel par défaut pour les données existantes)
+                            $slot_type = isset($value['slot_type']) ? $value['slot_type'] : 'ponctuel';
+                            ?>
+                            <div class="creneaux_item item_calendar" data-key="<?php echo esc_attr($key); ?>" data-type="<?php echo esc_attr($slot_type); ?>">
+                                <label class="creneaux_item_select">
+                                    <input type="checkbox" class="creneaux_unified_item_checkbox">
+                                    <span class="option_checkbox"></span>
+                                </label>
+
+                                <input type="hidden"
+                                       class="calendar_id"
+                                       name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][calendar_id]' ); ?>"
+                                       value="<?php echo esc_attr( isset( $value['calendar_id'] ) ? $value['calendar_id'] : '' ); ?>">
+
+                                <!-- Type indicator (dot coloré) -->
+                                <span class="creneaux_type_indicator type_<?php echo esc_attr($slot_type); ?>" title="<?php echo $slot_type === 'ponctuel' ? esc_attr__('Créneau ponctuel', 'eventlist') : esc_attr__('Créneau récurrent', 'eventlist'); ?>"></span>
+
+                                <!-- Date affichée en texte lisible -->
+                                <div class="creneaux_item_date_display">
+                                    <span class="date_text"><?php echo esc_html( ucfirst($formatted_date) ); ?></span>
+                                    <input type="hidden"
+                                           class="calendar_date"
+                                           value="<?php echo esc_attr( $value['date'] ); ?>"
+                                           name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][date]' ); ?>">
+                                </div>
+
+                                <div class="creneaux_item_time">
+                                    <span class="time_label"><?php esc_html_e( 'De', 'eventlist' ); ?></span>
+                                    <input type="time"
+                                           class="creneaux_input creneaux_time_native calendar_start_time readonly"
+                                           value="<?php echo esc_attr( $value['start_time'] ); ?>"
+                                           name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][start_time]' ); ?>"
+                                           step="900"
+                                           readonly>
+                                    <span class="time_label"><?php esc_html_e( 'À', 'eventlist' ); ?></span>
+                                    <input type="time"
+                                           class="creneaux_input creneaux_time_native calendar_end_time readonly"
+                                           value="<?php echo esc_attr( $value['end_time'] ); ?>"
+                                           name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][end_time]' ); ?>"
+                                           step="900"
+                                           readonly>
+                                </div>
+
+                                <!-- Date de fin cachée -->
+                                <input type="hidden"
+                                       class="calendar_end_date"
+                                       value="<?php echo esc_attr( isset($value['end_date']) ? $value['end_date'] : '' ); ?>"
+                                       name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][end_date]' ); ?>">
+
+                                <!-- Type de créneau caché -->
+                                <input type="hidden"
+                                       class="slot_type"
+                                       value="<?php echo esc_attr($slot_type); ?>"
+                                       name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][slot_type]' ); ?>">
+
+                                <!-- Booking before cachée -->
+                                <input type="hidden"
+                                       name="<?php echo esc_attr( $_prefix.'calendar['.$key.'][book_before_minutes]' ); ?>"
+                                       value="<?php echo esc_attr( isset($value['book_before_minutes']) ? $value['book_before_minutes'] : '0' ); ?>">
+
+                                <div class="creneaux_item_actions">
+                                    <button type="button" class="btn_edit_creneaux" title="<?php esc_attr_e( 'Modifier', 'eventlist' ); ?>">
+                                        <i class="fa fa-pencil-alt"></i>
+                                    </button>
+                                    <button type="button" class="btn_remove_creneaux remove_calendar" title="<?php esc_attr_e( 'Supprimer', 'eventlist' ); ?>">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        <?php endif;
+                    endforeach;
+                endif; ?>
+            </div>
+
+            <!-- Pagination -->
+            <div class="creneaux_pagination" style="display: none;">
+                <button type="button" class="pagination_btn pagination_prev" disabled>
+                    <i class="fa fa-chevron-left"></i>
+                    <?php esc_html_e( 'Précédent', 'eventlist' ); ?>
+                </button>
+                <div class="pagination_info">
+                    <span class="pagination_current">1</span>
+                    <span class="pagination_separator">/</span>
+                    <span class="pagination_total">1</span>
+                </div>
+                <button type="button" class="pagination_btn pagination_next">
+                    <?php esc_html_e( 'Suivant', 'eventlist' ); ?>
+                    <i class="fa fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- État vide -->
+            <div class="creneaux_empty_state" <?php echo !empty($calendar) ? 'style="display:none;"' : ''; ?>>
+                <i class="fa fa-calendar-alt"></i>
+                <p><?php esc_html_e( 'Aucun créneau configuré', 'eventlist' ); ?></p>
+                <span><?php esc_html_e( 'Ajoutez des créneaux ponctuels ou générez des créneaux récurrents pour commencer', 'eventlist' ); ?></span>
+            </div>
+
+            <!-- Compteur et informations -->
+            <div class="creneaux_recap_footer">
+                <span class="recap_count"></span>
+            </div>
+
+        </div> <!-- End .step_content -->
+    </div> <!-- End .creneaux_unified_recap_section -->
+
 </div>
 
 <style>
@@ -867,6 +840,25 @@ $arr_recurrence_byweekno = array(
     border-radius: 50%;
     flex-shrink: 0;
     box-shadow: 0 2px 6px rgba(255, 102, 0, 0.3);
+}
+
+/* Step Icon Badge (alternative to number, e.g., calendar icon) */
+.step_icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #fff;
+    font-size: 16px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.step_icon i {
+    font-size: 16px;
 }
 
 /* Step Label */
@@ -954,6 +946,114 @@ $arr_recurrence_byweekno = array(
 /* Step Content */
 .step_content {
     /* Contenu des étapes */
+}
+
+/* ==========================================================================
+   Type Legend (Ponctuel / Récurrent)
+   ========================================================================== */
+.creneaux_type_legend {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e8e8e8;
+}
+
+.legend_item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+}
+
+.legend_dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.legend_ponctuel .legend_dot {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow: 0 1px 3px rgba(59, 130, 246, 0.4);
+}
+
+.legend_recurrent .legend_dot {
+    background: linear-gradient(135deg, #FF6600 0%, #e55a00 100%);
+    box-shadow: 0 1px 3px rgba(255, 102, 0, 0.4);
+}
+
+/* ==========================================================================
+   Generate Button Section (for recurring mode)
+   ========================================================================== */
+.generate_creneaux_actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.generate_creneaux_actions .btn_generate_preview {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #FF6600 0%, #e55a00 100%);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+}
+
+.generate_creneaux_actions .btn_generate_preview:hover {
+    background: linear-gradient(135deg, #e55a00 0%, #cc5000 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 102, 0, 0.4);
+}
+
+.generate_creneaux_actions .btn_generate_preview i {
+    font-size: 16px;
+}
+
+.generate_creneaux_actions .btn_generate_preview.loading i {
+    animation: spin 1s linear infinite;
+}
+
+.generate_hint {
+    font-size: 13px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* ==========================================================================
+   Recap Footer (counter and info)
+   ========================================================================== */
+.creneaux_recap_footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e8e8e8;
+}
+
+.recap_count {
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+}
+
+.recap_count strong {
+    color: #FF6600;
 }
 
 /* Responsive - Mobile */
@@ -1576,7 +1676,7 @@ $arr_recurrence_byweekno = array(
 /* En-têtes de colonnes du tableau - utiliser grid pour alignement parfait */
 .creneaux_table_header {
     display: grid;
-    grid-template-columns: 40px 200px 1fr 100px;
+    grid-template-columns: 40px 12px 200px 1fr 100px;
     align-items: center;
     gap: 16px;
     padding: 12px 20px;
@@ -1584,6 +1684,12 @@ $arr_recurrence_byweekno = array(
     border: 1px solid #e8e8e8;
     border-radius: 8px 8px 0 0;
     border-bottom: none;
+}
+
+/* Spacer for type indicator column in header */
+.creneaux_table_header::after {
+    content: '';
+    grid-column: 2;
 }
 
 .creneaux_table_header .header_col {
@@ -1673,13 +1779,14 @@ $arr_recurrence_byweekno = array(
 
 .creneaux_item {
     display: grid;
-    grid-template-columns: 40px 200px 1fr 100px;
+    grid-template-columns: 40px 12px 200px 1fr 100px;
     align-items: center;
     gap: 16px;
     padding: 16px 20px;
     background: #fff;
     border-bottom: 1px solid #e8e8e8;
     transition: all 0.2s;
+    position: relative;
 }
 
 .creneaux_item:last-child {
@@ -1688,6 +1795,46 @@ $arr_recurrence_byweekno = array(
 
 .creneaux_item:hover {
     background: #fafafa;
+}
+
+/* Type indicator (colored dot) */
+.creneaux_type_indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.creneaux_type_indicator.type_ponctuel {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow: 0 1px 3px rgba(59, 130, 246, 0.4);
+}
+
+.creneaux_type_indicator.type_recurrent {
+    background: linear-gradient(135deg, #FF6600 0%, #e55a00 100%);
+    box-shadow: 0 1px 3px rgba(255, 102, 0, 0.4);
+}
+
+.creneaux_item:hover .creneaux_type_indicator {
+    transform: scale(1.2);
+}
+
+/* Row colors based on type */
+.creneaux_item[data-type="ponctuel"] {
+    border-left: 3px solid #3b82f6;
+}
+
+.creneaux_item[data-type="recurrent"] {
+    border-left: 3px solid #FF6600;
+}
+
+.creneaux_item[data-type="ponctuel"]:hover {
+    background: #f0f7ff;
+}
+
+.creneaux_item[data-type="recurrent"]:hover {
+    background: #fff8f5;
 }
 
 .creneaux_item_select {
@@ -3169,24 +3316,24 @@ $arr_recurrence_byweekno = array(
                 });
             });
 
-            // Sélectionner tout
-            $('.creneaux_select_all').on('change', function() {
+            // Sélectionner tout dans le tableau unifié
+            $(document).on('change', '.creneaux_unified_select_all', function() {
                 var checked = $(this).is(':checked');
-                $('.creneaux_item_checkbox').prop('checked', checked);
-                self.updateBulkActionsBar();
+                $('.creneaux_unified_item_checkbox').prop('checked', checked);
+                self.updateUnifiedBulkActionsBar();
             });
 
-            // Sélection individuelle - mettre à jour la barre d'actions
-            $(document).on('change', '.creneaux_item_checkbox', function() {
-                self.updateBulkActionsBar();
+            // Sélection individuelle dans le tableau unifié - mettre à jour la barre d'actions
+            $(document).on('change', '.creneaux_unified_item_checkbox', function() {
+                self.updateUnifiedBulkActionsBar();
                 // Mettre à jour le "sélectionner tout" si nécessaire
-                var allChecked = $('.creneaux_item_checkbox:checked').length === $('.creneaux_item_checkbox').length;
-                $('.creneaux_select_all').prop('checked', allChecked && $('.creneaux_item_checkbox').length > 0);
+                var allChecked = $('.creneaux_unified_item_checkbox:checked').length === $('.creneaux_unified_item_checkbox').length;
+                $('.creneaux_unified_select_all').prop('checked', allChecked && $('.creneaux_unified_item_checkbox').length > 0);
             });
 
-            // Suppression groupée
-            $(document).on('click', '.btn_bulk_delete', function() {
-                var selectedCount = $('.creneaux_item_checkbox:checked').length;
+            // Suppression groupée dans le tableau unifié
+            $(document).on('click', '.btn_unified_bulk_delete', function() {
+                var selectedCount = $('.creneaux_unified_item_checkbox:checked').length;
                 if (selectedCount === 0) return;
 
                 var confirmMsg = selectedCount === 1
@@ -3194,15 +3341,16 @@ $arr_recurrence_byweekno = array(
                     : '<?php echo esc_js( __("Êtes-vous sûr de vouloir supprimer ces", "eventlist") ); ?> ' + selectedCount + ' <?php echo esc_js( __("créneaux ?", "eventlist") ); ?>';
 
                 if (confirm(confirmMsg)) {
-                    $('.creneaux_item_checkbox:checked').each(function() {
+                    $('.creneaux_unified_item_checkbox:checked').each(function() {
                         $(this).closest('.creneaux_item').fadeOut(200, function() {
                             $(this).remove();
-                            self.updateBulkActionsBar();
+                            self.updateUnifiedBulkActionsBar();
                             self.updateEmptyState();
+                            self.updateRecapCount();
                         });
                     });
                     // Décocher "sélectionner tout"
-                    $('.creneaux_select_all').prop('checked', false);
+                    $('.creneaux_unified_select_all').prop('checked', false);
                 }
             });
 
@@ -3243,14 +3391,14 @@ $arr_recurrence_byweekno = array(
                 }
             });
 
-            // Filtrer les créneaux (manuel)
-            $(document).on('click', '.btn_filter_creneaux:not(.btn_filter_preview)', function() {
-                self.filterSlots();
+            // Filtrer les créneaux du tableau unifié
+            $(document).on('click', '.btn_filter_unified', function() {
+                self.filterUnifiedSlots();
             });
 
-            // Réinitialiser le filtre (manuel)
-            $(document).on('click', '.btn_reset_filter_creneaux:not(.btn_reset_preview_filter)', function() {
-                self.resetFilter();
+            // Réinitialiser le filtre du tableau unifié
+            $(document).on('click', '.btn_reset_unified_filter', function() {
+                self.resetUnifiedFilter();
             });
 
             // Générer la prévisualisation des créneaux récurrents
@@ -3399,12 +3547,13 @@ $arr_recurrence_byweekno = array(
             var endDate = this.convertToISODate(endDateInput);
 
             var html = `
-                <div class="creneaux_item item_calendar" data-key="${key}">
+                <div class="creneaux_item item_calendar" data-key="${key}" data-type="ponctuel">
                     <label class="creneaux_item_select">
-                        <input type="checkbox" class="creneaux_item_checkbox">
+                        <input type="checkbox" class="creneaux_unified_item_checkbox">
                         <span class="option_checkbox"></span>
                     </label>
                     <input type="hidden" class="calendar_id" name="${prefix}calendar[${key}][calendar_id]" value="">
+                    <span class="creneaux_type_indicator type_ponctuel" title="<?php esc_attr_e("Créneau ponctuel", "eventlist"); ?>"></span>
                     <div class="creneaux_item_date_display">
                         <span class="date_text">${formattedDate}</span>
                         <input type="hidden" class="calendar_date" value="${startDate}" name="${prefix}calendar[${key}][date]">
@@ -3416,6 +3565,7 @@ $arr_recurrence_byweekno = array(
                         <input type="time" class="creneaux_input creneaux_time_native calendar_end_time" value="${endTime}" name="${prefix}calendar[${key}][end_time]" step="900">
                     </div>
                     <input type="hidden" class="calendar_end_date" value="${endDate}" name="${prefix}calendar[${key}][end_date]">
+                    <input type="hidden" class="slot_type" value="ponctuel" name="${prefix}calendar[${key}][slot_type]">
                     <input type="hidden" name="${prefix}calendar[${key}][book_before_minutes]" value="0">
                     <div class="creneaux_item_actions">
                         <button type="button" class="btn_edit_creneaux" title="<?php esc_attr_e("Valider", "eventlist"); ?>">
@@ -3428,12 +3578,14 @@ $arr_recurrence_byweekno = array(
                 </div>
             `;
 
-            $('.creneaux_list').append(html);
+            // Ajouter au tableau unifié
+            $('.creneaux_unified_list').append(html);
 
             // Réinitialiser le formulaire
             $('.creneaux_new_start_date, .creneaux_new_start_time, .creneaux_new_end_date, .creneaux_new_end_time').val('');
 
             this.updateEmptyState();
+            this.updateRecapCount();
             this.initPickers();
         },
 
@@ -3758,7 +3910,7 @@ $arr_recurrence_byweekno = array(
         },
 
         updateEmptyState: function() {
-            var hasItems = $('.creneaux_list .creneaux_item').length > 0;
+            var hasItems = $('.creneaux_unified_list .creneaux_item').length > 0;
 
             if (hasItems) {
                 $('.creneaux_empty_state').hide();
@@ -3767,54 +3919,62 @@ $arr_recurrence_byweekno = array(
             }
         },
 
-        // Mettre à jour la barre d'actions groupées
-        updateBulkActionsBar: function() {
-            var selectedCount = $('.creneaux_item_checkbox:checked').length;
-            var $bulkBar = $('.creneaux_bulk_actions');
+        // Mettre à jour le compteur du récapitulatif unifié
+        updateRecapCount: function() {
+            var totalItems = $('.creneaux_unified_list .creneaux_item').length;
+            var ponctuelCount = $('.creneaux_unified_list .creneaux_item[data-type="ponctuel"]').length;
+            var recurrentCount = $('.creneaux_unified_list .creneaux_item[data-type="recurrent"]').length;
 
-            if (selectedCount > 0) {
-                $bulkBar.find('.count_number').text(selectedCount);
-                $bulkBar.slideDown(200);
-            } else {
-                $bulkBar.slideUp(200);
-            }
-        },
-
-        // Mettre à jour la barre d'actions groupées de la prévisualisation
-        updatePreviewBulkActionsBar: function() {
-            var selectedCount = $('.creneaux_preview_list .creneaux_item_checkbox:checked').length;
-            var $bulkBar = $('.creneaux_preview_bulk_actions');
-
-            if (selectedCount > 0) {
-                $bulkBar.find('.count_number').text(selectedCount);
-                $bulkBar.slideDown(200);
-            } else {
-                $bulkBar.slideUp(200);
-            }
-        },
-
-        // Mettre à jour le compteur de la prévisualisation
-        updatePreviewCount: function() {
-            // Utiliser le tableau complet pour le total, pas seulement les éléments affichés
-            var count = this.previewAllItems ? this.previewAllItems.length : 0;
-            var $countSpan = $('.preview_count');
-            if (count > 0) {
-                $countSpan.html('<strong>' + count + '</strong> <?php echo esc_js( __( 'créneau(x) généré(s)', 'eventlist' ) ); ?>');
+            var $countSpan = $('.recap_count');
+            if (totalItems > 0) {
+                var html = '<strong>' + totalItems + '</strong> <?php echo esc_js( __( 'créneau(x) au total', 'eventlist' ) ); ?>';
+                if (ponctuelCount > 0 && recurrentCount > 0) {
+                    html += ' (' + ponctuelCount + ' <?php echo esc_js( __( 'ponctuel(s)', 'eventlist' ) ); ?>, ' + recurrentCount + ' <?php echo esc_js( __( 'récurrent(s)', 'eventlist' ) ); ?>)';
+                }
+                $countSpan.html(html);
             } else {
                 $countSpan.html('');
             }
         },
 
-        // Filtrer les créneaux par plage de dates
-        filterSlots: function() {
+        // Mettre à jour la barre d'actions groupées du tableau unifié
+        updateUnifiedBulkActionsBar: function() {
+            var selectedCount = $('.creneaux_unified_item_checkbox:checked').length;
+            var $bulkBar = $('.creneaux_unified_bulk_actions');
+
+            if (selectedCount > 0) {
+                $bulkBar.find('.count_number').text(selectedCount);
+                $bulkBar.slideDown(200);
+            } else {
+                $bulkBar.slideUp(200);
+            }
+        },
+
+        // Ancienne fonction - conservée pour compatibilité
+        updateBulkActionsBar: function() {
+            this.updateUnifiedBulkActionsBar();
+        },
+
+        // Ancienne fonction - conservée pour compatibilité
+        updatePreviewBulkActionsBar: function() {
+            this.updateUnifiedBulkActionsBar();
+        },
+
+        // Ancienne fonction - conservée pour compatibilité
+        updatePreviewCount: function() {
+            this.updateRecapCount();
+        },
+
+        // Filtrer les créneaux dans le tableau unifié par plage de dates
+        filterUnifiedSlots: function() {
             var self = this;
-            var startDateStr = $('.creneaux_filter_start').val();
-            var endDateStr = $('.creneaux_filter_end').val();
+            var startDateStr = $('.creneaux_unified_filter_start').val();
+            var endDateStr = $('.creneaux_unified_filter_end').val();
 
             // Si aucun filtre, tout afficher
             if (!startDateStr && !endDateStr) {
-                $('.creneaux_item').show();
-                $('.btn_reset_filter_creneaux').hide();
+                $('.creneaux_unified_list .creneaux_item').show();
+                $('.btn_reset_unified_filter').hide();
                 return;
             }
 
@@ -3831,10 +3991,10 @@ $arr_recurrence_byweekno = array(
 
             var visibleCount = 0;
 
-            // Parcourir tous les créneaux et filtrer
-            $('.creneaux_item').each(function() {
+            // Parcourir tous les créneaux du tableau unifié et filtrer
+            $('.creneaux_unified_list .creneaux_item').each(function() {
                 var $item = $(this);
-                var slotDateStr = $item.find('.calendar_date').val(); // Format YYYY-MM-DD
+                var slotDateStr = $item.find('.calendar_date').val() || $item.data('date'); // Format YYYY-MM-DD
 
                 if (!slotDateStr) {
                     $item.hide();
@@ -3864,10 +4024,15 @@ $arr_recurrence_byweekno = array(
             });
 
             // Afficher le bouton reset
-            $('.btn_reset_filter_creneaux').show();
+            $('.btn_reset_unified_filter').show();
 
             // Mettre à jour le checkbox "sélectionner tout" pour ne considérer que les éléments visibles
             this.updateSelectAllForVisibleItems();
+        },
+
+        // Ancienne fonction - conservée pour compatibilité
+        filterSlots: function() {
+            this.filterUnifiedSlots();
         },
 
         // Parser une date au format jj/mm/aaaa
@@ -3884,28 +4049,33 @@ $arr_recurrence_byweekno = array(
             return new Date(year, month, day);
         },
 
-        // Réinitialiser le filtre
-        resetFilter: function() {
+        // Réinitialiser le filtre du tableau unifié
+        resetUnifiedFilter: function() {
             // Vider les champs de filtre
-            $('.creneaux_filter_start').val('');
-            $('.creneaux_filter_end').val('');
+            $('.creneaux_unified_filter_start').val('');
+            $('.creneaux_unified_filter_end').val('');
 
             // Afficher tous les créneaux
-            $('.creneaux_item').show();
+            $('.creneaux_unified_list .creneaux_item').show();
 
             // Cacher le bouton reset
-            $('.btn_reset_filter_creneaux').hide();
+            $('.btn_reset_unified_filter').hide();
 
             // Mettre à jour le checkbox "sélectionner tout"
             this.updateSelectAllForVisibleItems();
         },
 
+        // Ancienne fonction - conservée pour compatibilité
+        resetFilter: function() {
+            this.resetUnifiedFilter();
+        },
+
         // Mettre à jour le comportement de "sélectionner tout" pour les éléments visibles
         updateSelectAllForVisibleItems: function() {
-            var visibleCheckboxes = $('.creneaux_item:visible .creneaux_item_checkbox');
+            var visibleCheckboxes = $('.creneaux_unified_list .creneaux_item:visible .creneaux_unified_item_checkbox');
             var allVisibleChecked = visibleCheckboxes.length > 0 &&
                                     visibleCheckboxes.filter(':checked').length === visibleCheckboxes.length;
-            $('.creneaux_select_all').prop('checked', allVisibleChecked);
+            $('.creneaux_unified_select_all').prop('checked', allVisibleChecked);
         },
 
         updateDisableSelect: function() {
@@ -3933,10 +4103,8 @@ $arr_recurrence_byweekno = array(
 
         generatePreview: function() {
             var self = this;
-            var $section = $('.creneaux_preview_section');
-            var $list = $('.creneaux_preview_list');
             var $btn = $('.btn_generate_preview');
-            var $count = $('.preview_count');
+            var $unifiedList = $('.creneaux_unified_list');
 
             // Récupérer les paramètres de récurrence
             var startDateStr = $('.calendar_auto_start_date').val();
@@ -3946,8 +4114,9 @@ $arr_recurrence_byweekno = array(
 
             // Vérifier que les dates sont remplies
             if (!startDateStr || !endDateStr) {
-                $section.removeClass('has-items');
-                $count.html('');
+                if (typeof ToastNotification !== 'undefined') {
+                    ToastNotification.error('<?php echo esc_js(__("Veuillez remplir les dates de début et de fin de période", "eventlist")); ?>');
+                }
                 return;
             }
 
@@ -3959,9 +4128,9 @@ $arr_recurrence_byweekno = array(
 
             // Si pas d'horaires configurés
             if (timeSlots.length === 0) {
-                $section.removeClass('has-items');
-                $list.empty();
-                $count.html('<?php echo esc_js(__("Ajoutez des horaires pour voir les créneaux", "eventlist")); ?>');
+                if (typeof ToastNotification !== 'undefined') {
+                    ToastNotification.error('<?php echo esc_js(__("Ajoutez des horaires avant de générer les créneaux", "eventlist")); ?>');
+                }
                 $btn.removeClass('loading');
                 return;
             }
@@ -3971,8 +4140,9 @@ $arr_recurrence_byweekno = array(
             var endDate = this.parseDate(endDateStr);
 
             if (!startDate || !endDate || startDate > endDate) {
-                $section.removeClass('has-items');
-                $count.html('<?php echo esc_js(__("Dates invalides", "eventlist")); ?>');
+                if (typeof ToastNotification !== 'undefined') {
+                    ToastNotification.error('<?php echo esc_js(__("Dates invalides", "eventlist")); ?>');
+                }
                 $btn.removeClass('loading');
                 return;
             }
@@ -3992,17 +4162,77 @@ $arr_recurrence_byweekno = array(
                     break;
             }
 
-            // Stocker les données pour le filtrage
-            this.previewData = generatedDates;
+            if (generatedDates.length === 0) {
+                if (typeof ToastNotification !== 'undefined') {
+                    ToastNotification.warning('<?php echo esc_js(__("Aucun créneau généré avec cette configuration", "eventlist")); ?>');
+                }
+                $btn.removeClass('loading');
+                return;
+            }
 
-            // Afficher les créneaux
-            this.renderPreviewSlots(generatedDates);
+            // Supprimer les créneaux récurrents existants du tableau unifié
+            $unifiedList.find('.creneaux_item[data-type="recurrent"]').remove();
 
-            // Mettre à jour le compteur
-            var total = generatedDates.length;
-            $count.html('<strong>' + total + '</strong> <?php echo esc_js(__("créneau(x) généré(s)", "eventlist")); ?>');
+            // Ajouter les nouveaux créneaux récurrents au tableau unifié
+            this.addRecurrentSlotsToUnifiedList(generatedDates);
+
+            // Mettre à jour l'état vide et le compteur
+            this.updateEmptyState();
+            this.updateRecapCount();
+
+            // Message de succès
+            if (typeof ToastNotification !== 'undefined') {
+                ToastNotification.success(generatedDates.length + ' <?php echo esc_js(__("créneau(x) récurrent(s) généré(s)", "eventlist")); ?>');
+            }
 
             $btn.removeClass('loading');
+        },
+
+        // Ajouter les créneaux récurrents au tableau unifié
+        addRecurrentSlotsToUnifiedList: function(dates) {
+            var self = this;
+            var $list = $('.creneaux_unified_list');
+            var prefix = '<?php echo $_prefix; ?>';
+
+            dates.forEach(function(item) {
+                var key = self.calendarIndex++;
+                var formattedDate = self.formatDateReadable(item.date);
+                var isoDate = self.formatDateISO(item.date);
+
+                var html = `
+                    <div class="creneaux_item item_calendar" data-key="${key}" data-type="recurrent" data-date="${isoDate}">
+                        <label class="creneaux_item_select">
+                            <input type="checkbox" class="creneaux_unified_item_checkbox">
+                            <span class="option_checkbox"></span>
+                        </label>
+                        <input type="hidden" class="calendar_id" name="${prefix}calendar[${key}][calendar_id]" value="">
+                        <span class="creneaux_type_indicator type_recurrent" title="<?php esc_attr_e("Créneau récurrent", "eventlist"); ?>"></span>
+                        <div class="creneaux_item_date_display">
+                            <span class="date_text">${formattedDate}</span>
+                            <input type="hidden" class="calendar_date" value="${isoDate}" name="${prefix}calendar[${key}][date]">
+                        </div>
+                        <div class="creneaux_item_time">
+                            <span class="time_label"><?php esc_html_e("De", "eventlist"); ?></span>
+                            <input type="time" class="creneaux_input creneaux_time_native calendar_start_time readonly" value="${item.startTime}" name="${prefix}calendar[${key}][start_time]" step="900" readonly>
+                            <span class="time_label"><?php esc_html_e("À", "eventlist"); ?></span>
+                            <input type="time" class="creneaux_input creneaux_time_native calendar_end_time readonly" value="${item.endTime}" name="${prefix}calendar[${key}][end_time]" step="900" readonly>
+                        </div>
+                        <input type="hidden" class="calendar_end_date" value="${isoDate}" name="${prefix}calendar[${key}][end_date]">
+                        <input type="hidden" class="slot_type" value="recurrent" name="${prefix}calendar[${key}][slot_type]">
+                        <input type="hidden" name="${prefix}calendar[${key}][book_before_minutes]" value="0">
+                        <div class="creneaux_item_actions">
+                            <button type="button" class="btn_edit_creneaux" title="<?php esc_attr_e("Modifier", "eventlist"); ?>">
+                                <i class="fa fa-pencil-alt"></i>
+                            </button>
+                            <button type="button" class="btn_remove_creneaux remove_calendar" title="<?php esc_attr_e("Supprimer", "eventlist"); ?>">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                $list.append(html);
+            });
         },
 
         getRecurringTimeSlots: function(frequency) {
@@ -4395,10 +4625,12 @@ $arr_recurrence_byweekno = array(
     $(document).ready(function() {
         CreneauxManager.init();
 
-        // Auto-refresh de la prévisualisation si le mode auto est actif
-        if ($('.creneaux_auto_section').is(':visible')) {
-            CreneauxManager.generatePreview();
-        }
+        // Initialiser le compteur du récapitulatif
+        CreneauxManager.updateRecapCount();
+        CreneauxManager.updateEmptyState();
+
+        // Auto-refresh si le mode auto est actif (ne pas régénérer automatiquement pour éviter de perdre les données)
+        // Le user cliquera sur "Générer" quand il voudra
     });
 
 })(jQuery);
