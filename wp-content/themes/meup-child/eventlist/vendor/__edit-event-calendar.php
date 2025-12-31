@@ -609,18 +609,6 @@ $arr_recurrence_byweekno = array(
         </div>
         <div class="step_content">
 
-            <!-- Légende des types -->
-            <div class="creneaux_type_legend">
-                <span class="legend_item legend_ponctuel">
-                    <span class="legend_dot"></span>
-                    <?php esc_html_e( 'Ponctuel', 'eventlist' ); ?>
-                </span>
-                <span class="legend_item legend_recurrent">
-                    <span class="legend_dot"></span>
-                    <?php esc_html_e( 'Récurrent', 'eventlist' ); ?>
-                </span>
-            </div>
-
             <!-- Filtre par date -->
             <div class="creneaux_filter_row">
                 <div class="creneaux_filter">
@@ -777,6 +765,16 @@ $arr_recurrence_byweekno = array(
             <!-- Compteur et informations -->
             <div class="creneaux_recap_footer">
                 <span class="recap_count"></span>
+                <div class="creneaux_type_legend">
+                    <span class="legend_item legend_ponctuel">
+                        <span class="legend_dot"></span>
+                        <?php esc_html_e( 'Ponctuel', 'eventlist' ); ?>
+                    </span>
+                    <span class="legend_item legend_recurrent">
+                        <span class="legend_dot"></span>
+                        <?php esc_html_e( 'Récurrent', 'eventlist' ); ?>
+                    </span>
+                </div>
             </div>
 
         </div> <!-- End .step_content -->
@@ -849,7 +847,7 @@ $arr_recurrence_byweekno = array(
     justify-content: center;
     width: 36px;
     height: 36px;
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    background: linear-gradient(135deg, #ff601f 0%, #ff6a3d 100%);
     color: #fff;
     font-size: 16px;
     border-radius: 10px;
@@ -954,12 +952,7 @@ $arr_recurrence_byweekno = array(
 .creneaux_type_legend {
     display: flex;
     align-items: center;
-    gap: 24px;
-    margin-bottom: 20px;
-    padding: 12px 16px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e8e8e8;
+    gap: 16px;
 }
 
 .legend_item {
@@ -1022,6 +1015,12 @@ $arr_recurrence_byweekno = array(
 
 .generate_creneaux_actions .btn_generate_preview i {
     font-size: 16px;
+}
+
+.generate_creneaux_actions .btn_generate_preview.loading {
+    pointer-events: none;
+    opacity: 0.8;
+    cursor: wait;
 }
 
 .generate_creneaux_actions .btn_generate_preview.loading i {
@@ -1676,14 +1675,15 @@ $arr_recurrence_byweekno = array(
 /* En-têtes de colonnes du tableau - utiliser grid pour alignement parfait */
 .creneaux_table_header {
     display: grid;
-    grid-template-columns: 40px 12px 200px 1fr 100px;
-    align-items: center;
-    gap: 16px;
-    padding: 12px 20px;
+    grid-template-columns: 60px 200px 500px 1fr 100px;
+    padding: 20px;
     background: #f8f9fa;
     border: 1px solid #e8e8e8;
     border-radius: 8px 8px 0 0;
     border-bottom: none;
+    justify-content: center;
+    align-items: center;
+    justify-items: stretch;
 }
 
 /* Spacer for type indicator column in header */
@@ -1766,6 +1766,16 @@ $arr_recurrence_byweekno = array(
 .creneaux_select_all_label input:checked + .option_checkbox {
     background: #FF6600;
     border-color: #FF6600;
+}
+
+.creneaux_select_all_label input:checked + .option_checkbox::after {
+    content: '';
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-top: -2px;
 }
 
 /* Items de créneau */
@@ -1857,6 +1867,9 @@ $arr_recurrence_byweekno = array(
     border-radius: 4px;
     background: #fff;
     transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .creneaux_item_select:hover .option_checkbox {
@@ -1866,6 +1879,16 @@ $arr_recurrence_byweekno = array(
 .creneaux_item_select input:checked + .option_checkbox {
     background: #FF6600;
     border-color: #FF6600;
+}
+
+.creneaux_item_select input:checked + .option_checkbox::after {
+    content: '';
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-top: -2px;
 }
 
 /* Date affichée en texte lisible */
@@ -2782,6 +2805,12 @@ $arr_recurrence_byweekno = array(
 
 .btn_generate_preview i {
     font-size: 14px;
+}
+
+.btn_generate_preview.loading {
+    pointer-events: none;
+    opacity: 0.8;
+    cursor: wait;
 }
 
 .btn_generate_preview.loading i {
@@ -4186,6 +4215,16 @@ $arr_recurrence_byweekno = array(
             }
 
             $btn.removeClass('loading');
+
+            // Scroll vers le tableau récapitulatif unifié
+            setTimeout(function() {
+                var $recapSection = $('.creneaux_unified_recap_section');
+                if ($recapSection.length) {
+                    $('html, body').animate({
+                        scrollTop: $recapSection.offset().top - 100
+                    }, 500);
+                }
+            }, 100);
         },
 
         // Ajouter les créneaux récurrents au tableau unifié
