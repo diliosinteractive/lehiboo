@@ -1695,6 +1695,30 @@ $arr_recurrence_byweekno = array(
     box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
 }
 
+/* États d'erreur pour les horaires invalides */
+.slot_time_input.time_invalid,
+.creneaux_input.time_invalid {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.has_invalid_time {
+    border-color: #fca5a5 !important;
+    background-color: #fef2f2 !important;
+}
+
+.day_slot_item.has_invalid_time,
+.daily_slot_item.has_invalid_time {
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
 .slot_time_separator {
     color: #9ca3af;
     font-size: 14px;
@@ -2537,6 +2561,32 @@ $arr_recurrence_byweekno = array(
                 }
             });
 
+            // Validation en temps réel des horaires existants
+            $(document).on('change', '.slot_time_input, .calendar_start_time, .calendar_end_time, .calendar_recurrence_ts_start, .calendar_recurrence_ts_end', function() {
+                var $container = $(this).closest('.day_slot_item, .daily_slot_item, .creneaux_item, .creneaux_time_slot');
+                var $startInput = $container.find('.calendar_recurrence_ts_start, .calendar_start_time, .start_time').first();
+                var $endInput = $container.find('.calendar_recurrence_ts_end, .calendar_end_time, .end_time').first();
+
+                var startTime = $startInput.val();
+                var endTime = $endInput.val();
+
+                // Valider seulement si les deux valeurs sont remplies
+                if (startTime && endTime) {
+                    var isValid = self.validateTimeSlot(startTime, endTime, false);
+
+                    // Mettre en surbrillance rouge si invalide
+                    if (!isValid) {
+                        $startInput.addClass('time_invalid');
+                        $endInput.addClass('time_invalid');
+                        $container.addClass('has_invalid_time');
+                    } else {
+                        $startInput.removeClass('time_invalid');
+                        $endInput.removeClass('time_invalid');
+                        $container.removeClass('has_invalid_time');
+                    }
+                }
+            });
+
             // Auto-remplir date de fin quand date de début est sélectionnée
             $(document).on('change', '.creneaux_new_start_date', function() {
                 var startDateVal = $(this).val();
@@ -2568,9 +2618,27 @@ $arr_recurrence_byweekno = array(
             var endDateInput = $('.creneaux_new_end_date').val();
             var endTime = $('.creneaux_new_end_time').val();
 
+            // Vérifier que tous les champs sont remplis
             if (!startDateInput || !startTime || !endDateInput || !endTime) {
-                alert('<?php esc_html_e("Veuillez remplir tous les champs", "eventlist"); ?>');
+                this.showTimeError('<?php esc_html_e("Veuillez remplir tous les champs (date et heure)", "eventlist"); ?>');
                 return;
+            }
+
+            // Convertir les dates pour comparaison
+            var startDate = this.convertToISODate(startDateInput);
+            var endDate = this.convertToISODate(endDateInput);
+
+            // Vérifier que la date de fin n'est pas avant la date de début
+            if (endDate < startDate) {
+                this.showTimeError('<?php esc_html_e("La date de fin ne peut pas être avant la date de début", "eventlist"); ?>');
+                return;
+            }
+
+            // Si même jour, valider les horaires
+            if (startDate === endDate) {
+                if (!this.validateTimeSlot(startTime, endTime)) {
+                    return;
+                }
             }
 
             var prefix = '<?php echo $_prefix; ?>';
@@ -2677,6 +2745,52 @@ $arr_recurrence_byweekno = array(
             return dateStr; // Retourner tel quel si format non reconnu
         },
 
+        // Validation des horaires
+        validateTimeSlot: function(startTime, endTime, showAlert) {
+            if (showAlert === undefined) showAlert = true;
+
+            // Vérifier que les deux champs sont remplis
+            if (!startTime || !endTime) {
+                if (showAlert) this.showTimeError('<?php esc_html_e("Veuillez remplir les horaires de début et de fin", "eventlist"); ?>');
+                return false;
+            }
+
+            // Convertir en minutes pour comparaison
+            var startParts = startTime.split(':');
+            var endParts = endTime.split(':');
+            var startMinutes = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+            var endMinutes = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+
+            // L'heure de fin doit être après l'heure de début
+            if (endMinutes <= startMinutes) {
+                if (showAlert) this.showTimeError('<?php esc_html_e("L\'heure de fin doit être après l\'heure de début", "eventlist"); ?>');
+                return false;
+            }
+
+            // Durée minimale de 15 minutes
+            if (endMinutes - startMinutes < 15) {
+                if (showAlert) this.showTimeError('<?php esc_html_e("La durée minimale d\'un créneau est de 15 minutes", "eventlist"); ?>');
+                return false;
+            }
+
+            // Durée maximale de 24h (éviter les erreurs de saisie)
+            if (endMinutes - startMinutes > 1440) {
+                if (showAlert) this.showTimeError('<?php esc_html_e("La durée d\'un créneau ne peut pas dépasser 24 heures", "eventlist"); ?>');
+                return false;
+            }
+
+            return true;
+        },
+
+        showTimeError: function(message) {
+            // Utiliser ToastNotification si disponible, sinon alert
+            if (typeof ToastNotification !== 'undefined') {
+                ToastNotification.error(message);
+            } else {
+                alert(message);
+            }
+        },
+
         addTimeSlot: function($button) {
             // Nouveau design en cartes
             var $card = $button.closest('.weekly_day_card, .ts_recurrence_bydays');
@@ -2691,8 +2805,8 @@ $arr_recurrence_byweekno = array(
             var startTime = $addForm.find('.new_ts_start').val();
             var endTime = $addForm.find('.new_ts_end').val();
 
-            if (!startTime || !endTime) {
-                alert('<?php esc_html_e("Veuillez remplir les horaires", "eventlist"); ?>');
+            // Validation des horaires
+            if (!this.validateTimeSlot(startTime, endTime)) {
                 return;
             }
 
@@ -2730,8 +2844,8 @@ $arr_recurrence_byweekno = array(
             var startTime = $('.calendar_recurrence_start_time').val();
             var endTime = $('.calendar_recurrence_end_time').val();
 
-            if (!startTime || !endTime) {
-                alert('<?php esc_html_e("Veuillez remplir les horaires", "eventlist"); ?>');
+            // Validation des horaires
+            if (!this.validateTimeSlot(startTime, endTime)) {
                 return;
             }
 
@@ -2797,8 +2911,8 @@ $arr_recurrence_byweekno = array(
             var startTime = $('.monthly_start_time').val();
             var endTime = $('.monthly_end_time').val();
 
-            if (!startTime || !endTime) {
-                alert('<?php esc_html_e("Veuillez remplir les horaires de début et de fin", "eventlist"); ?>');
+            // Validation des horaires
+            if (!this.validateTimeSlot(startTime, endTime)) {
                 return;
             }
 
