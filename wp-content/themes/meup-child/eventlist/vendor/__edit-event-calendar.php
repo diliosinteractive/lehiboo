@@ -852,8 +852,8 @@ $arr_recurrence_byweekno = array(
     font-weight: 400;
     line-height: 1.5;
     border-radius: 8px;
-    width: 280px !important;
-    max-width: 300px !important;
+    width: 250px !important;
+    max-width: 250px !important;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -1007,7 +1007,8 @@ $arr_recurrence_byweekno = array(
     }
 
     .el_tooltip_popup {
-        width: 260px !important;
+        width: 230px !important;
+        max-width: 230px !important;
     }
 }
 
@@ -3131,7 +3132,7 @@ $arr_recurrence_byweekno = array(
                 $tooltip.text(text);
 
                 // Positionner au-dessus du bouton, centré
-                var tooltipWidth = 280;
+                var tooltipWidth = 250;
 
                 // D'abord afficher le tooltip pour calculer sa hauteur
                 $tooltip.css({
