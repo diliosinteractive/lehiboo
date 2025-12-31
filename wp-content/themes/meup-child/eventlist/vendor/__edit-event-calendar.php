@@ -807,16 +807,16 @@ $arr_recurrence_byweekno = array(
     box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
 }
 
-/* Bouton Ajouter créneau - Vert */
+/* Bouton Ajouter créneau - Style outline vert */
 .btn_add_creneaux_manual {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     padding: 12px 24px;
-    background: #10B981;
-    border: none;
+    background: #fff;
+    border: 2px solid #10B981;
     border-radius: 8px;
-    color: #fff;
+    color: #10B981;
     font-weight: 600;
     font-size: 14px;
     cursor: pointer;
@@ -825,7 +825,8 @@ $arr_recurrence_byweekno = array(
 }
 
 .btn_add_creneaux_manual:hover {
-    background: #059669;
+    background: #10B981;
+    color: #fff;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
@@ -990,27 +991,25 @@ $arr_recurrence_byweekno = array(
     margin-bottom: 16px;
 }
 
-/* Ligne de filtre */
+/* Ligne de filtre - aligné à droite */
 .creneaux_filter_row {
-    background: #fff;
-    border: 1px solid #e8e8e8;
-    border-radius: 10px;
-    padding: 16px 20px;
+    display: flex;
+    justify-content: flex-end;
     margin-bottom: 16px;
 }
 
 .creneaux_filter {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     font-size: 14px;
     color: #666;
-    flex-wrap: wrap;
 }
 
 .creneaux_filter .filter_label {
     font-weight: 500;
     color: #555;
+    white-space: nowrap;
 }
 
 .creneaux_filter .filter_separator {
@@ -1018,8 +1017,8 @@ $arr_recurrence_byweekno = array(
 }
 
 .creneaux_filter_input {
-    width: 130px;
-    height: 40px;
+    width: 120px;
+    height: 38px;
     padding: 0 12px;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -1123,25 +1122,6 @@ $arr_recurrence_byweekno = array(
 .creneaux_select_all_label input:checked + .option_checkbox {
     background: #FF6600;
     border-color: #FF6600;
-}
-
-.creneaux_filter .filter_label {
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-.creneaux_filter .filter_separator {
-    font-weight: 500;
-}
-
-.creneaux_filter_input {
-    width: 140px;
-    height: 40px;
-    padding: 0 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 14px;
-    background: #fff;
 }
 
 /* Items de créneau */
@@ -1251,29 +1231,6 @@ $arr_recurrence_byweekno = array(
     display: flex;
     gap: 8px;
     margin-left: auto;
-}
-
-/* Bouton Ajouter en bas de la liste */
-.creneaux_list_section > .btn_add_creneaux_manual {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 14px 28px;
-    background: #10B981;
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 20px;
-}
-
-.creneaux_list_section > .btn_add_creneaux_manual:hover {
-    background: #059669;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 /* État vide */
