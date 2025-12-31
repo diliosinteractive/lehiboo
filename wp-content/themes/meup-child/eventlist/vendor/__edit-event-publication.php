@@ -598,7 +598,7 @@ $el_restau   = get_post_meta( $post_id, $_prefix.'el_restau', true );
 
 .service_item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
     padding: 16px;
     background: #f8fafc;

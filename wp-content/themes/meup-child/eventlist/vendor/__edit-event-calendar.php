@@ -151,26 +151,42 @@ $arr_recurrence_byweekno = array(
 
         <!-- Liste des créneaux -->
         <div class="creneaux_list_section">
-            <div class="creneaux_list_header">
+            <!-- Titre de section -->
+            <div class="creneaux_list_title">
+                <?php esc_html_e( 'Les créneaux', 'eventlist' ); ?>
+            </div>
+
+            <!-- Filtre par date -->
+            <div class="creneaux_filter_row">
+                <div class="creneaux_filter">
+                    <span class="filter_label"><?php esc_html_e( 'Filtrer par date, de', 'eventlist' ); ?></span>
+                    <input type="text"
+                           class="creneaux_filter_input creneaux_filter_start"
+                           placeholder="DD/MM/AAAA"
+                           data-format="dd/mm/yy"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
+                    <span class="filter_separator"><?php esc_html_e( 'à', 'eventlist' ); ?></span>
+                    <input type="text"
+                           class="creneaux_filter_input creneaux_filter_end"
+                           placeholder="DD/MM/AAAA"
+                           data-format="dd/mm/yy"
+                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
+                    <button type="button" class="btn_filter_creneaux">
+                        <?php esc_html_e( 'Filtrer', 'eventlist' ); ?>
+                    </button>
+                </div>
+            </div>
+
+            <!-- En-têtes de colonnes -->
+            <div class="creneaux_table_header">
                 <label class="creneaux_select_all_label">
                     <input type="checkbox" class="creneaux_select_all">
                     <span class="option_checkbox"></span>
-                    <span><?php esc_html_e( 'Les créneaux', 'eventlist' ); ?></span>
                 </label>
-                <div class="creneaux_filter">
-                    <span class="filter_label"><?php esc_html_e( 'Filtrer par date : De', 'eventlist' ); ?></span>
-                    <input type="text"
-                           class="creneaux_filter_input creneaux_filter_start"
-                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-                           data-format="<?php echo esc_attr( $format ); ?>"
-                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
-                    <span class="filter_separator"><?php esc_html_e( 'À', 'eventlist' ); ?></span>
-                    <input type="text"
-                           class="creneaux_filter_input creneaux_filter_end"
-                           placeholder="<?php echo esc_attr( $placeholder_dateformat ); ?>"
-                           data-format="<?php echo esc_attr( $format ); ?>"
-                           data-firstday="<?php echo esc_attr( $first_day ); ?>">
-                </div>
+                <span class="header_col header_date"><?php esc_html_e( 'Date de début', 'eventlist' ); ?></span>
+                <span class="header_col header_start_time"><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?></span>
+                <span class="header_col header_end_time"><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?></span>
+                <span class="header_col header_actions"></span>
             </div>
 
             <div class="creneaux_list list_calendar">
@@ -963,17 +979,111 @@ $arr_recurrence_byweekno = array(
 
 /* Liste des créneaux */
 .creneaux_list_section {
-    margin-top: 16px;
+    margin-top: 24px;
 }
 
-.creneaux_list_header {
+/* Titre de section */
+.creneaux_list_title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+/* Ligne de filtre */
+.creneaux_filter_row {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+}
+
+.creneaux_filter {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+    color: #666;
+    flex-wrap: wrap;
+}
+
+.creneaux_filter .filter_label {
+    font-weight: 500;
+    color: #555;
+}
+
+.creneaux_filter .filter_separator {
+    color: #888;
+}
+
+.creneaux_filter_input {
+    width: 130px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    background: #fff;
+}
+
+.creneaux_filter_input:focus {
+    border-color: #FF6600;
+    outline: none;
+}
+
+/* Bouton Filtrer - Orange */
+.btn_filter_creneaux {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background: #FF6600;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn_filter_creneaux:hover {
+    background: #e55b00;
+}
+
+/* En-têtes de colonnes du tableau */
+.creneaux_table_header {
+    display: flex;
+    align-items: center;
     gap: 16px;
-    margin-bottom: 12px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #eee;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
+}
+
+.creneaux_table_header .header_col {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+}
+
+.creneaux_table_header .header_date {
+    flex: 0 0 200px;
+}
+
+.creneaux_table_header .header_start_time {
+    flex: 0 0 140px;
+}
+
+.creneaux_table_header .header_end_time {
+    flex: 0 0 140px;
+}
+
+.creneaux_table_header .header_actions {
+    flex: 0 0 100px;
 }
 
 .creneaux_select_all_label {
@@ -984,6 +1094,7 @@ $arr_recurrence_byweekno = array(
     font-weight: 600;
     font-size: 13px;
     color: #333;
+    flex-shrink: 0;
 }
 
 .creneaux_select_all_label input[type="checkbox"] {
@@ -1014,14 +1125,6 @@ $arr_recurrence_byweekno = array(
     border-color: #FF6600;
 }
 
-.creneaux_filter {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    color: #666;
-}
-
 .creneaux_filter .filter_label {
     font-weight: 500;
     white-space: nowrap;
@@ -1045,7 +1148,9 @@ $arr_recurrence_byweekno = array(
 .creneaux_list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    border: 1px solid #e8e8e8;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
 }
 
 .creneaux_item {
@@ -1054,14 +1159,16 @@ $arr_recurrence_byweekno = array(
     gap: 16px;
     padding: 16px 20px;
     background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 10px;
+    border-bottom: 1px solid #e8e8e8;
     transition: all 0.2s;
 }
 
+.creneaux_item:last-child {
+    border-bottom: none;
+}
+
 .creneaux_item:hover {
-    border-color: #d0d0d0;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    background: #fafafa;
 }
 
 .creneaux_item_select {
