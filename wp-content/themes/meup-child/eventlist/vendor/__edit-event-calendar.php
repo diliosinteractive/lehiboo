@@ -642,6 +642,15 @@ $arr_recurrence_byweekno = array(
                 </div>
             </div>
 
+            <!-- Barre d'actions groupées pour la prévisualisation (cachée par défaut) -->
+            <div class="creneaux_preview_bulk_actions" style="display: none;">
+                <span class="bulk_count"><span class="count_number">0</span> <?php esc_html_e( 'sélectionné(s)', 'eventlist' ); ?></span>
+                <button type="button" class="btn_preview_bulk_delete">
+                    <i class="fa fa-trash"></i>
+                    <?php esc_html_e( 'Supprimer la sélection', 'eventlist' ); ?>
+                </button>
+            </div>
+
             <!-- En-têtes de colonnes -->
             <div class="creneaux_table_header">
                 <label class="creneaux_select_all_label">
@@ -670,11 +679,12 @@ $arr_recurrence_byweekno = array(
 
             <!-- Bouton générer/rafraîchir -->
             <div class="creneaux_preview_actions">
-                <button type="button" class="btn_generate_preview">
+                <button type="button" class="btn_generate_preview" title="<?php esc_attr_e( 'Actualise la liste des créneaux en fonction de votre configuration ci-dessus', 'eventlist' ); ?>">
                     <i class="fa fa-sync-alt"></i>
-                    <?php esc_html_e( 'Générer la prévisualisation', 'eventlist' ); ?>
+                    <?php esc_html_e( 'Actualiser', 'eventlist' ); ?>
                 </button>
                 <span class="preview_count"></span>
+                <span class="preview_hint"><?php esc_html_e( 'Modifiez un créneau ou supprimez-le avec la croix', 'eventlist' ); ?></span>
             </div>
             </div><!-- End .step_content for preview -->
         </div>
@@ -867,14 +877,14 @@ $arr_recurrence_byweekno = array(
     font-size: 14px;
 }
 
-/* Tooltip Popover */
+/* Tooltip Popover - Affichage en dessous pour éviter le débordement */
 .step_info_btn::after {
     content: attr(data-tooltip);
     position: absolute;
-    right: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-    margin-right: 12px;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    margin-top: 12px;
     padding: 12px 16px;
     background: #1f2937;
     color: #fff;
@@ -882,28 +892,31 @@ $arr_recurrence_byweekno = array(
     font-weight: 400;
     line-height: 1.5;
     border-radius: 8px;
-    width: 280px;
+    width: 320px;
+    max-width: calc(100vw - 40px);
     opacity: 0;
     visibility: hidden;
     transition: all 0.2s ease;
     pointer-events: none;
-    z-index: 100;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    text-align: left;
+    white-space: normal;
 }
 
 .step_info_btn::before {
     content: '';
     position: absolute;
-    right: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-    margin-right: 4px;
-    border: 6px solid transparent;
-    border-left-color: #1f2937;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    margin-top: 0;
+    border: 8px solid transparent;
+    border-bottom-color: #1f2937;
     opacity: 0;
     visibility: hidden;
     transition: all 0.2s ease;
-    z-index: 101;
+    z-index: 1001;
 }
 
 .step_info_btn:hover::after,
@@ -917,7 +930,7 @@ $arr_recurrence_byweekno = array(
     /* Contenu des étapes */
 }
 
-/* Responsive - Tooltip en dessous sur mobile */
+/* Responsive - Mobile */
 @media (max-width: 768px) {
     .step_header {
         flex-wrap: wrap;
@@ -929,25 +942,16 @@ $arr_recurrence_byweekno = array(
     }
 
     .step_info_btn::after {
-        right: auto;
-        left: 50%;
-        top: 100%;
-        transform: translateX(-50%);
-        margin-right: 0;
-        margin-top: 12px;
-        width: 250px;
+        width: 260px;
+        left: auto;
+        right: -10px;
+        transform: none;
     }
 
     .step_info_btn::before {
-        right: auto;
-        left: 50%;
-        top: 100%;
-        transform: translateX(-50%);
-        margin-right: 0;
-        margin-top: 0;
-        border: 6px solid transparent;
-        border-bottom-color: #1f2937;
-        border-left-color: transparent;
+        left: auto;
+        right: 8px;
+        transform: none;
     }
 }
 
@@ -1502,10 +1506,50 @@ $arr_recurrence_byweekno = array(
     transition: all 0.2s ease;
 }
 
-.btn_bulk_delete:hover {
+.btn_bulk_delete:hover,
+.btn_preview_bulk_delete:hover {
     background: #dc2626;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Barre d'actions groupées pour la prévisualisation */
+.creneaux_preview_bulk_actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    animation: slideDown 0.2s ease-out;
+}
+
+.creneaux_preview_bulk_actions .bulk_count {
+    font-size: 14px;
+    font-weight: 600;
+    color: #92400e;
+}
+
+.creneaux_preview_bulk_actions .count_number {
+    font-weight: 700;
+    color: #d97706;
+}
+
+.btn_preview_bulk_delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #ef4444;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .btn_bulk_delete i {
@@ -2591,6 +2635,13 @@ $arr_recurrence_byweekno = array(
     color: #FF6600;
 }
 
+.preview_hint {
+    font-size: 13px;
+    color: #94a3b8;
+    font-style: italic;
+    margin-left: auto;
+}
+
 /* Masquer le tableau et état vide selon le contexte */
 .creneaux_preview_section.has-items .creneaux_preview_empty_state {
     display: none;
@@ -3045,6 +3096,36 @@ $arr_recurrence_byweekno = array(
             $(document).on('change', '.creneaux_preview_select_all', function() {
                 var checked = $(this).is(':checked');
                 $('.creneaux_preview_list .creneaux_item_checkbox').prop('checked', checked);
+                self.updatePreviewBulkActionsBar();
+            });
+
+            // Sélection individuelle dans la prévisualisation - mettre à jour la barre d'actions
+            $(document).on('change', '.creneaux_preview_list .creneaux_item_checkbox', function() {
+                self.updatePreviewBulkActionsBar();
+                // Mettre à jour le "sélectionner tout" si nécessaire
+                var allChecked = $('.creneaux_preview_list .creneaux_item_checkbox:checked').length === $('.creneaux_preview_list .creneaux_item_checkbox').length;
+                $('.creneaux_preview_select_all').prop('checked', allChecked && $('.creneaux_preview_list .creneaux_item_checkbox').length > 0);
+            });
+
+            // Suppression groupée dans la prévisualisation
+            $(document).on('click', '.btn_preview_bulk_delete', function() {
+                var selectedCount = $('.creneaux_preview_list .creneaux_item_checkbox:checked').length;
+                if (selectedCount === 0) return;
+
+                var confirmMsg = '<?php esc_html_e("Êtes-vous sûr de vouloir supprimer les {count} créneaux sélectionnés ?", "eventlist"); ?>';
+                confirmMsg = confirmMsg.replace('{count}', selectedCount);
+
+                if (confirm(confirmMsg)) {
+                    $('.creneaux_preview_list .creneaux_item_checkbox:checked').each(function() {
+                        $(this).closest('.creneaux_item').fadeOut(200, function() {
+                            $(this).remove();
+                            self.updatePreviewBulkActionsBar();
+                            self.updatePreviewCount();
+                        });
+                    });
+                    // Décocher "sélectionner tout"
+                    $('.creneaux_preview_select_all').prop('checked', false);
+                }
             });
 
             // Auto-régénérer la prévisualisation quand la config change
@@ -3480,6 +3561,30 @@ $arr_recurrence_byweekno = array(
                 $bulkBar.slideDown(200);
             } else {
                 $bulkBar.slideUp(200);
+            }
+        },
+
+        // Mettre à jour la barre d'actions groupées de la prévisualisation
+        updatePreviewBulkActionsBar: function() {
+            var selectedCount = $('.creneaux_preview_list .creneaux_item_checkbox:checked').length;
+            var $bulkBar = $('.creneaux_preview_bulk_actions');
+
+            if (selectedCount > 0) {
+                $bulkBar.find('.count_number').text(selectedCount);
+                $bulkBar.slideDown(200);
+            } else {
+                $bulkBar.slideUp(200);
+            }
+        },
+
+        // Mettre à jour le compteur de la prévisualisation
+        updatePreviewCount: function() {
+            var count = $('.creneaux_preview_list .creneaux_item').length;
+            var $countSpan = $('.preview_count');
+            if (count > 0) {
+                $countSpan.html('<strong>' + count + '</strong> <?php echo esc_js( __( 'créneau(x) généré(s)', 'eventlist' ) ); ?>');
+            } else {
+                $countSpan.html('');
             }
         },
 
