@@ -205,45 +205,45 @@ $services_toggle_open = !empty($event_services_enabled) || !empty($event_parking
     <!-- Section Lieu Physique -->
     <div class="physical_location_section" style="<?php echo ($event_type == 'classic') ? 'display: block;' : 'display: none;'; ?>">
 
-        <!-- Source de l'adresse -->
-        <div class="vendor_field address_source_field">
-            <label for="address_source_select" class="field_label"><?php esc_html_e( 'Veuillez choisir la source de l\'adresse pour cette localisation :', 'eventlist' ); ?></label>
-
-            <div class="address_source_select_wrapper">
-                <select name="<?php echo esc_attr($_prefix.'address_source'); ?>"
-                        id="address_source_select"
-                        class="address_source_select">
-                    <option value="entity"
-                            data-address="<?php echo esc_attr($user_address); ?>"
-                            data-lat="<?php echo esc_attr($user_lat); ?>"
-                            data-lng="<?php echo esc_attr($user_lng); ?>"
-                            <?php selected($address_source, 'entity'); ?>>
-                        <?php esc_html_e( 'Mon entité', 'eventlist' ); ?>
-                    </option>
-                    <?php if ( !empty($partners) ) : ?>
-                        <?php foreach ( $partners as $partner ) : ?>
-                            <option value="coorg_<?php echo esc_attr($partner['id']); ?>"
-                                    data-address="<?php echo esc_attr($partner['address']); ?>"
-                                    data-lat="<?php echo esc_attr($partner['lat']); ?>"
-                                    data-lng="<?php echo esc_attr($partner['lng']); ?>"
-                                    data-partner-id="<?php echo esc_attr($partner['id']); ?>"
-                                    <?php echo ($address_source == 'coorg' && $coorg_entity_id == $partner['id']) ? 'selected' : ''; ?>>
-                                <?php echo esc_html($partner['name']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                    <option value="new" <?php selected($address_source, 'new'); ?>>
-                        <?php esc_html_e( 'Nouvelle adresse', 'eventlist' ); ?>
-                    </option>
-                </select>
-                <!-- Champ caché pour stocker l'ID du co-org si sélectionné -->
-                <input type="hidden" name="<?php echo esc_attr($_prefix.'coorg_entity_id'); ?>" id="coorg_entity_id" value="<?php echo esc_attr($coorg_entity_id); ?>">
-            </div>
-        </div>
-
-        <!-- Champs d'adresse et carte -->
+        <!-- Layout 2 colonnes: Champs à gauche, Carte à droite -->
         <div class="location_fields_wrapper">
+            <!-- Colonne gauche: Les 3 champs -->
             <div class="location_fields_left">
+                <!-- Source de l'adresse -->
+                <div class="vendor_field address_source_field">
+                    <label for="address_source_select" class="field_label"><?php esc_html_e( 'Veuillez choisir la source de l\'adresse pour cette localisation :', 'eventlist' ); ?></label>
+                    <div class="address_source_select_wrapper">
+                        <select name="<?php echo esc_attr($_prefix.'address_source'); ?>"
+                                id="address_source_select"
+                                class="address_source_select">
+                            <option value="entity"
+                                    data-address="<?php echo esc_attr($user_address); ?>"
+                                    data-lat="<?php echo esc_attr($user_lat); ?>"
+                                    data-lng="<?php echo esc_attr($user_lng); ?>"
+                                    <?php selected($address_source, 'entity'); ?>>
+                                <?php esc_html_e( 'Mon entité', 'eventlist' ); ?>
+                            </option>
+                            <?php if ( !empty($partners) ) : ?>
+                                <?php foreach ( $partners as $partner ) : ?>
+                                    <option value="coorg_<?php echo esc_attr($partner['id']); ?>"
+                                            data-address="<?php echo esc_attr($partner['address']); ?>"
+                                            data-lat="<?php echo esc_attr($partner['lat']); ?>"
+                                            data-lng="<?php echo esc_attr($partner['lng']); ?>"
+                                            data-partner-id="<?php echo esc_attr($partner['id']); ?>"
+                                            <?php echo ($address_source == 'coorg' && $coorg_entity_id == $partner['id']) ? 'selected' : ''; ?>>
+                                        <?php echo esc_html($partner['name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                            <option value="new" <?php selected($address_source, 'new'); ?>>
+                                <?php esc_html_e( 'Nouvelle adresse', 'eventlist' ); ?>
+                            </option>
+                        </select>
+                        <!-- Champ caché pour stocker l'ID du co-org si sélectionné -->
+                        <input type="hidden" name="<?php echo esc_attr($_prefix.'coorg_entity_id'); ?>" id="coorg_entity_id" value="<?php echo esc_attr($coorg_entity_id); ?>">
+                    </div>
+                </div>
+
                 <!-- Adresse de l'activité - Input avec autocomplétion -->
                 <div class="vendor_field address_autocomplete_wrapper">
                     <label for="location_address"><?php esc_html_e( 'Adresse de l\'activité', 'eventlist' ); ?></label>
@@ -281,8 +281,8 @@ $services_toggle_open = !empty($event_services_enabled) || !empty($event_parking
                 <input type="hidden" name="<?php echo esc_attr($_prefix.'venue[0]'); ?>" id="venue_storage" value="<?php echo esc_attr($current_venue); ?>">
             </div>
 
+            <!-- Colonne droite: Carte OSM -->
             <div class="location_fields_right">
-                <!-- Carte OSM -->
                 <div class="location_map_container">
                     <div id="location_osm_map" class="osm_map"></div>
                 </div>
@@ -1335,7 +1335,7 @@ var EL_ServicesData = {
 
 /* Select source d'adresse */
 .address_source_field {
-    margin-bottom: 24px;
+    margin-bottom: 0;
 }
 
 .address_source_field .field_label {
@@ -1347,7 +1347,7 @@ var EL_ServicesData = {
 }
 
 .address_source_select_wrapper {
-    max-width: 400px;
+    width: 100%;
 }
 
 .address_source_select {
