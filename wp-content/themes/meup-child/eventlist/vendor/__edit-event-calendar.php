@@ -174,6 +174,9 @@ $arr_recurrence_byweekno = array(
                     <button type="button" class="btn_filter_creneaux">
                         <?php esc_html_e( 'Filtrer', 'eventlist' ); ?>
                     </button>
+                    <button type="button" class="btn_reset_filter_creneaux" style="display: none;">
+                        <?php esc_html_e( 'Réinitialiser', 'eventlist' ); ?>
+                    </button>
                 </div>
             </div>
 
@@ -1078,6 +1081,27 @@ $arr_recurrence_byweekno = array(
 
 .btn_filter_creneaux:hover {
     background: #e55b00;
+}
+
+/* Bouton Réinitialiser - Gris */
+.btn_reset_filter_creneaux {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    color: #64748b;
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn_reset_filter_creneaux:hover {
+    background: #e2e8f0;
+    color: #475569;
 }
 
 /* Barre d'actions groupées */
@@ -2210,6 +2234,16 @@ $arr_recurrence_byweekno = array(
                 }
             });
 
+            // Filtrer les créneaux
+            $(document).on('click', '.btn_filter_creneaux', function() {
+                self.filterSlots();
+            });
+
+            // Réinitialiser le filtre
+            $(document).on('click', '.btn_reset_filter_creneaux', function() {
+                self.resetFilter();
+            });
+
             // Init date/time pickers si disponibles
             this.initPickers();
         },
@@ -2499,6 +2533,109 @@ $arr_recurrence_byweekno = array(
             } else {
                 $bulkBar.slideUp(200);
             }
+        },
+
+        // Filtrer les créneaux par plage de dates
+        filterSlots: function() {
+            var self = this;
+            var startDateStr = $('.creneaux_filter_start').val();
+            var endDateStr = $('.creneaux_filter_end').val();
+
+            // Si aucun filtre, tout afficher
+            if (!startDateStr && !endDateStr) {
+                $('.creneaux_item').show();
+                $('.btn_reset_filter_creneaux').hide();
+                return;
+            }
+
+            // Convertir les dates du filtre (format dd/mm/yyyy) en objets Date
+            var filterStart = null;
+            var filterEnd = null;
+
+            if (startDateStr) {
+                filterStart = this.parseDateFromFilter(startDateStr);
+            }
+            if (endDateStr) {
+                filterEnd = this.parseDateFromFilter(endDateStr);
+            }
+
+            var visibleCount = 0;
+
+            // Parcourir tous les créneaux et filtrer
+            $('.creneaux_item').each(function() {
+                var $item = $(this);
+                var slotDateStr = $item.find('.calendar_date').val(); // Format YYYY-MM-DD
+
+                if (!slotDateStr) {
+                    $item.hide();
+                    return;
+                }
+
+                var slotDate = new Date(slotDateStr);
+
+                var show = true;
+
+                // Vérifier la date de début du filtre
+                if (filterStart && slotDate < filterStart) {
+                    show = false;
+                }
+
+                // Vérifier la date de fin du filtre
+                if (filterEnd && slotDate > filterEnd) {
+                    show = false;
+                }
+
+                if (show) {
+                    $item.show();
+                    visibleCount++;
+                } else {
+                    $item.hide();
+                }
+            });
+
+            // Afficher le bouton reset
+            $('.btn_reset_filter_creneaux').show();
+
+            // Mettre à jour le checkbox "sélectionner tout" pour ne considérer que les éléments visibles
+            this.updateSelectAllForVisibleItems();
+        },
+
+        // Parser une date au format dd/mm/yyyy
+        parseDateFromFilter: function(dateStr) {
+            if (!dateStr) return null;
+
+            var parts = dateStr.split('/');
+            if (parts.length !== 3) return null;
+
+            var day = parseInt(parts[0], 10);
+            var month = parseInt(parts[1], 10) - 1; // Les mois commencent à 0
+            var year = parseInt(parts[2], 10);
+
+            return new Date(year, month, day);
+        },
+
+        // Réinitialiser le filtre
+        resetFilter: function() {
+            // Vider les champs de filtre
+            $('.creneaux_filter_start').val('');
+            $('.creneaux_filter_end').val('');
+
+            // Afficher tous les créneaux
+            $('.creneaux_item').show();
+
+            // Cacher le bouton reset
+            $('.btn_reset_filter_creneaux').hide();
+
+            // Mettre à jour le checkbox "sélectionner tout"
+            this.updateSelectAllForVisibleItems();
+        },
+
+        // Mettre à jour le comportement de "sélectionner tout" pour les éléments visibles
+        updateSelectAllForVisibleItems: function() {
+            var visibleCheckboxes = $('.creneaux_item:visible .creneaux_item_checkbox');
+            var allVisibleChecked = visibleCheckboxes.length > 0 &&
+                                    visibleCheckboxes.filter(':checked').length === visibleCheckboxes.length;
+            $('.creneaux_select_all').prop('checked', allVisibleChecked);
         },
 
         updateDisableSelect: function() {
