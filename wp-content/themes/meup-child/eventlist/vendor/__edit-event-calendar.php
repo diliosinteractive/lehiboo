@@ -2205,19 +2205,21 @@ $arr_recurrence_byweekno = array(
 }
 
 .weekly_days_grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     margin-top: 16px;
+    width: 100%;
 }
 
-/* Carte de jour */
+/* Carte de jour - full width */
 .weekly_day_card {
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     overflow: hidden;
     transition: all 0.2s ease;
+    width: 100%;
 }
 
 .weekly_day_card:hover {
@@ -2665,7 +2667,7 @@ $arr_recurrence_byweekno = array(
 /* Responsive */
 @media (max-width: 768px) {
     .weekly_days_grid {
-        grid-template-columns: 1fr;
+        gap: 10px;
     }
 
     .monthly_selectors {
