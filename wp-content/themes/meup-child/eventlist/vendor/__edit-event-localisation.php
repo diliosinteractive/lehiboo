@@ -1183,43 +1183,46 @@ var EL_ServicesData = {
     font-style: italic;
 }
 
-/* Services Grid - 2 colonnes */
+/* Services Grid - 2 colonnes strictes */
 .services_grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 20px;
 }
 
 .service_item {
     background: #fafafa;
     border: 1px solid #e8e8e8;
     border-radius: 10px;
-    padding: 16px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
 }
 
 .service_header {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .service_label {
     font-size: 14px;
     font-weight: 600;
     color: #333;
+    flex: 1;
 }
 
 .service_info_input {
     width: 100%;
-    height: 44px;
-    padding: 0 14px;
+    height: 42px;
+    padding: 0 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 13px;
     color: #333;
     background: #fff;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .service_info_input:focus {
@@ -1229,9 +1232,9 @@ var EL_ServicesData = {
 }
 
 .service_hint {
-    font-size: 12px;
+    font-size: 11px;
     color: #888;
-    line-height: 1.5;
+    line-height: 1.4;
     margin: 0;
 }
 
