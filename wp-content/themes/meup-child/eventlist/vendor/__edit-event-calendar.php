@@ -184,8 +184,10 @@ $arr_recurrence_byweekno = array(
                     <span class="option_checkbox"></span>
                 </label>
                 <span class="header_col header_date"><?php esc_html_e( 'Date de début', 'eventlist' ); ?></span>
-                <span class="header_col header_start_time"><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?></span>
-                <span class="header_col header_end_time"><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?></span>
+                <div class="header_times_wrapper">
+                    <span class="header_col header_start_time"><?php esc_html_e( 'Horaire de début', 'eventlist' ); ?></span>
+                    <span class="header_col header_end_time"><?php esc_html_e( 'Horaire de fin', 'eventlist' ); ?></span>
+                </div>
                 <span class="header_col header_actions"></span>
             </div>
 
@@ -1069,12 +1071,13 @@ $arr_recurrence_byweekno = array(
     background: #e55b00;
 }
 
-/* En-têtes de colonnes du tableau */
+/* En-têtes de colonnes du tableau - utiliser grid pour alignement parfait */
 .creneaux_table_header {
-    display: flex;
+    display: grid;
+    grid-template-columns: 40px 200px 1fr 100px;
     align-items: center;
     gap: 16px;
-    padding: 12px 16px;
+    padding: 12px 20px;
     background: #f8f9fa;
     border: 1px solid #e8e8e8;
     border-radius: 8px 8px 0 0;
@@ -1087,20 +1090,34 @@ $arr_recurrence_byweekno = array(
     color: #555;
 }
 
+/* Header date */
 .creneaux_table_header .header_date {
-    flex: 0 0 200px;
+    /* Occupera la 2ème colonne de la grid */
+}
+
+/* Header des horaires - aligné avec les inputs des items */
+.creneaux_table_header .header_times_wrapper {
+    display: flex;
+    align-items: center;
 }
 
 .creneaux_table_header .header_start_time {
-    flex: 0 0 140px;
+    /* Position: "De" (20px) + gap (12px) + demi-input (55px) = 87px du début */
+    /* Largeur totale section start: "De" + gap + input + gap = 20 + 12 + 110 + 12 = 154px */
+    width: 154px;
+    text-align: center;
+    padding-left: 20px; /* Décalage pour centrer sur l'input, pas sur "De" */
 }
 
 .creneaux_table_header .header_end_time {
-    flex: 0 0 140px;
+    /* Position après start section: "À" (10px) + gap (12px) + input (110px) */
+    width: 132px;
+    text-align: center;
+    padding-left: 10px; /* Décalage pour centrer sur l'input, pas sur "À" */
 }
 
 .creneaux_table_header .header_actions {
-    flex: 0 0 100px;
+    /* Occupera la dernière colonne */
 }
 
 .creneaux_select_all_label {
@@ -1152,7 +1169,8 @@ $arr_recurrence_byweekno = array(
 }
 
 .creneaux_item {
-    display: flex;
+    display: grid;
+    grid-template-columns: 40px 200px 1fr 100px;
     align-items: center;
     gap: 16px;
     padding: 16px 20px;
@@ -1202,7 +1220,7 @@ $arr_recurrence_byweekno = array(
 
 /* Date affichée en texte lisible */
 .creneaux_item_date_display {
-    flex: 0 0 200px;
+    /* Grid colonne 2 */
 }
 
 .creneaux_item_date_display .date_text {
@@ -1226,7 +1244,7 @@ $arr_recurrence_byweekno = array(
     display: flex;
     align-items: center;
     gap: 12px;
-    flex: 1;
+    /* Grid colonne 3 (1fr) */
 }
 
 .creneaux_item_time .creneaux_time_native {
@@ -1248,7 +1266,8 @@ $arr_recurrence_byweekno = array(
 .creneaux_item_actions {
     display: flex;
     gap: 8px;
-    margin-left: auto;
+    justify-content: flex-end;
+    /* Grid colonne 4 */
 }
 
 /* État vide */
