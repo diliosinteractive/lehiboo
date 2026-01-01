@@ -239,6 +239,21 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
             ?>
                 <div class="ticket_form_item" data-index="<?php echo esc_attr( $key ); ?>">
                     <div class="ticket_form_content">
+                        <!-- Header avec titre et badge -->
+                        <div class="ticket_form_header">
+                            <h4 class="ticket_title"><?php echo esc_html( $ticket_name ); ?></h4>
+                            <?php
+                            // Calculer le label du badge
+                            if ( $ticket_slots_mode === 'all' ) {
+                                $slots_badge_label = __( 'Tous les créneaux', 'eventlist' );
+                            } else {
+                                $slots_count = count( $ticket_slots );
+                                $slots_badge_label = sprintf( _n( '%d créneau sélectionné', '%d créneaux sélectionnés', $slots_count, 'eventlist' ), $slots_count );
+                            }
+                            ?>
+                            <span class="ticket_slots_badge"><?php echo esc_html( $slots_badge_label ); ?></span>
+                        </div>
+
                         <!-- Nom du billet -->
                         <div class="ticket_form_field">
                             <label class="field_label"><strong><?php esc_html_e( 'Nom du billet', 'eventlist' ); ?></strong> <span class="required">*</span> :</label>
@@ -415,21 +430,32 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 
                         <!-- Boutons d'action -->
                         <div class="ticket_form_actions">
-                            <button type="button" class="btn_save_ticket el_btn_save">
+                            <div class="ticket_actions_left">
+                                <button type="button" class="btn_save_ticket el_btn_save">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                        <polyline points="7 3 7 8 15 8"></polyline>
+                                    </svg>
+                                    <span class="btn_text"><?php esc_html_e( 'Sauvegarder ce billet', 'eventlist' ); ?></span>
+                                </button>
+                                <button type="button" class="btn_stop_reservation el_btn_warning" data-index="<?php echo esc_attr( $key ); ?>">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="10" y1="15" x2="10" y2="9"></line>
+                                        <line x1="14" y1="15" x2="14" y2="9"></line>
+                                    </svg>
+                                    <span class="btn_text"><?php esc_html_e( 'Stopper la réservation', 'eventlist' ); ?></span>
+                                </button>
+                            </div>
+                            <button type="button" class="btn_delete_ticket el_btn_danger" data-index="<?php echo esc_attr( $key ); ?>" data-ticket-name="<?php echo esc_attr( $ticket_name ); ?>">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                                    <polyline points="7 3 7 8 15 8"></polyline>
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
                                 </svg>
-                                <span class="btn_text"><?php esc_html_e( 'Sauvegarder ce billet', 'eventlist' ); ?></span>
-                            </button>
-                            <button type="button" class="btn_stop_reservation el_btn_danger" data-index="<?php echo esc_attr( $key ); ?>">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="15" y1="9" x2="9" y2="15"></line>
-                                    <line x1="9" y1="9" x2="15" y2="15"></line>
-                                </svg>
-                                <span class="btn_text"><?php esc_html_e( 'Stopper la réservation', 'eventlist' ); ?></span>
+                                <span class="btn_text"><?php esc_html_e( 'Supprimer', 'eventlist' ); ?></span>
                             </button>
                         </div>
                     </div>
@@ -635,11 +661,27 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
                                 <input type="text" class="slots_search_input" placeholder="<?php esc_attr_e( 'Rechercher un créneau...', 'eventlist' ); ?>">
                             </div>
 
+                            <!-- Filtres par période -->
+                            <div class="slots_date_filters">
+                                <button type="button" class="slots_filter_btn active" data-filter="all">
+                                    <?php esc_html_e( 'Tout', 'eventlist' ); ?>
+                                </button>
+                                <button type="button" class="slots_filter_btn" data-filter="this_week">
+                                    <?php esc_html_e( 'Cette semaine', 'eventlist' ); ?>
+                                </button>
+                                <button type="button" class="slots_filter_btn" data-filter="this_month">
+                                    <?php esc_html_e( 'Ce mois', 'eventlist' ); ?>
+                                </button>
+                                <button type="button" class="slots_filter_btn" data-filter="next_month">
+                                    <?php esc_html_e( 'Mois prochain', 'eventlist' ); ?>
+                                </button>
+                            </div>
+
                             <div class="slots_checklist">
                                 <?php foreach ( $event_slots as $slot ) : ?>
-                                <div class="slot_check_item" data-slot-id="<?php echo esc_attr( $slot['id'] ); ?>">
-                                    <label class="slot_check_label">
-                                        <input type="checkbox" class="slot_checkbox_input" value="<?php echo esc_attr( $slot['id'] ); ?>">
+                                <div class="slot_check_item" data-slot-id="<?php echo esc_attr( $slot['id'] ); ?>" data-slot-date="<?php echo esc_attr( $slot['date'] ); ?>">
+                                    <input type="checkbox" class="slot_checkbox_input" value="<?php echo esc_attr( $slot['id'] ); ?>" id="slot_<?php echo esc_attr( $slot['id'] ); ?>">
+                                    <label class="slot_check_label" for="slot_<?php echo esc_attr( $slot['id'] ); ?>">
                                         <span class="slot_checkbox_custom"></span>
                                         <span class="slot_date"><?php echo esc_html( date_i18n( 'D j M Y', strtotime( $slot['date'] ) ) ); ?></span>
                                         <span class="slot_time"><?php echo esc_html( $slot['start_time'] . ' → ' . $slot['end_time'] ); ?></span>
@@ -1248,8 +1290,8 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 }
 
 .ticket_form_item {
-    background: #fff;
-    border: 1px solid #e2e8f0;
+    background-color: #fff8f6;
+    border: 1px solid #ff6602;
     border-radius: 12px;
     margin-bottom: 20px;
     overflow: hidden;
@@ -1410,10 +1452,18 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 .ticket_form_actions {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
     gap: 12px;
     padding-top: 24px;
     margin-top: 24px;
     border-top: 1px solid #e2e8f0;
+}
+
+.ticket_actions_left {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 /* Base Button Styles */
@@ -1537,6 +1587,53 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 
 .el_btn_danger:active {
     transform: scale(0.98);
+}
+
+/* Warning Button - Pause/Stop */
+.el_btn_warning {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: transparent;
+    color: #d97706;
+    border: 2px solid #fde68a;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.el_btn_warning svg {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.el_btn_warning:hover {
+    background: #fffbeb;
+    border-color: #fbbf24;
+    color: #b45309;
+}
+
+.el_btn_warning:hover svg {
+    transform: scale(1.1);
+}
+
+.el_btn_warning:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+}
+
+.el_btn_warning:active {
+    transform: scale(0.98);
+}
+
+.el_btn_warning.btn_disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 /* Add Button - Outlined */
@@ -2240,6 +2337,39 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     border-color: #FF6600;
 }
 
+/* Date Filters */
+.slots_date_filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.slots_filter_btn {
+    padding: 8px 14px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.slots_filter_btn:hover {
+    border-color: #FF6600;
+    color: #FF6600;
+    background: #fff8f5;
+}
+
+.slots_filter_btn.active {
+    background: linear-gradient(135deg, #FF6600 0%, #e55c00 100%);
+    border-color: #FF6600;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(255, 102, 0, 0.25);
+}
+
 .slots_checklist {
     max-height: 240px;
     overflow-y: auto;
@@ -2257,10 +2387,23 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     border-radius: 3px;
 }
 
+.slots_no_results {
+    padding: 24px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 14px;
+    font-style: italic;
+}
+
 .slot_check_item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
     padding: 14px 16px;
     border-bottom: 1px solid #f1f5f9;
-    transition: background 0.15s;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    position: relative;
 }
 
 .slot_check_item:last-child {
@@ -2271,8 +2414,10 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     background: #f8fafc;
 }
 
-.slot_check_item.is-checked {
-    background: #fff8f5;
+.slot_check_item.is_checked {
+    background: linear-gradient(135deg, #fff8f5 0%, #fff5f0 100%);
+    border-left: 3px solid #FF6600;
+    padding-left: 13px;
 }
 
 .slot_check_label {
@@ -2280,11 +2425,13 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     align-items: center;
     gap: 14px;
     cursor: pointer;
-    width: 100%;
+    flex: 1;
 }
 
 .slot_checkbox_input {
-    display: none;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .slot_checkbox_custom {
@@ -2299,45 +2446,65 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     transition: all 0.2s;
 }
 
-.slot_check_item.is-checked .slot_checkbox_custom {
+.slot_check_item.is_checked .slot_checkbox_custom {
     background: #FF6600;
     border-color: #FF6600;
+    transform: scale(1.05);
 }
 
-.slot_check_item.is-checked .slot_checkbox_custom::after {
+.slot_check_item.is_checked .slot_checkbox_custom::after {
     content: '✓';
     color: #fff;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
+}
+
+.slot_check_item.is_checked .slot_date {
+    color: #FF6600;
 }
 
 .slot_date {
     font-size: 14px;
     font-weight: 600;
     color: #1e293b;
+    transition: color 0.15s;
 }
 
 .slot_time {
     font-size: 13px;
     color: #64748b;
     margin-left: auto;
+    background: #f1f5f9;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.slot_check_item.is_checked .slot_time {
+    background: #FF6600;
+    color: #fff;
 }
 
 .slots_quick_actions {
     display: flex;
+    align-items: center;
     gap: 10px;
     margin-top: 12px;
+    flex-wrap: wrap;
 }
 
 .slots_action_btn {
     padding: 8px 14px;
-    background: transparent;
+    background: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-size: 13px;
+    font-weight: 500;
     color: #64748b;
     cursor: pointer;
     transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .slots_action_btn:hover {
@@ -2346,14 +2513,28 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     background: #fff8f5;
 }
 
+.slots_action_btn.slots_select_all:hover {
+    border-color: #22c55e;
+    color: #22c55e;
+    background: #f0fdf4;
+}
+
+.slots_action_btn.slots_deselect_all:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: #fef2f2;
+}
+
 .slots_chips_container {
     margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #e2e8f0;
+    padding: 16px;
+    border-radius: 10px;
+    background: #f8fafc;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
+    min-height: 52px;
 }
 
 .slots_chips_count {
@@ -2367,6 +2548,14 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     font-size: 13px;
     color: #94a3b8;
     font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.slots_chips_empty::before {
+    content: '○';
+    font-size: 10px;
 }
 
 .chips_label {
@@ -2666,6 +2855,11 @@ jQuery(document).ready(function($) {
                 self.stopReservation($(this));
             });
 
+            // Supprimer un billet
+            $(document).on('click', '.btn_delete_ticket', function() {
+                self.deleteTicket($(this));
+            });
+
             // Ajout d'un tarif
             $(document).on('click', '.btn_add_tarif', function() {
                 self.addTarif();
@@ -2859,6 +3053,61 @@ jQuery(document).ready(function($) {
                     window.ToastNotification.info('<?php echo esc_js( __( 'Réservation stoppée', 'eventlist' ) ); ?>');
                 }
             }
+        },
+
+        deleteTicket: function($btn) {
+            var self = this;
+            var $item = $btn.closest('.ticket_form_item');
+            var ticketName = $btn.data('ticket-name') || '<?php echo esc_js( __( 'ce billet', 'eventlist' ) ); ?>';
+
+            var confirmMessage = '<?php echo esc_js( __( 'Êtes-vous sûr de vouloir supprimer le billet "%s" ?', 'eventlist' ) ); ?>';
+            confirmMessage = confirmMessage.replace('%s', ticketName);
+
+            var warningMessage = '<?php echo esc_js( __( 'Attention : Cette action est irréversible.', 'eventlist' ) ); ?>';
+
+            if (confirm(confirmMessage + '\n\n' + warningMessage)) {
+                // Animation de suppression
+                $item.css({
+                    'transition': 'all 0.3s ease',
+                    'opacity': '0',
+                    'transform': 'translateX(-20px)'
+                });
+
+                setTimeout(function() {
+                    $item.slideUp(200, function() {
+                        $item.remove();
+                        self.reindexTickets();
+
+                        if (window.ToastNotification) {
+                            window.ToastNotification.success('<?php echo esc_js( __( 'Billet supprimé', 'eventlist' ) ); ?>');
+                        }
+                    });
+                }, 200);
+            }
+        },
+
+        reindexTickets: function() {
+            var self = this;
+            var newIndex = 0;
+            $('.ticket_form_item').each(function() {
+                var $item = $(this);
+                $item.attr('data-index', newIndex);
+
+                // Update all input names with new index
+                $item.find('input, select, textarea').each(function() {
+                    var name = $(this).attr('name');
+                    if (name) {
+                        name = name.replace(/ticket\[\d+\]/, 'ticket[' + newIndex + ']');
+                        $(this).attr('name', name);
+                    }
+                });
+
+                // Update button data-index
+                $item.find('[data-index]').attr('data-index', newIndex);
+
+                newIndex++;
+            });
+            self.ticketIndex = newIndex;
         },
 
         addTarif: function() {
@@ -3279,21 +3528,32 @@ jQuery(document).ready(function($) {
                     slotsHtml +
                     '<input type="hidden" name="' + prefix + 'ticket[' + index + '][is_active]" value="yes" class="ticket_is_active">' +
                     '<div class="ticket_form_actions">' +
-                        '<button type="button" class="btn_save_ticket el_btn_save">' +
+                        '<div class="ticket_actions_left">' +
+                            '<button type="button" class="btn_save_ticket el_btn_save">' +
+                                '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                                    '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>' +
+                                    '<polyline points="17 21 17 13 7 13 7 21"></polyline>' +
+                                    '<polyline points="7 3 7 8 15 8"></polyline>' +
+                                '</svg>' +
+                                '<span class="btn_text"><?php echo esc_js( __( 'Sauvegarder ce billet', 'eventlist' ) ); ?></span>' +
+                            '</button>' +
+                            '<button type="button" class="btn_stop_reservation el_btn_warning" data-index="' + index + '">' +
+                                '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                                    '<circle cx="12" cy="12" r="10"></circle>' +
+                                    '<line x1="10" y1="15" x2="10" y2="9"></line>' +
+                                    '<line x1="14" y1="15" x2="14" y2="9"></line>' +
+                                '</svg>' +
+                                '<span class="btn_text"><?php echo esc_js( __( 'Stopper la réservation', 'eventlist' ) ); ?></span>' +
+                            '</button>' +
+                        '</div>' +
+                        '<button type="button" class="btn_delete_ticket el_btn_danger" data-index="' + index + '" data-ticket-name="' + this.escapeHtml(data.name) + '">' +
                             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                                '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>' +
-                                '<polyline points="17 21 17 13 7 13 7 21"></polyline>' +
-                                '<polyline points="7 3 7 8 15 8"></polyline>' +
+                                '<polyline points="3 6 5 6 21 6"></polyline>' +
+                                '<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>' +
+                                '<line x1="10" y1="11" x2="10" y2="17"></line>' +
+                                '<line x1="14" y1="11" x2="14" y2="17"></line>' +
                             '</svg>' +
-                            '<span class="btn_text"><?php echo esc_js( __( 'Sauvegarder ce billet', 'eventlist' ) ); ?></span>' +
-                        '</button>' +
-                        '<button type="button" class="btn_stop_reservation el_btn_danger" data-index="' + index + '">' +
-                            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                                '<circle cx="12" cy="12" r="10"></circle>' +
-                                '<line x1="15" y1="9" x2="9" y2="15"></line>' +
-                                '<line x1="9" y1="9" x2="15" y2="15"></line>' +
-                            '</svg>' +
-                            '<span class="btn_text"><?php echo esc_js( __( 'Stopper la réservation', 'eventlist' ) ); ?></span>' +
+                            '<span class="btn_text"><?php echo esc_js( __( 'Supprimer', 'eventlist' ) ); ?></span>' +
                         '</button>' +
                     '</div>' +
                 '</div>' +
@@ -3313,6 +3573,8 @@ jQuery(document).ready(function($) {
     // SLOT MULTI-SELECT - Gestion de la checklist des créneaux
     // ═══════════════════════════════════════════════════════════════
     var SlotMultiSelect = {
+        currentFilter: 'all',
+
         init: function() {
             this.bindEvents();
         },
@@ -3320,27 +3582,28 @@ jQuery(document).ready(function($) {
         bindEvents: function() {
             var self = this;
 
-            // Toggle checkbox en cliquant sur la ligne
+            // Toggle checkbox en cliquant sur la ligne entière
             $(document).on('click', '.slot_check_item', function(e) {
-                // Ne pas déclencher si on clique sur la checkbox elle-même
-                if ($(e.target).hasClass('slot_checkbox_input')) {
-                    return;
-                }
+                e.preventDefault();
+                e.stopPropagation();
                 var $checkbox = $(this).find('.slot_checkbox_input');
                 $checkbox.prop('checked', !$checkbox.prop('checked'));
                 self.updateItemState($(this));
                 self.updateChips();
             });
 
-            // Changement de checkbox
-            $(document).on('change', '.slot_checkbox_input', function() {
-                self.updateItemState($(this).closest('.slot_check_item'));
-                self.updateChips();
-            });
-
             // Recherche
             $(document).on('input', '.slots_search_input', function() {
                 self.filterSlots($(this).val());
+            });
+
+            // Filtres par date
+            $(document).on('click', '.slots_filter_btn', function() {
+                var filter = $(this).data('filter');
+                $('.slots_filter_btn').removeClass('active');
+                $(this).addClass('active');
+                self.currentFilter = filter;
+                self.applyDateFilter(filter);
             });
 
             // Tout sélectionner
@@ -3354,7 +3617,9 @@ jQuery(document).ready(function($) {
             });
 
             // Supprimer un chip
-            $(document).on('click', '.slot_chip_remove', function() {
+            $(document).on('click', '.slot_chip_remove', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
                 var slotId = $(this).closest('.slot_chip').data('slot-id');
                 self.removeSlot(slotId);
             });
@@ -3369,22 +3634,102 @@ jQuery(document).ready(function($) {
             }
         },
 
-        filterSlots: function(query) {
-            query = query.toLowerCase().trim();
+        applyDateFilter: function(filter) {
+            var self = this;
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-            $('.slot_check_item').each(function() {
-                var text = $(this).text().toLowerCase();
-                if (query === '' || text.indexOf(query) !== -1) {
-                    $(this).show();
+            // Calculer les bornes de dates
+            var startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Lundi
+
+            var endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6); // Dimanche
+
+            var startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            var endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+            var startOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+            var endOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+
+            var visibleCount = 0;
+
+            $('.slots_checklist .slot_check_item').each(function() {
+                var $item = $(this);
+                var slotDateStr = $item.data('slot-date');
+                var slotDate = new Date(slotDateStr);
+                slotDate.setHours(0, 0, 0, 0);
+
+                var show = true;
+
+                switch (filter) {
+                    case 'this_week':
+                        show = slotDate >= startOfWeek && slotDate <= endOfWeek;
+                        break;
+                    case 'this_month':
+                        show = slotDate >= startOfMonth && slotDate <= endOfMonth;
+                        break;
+                    case 'next_month':
+                        show = slotDate >= startOfNextMonth && slotDate <= endOfNextMonth;
+                        break;
+                    case 'all':
+                    default:
+                        show = true;
+                }
+
+                if (show) {
+                    $item.show();
+                    visibleCount++;
                 } else {
-                    $(this).hide();
+                    $item.hide();
                 }
             });
+
+            // Afficher/masquer le message "aucun résultat"
+            self.updateNoResultsMessage(visibleCount);
+
+            // Réappliquer le filtre de recherche si actif
+            var searchQuery = $('.slots_search_input').val();
+            if (searchQuery) {
+                self.filterSlots(searchQuery);
+            }
+        },
+
+        updateNoResultsMessage: function(visibleCount) {
+            var $checklist = $('.slots_checklist');
+            var $noResults = $checklist.find('.slots_no_results');
+
+            if (visibleCount === 0) {
+                if ($noResults.length === 0) {
+                    $checklist.append('<div class="slots_no_results"><?php echo esc_js( __( 'Aucun créneau pour cette période', 'eventlist' ) ); ?></div>');
+                }
+                $noResults.show();
+            } else {
+                $noResults.hide();
+            }
+        },
+
+        filterSlots: function(query) {
+            var self = this;
+            query = query.toLowerCase().trim();
+
+            // D'abord appliquer le filtre de date
+            self.applyDateFilter(self.currentFilter);
+
+            // Puis filtrer par texte parmi les visibles
+            if (query !== '') {
+                $('.slots_checklist .slot_check_item:visible').each(function() {
+                    var text = $(this).text().toLowerCase();
+                    if (text.indexOf(query) === -1) {
+                        $(this).hide();
+                    }
+                });
+            }
         },
 
         selectAll: function() {
             var self = this;
-            $('.slot_check_item:visible').each(function() {
+            $('.slots_checklist .slot_check_item:visible').each(function() {
                 $(this).find('.slot_checkbox_input').prop('checked', true);
                 self.updateItemState($(this));
             });
@@ -3393,7 +3738,7 @@ jQuery(document).ready(function($) {
 
         deselectAll: function() {
             var self = this;
-            $('.slot_check_item').each(function() {
+            $('.slots_checklist .slot_check_item').each(function() {
                 $(this).find('.slot_checkbox_input').prop('checked', false);
                 self.updateItemState($(this));
             });
@@ -3401,7 +3746,7 @@ jQuery(document).ready(function($) {
         },
 
         removeSlot: function(slotId) {
-            var $item = $('.slot_check_item[data-slot-id="' + slotId + '"]');
+            var $item = $('.slots_checklist .slot_check_item[data-slot-id="' + slotId + '"]');
             $item.find('.slot_checkbox_input').prop('checked', false);
             this.updateItemState($item);
             this.updateChips();
@@ -3421,7 +3766,7 @@ jQuery(document).ready(function($) {
             var chipsHtml = '<span class="slots_chips_count">' + selectedSlots.length + ' <?php echo esc_js( __( 'sélectionné(s)', 'eventlist' ) ); ?> :</span>';
 
             selectedSlots.forEach(function(slotId) {
-                var $item = $('.slot_check_item[data-slot-id="' + slotId + '"]');
+                var $item = $('.slots_checklist .slot_check_item[data-slot-id="' + slotId + '"]');
                 var label = $item.find('.slot_date').text() + ' - ' + $item.find('.slot_time').text();
 
                 chipsHtml += '<span class="slot_chip" data-slot-id="' + slotId + '">' +
@@ -3435,16 +3780,19 @@ jQuery(document).ready(function($) {
 
         getSelectedSlots: function() {
             var slots = [];
-            $('.slot_checkbox_input:checked').each(function() {
+            $('.slots_checklist .slot_checkbox_input:checked').each(function() {
                 slots.push($(this).val());
             });
             return slots;
         },
 
         reset: function() {
+            this.currentFilter = 'all';
             this.deselectAll();
             $('.slots_search_input').val('');
-            this.filterSlots('');
+            $('.slots_filter_btn').removeClass('active');
+            $('.slots_filter_btn[data-filter="all"]').addClass('active');
+            this.applyDateFilter('all');
         }
     };
 
