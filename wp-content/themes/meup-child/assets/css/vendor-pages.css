@@ -570,3 +570,13 @@ padding: 20px 10px!important;
     padding: 10px;
 }
 
+.vendor_sidebar .vendor_user_profile {
+    display: flex;
+    padding: 10px;
+}
+
+.vendor_sidebar ul.dashboard_nav {
+    padding: 10px 20px;
+    margin: 0;
+}
+
