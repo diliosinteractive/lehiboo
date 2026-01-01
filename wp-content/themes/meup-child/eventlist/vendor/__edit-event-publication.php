@@ -994,37 +994,45 @@ jQuery(document).ready(function($) {
                 self.markFieldError($catField);
             }
 
-            // 3. Type d'événement (Select2 multi)
+            // 3. Type d'événement (peut être single select ou multi select)
             var $tagField = $('select[name="event_tag[]"]');
+            if ($tagField.length === 0) {
+                $tagField = $('select[name="event_tag"]');
+            }
             var eventTagData = getSelect2Value($tagField);
             var hasEventTag = false;
             if (Array.isArray(eventTagData) && eventTagData.length > 0) {
-                // Select2 data format
+                // Select2 data format (multi)
                 hasEventTag = eventTagData.some(function(item) {
                     return item.id && item.id !== '';
                 });
-            } else if (eventTagData && eventTagData.length > 0) {
-                // Regular val()
+            } else if (eventTagData && eventTagData !== '' && eventTagData !== '0') {
+                // Single select ou regular val()
                 hasEventTag = true;
             }
             if (!hasEventTag) {
-                errors.push({ field: "Type d'événement", selector: 'select[name="event_tag[]"]' });
+                errors.push({ field: "Type d'événement", selector: 'select[name="event_tag"]' });
                 self.markFieldError($tagField);
             }
 
-            // 4. Public visé (Select2 multi)
+            // 4. Public visé (peut être single select ou multi select)
             var $publicField = $('select[name="event_public[]"]');
+            if ($publicField.length === 0) {
+                $publicField = $('select[name="event_public"]');
+            }
             var eventPublicData = getSelect2Value($publicField);
             var hasEventPublic = false;
             if (Array.isArray(eventPublicData) && eventPublicData.length > 0) {
+                // Select2 data format (multi)
                 hasEventPublic = eventPublicData.some(function(item) {
                     return item.id && item.id !== '';
                 });
-            } else if (eventPublicData && eventPublicData.length > 0) {
+            } else if (eventPublicData && eventPublicData !== '' && eventPublicData !== '0') {
+                // Single select ou regular val()
                 hasEventPublic = true;
             }
             if (!hasEventPublic) {
-                errors.push({ field: "Public visé", selector: 'select[name="event_public[]"]' });
+                errors.push({ field: "Public visé", selector: 'select[name="event_public"]' });
                 self.markFieldError($publicField);
             }
 
