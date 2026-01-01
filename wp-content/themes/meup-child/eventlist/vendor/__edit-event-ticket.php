@@ -212,6 +212,29 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     <!-- Section Module de réservation interne -->
     <div class="billetterie_internal_section" style="<?php echo ($ticket_link === 'ticket_internal_link' || empty($ticket_link)) ? '' : 'display: none;'; ?>">
 
+        <!-- Toolbar accordéons -->
+        <?php if ( ! empty( $tickets ) ) : ?>
+        <div class="tickets_accordion_toolbar">
+            <span class="toolbar_label"><?php esc_html_e( 'Billets', 'eventlist' ); ?> (<?php echo count( $tickets ); ?>)</span>
+            <div class="toolbar_buttons">
+                <button type="button" class="btn_expand_all toolbar_btn" title="<?php esc_attr_e( 'Tout déplier', 'eventlist' ); ?>">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="7 13 12 18 17 13"></polyline>
+                        <polyline points="7 6 12 11 17 6"></polyline>
+                    </svg>
+                    <span><?php esc_html_e( 'Tout déplier', 'eventlist' ); ?></span>
+                </button>
+                <button type="button" class="btn_collapse_all toolbar_btn" title="<?php esc_attr_e( 'Tout replier', 'eventlist' ); ?>">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="17 11 12 6 7 11"></polyline>
+                        <polyline points="17 18 12 13 7 18"></polyline>
+                    </svg>
+                    <span><?php esc_html_e( 'Tout replier', 'eventlist' ); ?></span>
+                </button>
+            </div>
+        </div>
+        <?php endif; ?>
+
         <!-- Liste des billets -->
         <div class="tickets_list_wrapper" data-prefix="<?php echo esc_attr( $_prefix ); ?>">
             <?php
@@ -239,9 +262,16 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
             ?>
                 <div class="ticket_form_item" data-index="<?php echo esc_attr( $key ); ?>">
                     <div class="ticket_form_content">
-                        <!-- Header avec titre et badge -->
-                        <div class="ticket_form_header">
-                            <h4 class="ticket_title"><?php echo esc_html( $ticket_name ); ?></h4>
+                        <!-- Header avec titre et badge - Cliquable pour accordéon -->
+                        <div class="ticket_form_header ticket_accordion_header" role="button" aria-expanded="false" tabindex="0">
+                            <div class="ticket_header_left">
+                                <button type="button" class="ticket_accordion_toggle" aria-label="<?php esc_attr_e( 'Déplier/Replier', 'eventlist' ); ?>">
+                                    <svg class="accordion_chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </button>
+                                <h4 class="ticket_title"><?php echo esc_html( $ticket_name ); ?></h4>
+                            </div>
                             <?php
                             // Calculer le label du badge
                             if ( $ticket_slots_mode === 'all' ) {
@@ -253,6 +283,9 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
                             ?>
                             <span class="ticket_slots_badge"><?php echo esc_html( $slots_badge_label ); ?></span>
                         </div>
+
+                        <!-- Contenu accordéon (replié par défaut) -->
+                        <div class="ticket_accordion_body" style="display: none;">
 
                         <!-- Nom du billet -->
                         <div class="ticket_form_field">
@@ -397,19 +430,43 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
                             </div>
 
                             <div class="slots_checkboxes_wrapper" style="<?php echo $ticket_slots_mode === 'selected' ? '' : 'display: none;'; ?>">
+                                <!-- Barre de recherche -->
+                                <div class="ticket_slots_search_bar">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <path d="m21 21-4.35-4.35"></path>
+                                    </svg>
+                                    <input type="text" class="ticket_slots_search_input" placeholder="<?php esc_attr_e( 'Rechercher un créneau...', 'eventlist' ); ?>" data-ticket-index="<?php echo esc_attr( $key ); ?>">
+                                </div>
+
+                                <!-- Filtres de date -->
+                                <div class="ticket_slots_date_filters">
+                                    <button type="button" class="ticket_slots_filter_btn active" data-filter="all" data-ticket-index="<?php echo esc_attr( $key ); ?>"><?php esc_html_e( 'Tout', 'eventlist' ); ?></button>
+                                    <button type="button" class="ticket_slots_filter_btn" data-filter="this_week" data-ticket-index="<?php echo esc_attr( $key ); ?>"><?php esc_html_e( 'Cette semaine', 'eventlist' ); ?></button>
+                                    <button type="button" class="ticket_slots_filter_btn" data-filter="this_month" data-ticket-index="<?php echo esc_attr( $key ); ?>"><?php esc_html_e( 'Ce mois', 'eventlist' ); ?></button>
+                                    <button type="button" class="ticket_slots_filter_btn" data-filter="next_month" data-ticket-index="<?php echo esc_attr( $key ); ?>"><?php esc_html_e( 'Mois prochain', 'eventlist' ); ?></button>
+                                </div>
+
                                 <div class="slots_checkboxes_grid">
-                                    <?php foreach ( $event_slots as $slot ) : ?>
-                                    <label class="slot_checkbox_item">
+                                    <?php foreach ( $event_slots as $slot ) :
+                                        $is_checked = in_array( $slot['id'], $ticket_slots, true );
+                                    ?>
+                                    <label class="slot_checkbox_item <?php echo $is_checked ? 'is_checked' : ''; ?>" data-slot-date="<?php echo esc_attr( $slot['date'] ); ?>">
                                         <input type="checkbox"
                                                name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][slots][]' ); ?>"
                                                value="<?php echo esc_attr( $slot['id'] ); ?>"
                                                class="slot_checkbox"
-                                               <?php checked( in_array( $slot['id'], $ticket_slots, true ) ); ?>>
+                                               <?php checked( $is_checked ); ?>>
                                         <span class="slot_checkbox_mark"></span>
                                         <span class="slot_checkbox_label"><?php echo esc_html( $slot['label'] ); ?></span>
                                     </label>
                                     <?php endforeach; ?>
                                 </div>
+
+                                <p class="slots_no_results" style="display: none;">
+                                    <?php esc_html_e( 'Aucun créneau ne correspond aux critères.', 'eventlist' ); ?>
+                                </p>
+
                                 <p class="slots_validation_hint" style="display: none; color: #dc3545; margin-top: 8px;">
                                     <?php esc_html_e( 'Veuillez sélectionner au moins un créneau.', 'eventlist' ); ?>
                                 </p>
@@ -427,6 +484,8 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
                                name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][is_active]' ); ?>"
                                value="<?php echo esc_attr( $is_active ); ?>"
                                class="ticket_is_active">
+
+                        </div><!-- Fin ticket_accordion_body -->
 
                         <!-- Boutons d'action -->
                         <div class="ticket_form_actions">
@@ -1284,6 +1343,54 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     color: #ef4444;
 }
 
+/* Tickets Accordion Toolbar */
+.tickets_accordion_toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+.toolbar_label {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.toolbar_buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.toolbar_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toolbar_btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #1e293b;
+}
+
+.toolbar_btn svg {
+    flex-shrink: 0;
+}
+
 /* Tickets List */
 .tickets_list_wrapper {
     margin-bottom: 24px;
@@ -1306,9 +1413,87 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
+    padding: 16px 0;
     border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 0;
+}
+
+/* Accordion Header - Cliquable */
+.ticket_accordion_header {
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s ease;
+    margin: -24px -24px 0 -24px;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.ticket_accordion_header:hover {
+    background: #f8fafc;
+}
+
+.ticket_header_left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ticket_accordion_toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.ticket_accordion_toggle:hover {
+    background: #e2e8f0;
+}
+
+.accordion_chevron {
+    transition: transform 0.3s ease;
+    color: #64748b;
+}
+
+/* État ouvert */
+.ticket_form_item.is_expanded .accordion_chevron {
+    transform: rotate(180deg);
+}
+
+.ticket_form_item.is_expanded .ticket_accordion_header {
+    background: #fff7ed;
+    border-color: #fdba74;
+}
+
+.ticket_form_item.is_expanded .ticket_accordion_toggle {
+    background: #FF6600;
+}
+
+.ticket_form_item.is_expanded .accordion_chevron {
+    color: #fff;
+}
+
+/* Contenu accordéon */
+.ticket_accordion_body {
+    padding-top: 20px;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .ticket_title {
@@ -1334,6 +1519,243 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 .ticket_slots_badge::before {
     content: '📅';
     font-size: 12px;
+}
+
+/* Slots Mode Options */
+.slots_mode_options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.slots_mode_option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slots_mode_option:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.slots_mode_option.selected {
+    background: #fff7ed;
+    border-color: #FF6600;
+}
+
+.slots_mode_option .slots_mode_radio {
+    display: none;
+}
+
+.slots_mode_option .slots_mode_checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.slots_mode_option.selected .slots_mode_checkmark {
+    background: #FF6600;
+    border-color: #FF6600;
+}
+
+.slots_mode_option.selected .slots_mode_checkmark::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+.slots_mode_text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #334155;
+}
+
+/* Slots Checkboxes Wrapper */
+.slots_checkboxes_wrapper {
+    margin-top: 16px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+/* Ticket Slots Search Bar */
+.ticket_slots_search_bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.ticket_slots_search_bar svg {
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.ticket_slots_search_input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: #334155;
+    outline: none;
+}
+
+.ticket_slots_search_input::placeholder {
+    color: #94a3b8;
+}
+
+/* Ticket Slots Date Filters */
+.ticket_slots_date_filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.ticket_slots_filter_btn {
+    padding: 6px 12px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ticket_slots_filter_btn:hover {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.ticket_slots_filter_btn.active {
+    background: linear-gradient(135deg, #FF6600 0%, #e55c00 100%);
+    border-color: #FF6600;
+    color: #fff;
+}
+
+/* Slots Checkboxes Grid */
+.slots_checkboxes_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 8px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.slots_checkboxes_grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.slots_checkboxes_grid::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.slots_checkboxes_grid::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.slots_checkboxes_grid::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Slot Checkbox Item */
+.slot_checkbox_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slot_checkbox_item:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.slot_checkbox_item.is_checked {
+    background: linear-gradient(135deg, #fff8f5 0%, #fff5f0 100%);
+    border-left: 3px solid #FF6600;
+    border-color: #fdba74;
+}
+
+.slot_checkbox_item .slot_checkbox {
+    display: none;
+}
+
+.slot_checkbox_item .slot_checkbox_mark {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #cbd5e1;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    background: #fff;
+}
+
+.slot_checkbox_item.is_checked .slot_checkbox_mark {
+    background: #FF6600;
+    border-color: #FF6600;
+}
+
+.slot_checkbox_item.is_checked .slot_checkbox_mark::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 10px;
+    color: #fff;
+}
+
+.slot_checkbox_label {
+    font-size: 13px;
+    color: #334155;
+    flex: 1;
+}
+
+.slot_checkbox_item.is_checked .slot_checkbox_label {
+    color: #ea580c;
+    font-weight: 500;
+}
+
+/* No Results Message */
+.slots_no_results {
+    text-align: center;
+    padding: 20px;
+    color: #94a3b8;
+    font-size: 14px;
+    font-style: italic;
 }
 
 .ticket_form_field {
@@ -2803,10 +3225,14 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 
 <script>
 jQuery(document).ready(function($) {
+    // V1 Le Hiboo - Slots disponibles pour le formulaire
+    var availableSlots = <?php echo json_encode( $event_slots ); ?>;
+
     var BilletterieManager = {
         prefix: '<?php echo esc_js( $_prefix ); ?>',
         ticketIndex: <?php echo count( $tickets ); ?>,
         tarifIndex: <?php echo count( $external_prices ); ?>,
+        availableSlots: availableSlots,
 
         init: function() {
             this.bindEvents();
@@ -2884,6 +3310,33 @@ jQuery(document).ready(function($) {
                 self.updateRegistrationOptionUI($(this));
             });
 
+            // V1 Le Hiboo - Accordéon pour les billets
+            $(document).on('click', '.ticket_accordion_header', function(e) {
+                // Éviter de déclencher si on clique sur un élément interactif
+                if ($(e.target).closest('input, button, select, textarea, a').length === 0) {
+                    self.toggleTicketAccordion($(this));
+                }
+            });
+
+            // Accessibilité clavier pour l'accordéon
+            $(document).on('keydown', '.ticket_accordion_header', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    self.toggleTicketAccordion($(this));
+                }
+            });
+
+            // V1 Le Hiboo - Boutons Tout déplier / Tout replier
+            $(document).on('click', '.btn_expand_all', function(e) {
+                e.preventDefault();
+                self.expandAllTickets();
+            });
+
+            $(document).on('click', '.btn_collapse_all', function(e) {
+                e.preventDefault();
+                self.collapseAllTickets();
+            });
+
             // V1 Le Hiboo - Toggle slots_mode pour chaque billet
             $(document).on('change', '.slots_mode_radio', function() {
                 self.handleTicketSlotsMode($(this));
@@ -2892,6 +3345,199 @@ jQuery(document).ready(function($) {
             $(document).on('click', '.slots_mode_option', function() {
                 var $radio = $(this).find('.slots_mode_radio');
                 $radio.prop('checked', true).trigger('change');
+            });
+
+            // V1 Le Hiboo - Recherche dans les créneaux des billets existants
+            $(document).on('input', '.ticket_slots_search_input', function() {
+                self.filterTicketSlots($(this));
+            });
+
+            // V1 Le Hiboo - Filtres de date pour les créneaux
+            $(document).on('click', '.ticket_slots_filter_btn', function(e) {
+                e.preventDefault();
+                self.applyTicketSlotsDateFilter($(this));
+            });
+
+            // V1 Le Hiboo - Clic sur un créneau checkbox
+            $(document).on('click', '.slot_checkbox_item', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                self.toggleSlotCheckbox($(this));
+            });
+        },
+
+        // V1 Le Hiboo - Filtrer les créneaux par recherche textuelle
+        filterTicketSlots: function($input) {
+            var query = $input.val().toLowerCase().trim();
+            var $wrapper = $input.closest('.slots_checkboxes_wrapper');
+            var $grid = $wrapper.find('.slots_checkboxes_grid');
+            var visibleCount = 0;
+
+            $grid.find('.slot_checkbox_item').each(function() {
+                var label = $(this).find('.slot_checkbox_label').text().toLowerCase();
+                if (query === '' || label.indexOf(query) > -1) {
+                    $(this).show();
+                    visibleCount++;
+                } else {
+                    $(this).hide();
+                }
+            });
+
+            // Afficher/masquer le message "aucun résultat"
+            if (visibleCount === 0) {
+                $wrapper.find('.slots_no_results').show();
+            } else {
+                $wrapper.find('.slots_no_results').hide();
+            }
+        },
+
+        // V1 Le Hiboo - Appliquer un filtre de date
+        applyTicketSlotsDateFilter: function($btn) {
+            var filter = $btn.data('filter');
+            var $wrapper = $btn.closest('.slots_checkboxes_wrapper');
+            var $grid = $wrapper.find('.slots_checkboxes_grid');
+
+            // Mettre à jour l'état actif des boutons
+            $wrapper.find('.ticket_slots_filter_btn').removeClass('active');
+            $btn.addClass('active');
+
+            // Calculer les dates de référence
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            var startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Lundi
+
+            var endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6); // Dimanche
+
+            var startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            var endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+            var startOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+            var endOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+
+            var visibleCount = 0;
+
+            $grid.find('.slot_checkbox_item').each(function() {
+                var slotDateStr = $(this).data('slot-date');
+                if (!slotDateStr) {
+                    $(this).show();
+                    visibleCount++;
+                    return;
+                }
+
+                var slotDate = new Date(slotDateStr);
+                slotDate.setHours(0, 0, 0, 0);
+
+                var show = true;
+
+                switch (filter) {
+                    case 'this_week':
+                        show = slotDate >= startOfWeek && slotDate <= endOfWeek;
+                        break;
+                    case 'this_month':
+                        show = slotDate >= startOfMonth && slotDate <= endOfMonth;
+                        break;
+                    case 'next_month':
+                        show = slotDate >= startOfNextMonth && slotDate <= endOfNextMonth;
+                        break;
+                    case 'all':
+                    default:
+                        show = true;
+                        break;
+                }
+
+                if (show) {
+                    $(this).show();
+                    visibleCount++;
+                } else {
+                    $(this).hide();
+                }
+            });
+
+            // Afficher/masquer le message "aucun résultat"
+            if (visibleCount === 0) {
+                $wrapper.find('.slots_no_results').show();
+            } else {
+                $wrapper.find('.slots_no_results').hide();
+            }
+        },
+
+        // V1 Le Hiboo - Toggle checkbox de créneau
+        toggleSlotCheckbox: function($item) {
+            var $checkbox = $item.find('.slot_checkbox');
+            var isChecked = $checkbox.prop('checked');
+
+            // Toggle l'état
+            $checkbox.prop('checked', !isChecked);
+            $item.toggleClass('is_checked', !isChecked);
+
+            // Mettre à jour le badge du ticket
+            this.updateTicketSlotsBadge($item);
+        },
+
+        // V1 Le Hiboo - Mettre à jour le badge du billet
+        updateTicketSlotsBadge: function($item) {
+            var $ticketItem = $item.closest('.ticket_form_item');
+            var $badge = $ticketItem.find('.ticket_slots_badge');
+            var slotsMode = $ticketItem.find('.slots_mode_radio:checked').val();
+
+            if (slotsMode === 'all') {
+                $badge.text('<?php echo esc_js( __( 'Tous les créneaux', 'eventlist' ) ); ?>');
+            } else {
+                var selectedCount = $ticketItem.find('.slot_checkbox:checked').length;
+                if (selectedCount === 0) {
+                    $badge.text('<?php echo esc_js( __( 'Aucun créneau', 'eventlist' ) ); ?>');
+                } else if (selectedCount === 1) {
+                    $badge.text('<?php echo esc_js( __( '1 créneau sélectionné', 'eventlist' ) ); ?>');
+                } else {
+                    $badge.text(selectedCount + ' <?php echo esc_js( __( 'créneaux sélectionnés', 'eventlist' ) ); ?>');
+                }
+            }
+        },
+
+        // V1 Le Hiboo - Toggle accordéon billet
+        toggleTicketAccordion: function($header) {
+            var $ticketItem = $header.closest('.ticket_form_item');
+            var $body = $ticketItem.find('.ticket_accordion_body');
+            var isExpanded = $ticketItem.hasClass('is_expanded');
+
+            if (isExpanded) {
+                // Fermer
+                $body.slideUp(250, function() {
+                    $ticketItem.removeClass('is_expanded');
+                    $header.attr('aria-expanded', 'false');
+                });
+            } else {
+                // Ouvrir
+                $ticketItem.addClass('is_expanded');
+                $header.attr('aria-expanded', 'true');
+                $body.slideDown(250);
+            }
+        },
+
+        // V1 Le Hiboo - Déplier tous les billets
+        expandAllTickets: function() {
+            var self = this;
+            $('.ticket_form_item').each(function() {
+                var $ticketItem = $(this);
+                if (!$ticketItem.hasClass('is_expanded')) {
+                    var $header = $ticketItem.find('.ticket_accordion_header');
+                    self.toggleTicketAccordion($header);
+                }
+            });
+        },
+
+        // V1 Le Hiboo - Replier tous les billets
+        collapseAllTickets: function() {
+            var self = this;
+            $('.ticket_form_item').each(function() {
+                var $ticketItem = $(this);
+                if ($ticketItem.hasClass('is_expanded')) {
+                    var $header = $ticketItem.find('.ticket_accordion_header');
+                    self.toggleTicketAccordion($header);
+                }
             });
         },
 
@@ -2981,6 +3627,7 @@ jQuery(document).ready(function($) {
         handleTicketSlotsMode: function($radio) {
             var $item = $radio.closest('.ticket_form_item');
             var mode = $radio.val();
+            var $badge = $item.find('.ticket_slots_badge');
 
             // Update UI
             $item.find('.slots_mode_option').removeClass('selected');
@@ -2989,10 +3636,18 @@ jQuery(document).ready(function($) {
             // Show/hide checkboxes
             if (mode === 'selected') {
                 $item.find('.slots_checkboxes_wrapper').slideDown(200);
+                // Mettre à jour le badge avec le nombre de créneaux sélectionnés
+                var selectedCount = $item.find('.slot_checkbox:checked').length;
+                if (selectedCount === 0) {
+                    $badge.text('<?php echo esc_js( __( 'Aucun créneau', 'eventlist' ) ); ?>');
+                } else if (selectedCount === 1) {
+                    $badge.text('<?php echo esc_js( __( '1 créneau sélectionné', 'eventlist' ) ); ?>');
+                } else {
+                    $badge.text(selectedCount + ' <?php echo esc_js( __( 'créneaux sélectionnés', 'eventlist' ) ); ?>');
+                }
             } else {
                 $item.find('.slots_checkboxes_wrapper').slideUp(200);
-                // Optionally uncheck all checkboxes when switching to "all"
-                // $item.find('.slot_checkbox').prop('checked', false);
+                $badge.text('<?php echo esc_js( __( 'Tous les créneaux', 'eventlist' ) ); ?>');
             }
         },
 
@@ -3016,24 +3671,33 @@ jQuery(document).ready(function($) {
                 return;
             }
 
-            // Animation de confirmation avec changement de couleur
-            var originalText = $btnText.text();
-            $btn.addClass('saved');
-            $btnText.text('<?php echo esc_js( __( 'Sauvegardé !', 'eventlist' ) ); ?>');
+            // V1 Le Hiboo - Déclencher la sauvegarde complète via le bouton principal
+            var $mainSaveBtn = $('#el-btn-save');
+            if ($mainSaveBtn.length) {
+                // Animation de feedback sur le bouton du billet
+                var originalText = $btnText.text();
+                $btn.addClass('saved');
+                $btnText.text('<?php echo esc_js( __( 'Sauvegarde...', 'eventlist' ) ); ?>');
 
-            // Changer l'icône en checkmark temporairement
-            var $svg = $btn.find('svg');
-            var originalSvg = $svg.html();
-            $svg.html('<polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline>');
+                // Changer l'icône en loader temporairement
+                var $svg = $btn.find('svg');
+                var originalSvg = $svg.html();
+                $svg.html('<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="60" stroke-dashoffset="15"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></circle>');
 
-            setTimeout(function() {
-                $btn.removeClass('saved');
-                $btnText.text(originalText);
-                $svg.html(originalSvg);
-            }, 2500);
+                // Déclencher le clic sur le bouton principal
+                $mainSaveBtn.trigger('click');
 
-            if (window.ToastNotification) {
-                window.ToastNotification.success('<?php echo esc_js( __( 'Billet sauvegardé', 'eventlist' ) ); ?>');
+                // Rétablir le bouton après un délai
+                setTimeout(function() {
+                    $btn.removeClass('saved');
+                    $btnText.text(originalText);
+                    $svg.html(originalSvg);
+                }, 3000);
+            } else {
+                // Fallback si le bouton principal n'existe pas
+                if (window.ToastNotification) {
+                    window.ToastNotification.warning('<?php echo esc_js( __( 'Utilisez le bouton Enregistrer en haut de la page', 'eventlist' ) ); ?>');
+                }
             }
         },
 
@@ -3475,26 +4139,79 @@ jQuery(document).ready(function($) {
 
         buildTicketHTML: function(index, data) {
             var prefix = this.prefix;
-            var slotsHtml = '';
+            var self = this;
 
-            // Générer les checkboxes des créneaux si mode selected
-            if (data.slotsMode === 'selected' && data.slots.length > 0) {
-                slotsHtml = data.slots.map(function(slotId, i) {
-                    return '<input type="hidden" name="' + prefix + 'ticket[' + index + '][slots][' + i + ']" value="' + slotId + '">';
-                }).join('');
-            }
-
-            // Affichage condensé du mode créneaux
+            // Affichage condensé du mode créneaux pour le badge
             var slotsModeLabel = data.slotsMode === 'all'
                 ? '<?php echo esc_js( __( 'Tous les créneaux', 'eventlist' ) ); ?>'
                 : data.slots.length + ' <?php echo esc_js( __( 'créneau(x) sélectionné(s)', 'eventlist' ) ); ?>';
 
-            var html = '<div class="ticket_form_item" data-index="' + index + '">' +
+            // Construire la section des créneaux si des slots sont disponibles
+            var slotsSectionHtml = '';
+            if (this.availableSlots && this.availableSlots.length > 0) {
+                // Générer les checkboxes pour chaque slot
+                var slotsCheckboxesHtml = '';
+                this.availableSlots.forEach(function(slot) {
+                    var isChecked = data.slots.indexOf(slot.id) > -1;
+                    var checkedClass = isChecked ? 'is_checked' : '';
+                    var checkedAttr = isChecked ? 'checked' : '';
+                    slotsCheckboxesHtml += '<label class="slot_checkbox_item ' + checkedClass + '" data-slot-date="' + slot.date + '">' +
+                        '<input type="checkbox" name="' + prefix + 'ticket[' + index + '][slots][]" value="' + slot.id + '" class="slot_checkbox" ' + checkedAttr + '>' +
+                        '<span class="slot_checkbox_mark"></span>' +
+                        '<span class="slot_checkbox_label">' + self.escapeHtml(slot.label) + '</span>' +
+                    '</label>';
+                });
+
+                slotsSectionHtml = '<div class="ticket_form_field ticket_slots_section">' +
+                    '<label class="field_label"><strong><?php echo esc_js( __( 'Créneaux associés', 'eventlist' ) ); ?></strong> :</label>' +
+                    '<p class="field_hint"><?php echo esc_js( __( 'Ce billet est disponible pour quels créneaux ?', 'eventlist' ) ); ?></p>' +
+                    '<div class="slots_mode_options">' +
+                        '<label class="slots_mode_option ' + (data.slotsMode === 'all' ? 'selected' : '') + '">' +
+                            '<input type="radio" name="' + prefix + 'ticket[' + index + '][slots_mode]" value="all" class="slots_mode_radio" ' + (data.slotsMode === 'all' ? 'checked' : '') + '>' +
+                            '<span class="slots_mode_checkmark"></span>' +
+                            '<span class="slots_mode_text"><?php echo esc_js( __( 'Tous les créneaux', 'eventlist' ) ); ?></span>' +
+                        '</label>' +
+                        '<label class="slots_mode_option ' + (data.slotsMode === 'selected' ? 'selected' : '') + '">' +
+                            '<input type="radio" name="' + prefix + 'ticket[' + index + '][slots_mode]" value="selected" class="slots_mode_radio" ' + (data.slotsMode === 'selected' ? 'checked' : '') + '>' +
+                            '<span class="slots_mode_checkmark"></span>' +
+                            '<span class="slots_mode_text"><?php echo esc_js( __( 'Créneaux spécifiques', 'eventlist' ) ); ?></span>' +
+                        '</label>' +
+                    '</div>' +
+                    '<div class="slots_checkboxes_wrapper" style="' + (data.slotsMode === 'selected' ? '' : 'display: none;') + '">' +
+                        '<div class="ticket_slots_search_bar">' +
+                            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                                '<circle cx="11" cy="11" r="8"></circle>' +
+                                '<path d="m21 21-4.35-4.35"></path>' +
+                            '</svg>' +
+                            '<input type="text" class="ticket_slots_search_input" placeholder="<?php echo esc_js( __( 'Rechercher un créneau...', 'eventlist' ) ); ?>" data-ticket-index="' + index + '">' +
+                        '</div>' +
+                        '<div class="ticket_slots_date_filters">' +
+                            '<button type="button" class="ticket_slots_filter_btn active" data-filter="all" data-ticket-index="' + index + '"><?php echo esc_js( __( 'Tout', 'eventlist' ) ); ?></button>' +
+                            '<button type="button" class="ticket_slots_filter_btn" data-filter="this_week" data-ticket-index="' + index + '"><?php echo esc_js( __( 'Cette semaine', 'eventlist' ) ); ?></button>' +
+                            '<button type="button" class="ticket_slots_filter_btn" data-filter="this_month" data-ticket-index="' + index + '"><?php echo esc_js( __( 'Ce mois', 'eventlist' ) ); ?></button>' +
+                            '<button type="button" class="ticket_slots_filter_btn" data-filter="next_month" data-ticket-index="' + index + '"><?php echo esc_js( __( 'Mois prochain', 'eventlist' ) ); ?></button>' +
+                        '</div>' +
+                        '<div class="slots_checkboxes_grid">' + slotsCheckboxesHtml + '</div>' +
+                        '<p class="slots_no_results" style="display: none;"><?php echo esc_js( __( 'Aucun créneau ne correspond aux critères.', 'eventlist' ) ); ?></p>' +
+                    '</div>' +
+                '</div>';
+            }
+
+            // Nouveau billet = ouvert par défaut
+            var html = '<div class="ticket_form_item is_expanded" data-index="' + index + '">' +
                 '<div class="ticket_form_content">' +
-                    '<div class="ticket_form_header">' +
-                        '<h4 class="ticket_title">' + this.escapeHtml(data.name) + '</h4>' +
+                    '<div class="ticket_form_header ticket_accordion_header" role="button" aria-expanded="true" tabindex="0">' +
+                        '<div class="ticket_header_left">' +
+                            '<button type="button" class="ticket_accordion_toggle" aria-label="<?php echo esc_js( __( 'Déplier/Replier', 'eventlist' ) ); ?>">' +
+                                '<svg class="accordion_chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                                    '<polyline points="6 9 12 15 18 9"></polyline>' +
+                                '</svg>' +
+                            '</button>' +
+                            '<h4 class="ticket_title">' + this.escapeHtml(data.name) + '</h4>' +
+                        '</div>' +
                         '<span class="ticket_slots_badge">' + slotsModeLabel + '</span>' +
                     '</div>' +
+                    '<div class="ticket_accordion_body">' +
                     '<div class="ticket_form_field">' +
                         '<label class="field_label"><strong><?php echo esc_js( __( 'Nom du billet', 'eventlist' ) ); ?></strong> <span class="required">*</span> :</label>' +
                         '<input type="text" name="' + prefix + 'ticket[' + index + '][name_ticket]" class="billetterie_input ticket_name_input" value="' + this.escapeHtml(data.name) + '" required>' +
@@ -3524,9 +4241,9 @@ jQuery(document).ready(function($) {
                     '<input type="hidden" name="' + prefix + 'ticket[' + index + '][start_ticket_time]" value="' + data.startTime + '">' +
                     '<input type="hidden" name="' + prefix + 'ticket[' + index + '][close_ticket_date]" value="' + data.closeDate + '">' +
                     '<input type="hidden" name="' + prefix + 'ticket[' + index + '][close_ticket_time]" value="' + data.closeTime + '">' +
-                    '<input type="hidden" name="' + prefix + 'ticket[' + index + '][slots_mode]" value="' + data.slotsMode + '">' +
-                    slotsHtml +
+                    slotsSectionHtml +
                     '<input type="hidden" name="' + prefix + 'ticket[' + index + '][is_active]" value="yes" class="ticket_is_active">' +
+                    '</div>' + // Fin ticket_accordion_body
                     '<div class="ticket_form_actions">' +
                         '<div class="ticket_actions_left">' +
                             '<button type="button" class="btn_save_ticket el_btn_save">' +
