@@ -553,49 +553,65 @@ if ( ! $can_vendor_publish ) {
 <!-- Modal de validation -->
 <div id="publication_validation_modal" class="validation_modal_overlay" style="display: none;">
     <div class="validation_modal">
+        <button type="button" class="validation_modal_close">&times;</button>
+        <div class="validation_modal_icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+        </div>
         <div class="validation_modal_header">
             <h3><?php esc_html_e( 'Informations manquantes', 'eventlist' ); ?></h3>
-            <button type="button" class="validation_modal_close">&times;</button>
+            <p class="validation_modal_intro"><?php esc_html_e( 'Pour mettre votre activité en ligne, veuillez compléter les éléments suivants :', 'eventlist' ); ?></p>
         </div>
         <div class="validation_modal_body">
-            <p class="validation_modal_intro"><?php esc_html_e( 'Pour mettre votre activité en ligne, veuillez compléter les informations suivantes :', 'eventlist' ); ?></p>
-
-            <div id="profile_errors_section" style="display: none;">
-                <h4><i class="fas fa-user"></i> <?php esc_html_e( 'Profil partenaire', 'eventlist' ); ?></h4>
+            <div id="profile_errors_section" class="validation_section" style="display: none;">
+                <div class="validation_section_header">
+                    <i class="fas fa-user-circle"></i>
+                    <span><?php esc_html_e( 'Profil partenaire', 'eventlist' ); ?></span>
+                </div>
                 <ul id="profile_errors_list"></ul>
                 <a href="<?php echo esc_url( add_query_arg( 'vendor', 'profile', get_myaccount_page() ) ); ?>" class="validation_link">
                     <?php esc_html_e( 'Compléter mon profil', 'eventlist' ); ?> <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
 
-            <div id="documents_errors_section" style="display: none;">
-                <h4><i class="fas fa-folder"></i> <?php esc_html_e( 'Documents', 'eventlist' ); ?></h4>
+            <div id="documents_errors_section" class="validation_section" style="display: none;">
+                <div class="validation_section_header">
+                    <i class="fas fa-folder-open"></i>
+                    <span><?php esc_html_e( 'Documents', 'eventlist' ); ?></span>
+                </div>
                 <ul id="documents_errors_list"></ul>
                 <a href="<?php echo esc_url( add_query_arg( 'vendor', 'documents', get_myaccount_page() ) ); ?>" class="validation_link">
                     <?php esc_html_e( 'Gérer mes documents', 'eventlist' ); ?> <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
 
-            <div id="activity_errors_section" style="display: none;">
-                <h4><i class="fas fa-calendar-alt"></i> <?php esc_html_e( 'Fiche activité', 'eventlist' ); ?></h4>
+            <div id="activity_errors_section" class="validation_section" style="display: none;">
+                <div class="validation_section_header">
+                    <i class="fas fa-calendar-check"></i>
+                    <span><?php esc_html_e( 'Fiche activité', 'eventlist' ); ?></span>
+                </div>
                 <ul id="activity_errors_list"></ul>
             </div>
         </div>
         <div class="validation_modal_footer">
-            <button type="button" class="validation_modal_btn_close"><?php esc_html_e( 'Fermer', 'eventlist' ); ?></button>
+            <button type="button" class="validation_modal_btn_close"><?php esc_html_e( 'J\'ai compris', 'eventlist' ); ?></button>
         </div>
     </div>
 </div>
 
 <style>
-/* Modal Validation */
+/* Modal Validation - Nouveau design */
 .validation_modal_overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(4px);
     z-index: 99999;
     display: flex;
     align-items: center;
@@ -605,96 +621,116 @@ if ( ! $can_vendor_publish ) {
 
 .validation_modal {
     background: #fff;
-    border-radius: 16px;
-    max-width: 550px;
+    border-radius: 20px;
+    max-width: 480px;
     width: 100%;
-    max-height: 80vh;
+    max-height: 85vh;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: modalSlideIn 0.3s ease;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
 }
 
 @keyframes modalSlideIn {
     from {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: scale(0.95) translateY(-10px);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: scale(1) translateY(0);
     }
 }
 
-.validation_modal_header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 24px;
-    border-bottom: 1px solid #e5e7eb;
-    background: #fef3c7;
-}
-
-.validation_modal_header h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: #92400e;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.validation_modal_header h3::before {
-    content: '⚠️';
-}
-
 .validation_modal_close {
-    background: none;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: #f1f5f9;
     border: none;
-    font-size: 28px;
-    color: #92400e;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 20px;
+    color: #64748b;
     cursor: pointer;
-    padding: 0;
-    line-height: 1;
-    opacity: 0.7;
-    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 10;
 }
 
 .validation_modal_close:hover {
-    opacity: 1;
+    background: #e2e8f0;
+    color: #334155;
 }
 
-.validation_modal_body {
-    padding: 24px;
-    overflow-y: auto;
-    max-height: 50vh;
+.validation_modal_icon {
+    display: flex;
+    justify-content: center;
+    padding: 32px 24px 16px;
+}
+
+.validation_modal_icon svg {
+    color: #f59e0b;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+.validation_modal_header {
+    text-align: center;
+    padding: 0 24px 20px;
+}
+
+.validation_modal_header h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
 }
 
 .validation_modal_intro {
-    margin: 0 0 20px;
-    color: #4b5563;
+    margin: 0;
+    color: #64748b;
     font-size: 14px;
+    line-height: 1.5;
 }
 
-.validation_modal_body h4 {
-    font-size: 15px;
-    font-weight: 600;
-    color: #1f2937;
-    margin: 20px 0 12px;
+.validation_modal_body {
+    padding: 0 24px;
+    overflow-y: auto;
+    max-height: 40vh;
+}
+
+.validation_section {
+    background: #fafafa;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.validation_section:last-child {
+    margin-bottom: 0;
+}
+
+.validation_section_header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.validation_modal_body h4:first-of-type {
-    margin-top: 0;
-}
-
-.validation_modal_body h4 i {
-    color: #FF601F;
+    gap: 10px;
+    margin-bottom: 12px;
     font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.validation_section_header i {
+    color: #FF601F;
+    font-size: 16px;
 }
 
 .validation_modal_body ul {
@@ -704,19 +740,23 @@ if ( ! $can_vendor_publish ) {
 }
 
 .validation_modal_body ul li {
-    padding: 8px 0 8px 24px;
+    padding: 6px 0 6px 20px;
     position: relative;
     color: #dc2626;
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 500;
 }
 
 .validation_modal_body ul li::before {
-    content: '✕';
+    content: '';
     position: absolute;
     left: 0;
-    color: #dc2626;
-    font-weight: bold;
-    font-size: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    background: #dc2626;
+    border-radius: 50%;
 }
 
 .validation_link {
@@ -727,33 +767,57 @@ if ( ! $can_vendor_publish ) {
     font-size: 13px;
     font-weight: 600;
     text-decoration: none;
-    margin-top: 4px;
+    padding: 6px 0;
+    transition: gap 0.2s;
 }
 
 .validation_link:hover {
-    text-decoration: underline;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.validation_link i {
+    font-size: 11px;
 }
 
 .validation_modal_footer {
-    padding: 16px 24px;
-    border-top: 1px solid #e5e7eb;
-    text-align: right;
+    padding: 20px 24px 24px;
+    text-align: center;
 }
 
 .validation_modal_btn_close {
     background: #FF601F;
     color: #fff;
     border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    width: 100%;
 }
 
 .validation_modal_btn_close:hover {
     background: #e5561c;
+    transform: translateY(-1px);
+}
+
+/* Champs avec erreur de validation */
+.validation_field_error {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+}
+
+.validation_field_error + .select2-container .select2-selection,
+.select2-container--default .select2-selection.validation_field_error {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+}
+
+/* Label avec erreur */
+.validation_label_error {
+    color: #dc2626 !important;
 }
 </style>
 
@@ -871,59 +935,106 @@ jQuery(document).ready(function($) {
         },
 
         validateActivityFields: function() {
+            var self = this;
             var errors = [];
 
+            // Réinitialiser les erreurs visuelles
+            self.clearFieldErrors();
+
+            // Helper pour obtenir la valeur Select2
+            function getSelect2Value($select) {
+                if ($select.length === 0) return null;
+                // Essayer Select2 d'abord
+                if ($select.hasClass('select2-hidden-accessible')) {
+                    return $select.select2('data');
+                }
+                return $select.val();
+            }
+
             // 1. Nom de l'activité
-            var name = $('input[name="name_event"]').val();
+            var $nameField = $('input[name="name_event"]');
+            var name = $nameField.val();
             if (!name || name.trim() === '') {
-                errors.push({ field: "Nom de l'activité", message: "Le nom de l'activité est obligatoire" });
+                errors.push({ field: "Nom de l'activité", selector: 'input[name="name_event"]' });
+                self.markFieldError($nameField);
             }
 
             // 2. Catégorie
-            var category = $('select[name="event_cat"]').val();
+            var $catField = $('select[name="event_cat"]');
+            var category = $catField.val();
             if (!category || category === '' || category === '0') {
-                errors.push({ field: "Catégorie", message: "La catégorie est obligatoire" });
+                errors.push({ field: "Catégorie", selector: 'select[name="event_cat"]' });
+                self.markFieldError($catField);
             }
 
-            // 3. Type d'événement
-            var eventTag = $('select[name="event_tag[]"]').val();
-            if (!eventTag || eventTag.length === 0) {
-                errors.push({ field: "Type d'événement", message: "Le type d'événement est obligatoire" });
+            // 3. Type d'événement (Select2 multi)
+            var $tagField = $('select[name="event_tag[]"]');
+            var eventTagData = getSelect2Value($tagField);
+            var hasEventTag = false;
+            if (Array.isArray(eventTagData) && eventTagData.length > 0) {
+                // Select2 data format
+                hasEventTag = eventTagData.some(function(item) {
+                    return item.id && item.id !== '';
+                });
+            } else if (eventTagData && eventTagData.length > 0) {
+                // Regular val()
+                hasEventTag = true;
+            }
+            if (!hasEventTag) {
+                errors.push({ field: "Type d'événement", selector: 'select[name="event_tag[]"]' });
+                self.markFieldError($tagField);
             }
 
-            // 4. Public visé
-            var eventPublic = $('select[name="event_public[]"]').val();
-            if (!eventPublic || eventPublic.length === 0) {
-                errors.push({ field: "Public visé", message: "Le public visé est obligatoire" });
+            // 4. Public visé (Select2 multi)
+            var $publicField = $('select[name="event_public[]"]');
+            var eventPublicData = getSelect2Value($publicField);
+            var hasEventPublic = false;
+            if (Array.isArray(eventPublicData) && eventPublicData.length > 0) {
+                hasEventPublic = eventPublicData.some(function(item) {
+                    return item.id && item.id !== '';
+                });
+            } else if (eventPublicData && eventPublicData.length > 0) {
+                hasEventPublic = true;
+            }
+            if (!hasEventPublic) {
+                errors.push({ field: "Public visé", selector: 'select[name="event_public[]"]' });
+                self.markFieldError($publicField);
             }
 
             // 5. Type de lieu et adresse
             var locationType = $('input[name="ova_mb_event_type_location"]:checked, input[name="type_location"]:checked').val();
             if (locationType === 'has_location' || locationType === '1') {
-                var address = $('input[name="ova_mb_event_map_address"]').val() || $('input[name="map_address"]').val();
+                var $addressField = $('input[name="ova_mb_event_map_address"], input[name="map_address"]').first();
+                var address = $addressField.val();
                 if (!address || address.trim() === '') {
-                    errors.push({ field: "Adresse", message: "L'adresse est obligatoire pour un lieu physique" });
+                    errors.push({ field: "Adresse", selector: 'input[name="ova_mb_event_map_address"]' });
+                    self.markFieldError($addressField);
                 }
             }
 
             // 6. Au moins 1 créneau
-            var hasSlot = $('.calendar_item, .schedule-item, .ticket_item').length > 0;
             var hasValidSlot = false;
-            $('.calendar_item, .ticket_item').each(function() {
-                var dateVal = $(this).find('input[type="date"], input[name*="date"]').val();
+            $('.calendar_item, .ticket_item, .slot_item').each(function() {
+                var dateVal = $(this).find('input[type="date"], input[name*="date"], input[name*="start"]').val();
                 if (dateVal && dateVal.trim() !== '') {
                     hasValidSlot = true;
                     return false;
                 }
             });
+            // Vérifier aussi les inputs de date globaux
             if (!hasValidSlot) {
-                errors.push({ field: "Créneau", message: "Au moins un créneau est obligatoire" });
+                $('input[name*="calendar"][name*="date"], input[name*="slot"][name*="date"]').each(function() {
+                    if ($(this).val() && $(this).val().trim() !== '') {
+                        hasValidSlot = true;
+                        return false;
+                    }
+                });
+            }
+            if (!hasValidSlot) {
+                errors.push({ field: "Créneau", selector: '.calendar_section, #section_calendar' });
             }
 
-            // 7. Gratuit ou Payant - vérifier si un tarif existe
-            // On suppose que si des tickets existent, c'est OK
-
-            // 8. Description >= 100 caractères
+            // 7. Description >= 100 caractères
             var descContent = '';
             if (typeof tinymce !== 'undefined' && tinymce.get('content_event')) {
                 descContent = tinymce.get('content_event').getContent({ format: 'text' });
@@ -933,16 +1044,40 @@ jQuery(document).ready(function($) {
             }
             descContent = descContent.replace(/\s+/g, ' ').trim();
             if (descContent.length < 100) {
-                errors.push({ field: "Description", message: "La description doit contenir au moins 100 caractères (actuellement : " + descContent.length + ")" });
+                errors.push({ field: "Description (min. 100 caractères)", selector: '#content_event' });
             }
 
-            // 9. Image de présentation
-            var thumbnail = $('input[name="img_thumbnail"]').val();
+            // 8. Image de présentation
+            var $thumbField = $('input[name="img_thumbnail"]');
+            var thumbnail = $thumbField.val();
             if (!thumbnail || thumbnail === '' || thumbnail === '0') {
-                errors.push({ field: "Image de présentation", message: "L'image de présentation est obligatoire" });
+                errors.push({ field: "Image de présentation", selector: 'input[name="img_thumbnail"]' });
             }
 
             return errors;
+        },
+
+        markFieldError: function($field) {
+            if ($field.length === 0) return;
+
+            // Pour Select2
+            if ($field.hasClass('select2-hidden-accessible')) {
+                $field.next('.select2-container').find('.select2-selection').addClass('validation_field_error');
+            } else {
+                $field.addClass('validation_field_error');
+            }
+
+            // Marquer le label aussi
+            var $wrapper = $field.closest('.vendor_field, .el_form_group, .form-group');
+            if ($wrapper.length) {
+                $wrapper.find('label').first().addClass('validation_label_error');
+            }
+        },
+
+        clearFieldErrors: function() {
+            $('.validation_field_error').removeClass('validation_field_error');
+            $('.validation_label_error').removeClass('validation_label_error');
+            $('.select2-selection.validation_field_error').removeClass('validation_field_error');
         },
 
         showValidationModal: function(profileErrors, documentErrors, activityErrors) {
@@ -980,7 +1115,10 @@ jQuery(document).ready(function($) {
         },
 
         closeModal: function() {
-            $('#publication_validation_modal').fadeOut(200);
+            var self = this;
+            $('#publication_validation_modal').fadeOut(200, function() {
+                // Ne pas effacer les erreurs pour que l'utilisateur voit les champs à corriger
+            });
             $('body').css('overflow', '');
         },
 
