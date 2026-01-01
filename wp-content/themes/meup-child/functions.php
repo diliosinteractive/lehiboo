@@ -316,17 +316,31 @@ function lehiboo_vendor_page_body_class( $classes ) {
 }
 
 /**
- * Cacher le header principal sur les pages partenaires
- * Le menu sera rendu directement dans le template via lehiboo_render_vendor_header_menu()
+ * Injecter le header (logo + boutons) sur TOUTES les pages partenaires
+ * via JavaScript pour fonctionner avec tous les templates
  */
-add_action( 'wp_head', 'lehiboo_hide_header_on_vendor_pages' );
-function lehiboo_hide_header_on_vendor_pages() {
+add_action( 'wp_head', 'lehiboo_vendor_header_styles' );
+function lehiboo_vendor_header_styles() {
 	$vendor_page = isset( $_GET['vendor'] ) ? sanitize_text_field( $_GET['vendor'] ) : '';
 
 	if ( ! empty( $vendor_page ) ) {
+		// URLs
+		$home_url = home_url( '/' );
+		$my_account_url = function_exists( 'get_myaccount_page' ) ? get_myaccount_page() : home_url( '/member-account/' );
+		$create_event_url = add_query_arg( 'vendor', 'listing-edit', $my_account_url );
+
+		// Logo
+		$logo_url = get_theme_mod( 'logo', '' );
+		if ( empty( $logo_url ) ) {
+			$custom_logo_id = get_theme_mod( 'custom_logo' );
+			if ( $custom_logo_id ) {
+				$logo_url = wp_get_attachment_image_url( $custom_logo_id, 'full' );
+			}
+		}
+		$site_name = get_bloginfo( 'name' );
 		?>
 		<style type="text/css">
-			/* Cacher TOUS les headers et menus originaux */
+			/* Cacher TOUS les headers originaux */
 			body.is-vendor-page .ovaheader,
 			body.is-vendor-page .elementor-element-717d424,
 			body.is-vendor-page .ova_menu_clasic,
@@ -335,12 +349,7 @@ function lehiboo_hide_header_on_vendor_pages() {
 			body.is-vendor-page header.ovatheme_header_default,
 			body.is-vendor-page .ovamenu_shrink,
 			body.is-vendor-page .ovamenu_shrink_mobile,
-			body.is-vendor-page .navbar-nav,
-			body.is-vendor-page .nav.navbar-nav,
-			body.is-vendor-page #header_menu,
-			body.is-vendor-page .vendor-content-header .menu,
-			body.is-vendor-page .vendor-content-header ul.menu,
-			body.is-vendor-page .vendor-content-header > ul {
+			body.is-vendor-page #header_menu {
 				display: none !important;
 			}
 
@@ -357,7 +366,6 @@ function lehiboo_hide_header_on_vendor_pages() {
 				padding: 12px 24px;
 			}
 
-			/* Logo à gauche */
 			.vendor-content-header .vendor-header-logo {
 				display: flex !important;
 				align-items: center;
@@ -376,7 +384,6 @@ function lehiboo_hide_header_on_vendor_pages() {
 				color: #2F4858;
 			}
 
-			/* Navigation à droite */
 			.vendor-content-header .vendor-header-nav {
 				display: flex !important;
 				align-items: center;
@@ -403,7 +410,6 @@ function lehiboo_hide_header_on_vendor_pages() {
 				border-color: #cbd5e1;
 			}
 
-			/* Bouton CTA orange */
 			.vendor-content-header .vendor-header-nav a.btn-cta {
 				background: #FF601F;
 				color: #ffffff;
@@ -415,53 +421,44 @@ function lehiboo_hide_header_on_vendor_pages() {
 				border-color: #e5561c;
 			}
 		</style>
+		<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', function() {
+			// Ne pas ajouter si déjà présent
+			if (document.querySelector('.vendor-content-header')) return;
+
+			var contentsArea = document.querySelector('.vendor_wrap .contents');
+			if (!contentsArea) return;
+
+			// Créer le header
+			var header = document.createElement('div');
+			header.className = 'vendor-content-header';
+			header.innerHTML = '<a href="<?php echo esc_js( $home_url ); ?>" class="vendor-header-logo">' +
+				<?php if ( $logo_url ) : ?>
+				'<img src="<?php echo esc_js( $logo_url ); ?>" alt="<?php echo esc_js( $site_name ); ?>">' +
+				<?php else : ?>
+				'<span class="site-name"><?php echo esc_js( $site_name ); ?></span>' +
+				<?php endif; ?>
+				'</a>' +
+				'<div class="vendor-header-nav">' +
+				'<a href="<?php echo esc_js( $my_account_url ); ?>">Mon compte</a>' +
+				'<a href="<?php echo esc_js( $create_event_url ); ?>" class="btn-cta">+ Créer mon événement</a>' +
+				'</div>';
+
+			// Insérer au début de .contents
+			contentsArea.insertBefore(header, contentsArea.firstChild);
+		});
+		</script>
 		<?php
 	}
 }
 
 /**
- * Rendre le header (logo + boutons) dans le bloc central des pages partenaires
- * À appeler depuis les templates vendor
+ * Rendre le header (logo + boutons) - pour appel direct depuis templates
+ * (conservé pour compatibilité avec les templates déjà modifiés)
  */
 function lehiboo_render_vendor_header_menu() {
-	$vendor_page = isset( $_GET['vendor'] ) ? sanitize_text_field( $_GET['vendor'] ) : '';
-
-	if ( empty( $vendor_page ) ) {
-		return '';
-	}
-
-	// URLs
-	$home_url = home_url( '/' );
-	$my_account_url = function_exists( 'get_myaccount_page' ) ? get_myaccount_page() : home_url( '/member-account/' );
-	$create_event_url = add_query_arg( 'vendor', 'listing-edit', $my_account_url );
-
-	// Logo - essayer plusieurs sources
-	$logo_url = get_theme_mod( 'logo', '' );
-	if ( empty( $logo_url ) ) {
-		// Fallback: custom_logo de WordPress
-		$custom_logo_id = get_theme_mod( 'custom_logo' );
-		if ( $custom_logo_id ) {
-			$logo_url = wp_get_attachment_image_url( $custom_logo_id, 'full' );
-		}
-	}
-
-	ob_start();
-	?>
-	<div class="vendor-content-header">
-		<a href="<?php echo esc_url( $home_url ); ?>" class="vendor-header-logo">
-			<?php if ( $logo_url ) : ?>
-				<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php bloginfo( 'name' ); ?>">
-			<?php else : ?>
-				<span class="site-name"><?php bloginfo( 'name' ); ?></span>
-			<?php endif; ?>
-		</a>
-		<div class="vendor-header-nav">
-			<a href="<?php echo esc_url( $my_account_url ); ?>">Mon compte</a>
-			<a href="<?php echo esc_url( $create_event_url ); ?>" class="btn-cta">+ Créer mon événement</a>
-		</div>
-	</div>
-	<?php
-	return ob_get_clean();
+	// Retourner vide - le header est injecté via JS maintenant
+	return '';
 }
 
 // ========================================
