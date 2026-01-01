@@ -98,6 +98,71 @@
     transform: scale(1.1);
 }
 
+/* Badge de vérification (compte validé) */
+.verified_badge_orange {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+    z-index: 10;
+}
+
+.verified_badge_orange i {
+    color: #FFFFFF;
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+/* Tooltip sur le badge vérifié */
+.verified_badge_orange::before {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.verified_badge_orange::after {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1e293b;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    pointer-events: none;
+}
+
+.verified_badge_orange:hover::before,
+.verified_badge_orange:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
 /* Tooltip sur le crayon */
 .edit_profile_icon::before {
     content: attr(data-tooltip);
