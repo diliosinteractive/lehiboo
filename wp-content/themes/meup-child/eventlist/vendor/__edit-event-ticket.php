@@ -212,74 +212,6 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     <!-- Section Module de réservation interne -->
     <div class="billetterie_internal_section" style="<?php echo ($ticket_link === 'ticket_internal_link' || empty($ticket_link)) ? '' : 'display: none;'; ?>">
 
-        <!-- Créneaux Associés -->
-        <div class="creneaux_associes_wrapper">
-            <h5 class="subsection_title"><?php esc_html_e( 'Créneaux Associés', 'eventlist' ); ?></h5>
-            <p class="subsection_hint"><?php esc_html_e( 'Sélectionnez certains ou tous les créneaux d\'activités', 'eventlist' ); ?></p>
-
-            <div class="slots_selection">
-                <label class="slots_option <?php echo $slots_mode === 'all' ? 'selected' : ''; ?>">
-                    <input type="radio"
-                           name="<?php echo esc_attr( $_prefix.'slots_mode' ); ?>"
-                           value="all"
-                           class="slots_radio"
-                           <?php checked( $slots_mode, 'all' ); ?>>
-                    <span class="slots_checkmark"></span>
-                    <span class="slots_label"><?php esc_html_e( 'Tous les créneaux', 'eventlist' ); ?></span>
-                </label>
-
-                <label class="slots_option slots_select_option <?php echo $slots_mode === 'selected' ? 'selected' : ''; ?>">
-                    <input type="radio"
-                           name="<?php echo esc_attr( $_prefix.'slots_mode' ); ?>"
-                           value="selected"
-                           class="slots_radio"
-                           <?php checked( $slots_mode, 'selected' ); ?>>
-                    <span class="slots_checkmark"></span>
-                    <span class="slots_label"><?php esc_html_e( 'Sélectionnez un ou plusieurs créneaux', 'eventlist' ); ?></span>
-                </label>
-            </div>
-
-            <!-- Sélection de créneaux spécifiques -->
-            <div class="slots_picker" style="<?php echo $slots_mode === 'selected' ? '' : 'display: none;'; ?>">
-                <div class="slots_picker_row">
-                    <div class="slots_picker_field">
-                        <label><?php esc_html_e( 'Date de début', 'eventlist' ); ?></label>
-                        <input type="date" class="billetterie_input slot_start_date" placeholder="JJ/MM/AAAA">
-                    </div>
-                    <div class="slots_picker_field">
-                        <label><?php esc_html_e( 'Date de fin', 'eventlist' ); ?></label>
-                        <input type="date" class="billetterie_input slot_end_date" placeholder="JJ/MM/AAAA">
-                    </div>
-                </div>
-                <div class="slots_picker_row">
-                    <div class="slots_picker_field slots_picker_field_select">
-                        <label><?php esc_html_e( 'Sélection du créneau', 'eventlist' ); ?></label>
-                        <select class="billetterie_select slot_select">
-                            <option value=""><?php esc_html_e( 'Choisissez le créneau', 'eventlist' ); ?></option>
-                            <?php foreach ( $event_slots as $slot ) : ?>
-                                <option value="<?php echo esc_attr( $slot['id'] ); ?>"><?php echo esc_html( $slot['label'] ); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="slots_picker_field slots_picker_field_btn">
-                        <button type="button" class="btn_add_slot el_button_primary"><?php esc_html_e( 'Ajouter', 'eventlist' ); ?></button>
-                    </div>
-                </div>
-
-                <!-- Liste des créneaux sélectionnés -->
-                <div class="selected_slots_list">
-                    <?php foreach ( $selected_slots as $index => $slot ) : ?>
-                        <div class="selected_slot_item" data-slot-id="<?php echo esc_attr( $slot['id'] ); ?>">
-                            <span class="slot_info"><?php echo esc_html( $slot['label'] ); ?></span>
-                            <input type="hidden" name="<?php echo esc_attr( $_prefix.'selected_slots['.$index.'][id]' ); ?>" value="<?php echo esc_attr( $slot['id'] ); ?>">
-                            <input type="hidden" name="<?php echo esc_attr( $_prefix.'selected_slots['.$index.'][label]' ); ?>" value="<?php echo esc_attr( $slot['label'] ); ?>">
-                            <button type="button" class="btn_remove_slot"><i class="fa fa-times"></i></button>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-
         <!-- Liste des billets -->
         <div class="tickets_list_wrapper" data-prefix="<?php echo esc_attr( $_prefix ); ?>">
             <?php
@@ -516,6 +448,258 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
             </svg>
             <span class="btn_text"><?php esc_html_e( 'Ajouter un autre billet', 'eventlist' ); ?></span>
         </button>
+
+        <!-- Modal Wizard Ajout Billet -->
+        <div class="ticket_wizard_overlay" style="display: none;">
+            <div class="ticket_wizard_modal">
+                <button type="button" class="wizard_close_btn" aria-label="<?php esc_attr_e( 'Fermer', 'eventlist' ); ?>">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+
+                <div class="wizard_header">
+                    <h3 class="wizard_title"><?php esc_html_e( 'Créer un billet', 'eventlist' ); ?></h3>
+
+                    <!-- Barre de progression -->
+                    <div class="wizard_progress">
+                        <div class="progress_step active" data-step="1">
+                            <span class="step_number">1</span>
+                            <span class="step_label"><?php esc_html_e( 'Infos', 'eventlist' ); ?></span>
+                        </div>
+                        <div class="progress_line"></div>
+                        <div class="progress_step" data-step="2">
+                            <span class="step_number">2</span>
+                            <span class="step_label"><?php esc_html_e( 'Capacité', 'eventlist' ); ?></span>
+                        </div>
+                        <div class="progress_line"></div>
+                        <div class="progress_step" data-step="3">
+                            <span class="step_number">3</span>
+                            <span class="step_label"><?php esc_html_e( 'Période', 'eventlist' ); ?></span>
+                        </div>
+                        <div class="progress_line"></div>
+                        <div class="progress_step" data-step="4">
+                            <span class="step_number">4</span>
+                            <span class="step_label"><?php esc_html_e( 'Créneaux', 'eventlist' ); ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wizard_body">
+                    <!-- Étape 1 : Informations -->
+                    <div class="wizard_step active" data-step="1">
+                        <div class="step_header">
+                            <span class="step_indicator"><?php esc_html_e( 'Étape 1/4', 'eventlist' ); ?></span>
+                            <h4 class="step_title"><?php esc_html_e( 'Informations essentielles', 'eventlist' ); ?></h4>
+                        </div>
+
+                        <div class="wizard_field">
+                            <label class="wizard_label">
+                                <?php esc_html_e( 'Nom du billet', 'eventlist' ); ?> <span class="required">*</span>
+                            </label>
+                            <input type="text" class="wizard_input wizard_ticket_name" placeholder="<?php esc_attr_e( 'Ex: Entrée adulte, Pass famille...', 'eventlist' ); ?>" required>
+                        </div>
+
+                        <div class="wizard_field">
+                            <label class="wizard_label">
+                                <?php esc_html_e( 'Description', 'eventlist' ); ?>
+                                <span class="label_hint"><?php esc_html_e( '(optionnel)', 'eventlist' ); ?></span>
+                            </label>
+                            <textarea class="wizard_textarea wizard_ticket_desc" rows="3" placeholder="<?php esc_attr_e( 'Décrivez ce billet...', 'eventlist' ); ?>"></textarea>
+                            <p class="field_help"><?php esc_html_e( 'Affiché sur la page et le PDF du billet', 'eventlist' ); ?></p>
+                        </div>
+                    </div>
+
+                    <!-- Étape 2 : Capacité -->
+                    <div class="wizard_step" data-step="2">
+                        <div class="step_header">
+                            <span class="step_indicator"><?php esc_html_e( 'Étape 2/4', 'eventlist' ); ?></span>
+                            <h4 class="step_title"><?php esc_html_e( 'Capacité & limites', 'eventlist' ); ?></h4>
+                        </div>
+
+                        <div class="wizard_fields_row">
+                            <div class="wizard_field">
+                                <label class="wizard_label"><?php esc_html_e( 'Places totales', 'eventlist' ); ?></label>
+                                <input type="number" class="wizard_input wizard_input_centered wizard_total_places" min="1" placeholder="20">
+                                <p class="field_help"><?php esc_html_e( 'Vide = illimité', 'eventlist' ); ?></p>
+                            </div>
+                            <div class="wizard_field">
+                                <label class="wizard_label"><?php esc_html_e( 'Min / réservation', 'eventlist' ); ?></label>
+                                <input type="number" class="wizard_input wizard_input_centered wizard_min_places" min="1" value="1">
+                            </div>
+                            <div class="wizard_field">
+                                <label class="wizard_label"><?php esc_html_e( 'Max / réservation', 'eventlist' ); ?></label>
+                                <input type="number" class="wizard_input wizard_input_centered wizard_max_places" min="1" placeholder="">
+                                <p class="field_help"><?php esc_html_e( 'Vide = pas de limite', 'eventlist' ); ?></p>
+                            </div>
+                        </div>
+
+                        <div class="wizard_info_box">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            <span><?php esc_html_e( 'Ces limites s\'appliquent à chaque réservation individuelle', 'eventlist' ); ?></span>
+                        </div>
+                    </div>
+
+                    <!-- Étape 3 : Période -->
+                    <div class="wizard_step" data-step="3">
+                        <div class="step_header">
+                            <span class="step_indicator"><?php esc_html_e( 'Étape 3/4', 'eventlist' ); ?></span>
+                            <h4 class="step_title"><?php esc_html_e( 'Période d\'inscription', 'eventlist' ); ?></h4>
+                        </div>
+
+                        <div class="wizard_period_options">
+                            <label class="wizard_radio_option selected">
+                                <input type="radio" name="wizard_registration_mode" value="before_start" checked>
+                                <span class="radio_mark"></span>
+                                <span class="radio_content">
+                                    <span class="radio_title"><?php esc_html_e( 'Jusqu\'au début de l\'activité', 'eventlist' ); ?></span>
+                                    <span class="radio_inline">
+                                        <?php esc_html_e( 'Fermer', 'eventlist' ); ?>
+                                        <input type="number" class="wizard_inline_input wizard_minutes_before" value="0" min="0">
+                                        <?php esc_html_e( 'minute(s) avant', 'eventlist' ); ?>
+                                    </span>
+                                </span>
+                            </label>
+
+                            <label class="wizard_radio_option">
+                                <input type="radio" name="wizard_registration_mode" value="date_range">
+                                <span class="radio_mark"></span>
+                                <span class="radio_content">
+                                    <span class="radio_title"><?php esc_html_e( 'Période personnalisée', 'eventlist' ); ?></span>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="wizard_date_range" style="display: none;">
+                            <div class="date_range_group">
+                                <label><?php esc_html_e( 'Ouverture', 'eventlist' ); ?></label>
+                                <div class="date_time_row">
+                                    <input type="date" class="wizard_input wizard_start_date">
+                                    <input type="time" class="wizard_input wizard_start_time" value="00:00">
+                                </div>
+                            </div>
+                            <div class="date_range_arrow">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </div>
+                            <div class="date_range_group">
+                                <label><?php esc_html_e( 'Fermeture', 'eventlist' ); ?></label>
+                                <div class="date_time_row">
+                                    <input type="date" class="wizard_input wizard_end_date">
+                                    <input type="time" class="wizard_input wizard_end_time" value="23:59">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Étape 4 : Créneaux -->
+                    <div class="wizard_step" data-step="4">
+                        <div class="step_header">
+                            <span class="step_indicator"><?php esc_html_e( 'Étape 4/4', 'eventlist' ); ?></span>
+                            <h4 class="step_title"><?php esc_html_e( 'Créneaux associés', 'eventlist' ); ?></h4>
+                        </div>
+
+                        <div class="wizard_slots_mode">
+                            <label class="wizard_radio_option selected">
+                                <input type="radio" name="wizard_slots_mode" value="all" checked>
+                                <span class="radio_mark"></span>
+                                <span class="radio_content">
+                                    <span class="radio_title"><?php esc_html_e( 'Tous les créneaux', 'eventlist' ); ?></span>
+                                </span>
+                            </label>
+
+                            <label class="wizard_radio_option">
+                                <input type="radio" name="wizard_slots_mode" value="selected">
+                                <span class="radio_mark"></span>
+                                <span class="radio_content">
+                                    <span class="radio_title"><?php esc_html_e( 'Créneaux spécifiques', 'eventlist' ); ?></span>
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Multi-select créneaux -->
+                        <div class="wizard_slots_picker" style="display: none;">
+                            <?php if ( ! empty( $event_slots ) ) : ?>
+                            <div class="slots_search_bar">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <input type="text" class="slots_search_input" placeholder="<?php esc_attr_e( 'Rechercher un créneau...', 'eventlist' ); ?>">
+                            </div>
+
+                            <div class="slots_checklist">
+                                <?php foreach ( $event_slots as $slot ) : ?>
+                                <div class="slot_check_item" data-slot-id="<?php echo esc_attr( $slot['id'] ); ?>">
+                                    <label class="slot_check_label">
+                                        <input type="checkbox" class="slot_checkbox_input" value="<?php echo esc_attr( $slot['id'] ); ?>">
+                                        <span class="slot_checkbox_custom"></span>
+                                        <span class="slot_date"><?php echo esc_html( date_i18n( 'D j M Y', strtotime( $slot['date'] ) ) ); ?></span>
+                                        <span class="slot_time"><?php echo esc_html( $slot['start_time'] . ' → ' . $slot['end_time'] ); ?></span>
+                                    </label>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <div class="slots_quick_actions">
+                                <button type="button" class="slots_action_btn slots_select_all">
+                                    <?php esc_html_e( 'Tout sélectionner', 'eventlist' ); ?>
+                                </button>
+                                <button type="button" class="slots_action_btn slots_deselect_all">
+                                    <?php esc_html_e( 'Tout désélectionner', 'eventlist' ); ?>
+                                </button>
+                            </div>
+
+                            <div class="slots_chips_container">
+                                <span class="chips_label"><?php esc_html_e( 'Sélectionnés', 'eventlist' ); ?> (<span class="chips_count">0</span>) :</span>
+                                <div class="slots_chips_list"></div>
+                            </div>
+                            <?php else : ?>
+                            <div class="slots_empty_message">
+                                <p><?php esc_html_e( 'Aucun créneau défini pour cet événement.', 'eventlist' ); ?></p>
+                                <p class="hint"><?php esc_html_e( 'Ajoutez d\'abord des créneaux dans la section Calendrier.', 'eventlist' ); ?></p>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wizard_footer">
+                    <button type="button" class="wizard_btn wizard_btn_cancel">
+                        <?php esc_html_e( 'Annuler', 'eventlist' ); ?>
+                    </button>
+                    <div class="wizard_nav_buttons">
+                        <button type="button" class="wizard_btn wizard_btn_prev" style="display: none;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                            <?php esc_html_e( 'Précédent', 'eventlist' ); ?>
+                        </button>
+                        <button type="button" class="wizard_btn wizard_btn_next wizard_btn_primary">
+                            <?php esc_html_e( 'Suivant', 'eventlist' ); ?>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                        <button type="button" class="wizard_btn wizard_btn_submit wizard_btn_primary" style="display: none;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <?php esc_html_e( 'Créer le billet', 'eventlist' ); ?>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Section Lien externe - V1 Le Hiboo Simplifiée -->
@@ -1075,6 +1259,41 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     padding: 24px;
 }
 
+.ticket_form_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.ticket_title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.ticket_slots_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #f0fdf4;
+    color: #15803d;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.ticket_slots_badge::before {
+    content: '📅';
+    font-size: 12px;
+}
+
 .ticket_form_field {
     margin-bottom: 20px;
 }
@@ -1530,6 +1749,823 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     z-index: 2;
 }
 
+/* ==========================================================================
+   Wizard Modal Styles
+   ========================================================================== */
+
+.ticket_wizard_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.ticket_wizard_modal {
+    background: #fff;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.wizard_close_btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f1f5f9;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.wizard_close_btn:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.wizard_header {
+    padding: 28px 28px 24px;
+    border-bottom: 1px solid #e2e8f0;
+    position: relative;
+}
+
+.wizard_title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 24px 0;
+}
+
+/* Progress Bar */
+.wizard_progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.progress_step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+}
+
+.step_number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.progress_step.active .step_number,
+.progress_step.completed .step_number {
+    background: #FF6600;
+    color: #fff;
+}
+
+.progress_step.completed .step_number {
+    background: #22c55e;
+}
+
+.step_label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #94a3b8;
+    transition: color 0.3s;
+}
+
+.progress_step.active .step_label {
+    color: #FF6600;
+    font-weight: 600;
+}
+
+.progress_step.completed .step_label {
+    color: #22c55e;
+}
+
+.progress_line {
+    flex: 1;
+    height: 2px;
+    background: #e2e8f0;
+    margin: 0 8px 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress_line::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: #FF6600;
+    transition: width 0.3s;
+}
+
+.progress_line.filled::after {
+    width: 100%;
+}
+
+/* Wizard Body */
+.wizard_body {
+    padding: 28px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.wizard_step {
+    display: none;
+    animation: stepFadeIn 0.3s ease;
+}
+
+.wizard_step.active {
+    display: block;
+}
+
+@keyframes stepFadeIn {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.step_header {
+    margin-bottom: 24px;
+}
+
+.step_indicator {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #FF6600;
+    background: #fff8f5;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+}
+
+.step_title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* Wizard Fields */
+.wizard_field {
+    margin-bottom: 20px;
+}
+
+.wizard_field:last-child {
+    margin-bottom: 0;
+}
+
+.wizard_label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.wizard_label .required {
+    color: #ef4444;
+}
+
+.label_hint {
+    font-weight: 400;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.wizard_input,
+.wizard_textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 15px;
+    color: #1e293b;
+    background: #fff;
+    transition: all 0.2s;
+}
+
+.wizard_input:focus,
+.wizard_textarea:focus {
+    outline: none;
+    border-color: #FF6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+}
+
+.wizard_input::placeholder,
+.wizard_textarea::placeholder {
+    color: #94a3b8;
+}
+
+.wizard_input_centered {
+    text-align: center;
+}
+
+.wizard_textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Validation Errors */
+.wizard_input_error {
+    border-color: #ef4444 !important;
+    background: #fef2f2 !important;
+    animation: wizardShake 0.4s ease;
+}
+
+@keyframes wizardShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+}
+
+.wizard_step_error {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #fecaca;
+}
+
+.wizard_step_error::before {
+    content: '⚠';
+    font-size: 16px;
+}
+
+.field_help {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 6px;
+    font-style: italic;
+}
+
+.wizard_fields_row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.wizard_info_box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #f0f9ff;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.wizard_info_box svg {
+    color: #0284c7;
+    flex-shrink: 0;
+}
+
+.wizard_info_box span {
+    font-size: 13px;
+    color: #0369a1;
+}
+
+/* Radio Options */
+.wizard_period_options,
+.wizard_slots_mode {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.wizard_radio_option {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.wizard_radio_option:hover {
+    border-color: #FF6600;
+    background: #fffbf8;
+}
+
+.wizard_radio_option.selected {
+    border-color: #FF6600;
+    background: #fff8f5;
+}
+
+.wizard_radio_option input[type="radio"] {
+    display: none;
+}
+
+.radio_mark {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    margin-top: 2px;
+}
+
+.wizard_radio_option.selected .radio_mark {
+    border-color: #FF6600;
+}
+
+.wizard_radio_option.selected .radio_mark::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: #FF6600;
+    border-radius: 50%;
+}
+
+.radio_content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.radio_title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.radio_inline {
+    font-size: 14px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.wizard_inline_input {
+    width: 70px;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.wizard_inline_input:focus {
+    outline: none;
+    border-color: #FF6600;
+}
+
+/* Date Range */
+.wizard_date_range {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.date_range_group {
+    flex: 1;
+}
+
+.date_range_group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.date_time_row {
+    display: flex;
+    gap: 8px;
+}
+
+.date_time_row .wizard_input {
+    padding: 10px 12px;
+}
+
+.date_range_arrow {
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+/* Slots Picker */
+.wizard_slots_picker {
+    margin-top: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.slots_search_bar {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.slots_search_bar svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+.slots_search_input {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    background: #fff;
+}
+
+.slots_search_input:focus {
+    outline: none;
+    border-color: #FF6600;
+}
+
+.slots_checklist {
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.slots_checklist::-webkit-scrollbar {
+    width: 6px;
+}
+
+.slots_checklist::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.slot_check_item {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.15s;
+}
+
+.slot_check_item:last-child {
+    border-bottom: none;
+}
+
+.slot_check_item:hover {
+    background: #f8fafc;
+}
+
+.slot_check_item.is-checked {
+    background: #fff8f5;
+}
+
+.slot_check_label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.slot_checkbox_input {
+    display: none;
+}
+
+.slot_checkbox_custom {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.slot_check_item.is-checked .slot_checkbox_custom {
+    background: #FF6600;
+    border-color: #FF6600;
+}
+
+.slot_check_item.is-checked .slot_checkbox_custom::after {
+    content: '✓';
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.slot_date {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.slot_time {
+    font-size: 13px;
+    color: #64748b;
+    margin-left: auto;
+}
+
+.slots_quick_actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.slots_action_btn {
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.slots_action_btn:hover {
+    border-color: #FF6600;
+    color: #FF6600;
+    background: #fff8f5;
+}
+
+.slots_chips_container {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.slots_chips_count {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    margin-right: 8px;
+}
+
+.slots_chips_empty {
+    font-size: 13px;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.chips_label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.chips_label .chips_count {
+    color: #FF6600;
+}
+
+.slots_chips_list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.slot_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #FF6600 0%, #e55c00 100%);
+    color: #fff;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    animation: chipIn 0.2s ease;
+}
+
+@keyframes chipIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.slot_chip_remove {
+    width: 18px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.2s;
+    color: #fff;
+    line-height: 1;
+}
+
+.slot_chip_remove:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.slots_empty_message {
+    text-align: center;
+    padding: 24px;
+    color: #64748b;
+}
+
+.slots_empty_message .hint {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-top: 8px;
+}
+
+/* Wizard Footer */
+.wizard_footer {
+    padding: 20px 28px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+}
+
+.wizard_nav_buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.wizard_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.wizard_btn_cancel {
+    background: transparent;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+.wizard_btn_cancel:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.wizard_btn_prev {
+    background: #fff;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+}
+
+.wizard_btn_prev:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.wizard_btn_primary {
+    background: linear-gradient(135deg, #FF6600 0%, #e55c00 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.25);
+}
+
+.wizard_btn_primary:hover {
+    background: linear-gradient(135deg, #e55c00 0%, #cc5200 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(255, 102, 0, 0.35);
+}
+
+.wizard_btn_primary:active {
+    transform: translateY(0);
+}
+
+/* Responsive Wizard */
+@media (max-width: 600px) {
+    .ticket_wizard_modal {
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .wizard_header {
+        padding: 20px;
+    }
+
+    .wizard_body {
+        padding: 20px;
+    }
+
+    .wizard_fields_row {
+        grid-template-columns: 1fr;
+    }
+
+    .wizard_date_range {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .date_range_arrow {
+        transform: rotate(90deg);
+    }
+
+    .wizard_progress {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .progress_line {
+        display: none;
+    }
+
+    .step_label {
+        display: none;
+    }
+
+    .wizard_footer {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .wizard_btn_cancel {
+        order: 1;
+        width: 100%;
+    }
+
+    .wizard_nav_buttons {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .wizard_btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .billetterie_row_2cols {
@@ -1767,91 +2803,8 @@ jQuery(document).ready(function($) {
         },
 
         addTicket: function() {
-            var self = this;
-            var index = this.ticketIndex;
-
-            var html = '<div class="ticket_form_item" data-index="' + index + '">' +
-                '<div class="ticket_form_content">' +
-                    '<div class="ticket_form_field">' +
-                        '<label class="field_label"><strong><?php echo esc_js( __( 'Nom du billet', 'eventlist' ) ); ?></strong> <span class="required">*</span> :</label>' +
-                        '<input type="text" name="' + this.prefix + 'ticket[' + index + '][name_ticket]" class="billetterie_input ticket_name_input" placeholder="<?php echo esc_js( __( 'Réservation des Petits Pouces du 5 Décembre', 'eventlist' ) ); ?>" required>' +
-                    '</div>' +
-                    '<div class="ticket_form_field">' +
-                        '<label class="field_label"><strong><?php echo esc_js( __( 'Description du billet', 'eventlist' ) ); ?></strong></label>' +
-                        '<p class="field_hint"><?php echo esc_js( __( 'Cette description sera affichée sur la page de l\'activité au niveau du billet, et également sur la version PDF du billet.', 'eventlist' ) ); ?> :</p>' +
-                        '<textarea name="' + this.prefix + 'ticket[' + index + '][desc_ticket]" class="billetterie_textarea" rows="3" placeholder="<?php echo esc_js( __( 'Description du billet...', 'eventlist' ) ); ?>"></textarea>' +
-                    '</div>' +
-                    '<div class="ticket_form_row_3cols">' +
-                        '<div class="ticket_form_field">' +
-                            '<label class="field_label"><strong><?php echo esc_js( __( 'Nombre total de places', 'eventlist' ) ); ?></strong> :</label>' +
-                            '<input type="number" name="' + this.prefix + 'ticket[' + index + '][number_total_ticket]" class="billetterie_input" min="1" placeholder="20">' +
-                        '</div>' +
-                        '<div class="ticket_form_field">' +
-                            '<label class="field_label"><strong><?php echo esc_js( __( 'Nombre minimum de place autorisé par réservation', 'eventlist' ) ); ?></strong> :</label>' +
-                            '<input type="number" name="' + this.prefix + 'ticket[' + index + '][number_min_ticket]" class="billetterie_input" min="1" placeholder="1" value="1">' +
-                        '</div>' +
-                        '<div class="ticket_form_field">' +
-                            '<label class="field_label"><strong><?php echo esc_js( __( 'Nombre maximum de places autorisé par réservation', 'eventlist' ) ); ?></strong> :</label>' +
-                            '<input type="number" name="' + this.prefix + 'ticket[' + index + '][number_max_ticket]" class="billetterie_input" min="1" placeholder="">' +
-                        '</div>' +
-                    '</div>' +
-                    '<div class="ticket_form_field">' +
-                        '<label class="field_label"><strong><?php echo esc_js( __( 'Période d\'inscription', 'eventlist' ) ); ?></strong> :</label>' +
-                        '<div class="registration_period_options">' +
-                            '<label class="registration_option selected">' +
-                                '<input type="radio" name="' + this.prefix + 'ticket[' + index + '][registration_mode]" value="before_start" class="registration_radio" checked>' +
-                                '<span class="registration_checkmark"></span>' +
-                                '<span class="registration_text"><?php echo esc_js( __( 'Les réservations sont ouvertes jusqu\'à', 'eventlist' ) ); ?> <input type="number" name="' + this.prefix + 'ticket[' + index + '][minutes_before]" value="0" class="minutes_input" min="0" placeholder="0"> <?php echo esc_js( __( 'minute(s) avant le début de l\'activité', 'eventlist' ) ); ?></span>' +
-                            '</label>' +
-                            '<label class="registration_option">' +
-                                '<input type="radio" name="' + this.prefix + 'ticket[' + index + '][registration_mode]" value="date_range" class="registration_radio">' +
-                                '<span class="registration_checkmark"></span>' +
-                                '<span class="registration_text"><?php echo esc_js( __( 'Les réservations sont ouvertes à partir du', 'eventlist' ) ); ?></span>' +
-                            '</label>' +
-                        '</div>' +
-                        '<div class="registration_date_range" style="display: none;">' +
-                            '<div class="date_range_row">' +
-                                '<input type="date" name="' + this.prefix + 'ticket[' + index + '][start_ticket_date]" class="billetterie_input date_input" placeholder="JJ/MM/AAAA">' +
-                                '<input type="time" name="' + this.prefix + 'ticket[' + index + '][start_ticket_time]" class="billetterie_input time_input" value="00:00">' +
-                            '</div>' +
-                            '<span class="date_range_separator"><?php echo esc_js( __( 'jusqu\'au', 'eventlist' ) ); ?></span>' +
-                            '<div class="date_range_row">' +
-                                '<input type="date" name="' + this.prefix + 'ticket[' + index + '][close_ticket_date]" class="billetterie_input date_input" placeholder="JJ/MM/AAAA">' +
-                                '<input type="time" name="' + this.prefix + 'ticket[' + index + '][close_ticket_time]" class="billetterie_input time_input" value="23:59">' +
-                            '</div>' +
-                        '</div>' +
-                    '</div>' +
-                    // V1 Le Hiboo - Par défaut, nouveau billet disponible pour tous les créneaux
-                    '<input type="hidden" name="' + this.prefix + 'ticket[' + index + '][slots_mode]" value="all">' +
-                    '<input type="hidden" name="' + this.prefix + 'ticket[' + index + '][is_active]" value="yes" class="ticket_is_active">' +
-                    '<div class="ticket_form_actions">' +
-                        '<button type="button" class="btn_save_ticket el_btn_save">' +
-                            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                                '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>' +
-                                '<polyline points="17 21 17 13 7 13 7 21"></polyline>' +
-                                '<polyline points="7 3 7 8 15 8"></polyline>' +
-                            '</svg>' +
-                            '<span class="btn_text"><?php echo esc_js( __( 'Sauvegarder ce billet', 'eventlist' ) ); ?></span>' +
-                        '</button>' +
-                        '<button type="button" class="btn_stop_reservation el_btn_danger" data-index="' + index + '">' +
-                            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-                                '<circle cx="12" cy="12" r="10"></circle>' +
-                                '<line x1="15" y1="9" x2="9" y2="15"></line>' +
-                                '<line x1="9" y1="9" x2="15" y2="15"></line>' +
-                            '</svg>' +
-                            '<span class="btn_text"><?php echo esc_js( __( 'Stopper la réservation', 'eventlist' ) ); ?></span>' +
-                        '</button>' +
-                    '</div>' +
-                '</div>' +
-            '</div>';
-
-            $('.tickets_list_wrapper').append(html);
-            this.ticketIndex++;
-
-            // Scroll vers le nouveau billet
-            $('html, body').animate({
-                scrollTop: $('.ticket_form_item').last().offset().top - 100
-            }, 300);
+            // Ouvrir le wizard au lieu d'ajouter directement le HTML
+            TicketWizard.open();
         },
 
         saveTicket: function($btn) {
@@ -1953,5 +2906,550 @@ jQuery(document).ready(function($) {
     };
 
     BilletterieManager.init();
+
+    // ═══════════════════════════════════════════════════════════════
+    // TICKET WIZARD - Gestion du wizard de création de billet
+    // ═══════════════════════════════════════════════════════════════
+    var TicketWizard = {
+        currentStep: 1,
+        totalSteps: 4,
+        prefix: '<?php echo esc_js( $_prefix ); ?>',
+
+        init: function() {
+            this.bindEvents();
+        },
+
+        bindEvents: function() {
+            var self = this;
+
+            // Fermer le wizard
+            $(document).on('click', '.wizard_close_btn, .wizard_btn_cancel', function() {
+                self.close();
+            });
+
+            // Clic sur l'overlay (en dehors du modal)
+            $(document).on('click', '.ticket_wizard_overlay', function(e) {
+                if ($(e.target).hasClass('ticket_wizard_overlay')) {
+                    self.close();
+                }
+            });
+
+            // Navigation
+            $(document).on('click', '.wizard_btn_next', function() {
+                self.nextStep();
+            });
+
+            $(document).on('click', '.wizard_btn_prev', function() {
+                self.prevStep();
+            });
+
+            // Clic sur les étapes de la barre de progression
+            $(document).on('click', '.progress_step', function() {
+                var step = parseInt($(this).data('step'));
+                if (step < self.currentStep) {
+                    self.goToStep(step);
+                }
+            });
+
+            // Soumission du formulaire
+            $(document).on('click', '.wizard_btn_submit', function() {
+                self.submitTicket();
+            });
+
+            // Mode période d'inscription
+            $(document).on('change', 'input[name="wizard_registration_mode"]', function() {
+                self.handleRegistrationMode($(this));
+            });
+
+            // Mode créneaux (tous / spécifiques)
+            $(document).on('change', 'input[name="wizard_slots_mode"]', function() {
+                self.handleSlotsMode($(this));
+            });
+
+            // Touche Escape pour fermer
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape' && $('.ticket_wizard_overlay').is(':visible')) {
+                    self.close();
+                }
+            });
+        },
+
+        open: function() {
+            this.reset();
+            $('.ticket_wizard_overlay').fadeIn(200);
+            $('body').addClass('wizard_open');
+            // Focus sur le premier champ
+            setTimeout(function() {
+                $('.wizard_step[data-step="1"]').find('input:first').focus();
+            }, 300);
+        },
+
+        close: function() {
+            $('.ticket_wizard_overlay').fadeOut(200);
+            $('body').removeClass('wizard_open');
+            this.reset();
+        },
+
+        reset: function() {
+            this.currentStep = 1;
+            // Reset tous les champs
+            $('.ticket_wizard_modal').find('input[type="text"], input[type="number"], textarea').val('');
+            $('.ticket_wizard_modal').find('.wizard_min_places').val('1');
+            $('.ticket_wizard_modal').find('.wizard_minutes_before').val('0');
+            // Reset les radios
+            $('input[name="wizard_registration_mode"][value="before_start"]').prop('checked', true).trigger('change');
+            $('input[name="wizard_slots_mode"][value="all"]').prop('checked', true).trigger('change');
+            // Reset l'UI
+            this.updateUI();
+            SlotMultiSelect.reset();
+        },
+
+        goToStep: function(step) {
+            if (step < 1 || step > this.totalSteps) return;
+
+            this.currentStep = step;
+            this.updateUI();
+        },
+
+        nextStep: function() {
+            if (!this.validateStep(this.currentStep)) {
+                return;
+            }
+
+            if (this.currentStep < this.totalSteps) {
+                this.currentStep++;
+                this.updateUI();
+            }
+        },
+
+        prevStep: function() {
+            if (this.currentStep > 1) {
+                this.currentStep--;
+                this.updateUI();
+            }
+        },
+
+        validateStep: function(step) {
+            var $step = $('.wizard_step[data-step="' + step + '"]');
+            var isValid = true;
+
+            // Reset les erreurs
+            $step.find('.wizard_input_error').removeClass('wizard_input_error');
+
+            switch (step) {
+                case 1:
+                    // Le nom est requis
+                    var $nameInput = $step.find('.wizard_ticket_name');
+                    if (!$nameInput.val().trim()) {
+                        $nameInput.addClass('wizard_input_error');
+                        $nameInput.focus();
+                        this.showStepError('<?php echo esc_js( __( 'Le nom du billet est requis', 'eventlist' ) ); ?>');
+                        isValid = false;
+                    }
+                    break;
+
+                case 2:
+                    // Vérifier min <= max si max est défini
+                    var $minInput = $step.find('.wizard_min_places');
+                    var $maxInput = $step.find('.wizard_max_places');
+                    var min = parseInt($minInput.val()) || 1;
+                    var max = parseInt($maxInput.val()) || 0;
+
+                    if (max > 0 && min > max) {
+                        $minInput.addClass('wizard_input_error');
+                        $maxInput.addClass('wizard_input_error');
+                        this.showStepError('<?php echo esc_js( __( 'Le minimum ne peut pas être supérieur au maximum', 'eventlist' ) ); ?>');
+                        isValid = false;
+                    }
+                    break;
+
+                case 3:
+                    // Si mode date_range, vérifier les dates
+                    var registrationMode = $step.find('input[name="wizard_registration_mode"]:checked').val();
+                    if (registrationMode === 'date_range') {
+                        var $startDate = $step.find('.wizard_start_date');
+                        if (!$startDate.val()) {
+                            $startDate.addClass('wizard_input_error');
+                            this.showStepError('<?php echo esc_js( __( 'La date de début est requise', 'eventlist' ) ); ?>');
+                            isValid = false;
+                        }
+                    }
+                    break;
+
+                case 4:
+                    // Si mode selected, au moins un créneau doit être coché
+                    var slotsMode = $step.find('input[name="wizard_slots_mode"]:checked').val();
+                    if (slotsMode === 'selected') {
+                        var checkedSlots = SlotMultiSelect.getSelectedSlots();
+                        if (checkedSlots.length === 0) {
+                            this.showStepError('<?php echo esc_js( __( 'Veuillez sélectionner au moins un créneau', 'eventlist' ) ); ?>');
+                            isValid = false;
+                        }
+                    }
+                    break;
+            }
+
+            return isValid;
+        },
+
+        showStepError: function(message) {
+            var $errorContainer = $('.wizard_step_error');
+            if ($errorContainer.length === 0) {
+                $errorContainer = $('<div class="wizard_step_error"></div>');
+                $('.wizard_step.active .wizard_step_content').prepend($errorContainer);
+            }
+            $errorContainer.text(message).fadeIn(200);
+            setTimeout(function() {
+                $errorContainer.fadeOut(200);
+            }, 3000);
+        },
+
+        updateUI: function() {
+            var self = this;
+
+            // Mettre à jour les étapes
+            $('.wizard_step').removeClass('active');
+            $('.wizard_step[data-step="' + this.currentStep + '"]').addClass('active');
+
+            // Mettre à jour la barre de progression
+            $('.progress_step').each(function() {
+                var step = parseInt($(this).data('step'));
+                $(this).removeClass('active completed');
+                if (step === self.currentStep) {
+                    $(this).addClass('active');
+                } else if (step < self.currentStep) {
+                    $(this).addClass('completed');
+                }
+            });
+
+            // Mettre à jour les lignes de progression
+            $('.progress_line').each(function(index) {
+                // La ligne est "filled" si l'étape suivante est déjà passée
+                if (index < self.currentStep - 1) {
+                    $(this).addClass('filled');
+                } else {
+                    $(this).removeClass('filled');
+                }
+            });
+
+            // Afficher/masquer les boutons de navigation
+            if (this.currentStep === 1) {
+                $('.wizard_btn_prev').hide();
+            } else {
+                $('.wizard_btn_prev').show();
+            }
+
+            if (this.currentStep === this.totalSteps) {
+                $('.wizard_btn_next').hide();
+                $('.wizard_btn_submit').show();
+            } else {
+                $('.wizard_btn_next').show();
+                $('.wizard_btn_submit').hide();
+            }
+        },
+
+        handleRegistrationMode: function($radio) {
+            var mode = $radio.val();
+            var $container = $radio.closest('.wizard_step');
+
+            $container.find('.wizard_period_options .wizard_radio_option').removeClass('selected');
+            $radio.closest('.wizard_radio_option').addClass('selected');
+
+            if (mode === 'date_range') {
+                $container.find('.wizard_date_range').slideDown(200);
+            } else {
+                $container.find('.wizard_date_range').slideUp(200);
+            }
+        },
+
+        handleSlotsMode: function($radio) {
+            var mode = $radio.val();
+            var $container = $radio.closest('.wizard_step');
+
+            $container.find('.wizard_slots_mode .wizard_radio_option').removeClass('selected');
+            $radio.closest('.wizard_radio_option').addClass('selected');
+
+            if (mode === 'selected') {
+                $container.find('.wizard_slots_picker').slideDown(200);
+            } else {
+                $container.find('.wizard_slots_picker').slideUp(200);
+            }
+        },
+
+        submitTicket: function() {
+            // Valider la dernière étape
+            if (!this.validateStep(this.currentStep)) {
+                return;
+            }
+
+            var self = this;
+            var index = BilletterieManager.ticketIndex;
+            var $modal = $('.ticket_wizard_modal');
+
+            // Récupérer les valeurs
+            var ticketData = {
+                name: $modal.find('.wizard_ticket_name').val().trim(),
+                description: $modal.find('.wizard_ticket_desc').val().trim(),
+                total: $modal.find('.wizard_total_places').val() || '',
+                min: $modal.find('.wizard_min_places').val() || '1',
+                max: $modal.find('.wizard_max_places').val() || '',
+                registrationMode: $modal.find('input[name="wizard_registration_mode"]:checked').val(),
+                minutesBefore: $modal.find('.wizard_minutes_before').val() || '0',
+                startDate: $modal.find('.wizard_start_date').val() || '',
+                startTime: $modal.find('.wizard_start_time').val() || '00:00',
+                closeDate: $modal.find('.wizard_end_date').val() || '',
+                closeTime: $modal.find('.wizard_end_time').val() || '23:59',
+                slotsMode: $modal.find('input[name="wizard_slots_mode"]:checked').val(),
+                slots: SlotMultiSelect.getSelectedSlots()
+            };
+
+            // Construire le HTML du nouveau billet
+            var html = this.buildTicketHTML(index, ticketData);
+
+            // Ajouter le billet à la liste
+            $('.tickets_list_wrapper').append(html);
+            BilletterieManager.ticketIndex++;
+
+            // Fermer le wizard
+            this.close();
+
+            // Scroll vers le nouveau billet
+            $('html, body').animate({
+                scrollTop: $('.ticket_form_item').last().offset().top - 100
+            }, 300);
+
+            // Notification
+            if (window.ToastNotification) {
+                window.ToastNotification.success('<?php echo esc_js( __( 'Billet créé avec succès', 'eventlist' ) ); ?>');
+            }
+        },
+
+        buildTicketHTML: function(index, data) {
+            var prefix = this.prefix;
+            var slotsHtml = '';
+
+            // Générer les checkboxes des créneaux si mode selected
+            if (data.slotsMode === 'selected' && data.slots.length > 0) {
+                slotsHtml = data.slots.map(function(slotId, i) {
+                    return '<input type="hidden" name="' + prefix + 'ticket[' + index + '][slots][' + i + ']" value="' + slotId + '">';
+                }).join('');
+            }
+
+            // Affichage condensé du mode créneaux
+            var slotsModeLabel = data.slotsMode === 'all'
+                ? '<?php echo esc_js( __( 'Tous les créneaux', 'eventlist' ) ); ?>'
+                : data.slots.length + ' <?php echo esc_js( __( 'créneau(x) sélectionné(s)', 'eventlist' ) ); ?>';
+
+            var html = '<div class="ticket_form_item" data-index="' + index + '">' +
+                '<div class="ticket_form_content">' +
+                    '<div class="ticket_form_header">' +
+                        '<h4 class="ticket_title">' + this.escapeHtml(data.name) + '</h4>' +
+                        '<span class="ticket_slots_badge">' + slotsModeLabel + '</span>' +
+                    '</div>' +
+                    '<div class="ticket_form_field">' +
+                        '<label class="field_label"><strong><?php echo esc_js( __( 'Nom du billet', 'eventlist' ) ); ?></strong> <span class="required">*</span> :</label>' +
+                        '<input type="text" name="' + prefix + 'ticket[' + index + '][name_ticket]" class="billetterie_input ticket_name_input" value="' + this.escapeHtml(data.name) + '" required>' +
+                    '</div>' +
+                    '<div class="ticket_form_field">' +
+                        '<label class="field_label"><strong><?php echo esc_js( __( 'Description du billet', 'eventlist' ) ); ?></strong></label>' +
+                        '<p class="field_hint"><?php echo esc_js( __( 'Cette description sera affichée sur la page de l\'activité au niveau du billet, et également sur la version PDF du billet.', 'eventlist' ) ); ?> :</p>' +
+                        '<textarea name="' + prefix + 'ticket[' + index + '][desc_ticket]" class="billetterie_textarea" rows="3">' + this.escapeHtml(data.description) + '</textarea>' +
+                    '</div>' +
+                    '<div class="ticket_form_row_3cols">' +
+                        '<div class="ticket_form_field">' +
+                            '<label class="field_label"><strong><?php echo esc_js( __( 'Nombre total de places', 'eventlist' ) ); ?></strong> :</label>' +
+                            '<input type="number" name="' + prefix + 'ticket[' + index + '][number_total_ticket]" class="billetterie_input" min="1" value="' + data.total + '">' +
+                        '</div>' +
+                        '<div class="ticket_form_field">' +
+                            '<label class="field_label"><strong><?php echo esc_js( __( 'Min / réservation', 'eventlist' ) ); ?></strong> :</label>' +
+                            '<input type="number" name="' + prefix + 'ticket[' + index + '][number_min_ticket]" class="billetterie_input" min="1" value="' + data.min + '">' +
+                        '</div>' +
+                        '<div class="ticket_form_field">' +
+                            '<label class="field_label"><strong><?php echo esc_js( __( 'Max / réservation', 'eventlist' ) ); ?></strong> :</label>' +
+                            '<input type="number" name="' + prefix + 'ticket[' + index + '][number_max_ticket]" class="billetterie_input" min="1" value="' + data.max + '">' +
+                        '</div>' +
+                    '</div>' +
+                    '<input type="hidden" name="' + prefix + 'ticket[' + index + '][registration_mode]" value="' + data.registrationMode + '">' +
+                    '<input type="hidden" name="' + prefix + 'ticket[' + index + '][minutes_before]" value="' + data.minutesBefore + '">' +
+                    '<input type="hidden" name="' + prefix + 'ticket[' + index + '][start_ticket_date]" value="' + data.startDate + '">' +
+                    '<input type="hidden" name="' + prefix + 'ticket[' + index + '][start_ticket_time]" value="' + data.startTime + '">' +
+                    '<input type="hidden" name="' + prefix + 'ticket[' + index + '][close_ticket_date]" value="' + data.closeDate + '">' +
+                    '<input type="hidden" name="' + prefix + 'ticket[' + index + '][close_ticket_time]" value="' + data.closeTime + '">' +
+                    '<input type="hidden" name="' + prefix + 'ticket[' + index + '][slots_mode]" value="' + data.slotsMode + '">' +
+                    slotsHtml +
+                    '<input type="hidden" name="' + prefix + 'ticket[' + index + '][is_active]" value="yes" class="ticket_is_active">' +
+                    '<div class="ticket_form_actions">' +
+                        '<button type="button" class="btn_save_ticket el_btn_save">' +
+                            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                                '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>' +
+                                '<polyline points="17 21 17 13 7 13 7 21"></polyline>' +
+                                '<polyline points="7 3 7 8 15 8"></polyline>' +
+                            '</svg>' +
+                            '<span class="btn_text"><?php echo esc_js( __( 'Sauvegarder ce billet', 'eventlist' ) ); ?></span>' +
+                        '</button>' +
+                        '<button type="button" class="btn_stop_reservation el_btn_danger" data-index="' + index + '">' +
+                            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                                '<circle cx="12" cy="12" r="10"></circle>' +
+                                '<line x1="15" y1="9" x2="9" y2="15"></line>' +
+                                '<line x1="9" y1="9" x2="15" y2="15"></line>' +
+                            '</svg>' +
+                            '<span class="btn_text"><?php echo esc_js( __( 'Stopper la réservation', 'eventlist' ) ); ?></span>' +
+                        '</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+
+            return html;
+        },
+
+        escapeHtml: function(text) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(text));
+            return div.innerHTML;
+        }
+    };
+
+    // ═══════════════════════════════════════════════════════════════
+    // SLOT MULTI-SELECT - Gestion de la checklist des créneaux
+    // ═══════════════════════════════════════════════════════════════
+    var SlotMultiSelect = {
+        init: function() {
+            this.bindEvents();
+        },
+
+        bindEvents: function() {
+            var self = this;
+
+            // Toggle checkbox en cliquant sur la ligne
+            $(document).on('click', '.slot_check_item', function(e) {
+                // Ne pas déclencher si on clique sur la checkbox elle-même
+                if ($(e.target).hasClass('slot_checkbox_input')) {
+                    return;
+                }
+                var $checkbox = $(this).find('.slot_checkbox_input');
+                $checkbox.prop('checked', !$checkbox.prop('checked'));
+                self.updateItemState($(this));
+                self.updateChips();
+            });
+
+            // Changement de checkbox
+            $(document).on('change', '.slot_checkbox_input', function() {
+                self.updateItemState($(this).closest('.slot_check_item'));
+                self.updateChips();
+            });
+
+            // Recherche
+            $(document).on('input', '.slots_search_input', function() {
+                self.filterSlots($(this).val());
+            });
+
+            // Tout sélectionner
+            $(document).on('click', '.slots_select_all', function() {
+                self.selectAll();
+            });
+
+            // Tout désélectionner
+            $(document).on('click', '.slots_deselect_all', function() {
+                self.deselectAll();
+            });
+
+            // Supprimer un chip
+            $(document).on('click', '.slot_chip_remove', function() {
+                var slotId = $(this).closest('.slot_chip').data('slot-id');
+                self.removeSlot(slotId);
+            });
+        },
+
+        updateItemState: function($item) {
+            var isChecked = $item.find('.slot_checkbox_input').prop('checked');
+            if (isChecked) {
+                $item.addClass('is_checked');
+            } else {
+                $item.removeClass('is_checked');
+            }
+        },
+
+        filterSlots: function(query) {
+            query = query.toLowerCase().trim();
+
+            $('.slot_check_item').each(function() {
+                var text = $(this).text().toLowerCase();
+                if (query === '' || text.indexOf(query) !== -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        },
+
+        selectAll: function() {
+            var self = this;
+            $('.slot_check_item:visible').each(function() {
+                $(this).find('.slot_checkbox_input').prop('checked', true);
+                self.updateItemState($(this));
+            });
+            this.updateChips();
+        },
+
+        deselectAll: function() {
+            var self = this;
+            $('.slot_check_item').each(function() {
+                $(this).find('.slot_checkbox_input').prop('checked', false);
+                self.updateItemState($(this));
+            });
+            this.updateChips();
+        },
+
+        removeSlot: function(slotId) {
+            var $item = $('.slot_check_item[data-slot-id="' + slotId + '"]');
+            $item.find('.slot_checkbox_input').prop('checked', false);
+            this.updateItemState($item);
+            this.updateChips();
+        },
+
+        updateChips: function() {
+            var $container = $('.slots_chips_container');
+            $container.empty();
+
+            var selectedSlots = this.getSelectedSlots();
+
+            if (selectedSlots.length === 0) {
+                $container.html('<span class="slots_chips_empty"><?php echo esc_js( __( 'Aucun créneau sélectionné', 'eventlist' ) ); ?></span>');
+                return;
+            }
+
+            var chipsHtml = '<span class="slots_chips_count">' + selectedSlots.length + ' <?php echo esc_js( __( 'sélectionné(s)', 'eventlist' ) ); ?> :</span>';
+
+            selectedSlots.forEach(function(slotId) {
+                var $item = $('.slot_check_item[data-slot-id="' + slotId + '"]');
+                var label = $item.find('.slot_date').text() + ' - ' + $item.find('.slot_time').text();
+
+                chipsHtml += '<span class="slot_chip" data-slot-id="' + slotId + '">' +
+                    '<span class="chip_text">' + label + '</span>' +
+                    '<button type="button" class="slot_chip_remove">&times;</button>' +
+                '</span>';
+            });
+
+            $container.html(chipsHtml);
+        },
+
+        getSelectedSlots: function() {
+            var slots = [];
+            $('.slot_checkbox_input:checked').each(function() {
+                slots.push($(this).val());
+            });
+            return slots;
+        },
+
+        reset: function() {
+            this.deselectAll();
+            $('.slots_search_input').val('');
+            this.filterSlots('');
+        }
+    };
+
+    // Initialiser les modules
+    TicketWizard.init();
+    SlotMultiSelect.init();
 });
 </script>
