@@ -527,7 +527,15 @@ button#el_coorg_add_btn {
 .menu_vendor_onboarding a i {
     color: #ffffff!important;
 }
-
+.menu_vendor_onboarding.active{
+padding: 0 10px;
+}
+.menu_vendor_onboarding.active a{
+        color: #ffffff!important;
+}
+.menu_vendor_onboarding.active:hover a{
+        color: #f9e8e1;
+}
 /* Badge de progression onboarding - petit pill discret */
 .onboarding_progress_badge {
     display: inline-flex;
