@@ -76,16 +76,37 @@ if ( ! is_wp_error( $entry_types_terms ) && ! empty( $entry_types_terms ) ) {
 }
 
 // Récupérer les créneaux de l'événement pour la sélection
+// V1 Le Hiboo - Utiliser le calendar_id natif ou en générer un
 $event_slots = array();
 $calendar_data = get_post_meta( $post_id, $_prefix.'calendar', true );
 if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     foreach ( $calendar_data as $slot ) {
-        if ( isset( $slot['start_date'] ) && isset( $slot['start_time'] ) ) {
+        if ( isset( $slot['date'] ) || isset( $slot['start_date'] ) ) {
+            $date = isset( $slot['date'] ) ? $slot['date'] : $slot['start_date'];
+            $start_time = isset( $slot['start_time'] ) ? $slot['start_time'] : '';
+            $end_time = isset( $slot['end_time'] ) ? $slot['end_time'] : '';
+
+            // Utiliser le calendar_id existant ou en générer un
+            $slot_id = isset( $slot['calendar_id'] ) && ! empty( $slot['calendar_id'] )
+                ? $slot['calendar_id']
+                : ( function_exists( 'el_generate_slot_id' ) ? el_generate_slot_id( $date, $start_time, $end_time ) : md5( $date . $start_time . $end_time ) );
+
+            // Formater le label d'affichage
+            $label = date_i18n( 'D j M Y', strtotime( $date ) );
+            if ( $start_time ) {
+                $label .= ' - ' . $start_time;
+                if ( $end_time ) {
+                    $label .= ' → ' . $end_time;
+                }
+            }
+
             $event_slots[] = array(
-                'id' => md5( $slot['start_date'] . $slot['start_time'] ),
-                'label' => date_i18n( get_option('date_format'), strtotime( $slot['start_date'] ) ) . ' - ' . $slot['start_time'],
-                'date' => $slot['start_date'],
-                'time' => $slot['start_time'],
+                'id'         => $slot_id,
+                'label'      => $label,
+                'date'       => $date,
+                'start_time' => $start_time,
+                'end_time'   => $end_time,
+                'source'     => isset( $slot['source'] ) ? $slot['source'] : 'manual',
             );
         }
     }
@@ -279,6 +300,10 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
                 $reg_end_date = isset( $ticket['close_ticket_date'] ) ? $ticket['close_ticket_date'] : '';
                 $reg_end_time = isset( $ticket['close_ticket_time'] ) ? $ticket['close_ticket_time'] : '23:59';
                 $is_active = isset( $ticket['is_active'] ) ? $ticket['is_active'] : 'yes';
+
+                // V1 Le Hiboo - Mapping Ticket ↔ Créneau
+                $ticket_slots_mode = isset( $ticket['slots_mode'] ) ? $ticket['slots_mode'] : 'all';
+                $ticket_slots = isset( $ticket['slots'] ) && is_array( $ticket['slots'] ) ? $ticket['slots'] : array();
             ?>
                 <div class="ticket_form_item" data-index="<?php echo esc_attr( $key ); ?>">
                     <div class="ticket_form_content">
@@ -396,6 +421,60 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
                             </div>
                         </div>
 
+                        <!-- V1 Le Hiboo - Sélection des créneaux -->
+                        <?php if ( ! empty( $event_slots ) ) : ?>
+                        <div class="ticket_form_field ticket_slots_section">
+                            <label class="field_label"><strong><?php esc_html_e( 'Créneaux associés', 'eventlist' ); ?></strong> :</label>
+                            <p class="field_hint"><?php esc_html_e( 'Ce billet est disponible pour quels créneaux ?', 'eventlist' ); ?></p>
+
+                            <div class="slots_mode_options">
+                                <label class="slots_mode_option <?php echo $ticket_slots_mode === 'all' ? 'selected' : ''; ?>">
+                                    <input type="radio"
+                                           name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][slots_mode]' ); ?>"
+                                           value="all"
+                                           class="slots_mode_radio"
+                                           <?php checked( $ticket_slots_mode, 'all' ); ?>>
+                                    <span class="slots_mode_checkmark"></span>
+                                    <span class="slots_mode_text"><?php esc_html_e( 'Tous les créneaux', 'eventlist' ); ?></span>
+                                </label>
+
+                                <label class="slots_mode_option <?php echo $ticket_slots_mode === 'selected' ? 'selected' : ''; ?>">
+                                    <input type="radio"
+                                           name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][slots_mode]' ); ?>"
+                                           value="selected"
+                                           class="slots_mode_radio"
+                                           <?php checked( $ticket_slots_mode, 'selected' ); ?>>
+                                    <span class="slots_mode_checkmark"></span>
+                                    <span class="slots_mode_text"><?php esc_html_e( 'Créneaux spécifiques', 'eventlist' ); ?></span>
+                                </label>
+                            </div>
+
+                            <div class="slots_checkboxes_wrapper" style="<?php echo $ticket_slots_mode === 'selected' ? '' : 'display: none;'; ?>">
+                                <div class="slots_checkboxes_grid">
+                                    <?php foreach ( $event_slots as $slot ) : ?>
+                                    <label class="slot_checkbox_item">
+                                        <input type="checkbox"
+                                               name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][slots][]' ); ?>"
+                                               value="<?php echo esc_attr( $slot['id'] ); ?>"
+                                               class="slot_checkbox"
+                                               <?php checked( in_array( $slot['id'], $ticket_slots, true ) ); ?>>
+                                        <span class="slot_checkbox_mark"></span>
+                                        <span class="slot_checkbox_label"><?php echo esc_html( $slot['label'] ); ?></span>
+                                    </label>
+                                    <?php endforeach; ?>
+                                </div>
+                                <p class="slots_validation_hint" style="display: none; color: #dc3545; margin-top: 8px;">
+                                    <?php esc_html_e( 'Veuillez sélectionner au moins un créneau.', 'eventlist' ); ?>
+                                </p>
+                            </div>
+                        </div>
+                        <?php else : ?>
+                        <!-- Pas de créneaux définis, mode "all" par défaut -->
+                        <input type="hidden"
+                               name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][slots_mode]' ); ?>"
+                               value="all">
+                        <?php endif; ?>
+
                         <!-- Champ caché pour le statut actif -->
                         <input type="hidden"
                                name="<?php echo esc_attr( $_prefix.'ticket['.$key.'][is_active]' ); ?>"
@@ -439,66 +518,41 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
         </button>
     </div>
 
-    <!-- Section Lien externe -->
+    <!-- Section Lien externe - V1 Le Hiboo Simplifiée -->
+    <?php
+    // V1 Le Hiboo - Récupérer la description externe
+    $external_description = get_post_meta( $post_id, $_prefix.'ticket_external_description', true );
+    ?>
     <div class="billetterie_external_section" style="<?php echo $ticket_link === 'ticket_external_link' ? '' : 'display: none;'; ?>">
 
         <!-- Lien URL -->
         <div class="billetterie_field">
-            <label class="field_label"><strong><?php esc_html_e( 'Lien URL de réservation', 'eventlist' ); ?></strong></label>
-            <p class="field_hint"><?php esc_html_e( 'Insérez le lien vers votre billetterie ou autre type de réservation externe', 'eventlist' ); ?></p>
+            <label class="field_label"><strong><?php esc_html_e( 'Lien URL de réservation', 'eventlist' ); ?></strong> <span class="required">*</span></label>
+            <p class="field_hint"><?php esc_html_e( 'Insérez le lien vers votre billetterie externe (Billetweb, Weezevent, Eventbrite, etc.)', 'eventlist' ); ?></p>
             <input type="url"
                    name="<?php echo esc_attr( $_prefix.'ticket_external_link' ); ?>"
                    value="<?php echo esc_url( $ticket_external_link ); ?>"
                    class="billetterie_input"
-                   placeholder="https://">
+                   placeholder="https://billetweb.fr/votre-evenement">
         </div>
 
-        <!-- Section Tarifs -->
-        <div class="external_tarifs_wrapper">
-            <h5 class="subsection_title"><?php esc_html_e( 'Tarifs', 'eventlist' ); ?></h5>
-            <p class="subsection_hint"><?php esc_html_e( 'Ajoutez un ou plusieurs tarifs pour informer vos visiteurs', 'eventlist' ); ?></p>
+        <!-- Description / Explication -->
+        <div class="billetterie_field">
+            <label class="field_label"><strong><?php esc_html_e( 'Informations complémentaires', 'eventlist' ); ?></strong></label>
+            <p class="field_hint"><?php esc_html_e( 'Expliquez aux visiteurs comment réserver (tarifs indicatifs, modalités, etc.)', 'eventlist' ); ?></p>
+            <textarea name="<?php echo esc_attr( $_prefix.'ticket_external_description' ); ?>"
+                      class="billetterie_textarea"
+                      rows="4"
+                      placeholder="<?php esc_attr_e( 'Ex: Billets disponibles sur notre partenaire Billetweb. Tarif adulte : 15€, Tarif enfant : 8€. Réservation conseillée.', 'eventlist' ); ?>"><?php echo esc_textarea( $external_description ); ?></textarea>
+        </div>
 
-            <div class="external_tarifs_list" data-prefix="<?php echo esc_attr( $_prefix ); ?>">
-                <?php foreach ( $external_prices as $index => $price ) : ?>
-                    <div class="external_tarif_item" data-index="<?php echo esc_attr( $index ); ?>">
-                        <div class="tarif_row">
-                            <div class="tarif_field tarif_name_field">
-                                <label><?php esc_html_e( 'Nom du tarif', 'eventlist' ); ?></label>
-                                <input type="text"
-                                       name="<?php echo esc_attr( $_prefix.'ticket_external_prices['.$index.'][name]' ); ?>"
-                                       value="<?php echo esc_attr( isset($price['name']) ? $price['name'] : '' ); ?>"
-                                       class="billetterie_input"
-                                       placeholder="<?php esc_attr_e( 'Tarif Normal', 'eventlist' ); ?>">
-                            </div>
-                            <div class="tarif_field tarif_price_field">
-                                <label><?php esc_html_e( 'Prix', 'eventlist' ); ?></label>
-                                <div class="price_input_wrapper">
-                                    <input type="number"
-                                           name="<?php echo esc_attr( $_prefix.'ticket_external_prices['.$index.'][price]' ); ?>"
-                                           value="<?php echo esc_attr( isset($price['price']) ? $price['price'] : '' ); ?>"
-                                           class="billetterie_input tarif_price_input"
-                                           min="0"
-                                           step="0.01"
-                                           placeholder="5">
-                                    <span class="currency_symbol">€</span>
-                                </div>
-                            </div>
-                            <button type="button" class="btn_remove_tarif"><i class="fa fa-times"></i></button>
-                        </div>
-                        <div class="tarif_field tarif_info_field">
-                            <label><?php esc_html_e( 'Informations', 'eventlist' ); ?></label>
-                            <textarea name="<?php echo esc_attr( $_prefix.'ticket_external_prices['.$index.'][info]' ); ?>"
-                                      class="billetterie_textarea"
-                                      rows="2"
-                                      placeholder="<?php esc_attr_e( 'Type de public pour ce tarif', 'eventlist' ); ?>"><?php echo esc_textarea( isset($price['info']) ? $price['info'] : '' ); ?></textarea>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-
-            <button type="button" class="btn_add_tarif el_button_primary">
-                <?php esc_html_e( 'Ajouter un tarif', 'eventlist' ); ?>
-            </button>
+        <div class="external_info_box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <p><?php esc_html_e( 'Les visiteurs seront redirigés vers votre billetterie externe pour effectuer leur réservation. Vous gérez les inscriptions et paiements directement sur cette plateforme.', 'eventlist' ); ?></p>
         </div>
     </div>
 </div>
@@ -1599,6 +1653,16 @@ jQuery(document).ready(function($) {
             $(document).on('click', '.registration_option', function() {
                 self.updateRegistrationOptionUI($(this));
             });
+
+            // V1 Le Hiboo - Toggle slots_mode pour chaque billet
+            $(document).on('change', '.slots_mode_radio', function() {
+                self.handleTicketSlotsMode($(this));
+            });
+
+            $(document).on('click', '.slots_mode_option', function() {
+                var $radio = $(this).find('.slots_mode_radio');
+                $radio.prop('checked', true).trigger('change');
+            });
         },
 
         handleModeChoice: function() {
@@ -1683,6 +1747,25 @@ jQuery(document).ready(function($) {
             // Handled by handleRegistrationChoice
         },
 
+        // V1 Le Hiboo - Toggle slots_mode pour chaque billet
+        handleTicketSlotsMode: function($radio) {
+            var $item = $radio.closest('.ticket_form_item');
+            var mode = $radio.val();
+
+            // Update UI
+            $item.find('.slots_mode_option').removeClass('selected');
+            $radio.closest('.slots_mode_option').addClass('selected');
+
+            // Show/hide checkboxes
+            if (mode === 'selected') {
+                $item.find('.slots_checkboxes_wrapper').slideDown(200);
+            } else {
+                $item.find('.slots_checkboxes_wrapper').slideUp(200);
+                // Optionally uncheck all checkboxes when switching to "all"
+                // $item.find('.slot_checkbox').prop('checked', false);
+            }
+        },
+
         addTicket: function() {
             var self = this;
             var index = this.ticketIndex;
@@ -1738,6 +1821,8 @@ jQuery(document).ready(function($) {
                             '</div>' +
                         '</div>' +
                     '</div>' +
+                    // V1 Le Hiboo - Par défaut, nouveau billet disponible pour tous les créneaux
+                    '<input type="hidden" name="' + this.prefix + 'ticket[' + index + '][slots_mode]" value="all">' +
                     '<input type="hidden" name="' + this.prefix + 'ticket[' + index + '][is_active]" value="yes" class="ticket_is_active">' +
                     '<div class="ticket_form_actions">' +
                         '<button type="button" class="btn_save_ticket el_btn_save">' +

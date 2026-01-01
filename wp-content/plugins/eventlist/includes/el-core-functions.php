@@ -1489,6 +1489,253 @@ function el_get_calendar_core( $id_event, $id_cal ){
 	return;
 }
 
+/**
+ * ============================================================================
+ * V1 Le Hiboo - Fonctions Billetterie avec Mapping Ticket ↔ Créneau
+ * ============================================================================
+ */
+
+/**
+ * Génère un ID unique pour un créneau (slot)
+ *
+ * @param string $date Date du créneau (YYYY-MM-DD)
+ * @param string $start_time Heure de début (HH:MM)
+ * @param string $end_time Heure de fin (HH:MM) - optionnel
+ * @return string ID unique du slot
+ */
+if ( ! function_exists( 'el_generate_slot_id' ) ) {
+	function el_generate_slot_id( $date, $start_time, $end_time = '' ) {
+		$base = $date . '_' . $start_time;
+		if ( ! empty( $end_time ) ) {
+			$base .= '_' . $end_time;
+		}
+		// Génère un hash court mais unique
+		return 'slot_' . substr( md5( $base . wp_generate_uuid4() ), 0, 12 );
+	}
+}
+
+/**
+ * Récupère les créneaux associés à un billet
+ *
+ * @param int $event_id ID de l'événement
+ * @param string $ticket_id ID du billet
+ * @return array Liste des IDs de créneaux, ou 'all' si tous
+ */
+if ( ! function_exists( 'el_get_ticket_slots' ) ) {
+	function el_get_ticket_slots( $event_id, $ticket_id ) {
+		$tickets = get_post_meta( $event_id, OVA_METABOX_EVENT . 'ticket', true );
+
+		if ( ! is_array( $tickets ) || empty( $tickets ) ) {
+			return 'all';
+		}
+
+		foreach ( $tickets as $ticket ) {
+			if ( isset( $ticket['ticket_id'] ) && $ticket['ticket_id'] === $ticket_id ) {
+				// Si slots_mode n'existe pas ou vaut 'all', retourner 'all'
+				$slots_mode = isset( $ticket['slots_mode'] ) ? $ticket['slots_mode'] : 'all';
+
+				if ( $slots_mode === 'all' ) {
+					return 'all';
+				}
+
+				// Sinon retourner la liste des slots sélectionnés
+				return isset( $ticket['slots'] ) && is_array( $ticket['slots'] ) ? $ticket['slots'] : array();
+			}
+		}
+
+		return 'all';
+	}
+}
+
+/**
+ * Vérifie si un billet est disponible pour un créneau donné
+ *
+ * @param int $event_id ID de l'événement
+ * @param string $ticket_id ID du billet
+ * @param string $slot_id ID du créneau
+ * @return bool True si le billet est disponible pour ce créneau
+ */
+if ( ! function_exists( 'el_ticket_available_for_slot' ) ) {
+	function el_ticket_available_for_slot( $event_id, $ticket_id, $slot_id ) {
+		$ticket_slots = el_get_ticket_slots( $event_id, $ticket_id );
+
+		// Si 'all', le billet est dispo pour tous les créneaux
+		if ( $ticket_slots === 'all' ) {
+			return true;
+		}
+
+		// Sinon vérifier si le slot est dans la liste
+		return in_array( $slot_id, $ticket_slots, true );
+	}
+}
+
+/**
+ * Alias de el_get_calendar_core pour cohérence de nommage
+ *
+ * @param int $event_id ID de l'événement
+ * @param string $slot_id ID du créneau
+ * @return array|null Données du créneau ou null
+ */
+if ( ! function_exists( 'el_get_slot_by_id' ) ) {
+	function el_get_slot_by_id( $event_id, $slot_id ) {
+		return el_get_calendar_core( $event_id, $slot_id );
+	}
+}
+
+/**
+ * Récupère tous les billets disponibles pour un créneau donné
+ *
+ * @param int $event_id ID de l'événement
+ * @param string $slot_id ID du créneau
+ * @return array Liste des billets filtrés
+ */
+if ( ! function_exists( 'el_get_tickets_for_slot' ) ) {
+	function el_get_tickets_for_slot( $event_id, $slot_id ) {
+		$tickets = get_post_meta( $event_id, OVA_METABOX_EVENT . 'ticket', true );
+
+		if ( ! is_array( $tickets ) || empty( $tickets ) ) {
+			return array();
+		}
+
+		$filtered_tickets = array();
+
+		foreach ( $tickets as $ticket ) {
+			$ticket_id = isset( $ticket['ticket_id'] ) ? $ticket['ticket_id'] : '';
+
+			if ( ! empty( $ticket_id ) && el_ticket_available_for_slot( $event_id, $ticket_id, $slot_id ) ) {
+				$filtered_tickets[] = $ticket;
+			}
+		}
+
+		return $filtered_tickets;
+	}
+}
+
+/**
+ * Récupère tous les créneaux d'un événement avec format unifié
+ * Combine créneaux manuels et récurrents résolus
+ *
+ * @param int $event_id ID de l'événement
+ * @return array Liste des créneaux avec format unifié
+ */
+if ( ! function_exists( 'el_get_all_slots' ) ) {
+	function el_get_all_slots( $event_id ) {
+		$calendars = get_arr_list_calendar_by_id_event( $event_id );
+
+		if ( ! is_array( $calendars ) || empty( $calendars ) ) {
+			return array();
+		}
+
+		$slots = array();
+
+		foreach ( $calendars as $cal ) {
+			// S'assurer que chaque créneau a un calendar_id
+			$slot_id = isset( $cal['calendar_id'] ) ? $cal['calendar_id'] : '';
+
+			if ( empty( $slot_id ) ) {
+				// Générer un ID si manquant (cas legacy)
+				$date = isset( $cal['start_date'] ) ? $cal['start_date'] : ( isset( $cal['date'] ) ? $cal['date'] : '' );
+				$start_time = isset( $cal['start_time'] ) ? $cal['start_time'] : '';
+				$end_time = isset( $cal['end_time'] ) ? $cal['end_time'] : '';
+				$slot_id = 'slot_' . md5( $date . $start_time . $end_time );
+			}
+
+			$slots[] = array(
+				'id'         => $slot_id,
+				'date'       => isset( $cal['start_date'] ) ? $cal['start_date'] : ( isset( $cal['date'] ) ? $cal['date'] : '' ),
+				'start_time' => isset( $cal['start_time'] ) ? $cal['start_time'] : '',
+				'end_time'   => isset( $cal['end_time'] ) ? $cal['end_time'] : '',
+				'source'     => isset( $cal['source'] ) ? $cal['source'] : 'manual',
+				'raw'        => $cal, // Données brutes pour compatibilité
+			);
+		}
+
+		// Trier par date puis par heure
+		usort( $slots, function( $a, $b ) {
+			$date_cmp = strcmp( $a['date'], $b['date'] );
+			if ( $date_cmp !== 0 ) {
+				return $date_cmp;
+			}
+			return strcmp( $a['start_time'], $b['start_time'] );
+		});
+
+		return $slots;
+	}
+}
+
+/**
+ * Formate un créneau pour affichage
+ *
+ * @param array $slot Données du créneau
+ * @param string $format Format de date ('short', 'long', 'full')
+ * @return string Créneau formaté
+ */
+if ( ! function_exists( 'el_format_slot_display' ) ) {
+	function el_format_slot_display( $slot, $format = 'long' ) {
+		$date = isset( $slot['date'] ) ? $slot['date'] : '';
+		$start_time = isset( $slot['start_time'] ) ? $slot['start_time'] : '';
+		$end_time = isset( $slot['end_time'] ) ? $slot['end_time'] : '';
+
+		if ( empty( $date ) ) {
+			return '';
+		}
+
+		$timestamp = strtotime( $date );
+
+		switch ( $format ) {
+			case 'short':
+				// "15/01 - 10:00"
+				$date_str = date_i18n( 'd/m', $timestamp );
+				break;
+			case 'full':
+				// "Mercredi 15 janvier 2025 - 10:00 → 12:00"
+				$date_str = date_i18n( 'l j F Y', $timestamp );
+				break;
+			case 'long':
+			default:
+				// "Mer. 15 janvier - 10:00 → 12:00"
+				$date_str = date_i18n( 'D. j F', $timestamp );
+				break;
+		}
+
+		$time_str = '';
+		if ( ! empty( $start_time ) ) {
+			$time_str = ' - ' . $start_time;
+			if ( ! empty( $end_time ) ) {
+				$time_str .= ' → ' . $end_time;
+			}
+		}
+
+		return $date_str . $time_str;
+	}
+}
+
+/**
+ * Vérifie si un événement a des billets avec mapping de créneaux
+ *
+ * @param int $event_id ID de l'événement
+ * @return bool True si au moins un billet a un mapping spécifique
+ */
+if ( ! function_exists( 'el_event_has_slot_mapping' ) ) {
+	function el_event_has_slot_mapping( $event_id ) {
+		$tickets = get_post_meta( $event_id, OVA_METABOX_EVENT . 'ticket', true );
+
+		if ( ! is_array( $tickets ) || empty( $tickets ) ) {
+			return false;
+		}
+
+		foreach ( $tickets as $ticket ) {
+			if ( isset( $ticket['slots_mode'] ) && $ticket['slots_mode'] === 'selected' ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+}
+
+// Fin V1 Le Hiboo - Fonctions Billetterie
+
 /* Only Show User Images Upload */
 function only_show_user_images( $query = array() ) {
 	$current_userID = get_current_user_id();

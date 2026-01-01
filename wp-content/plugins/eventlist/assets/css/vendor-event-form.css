@@ -2948,3 +2948,236 @@ textarea.field-error {
         justify-content: center;
     }
 }
+
+/* ==========================================================================
+   15. V1 Le Hiboo - Ticket Slots Mapping
+   ========================================================================== */
+
+/* Section des créneaux */
+.ticket_slots_section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* Options de mode (Tous / Spécifiques) */
+.slots_mode_options {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.slots_mode_option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+    min-width: 180px;
+}
+
+.slots_mode_option:hover {
+    background: #fff;
+    border-color: #FF6600;
+}
+
+.slots_mode_option.selected {
+    background: #fff8f5;
+    border-color: #FF6600;
+}
+
+.slots_mode_radio {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.slots_mode_checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.slots_mode_option.selected .slots_mode_checkmark,
+.slots_mode_option:has(.slots_mode_radio:checked) .slots_mode_checkmark {
+    border-color: #FF6600;
+}
+
+.slots_mode_checkmark::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 10px;
+    height: 10px;
+    background: #FF6600;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+}
+
+.slots_mode_option.selected .slots_mode_checkmark::after,
+.slots_mode_option:has(.slots_mode_radio:checked) .slots_mode_checkmark::after {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.slots_mode_text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Grille des checkboxes de créneaux */
+.slots_checkboxes_wrapper {
+    margin-top: 12px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slots_checkboxes_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+.slot_checkbox_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slot_checkbox_item:hover {
+    border-color: #FF6600;
+    background: #fff8f5;
+}
+
+.slot_checkbox_item:has(.slot_checkbox:checked) {
+    border-color: #FF6600;
+    background: #fff8f5;
+}
+
+.slot_checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.slot_checkbox_mark {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.slot_checkbox_item:has(.slot_checkbox:checked) .slot_checkbox_mark {
+    background: #FF6600;
+    border-color: #FF6600;
+}
+
+.slot_checkbox_mark::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) scale(0);
+    transition: transform 0.2s ease;
+}
+
+.slot_checkbox_item:has(.slot_checkbox:checked) .slot_checkbox_mark::after {
+    transform: rotate(45deg) scale(1);
+}
+
+.slot_checkbox_label {
+    font-size: 13px;
+    color: #333;
+    flex: 1;
+}
+
+/* Message de validation */
+.slots_validation_hint {
+    font-size: 13px;
+    color: #dc3545;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .slots_mode_options {
+        flex-direction: column;
+    }
+
+    .slots_mode_option {
+        min-width: 100%;
+    }
+
+    .slots_checkboxes_grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   16. V1 Le Hiboo - External Ticketing Info Box
+   ========================================================================== */
+
+.external_info_box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.external_info_box svg {
+    flex-shrink: 0;
+    color: #6c757d;
+    margin-top: 2px;
+}
+
+.external_info_box p {
+    margin: 0;
+    font-size: 14px;
+    color: #495057;
+    line-height: 1.5;
+}

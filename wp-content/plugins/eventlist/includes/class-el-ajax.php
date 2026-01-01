@@ -2438,6 +2438,26 @@ if( !class_exists( 'El_Ajax' ) ){
 						$ticket_prices['none'][] = (float) $new_price;
 						$ticket_prices['simple'][] = (float) $new_price;
 					}
+
+					// V1 Le Hiboo - Mapping Ticket ↔ Créneau
+					// slots_mode: 'all' (tous les créneaux) ou 'selected' (créneaux spécifiques)
+					$slots_mode = isset( $value['slots_mode'] ) ? sanitize_text_field( $value['slots_mode'] ) : 'all';
+					if ( ! in_array( $slots_mode, array( 'all', 'selected' ), true ) ) {
+						$slots_mode = 'all';
+					}
+					$post_data_sanitize[$_prefix.'ticket'][$key]['slots_mode'] = $slots_mode;
+
+					// slots: array des calendar_id sélectionnés (si slots_mode = 'selected')
+					$slots = array();
+					if ( isset( $value['slots'] ) && is_array( $value['slots'] ) ) {
+						$slots = array_map( 'sanitize_text_field', $value['slots'] );
+						$slots = array_filter( $slots ); // Retirer les valeurs vides
+						$slots = array_values( $slots ); // Ré-indexer
+					}
+					$post_data_sanitize[$_prefix.'ticket'][$key]['slots'] = $slots;
+
+					// Validation : si slots_mode = 'selected', au moins 1 slot requis
+					// Note: on laisse passer pour le moment, le front validera
 				}
 			}
 
@@ -2945,6 +2965,12 @@ if( !class_exists( 'El_Ajax' ) ){
 					update_post_meta( $post_id, $key, $value );
 				}
 
+				// V1 Le Hiboo - Résoudre les récurrences en créneaux réels
+				// Doit être appelé APRÈS la sauvegarde des meta calendar
+				if ( class_exists( 'EL_Recurrence_Resolver' ) ) {
+					EL_Recurrence_Resolver::on_event_save( $post_id );
+				}
+
 				$post_info = get_post( $post_id );
 
 				if( ! el_can_publish_event() ){
@@ -3103,6 +3129,11 @@ if( !class_exists( 'El_Ajax' ) ){
 
 				foreach ($post_data_sanitize as $name => $value ) {
 					update_post_meta( $new_post_id, $name, $value );
+				}
+
+				// V1 Le Hiboo - Résoudre les récurrences en créneaux réels
+				if ( class_exists( 'EL_Recurrence_Resolver' ) ) {
+					EL_Recurrence_Resolver::on_event_save( $new_post_id );
 				}
 
 				// Add Membership ID

@@ -115,6 +115,9 @@ final class EventList{
 		// Core Functions
 		require_once EL_PLUGIN_INC . 'el-core-functions.php';
 
+		// V1 Le Hiboo - Recurrence Resolver (génère créneaux depuis récurrence)
+		require_once EL_PLUGIN_INC . 'class-el-recurrence-resolver.php';
+
 		// Post Type
 		require_once EL_PLUGIN_INC . 'class-el-post-types.php';
 

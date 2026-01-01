@@ -537,6 +537,14 @@ class EL_Event extends EL_Abstract_Event{
 					return false;
 				}
 
+				// V1 Le Hiboo - Vérifier que le billet est disponible pour ce créneau
+				if ( function_exists( 'el_ticket_available_for_slot' ) ) {
+					if ( ! el_ticket_available_for_slot( $id_event, $value['id'], $id_cal ) ) {
+						EL()->msg_session->set( 'el_message', __("Ce billet n'est pas disponible pour ce créneau", "eventlist") );
+						return false;
+					}
+				}
+
 				//check ticket open
 				$is_time_open = EL_Cart::instance()->is_booking_ticket_by_date_time( $list_date_time_ticket[$value['id']]['start_date'], $list_date_time_ticket[$value['id']]['start_time'], $list_date_time_ticket[$value['id']]['end_date'], $list_date_time_ticket[$value['id']]['end_time'], $id_event );
 				
