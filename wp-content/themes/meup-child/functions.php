@@ -326,7 +326,7 @@ function lehiboo_hide_header_on_vendor_pages() {
 	if ( ! empty( $vendor_page ) ) {
 		?>
 		<style type="text/css">
-			/* Cacher TOUS les headers originaux */
+			/* Cacher TOUS les headers et menus originaux */
 			body.is-vendor-page .ovaheader,
 			body.is-vendor-page .elementor-element-717d424,
 			body.is-vendor-page .ova_menu_clasic,
@@ -334,13 +334,19 @@ function lehiboo_hide_header_on_vendor_pages() {
 			body.is-vendor-page .elementor-widget-ova_menu,
 			body.is-vendor-page header.ovatheme_header_default,
 			body.is-vendor-page .ovamenu_shrink,
-			body.is-vendor-page .ovamenu_shrink_mobile {
+			body.is-vendor-page .ovamenu_shrink_mobile,
+			body.is-vendor-page .navbar-nav,
+			body.is-vendor-page .nav.navbar-nav,
+			body.is-vendor-page #header_menu,
+			body.is-vendor-page .vendor-content-header .menu,
+			body.is-vendor-page .vendor-content-header ul.menu,
+			body.is-vendor-page .vendor-content-header > ul {
 				display: none !important;
 			}
 
 			/* Styles pour le header dans le bloc central */
-			body.is-vendor-page .vendor-content-header {
-				display: flex;
+			.vendor-content-header {
+				display: flex !important;
 				align-items: center;
 				justify-content: space-between;
 				background: #ffffff;
@@ -352,20 +358,33 @@ function lehiboo_hide_header_on_vendor_pages() {
 			}
 
 			/* Logo à gauche */
-			body.is-vendor-page .vendor-content-header .vendor-header-logo img {
+			.vendor-content-header .vendor-header-logo {
+				display: flex !important;
+				align-items: center;
+				text-decoration: none;
+			}
+
+			.vendor-content-header .vendor-header-logo img {
 				max-height: 40px;
 				width: auto;
+				display: block !important;
+			}
+
+			.vendor-content-header .vendor-header-logo .site-name {
+				font-size: 20px;
+				font-weight: 700;
+				color: #2F4858;
 			}
 
 			/* Navigation à droite */
-			body.is-vendor-page .vendor-content-header .vendor-header-nav {
-				display: flex;
+			.vendor-content-header .vendor-header-nav {
+				display: flex !important;
 				align-items: center;
 				gap: 12px;
 			}
 
-			body.is-vendor-page .vendor-content-header .vendor-header-nav a {
-				display: inline-flex;
+			.vendor-content-header .vendor-header-nav a {
+				display: inline-flex !important;
 				align-items: center;
 				gap: 8px;
 				padding: 10px 18px;
@@ -379,19 +398,19 @@ function lehiboo_hide_header_on_vendor_pages() {
 				border: 1px solid #e2e8f0;
 			}
 
-			body.is-vendor-page .vendor-content-header .vendor-header-nav a:hover {
+			.vendor-content-header .vendor-header-nav a:hover {
 				background: #e9ecef;
 				border-color: #cbd5e1;
 			}
 
 			/* Bouton CTA orange */
-			body.is-vendor-page .vendor-content-header .vendor-header-nav a.btn-cta {
+			.vendor-content-header .vendor-header-nav a.btn-cta {
 				background: #FF601F;
 				color: #ffffff;
 				border-color: #FF601F;
 			}
 
-			body.is-vendor-page .vendor-content-header .vendor-header-nav a.btn-cta:hover {
+			.vendor-content-header .vendor-header-nav a.btn-cta:hover {
 				background: #e5561c;
 				border-color: #e5561c;
 			}
@@ -416,13 +435,19 @@ function lehiboo_render_vendor_header_menu() {
 	$my_account_url = function_exists( 'get_myaccount_page' ) ? get_myaccount_page() : home_url( '/member-account/' );
 	$create_event_url = add_query_arg( 'vendor', 'listing-edit', $my_account_url );
 
-	// Logo
+	// Logo - essayer plusieurs sources
 	$logo_url = get_theme_mod( 'logo', '' );
+	if ( empty( $logo_url ) ) {
+		// Fallback: custom_logo de WordPress
+		$custom_logo_id = get_theme_mod( 'custom_logo' );
+		if ( $custom_logo_id ) {
+			$logo_url = wp_get_attachment_image_url( $custom_logo_id, 'full' );
+		}
+	}
 
 	ob_start();
 	?>
 	<div class="vendor-content-header">
-		<!-- Logo à gauche -->
 		<a href="<?php echo esc_url( $home_url ); ?>" class="vendor-header-logo">
 			<?php if ( $logo_url ) : ?>
 				<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php bloginfo( 'name' ); ?>">
@@ -430,15 +455,9 @@ function lehiboo_render_vendor_header_menu() {
 				<span class="site-name"><?php bloginfo( 'name' ); ?></span>
 			<?php endif; ?>
 		</a>
-
-		<!-- Navigation à droite -->
 		<div class="vendor-header-nav">
-			<a href="<?php echo esc_url( $my_account_url ); ?>">
-				<?php esc_html_e( 'Mon compte', 'meup-child' ); ?>
-			</a>
-			<a href="<?php echo esc_url( $create_event_url ); ?>" class="btn-cta">
-				+ <?php esc_html_e( 'Créer mon événement', 'meup-child' ); ?>
-			</a>
+			<a href="<?php echo esc_url( $my_account_url ); ?>">Mon compte</a>
+			<a href="<?php echo esc_url( $create_event_url ); ?>" class="btn-cta">+ Créer mon événement</a>
 		</div>
 	</div>
 	<?php
