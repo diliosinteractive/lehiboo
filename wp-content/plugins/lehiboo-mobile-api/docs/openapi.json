@@ -240,6 +240,50 @@
         }
       }
     },
+    "/events/{id}/slots": {
+      "get": {
+        "tags": ["Events"],
+        "summary": "Créneaux d'un événement",
+        "description": "Récupère tous les créneaux (slots) disponibles pour un événement, avec les dates disponibles",
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}},
+          {"name": "date", "in": "query", "schema": {"type": "string", "format": "date"}, "description": "Filtrer par date spécifique"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des créneaux",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/SlotsResponse"}
+              }
+            }
+          },
+          "404": {"description": "Événement introuvable"}
+        }
+      }
+    },
+    "/events/{id}/slots/{slot_id}/tickets": {
+      "get": {
+        "tags": ["Events"],
+        "summary": "Billets disponibles pour un créneau",
+        "description": "Récupère les billets disponibles pour un créneau spécifique (avec mapping ticket ↔ slot)",
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}},
+          {"name": "slot_id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "ID du créneau"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Billets disponibles",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/SlotTicketsResponse"}
+              }
+            }
+          },
+          "404": {"description": "Événement ou créneau introuvable"}
+        }
+      }
+    },
     "/organizers/{id}": {
       "get": {
         "tags": ["Organizers"],
@@ -860,21 +904,105 @@
       },
       "BookingRequest": {
         "type": "object",
-        "required": ["event_id", "date", "tickets"],
+        "required": ["event_id", "tickets"],
         "properties": {
           "event_id": {"type": "integer"},
-          "date": {"type": "string", "format": "date"},
-          "time": {"type": "string"},
+          "slot_id": {"type": "string", "description": "ID du créneau sélectionné"},
           "tickets": {
             "type": "array",
             "items": {
               "type": "object",
+              "required": ["ticket_type_id", "quantity"],
               "properties": {
-                "ticket_id": {"type": "string"},
-                "quantity": {"type": "integer"}
+                "ticket_type_id": {"type": "string"},
+                "quantity": {"type": "integer", "minimum": 1}
+              }
+            }
+          },
+          "buyer_info": {
+            "type": "object",
+            "properties": {
+              "first_name": {"type": "string"},
+              "last_name": {"type": "string"},
+              "email": {"type": "string", "format": "email"},
+              "phone": {"type": "string"}
+            }
+          },
+          "coupon_code": {"type": "string"},
+          "notes": {"type": "string"}
+        }
+      },
+      "SlotsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "data": {
+            "type": "object",
+            "properties": {
+              "event_id": {"type": "integer"},
+              "slots": {
+                "type": "array",
+                "items": {"$ref": "#/components/schemas/SlotDetailed"}
+              },
+              "available_dates": {
+                "type": "array",
+                "items": {"type": "string", "format": "date"},
+                "description": "Liste des dates avec au moins un créneau disponible"
               }
             }
           }
+        }
+      },
+      "SlotDetailed": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "date": {"type": "string", "format": "date"},
+          "day_name": {"type": "string", "example": "Mercredi"},
+          "start_time": {"type": "string", "example": "14:00"},
+          "end_time": {"type": "string", "example": "16:00"},
+          "available_tickets": {"type": "integer", "description": "Nombre total de places disponibles"},
+          "tickets_count": {"type": "integer", "description": "Nombre de types de billets disponibles"},
+          "status": {"type": "string", "enum": ["available", "sold_out"]}
+        }
+      },
+      "SlotTicketsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "data": {
+            "type": "object",
+            "properties": {
+              "event_id": {"type": "integer"},
+              "slot_id": {"type": "string"},
+              "slot": {
+                "type": "object",
+                "properties": {
+                  "date": {"type": "string", "format": "date"},
+                  "start_time": {"type": "string"},
+                  "end_time": {"type": "string"}
+                }
+              },
+              "tickets": {
+                "type": "array",
+                "items": {"$ref": "#/components/schemas/TicketForSlot"}
+              }
+            }
+          }
+        }
+      },
+      "TicketForSlot": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "price": {"type": "number"},
+          "price_formatted": {"type": "string", "example": "15,00 €"},
+          "currency": {"type": "string", "example": "EUR"},
+          "remaining": {"type": "integer"},
+          "min_qty": {"type": "integer"},
+          "max_qty": {"type": "integer"}
         }
       },
       "AlertCreateRequest": {

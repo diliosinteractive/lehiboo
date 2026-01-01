@@ -66,6 +66,7 @@ class LMA_REST_Bookings {
 
         $data = array(
             'event_id' => absint($request->get_param('event_id')),
+            'slot_id' => sanitize_text_field($request->get_param('slot_id')), // V1 Le Hiboo
             'tickets' => $request->get_param('tickets'),
             'buyer_info' => $request->get_param('buyer_info'),
             'coupon_code' => sanitize_text_field($request->get_param('coupon_code')),
@@ -80,6 +81,49 @@ class LMA_REST_Bookings {
 
         // Get event
         $event = get_post($data['event_id']);
+
+        // V1 Le Hiboo - Validate slot if provided
+        $slot_info = null;
+        if (!empty($data['slot_id'])) {
+            $calendar = get_post_meta($event->ID, $meta_prefix . 'calendar', true);
+            $slot_found = false;
+
+            if (!empty($calendar) && is_array($calendar)) {
+                foreach ($calendar as $cal) {
+                    if (isset($cal['calendar_id']) && $cal['calendar_id'] === $data['slot_id']) {
+                        $slot_found = true;
+                        $slot_info = $cal;
+                        break;
+                    }
+                }
+            }
+
+            if (!$slot_found) {
+                return LMA_Response::error(
+                    'slot_not_found',
+                    __('Créneau introuvable', 'lehiboo-mobile-api'),
+                    400
+                );
+            }
+
+            // Validate that tickets are available for this slot
+            if (!empty($data['tickets']) && is_array($data['tickets'])) {
+                foreach ($data['tickets'] as $ticket_data) {
+                    $ticket_type_id = isset($ticket_data['ticket_type_id']) ? $ticket_data['ticket_type_id'] : '';
+
+                    if (function_exists('el_ticket_available_for_slot')) {
+                        $available = el_ticket_available_for_slot($event->ID, $ticket_type_id, $data['slot_id']);
+                        if (!$available) {
+                            return LMA_Response::error(
+                                'ticket_not_available_for_slot',
+                                sprintf(__('Le billet "%s" n\'est pas disponible pour ce créneau', 'lehiboo-mobile-api'), $ticket_type_id),
+                                400
+                            );
+                        }
+                    }
+                }
+            }
+        }
 
         // Check availability
         $total_capacity = absint(get_post_meta($event->ID, $meta_prefix . 'total_capacity', true));
@@ -141,6 +185,16 @@ class LMA_REST_Bookings {
         update_post_meta($booking_id, $meta_prefix . 'notes', $data['notes']);
         update_post_meta($booking_id, $meta_prefix . 'expires_at', time() + 900); // 15 min
 
+        // V1 Le Hiboo - Store slot info
+        if (!empty($data['slot_id'])) {
+            update_post_meta($booking_id, $meta_prefix . 'slot_id', $data['slot_id']);
+            if ($slot_info) {
+                update_post_meta($booking_id, $meta_prefix . 'slot_date', isset($slot_info['date']) ? $slot_info['date'] : '');
+                update_post_meta($booking_id, $meta_prefix . 'slot_start_time', isset($slot_info['start_time']) ? $slot_info['start_time'] : '');
+                update_post_meta($booking_id, $meta_prefix . 'slot_end_time', isset($slot_info['end_time']) ? $slot_info['end_time'] : '');
+            }
+        }
+
         // Format response
         $tickets_summary = $this->format_tickets_summary($data['tickets'], $event, $meta_prefix);
 
@@ -162,6 +216,16 @@ class LMA_REST_Bookings {
             'tickets_summary' => $tickets_summary,
             'pricing' => $pricing,
         );
+
+        // V1 Le Hiboo - Add slot info to response
+        if (!empty($data['slot_id']) && $slot_info) {
+            $response['slot'] = array(
+                'id' => $data['slot_id'],
+                'date' => isset($slot_info['date']) ? $slot_info['date'] : null,
+                'start_time' => isset($slot_info['start_time']) ? $slot_info['start_time'] : null,
+                'end_time' => isset($slot_info['end_time']) ? $slot_info['end_time'] : null,
+            );
+        }
 
         // Add payment info if not free
         if ($pricing['total'] > 0) {
@@ -572,7 +636,19 @@ class LMA_REST_Bookings {
         $start_date = get_post_meta($event_id, $meta_prefix . 'date_start', true);
         $is_upcoming = $start_date && (is_numeric($start_date) ? $start_date : strtotime($start_date)) > time();
 
-        return array(
+        // V1 Le Hiboo - Get slot info
+        $slot_id = get_post_meta($booking->ID, $meta_prefix . 'slot_id', true);
+        $slot_date = get_post_meta($booking->ID, $meta_prefix . 'slot_date', true);
+        $slot_start_time = get_post_meta($booking->ID, $meta_prefix . 'slot_start_time', true);
+        $slot_end_time = get_post_meta($booking->ID, $meta_prefix . 'slot_end_time', true);
+
+        // Use slot date/time if available, otherwise use event date/time
+        $display_date = $slot_date ?: ($start_date ? date('Y-m-d', is_numeric($start_date) ? $start_date : strtotime($start_date)) : '');
+        $display_time = ($slot_start_time && $slot_end_time)
+            ? $slot_start_time . ' - ' . $slot_end_time
+            : get_post_meta($event_id, $meta_prefix . 'start_time', true) . ' - ' . get_post_meta($event_id, $meta_prefix . 'end_time', true);
+
+        $result = array(
             'id' => $booking->ID,
             'reference' => get_post_meta($booking->ID, $meta_prefix . 'reference', true),
             'status' => get_post_meta($booking->ID, $meta_prefix . 'status', true),
@@ -580,9 +656,8 @@ class LMA_REST_Bookings {
                 'id' => $event_id,
                 'title' => $event ? $event->post_title : '',
                 'thumbnail' => get_the_post_thumbnail_url($event_id, 'thumbnail'),
-                'date' => $start_date ? date('Y-m-d', is_numeric($start_date) ? $start_date : strtotime($start_date)) : '',
-                'time' => get_post_meta($event_id, $meta_prefix . 'start_time', true) . ' - ' .
-                         get_post_meta($event_id, $meta_prefix . 'end_time', true),
+                'date' => $display_date,
+                'time' => $display_time,
                 'venue' => get_post_meta($event_id, $meta_prefix . 'venue', true),
             ),
             'tickets_count' => $this->count_booking_tickets($booking->ID, $meta_prefix),
@@ -592,6 +667,18 @@ class LMA_REST_Bookings {
             'is_upcoming' => $is_upcoming,
             'can_cancel' => $is_upcoming && get_post_meta($booking->ID, $meta_prefix . 'status', true) === 'confirmed',
         );
+
+        // V1 Le Hiboo - Add slot info if present
+        if ($slot_id) {
+            $result['slot'] = array(
+                'id' => $slot_id,
+                'date' => $slot_date ?: null,
+                'start_time' => $slot_start_time ?: null,
+                'end_time' => $slot_end_time ?: null,
+            );
+        }
+
+        return $result;
     }
 
     private function format_booking_detail($booking, $meta_prefix) {

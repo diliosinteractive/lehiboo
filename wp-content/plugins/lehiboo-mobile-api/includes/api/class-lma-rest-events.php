@@ -35,6 +35,20 @@ class LMA_REST_Events {
             'callback' => array($this, 'get_availability'),
             'permission_callback' => '__return_true',
         ));
+
+        // V1 Le Hiboo - Get event slots
+        register_rest_route($this->namespace, '/events/(?P<id>\d+)/slots', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_slots'),
+            'permission_callback' => '__return_true',
+        ));
+
+        // V1 Le Hiboo - Get tickets for a specific slot
+        register_rest_route($this->namespace, '/events/(?P<id>\d+)/slots/(?P<slot_id>[a-zA-Z0-9_-]+)/tickets', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_slot_tickets'),
+            'permission_callback' => '__return_true',
+        ));
     }
 
     /**
@@ -768,5 +782,257 @@ class LMA_REST_Events {
         ));
 
         return absint($result);
+    }
+
+    /**
+     * V1 Le Hiboo - Get event slots
+     * GET /events/{id}/slots
+     *
+     * @param WP_REST_Request $request
+     * @return WP_REST_Response
+     */
+    public function get_slots($request) {
+        $event_id = absint($request->get_param('id'));
+        $date = sanitize_text_field($request->get_param('date') ?? '');
+
+        $event = get_post($event_id);
+
+        if (!$event || $event->post_type !== 'event' || $event->post_status !== 'publish') {
+            return LMA_Response::error(
+                'event_not_found',
+                __('Événement introuvable', 'lehiboo-mobile-api'),
+                404
+            );
+        }
+
+        $meta_prefix = defined('OVA_METABOX_EVENT') ? OVA_METABOX_EVENT : 'el_';
+
+        // Get calendar data
+        $calendar = get_post_meta($event_id, $meta_prefix . 'calendar', true);
+        $seat_option = get_post_meta($event_id, $meta_prefix . 'seat_option', true);
+        $tickets = get_post_meta($event_id, $meta_prefix . 'ticket', true);
+
+        $slots = array();
+        $available_dates = array();
+
+        if (!empty($calendar) && is_array($calendar)) {
+            foreach ($calendar as $cal) {
+                $slot_id = isset($cal['calendar_id']) ? $cal['calendar_id'] : '';
+                $slot_date = isset($cal['date']) ? $cal['date'] : '';
+
+                // Filter by date if specified
+                if ($date && $slot_date !== $date) {
+                    continue;
+                }
+
+                // Skip past dates
+                if ($slot_date && strtotime($slot_date) < strtotime('today')) {
+                    continue;
+                }
+
+                // Check availability (using existing function from el-core-functions.php)
+                $start_time = isset($cal['date']) ? el_get_time_int_by_date_and_hour($cal['date'], $cal['start_time'] ?? '') : '';
+                $end_time = isset($cal['end_date']) ? el_get_time_int_by_date_and_hour($cal['end_date'], $cal['end_time'] ?? '') : '';
+                $book_before = isset($cal['book_before_minutes']) ? floatval($cal['book_before_minutes']) * 60 : 0;
+                $is_available = function_exists('el_validate_selling_ticket')
+                    ? el_validate_selling_ticket($start_time, $end_time, $book_before, $event_id)
+                    : true;
+
+                // Calculate total remaining tickets for this slot
+                $total_remaining = 0;
+                $tickets_count = 0;
+
+                if (!empty($tickets) && is_array($tickets)) {
+                    foreach ($tickets as $ticket) {
+                        $ticket_id = isset($ticket['ticket_id']) ? $ticket['ticket_id'] : '';
+
+                        // Check if ticket is available for this slot
+                        $ticket_available = true;
+                        if (function_exists('el_ticket_available_for_slot')) {
+                            $ticket_available = el_ticket_available_for_slot($event_id, $ticket_id, $slot_id);
+                        }
+
+                        if ($ticket_available) {
+                            $tickets_count++;
+                            if ($seat_option === 'none') {
+                                $remaining = class_exists('EL_Booking')
+                                    ? EL_Booking::instance()->get_number_ticket_rest($event_id, $slot_id, $ticket_id)
+                                    : 0;
+                            } else {
+                                $remaining = class_exists('EL_Booking')
+                                    ? count(EL_Booking::instance()->get_list_seat_rest($event_id, $slot_id, $ticket_id))
+                                    : 0;
+                            }
+                            $total_remaining += $remaining;
+                        }
+                    }
+                }
+
+                // Format day name in French
+                $day_names = array(
+                    'Monday' => 'Lundi',
+                    'Tuesday' => 'Mardi',
+                    'Wednesday' => 'Mercredi',
+                    'Thursday' => 'Jeudi',
+                    'Friday' => 'Vendredi',
+                    'Saturday' => 'Samedi',
+                    'Sunday' => 'Dimanche',
+                );
+                $day_name = isset($day_names[date('l', strtotime($slot_date))])
+                    ? $day_names[date('l', strtotime($slot_date))]
+                    : date('l', strtotime($slot_date));
+
+                $slot = array(
+                    'id' => $slot_id,
+                    'date' => $slot_date,
+                    'day_name' => $day_name,
+                    'start_time' => isset($cal['start_time']) ? $cal['start_time'] : null,
+                    'end_time' => isset($cal['end_time']) ? $cal['end_time'] : null,
+                    'available_tickets' => $total_remaining,
+                    'tickets_count' => $tickets_count,
+                    'status' => ($is_available && $total_remaining > 0) ? 'available' : 'sold_out',
+                );
+
+                $slots[] = $slot;
+
+                // Track available dates
+                if ($is_available && $total_remaining > 0 && !in_array($slot_date, $available_dates)) {
+                    $available_dates[] = $slot_date;
+                }
+            }
+        }
+
+        // Sort by date and time
+        usort($slots, function($a, $b) {
+            $date_cmp = strcmp($a['date'] ?? '', $b['date'] ?? '');
+            if ($date_cmp !== 0) return $date_cmp;
+            return strcmp($a['start_time'] ?? '', $b['start_time'] ?? '');
+        });
+
+        sort($available_dates);
+
+        return LMA_Response::success(array(
+            'event_id' => $event_id,
+            'slots' => $slots,
+            'available_dates' => $available_dates,
+        ));
+    }
+
+    /**
+     * V1 Le Hiboo - Get tickets for a specific slot
+     * GET /events/{id}/slots/{slot_id}/tickets
+     *
+     * @param WP_REST_Request $request
+     * @return WP_REST_Response
+     */
+    public function get_slot_tickets($request) {
+        $event_id = absint($request->get_param('id'));
+        $slot_id = sanitize_text_field($request->get_param('slot_id'));
+
+        $event = get_post($event_id);
+
+        if (!$event || $event->post_type !== 'event' || $event->post_status !== 'publish') {
+            return LMA_Response::error(
+                'event_not_found',
+                __('Événement introuvable', 'lehiboo-mobile-api'),
+                404
+            );
+        }
+
+        $meta_prefix = defined('OVA_METABOX_EVENT') ? OVA_METABOX_EVENT : 'el_';
+
+        // Verify slot exists
+        $calendar = get_post_meta($event_id, $meta_prefix . 'calendar', true);
+        $slot_found = false;
+        $slot_info = null;
+
+        if (!empty($calendar) && is_array($calendar)) {
+            foreach ($calendar as $cal) {
+                if (isset($cal['calendar_id']) && $cal['calendar_id'] === $slot_id) {
+                    $slot_found = true;
+                    $slot_info = $cal;
+                    break;
+                }
+            }
+        }
+
+        if (!$slot_found) {
+            return LMA_Response::error(
+                'slot_not_found',
+                __('Créneau introuvable', 'lehiboo-mobile-api'),
+                404
+            );
+        }
+
+        // Get tickets
+        $tickets_raw = get_post_meta($event_id, $meta_prefix . 'ticket', true);
+        $seat_option = get_post_meta($event_id, $meta_prefix . 'seat_option', true);
+
+        $available_tickets = array();
+
+        if (!empty($tickets_raw) && is_array($tickets_raw)) {
+            foreach ($tickets_raw as $ticket) {
+                $ticket_id = isset($ticket['ticket_id']) ? $ticket['ticket_id'] : '';
+
+                // Check if ticket is available for this slot (mapping ticket ↔ slot)
+                $ticket_available = true;
+                if (function_exists('el_ticket_available_for_slot')) {
+                    $ticket_available = el_ticket_available_for_slot($event_id, $ticket_id, $slot_id);
+                }
+
+                if (!$ticket_available) {
+                    continue;
+                }
+
+                // Calculate remaining
+                if ($seat_option === 'none') {
+                    $remaining = class_exists('EL_Booking')
+                        ? EL_Booking::instance()->get_number_ticket_rest($event_id, $slot_id, $ticket_id)
+                        : 0;
+                } else {
+                    $remaining = class_exists('EL_Booking')
+                        ? count(EL_Booking::instance()->get_list_seat_rest($event_id, $slot_id, $ticket_id))
+                        : 0;
+                }
+
+                // Skip sold out tickets
+                if ($remaining <= 0) {
+                    continue;
+                }
+
+                $price = isset($ticket['price_ticket']) ? floatval($ticket['price_ticket']) : 0;
+                $min_qty = isset($ticket['min_per_ticket']) ? absint($ticket['min_per_ticket']) : 1;
+                $max_qty = isset($ticket['max_per_ticket']) ? absint($ticket['max_per_ticket']) : 10;
+
+                if ($max_qty > $remaining) {
+                    $max_qty = $remaining;
+                }
+
+                $available_tickets[] = array(
+                    'id' => $ticket_id,
+                    'name' => isset($ticket['name_ticket']) ? $ticket['name_ticket'] : '',
+                    'description' => isset($ticket['desc_ticket']) ? $ticket['desc_ticket'] : '',
+                    'price' => $price,
+                    'price_formatted' => function_exists('el_get_price_format')
+                        ? el_get_price_format($price)
+                        : number_format($price, 2, ',', ' ') . ' €',
+                    'currency' => 'EUR',
+                    'remaining' => $remaining,
+                    'min_qty' => max(1, $min_qty),
+                    'max_qty' => $max_qty,
+                );
+            }
+        }
+
+        return LMA_Response::success(array(
+            'event_id' => $event_id,
+            'slot_id' => $slot_id,
+            'slot' => array(
+                'date' => isset($slot_info['date']) ? $slot_info['date'] : null,
+                'start_time' => isset($slot_info['start_time']) ? $slot_info['start_time'] : null,
+                'end_time' => isset($slot_info['end_time']) ? $slot_info['end_time'] : null,
+            ),
+            'tickets' => $available_tickets,
+        ));
     }
 }

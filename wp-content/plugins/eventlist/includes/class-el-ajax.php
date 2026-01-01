@@ -112,6 +112,9 @@ if( !class_exists( 'El_Ajax' ) ){
 				// Countdown (session based)
 				'el_countdown_checkout',
 				'el_payment_countdown',
+
+				// V1 Le Hiboo - Billetterie créneaux
+				'el_get_tickets_for_slot',
 			);
 
 			// =====================================================
@@ -5822,6 +5825,117 @@ RÉPONDS UNIQUEMENT avec le code HTML, sans ```html```, sans commentaire, sans e
 		}
 
 		return trim( $result['choices'][0]['message']['content'] );
+	}
+
+	/**
+	 * V1 Le Hiboo - Récupérer les billets disponibles pour un créneau
+	 *
+	 * @return void
+	 */
+	public function el_get_tickets_for_slot() {
+		$event_id = isset( $_POST['event_id'] ) ? intval( $_POST['event_id'] ) : 0;
+		$slot_id  = isset( $_POST['slot_id'] ) ? sanitize_text_field( $_POST['slot_id'] ) : '';
+
+		if ( ! $event_id || ! $slot_id ) {
+			wp_send_json_error( array(
+				'message' => __( 'Missing event_id or slot_id', 'eventlist' ),
+				'code'    => 'missing_params'
+			) );
+			return;
+		}
+
+		// Vérifier que l'événement existe
+		$event = get_post( $event_id );
+		if ( ! $event || $event->post_type !== 'el_events' ) {
+			wp_send_json_error( array(
+				'message' => __( 'Event not found', 'eventlist' ),
+				'code'    => 'event_not_found'
+			) );
+			return;
+		}
+
+		// Récupérer les billets et le calendrier
+		$tickets     = get_post_meta( $event_id, OVA_METABOX_EVENT . 'ticket', true );
+		$calendar    = get_post_meta( $event_id, OVA_METABOX_EVENT . 'calendar', true );
+		$seat_option = get_post_meta( $event_id, OVA_METABOX_EVENT . 'seat_option', true );
+
+		// Vérifier que le créneau existe
+		$slot_found = false;
+		if ( ! empty( $calendar ) && is_array( $calendar ) ) {
+			foreach ( $calendar as $cal ) {
+				if ( isset( $cal['calendar_id'] ) && $cal['calendar_id'] === $slot_id ) {
+					$slot_found = true;
+					break;
+				}
+			}
+		}
+
+		if ( ! $slot_found ) {
+			wp_send_json_error( array(
+				'message' => __( 'Slot not found', 'eventlist' ),
+				'code'    => 'slot_not_found'
+			) );
+			return;
+		}
+
+		// Récupérer les billets disponibles pour ce créneau
+		$available_tickets = array();
+
+		if ( ! empty( $tickets ) && is_array( $tickets ) ) {
+			foreach ( $tickets as $ticket ) {
+				$ticket_id = isset( $ticket['ticket_id'] ) ? $ticket['ticket_id'] : '';
+
+				// Vérifier si ce billet est disponible pour ce créneau (mapping ticket ↔ slot)
+				$ticket_available = true;
+				if ( function_exists( 'el_ticket_available_for_slot' ) ) {
+					$ticket_available = el_ticket_available_for_slot( $event_id, $ticket_id, $slot_id );
+				}
+
+				if ( ! $ticket_available ) {
+					continue;
+				}
+
+				// Calculer les places restantes
+				if ( $seat_option === 'none' ) {
+					$remaining = EL_Booking::instance()->get_number_ticket_rest( $event_id, $slot_id, $ticket_id );
+				} else {
+					$remaining = count( EL_Booking::instance()->get_list_seat_rest( $event_id, $slot_id, $ticket_id ) );
+				}
+
+				// Ne pas afficher les billets épuisés
+				if ( $remaining <= 0 ) {
+					continue;
+				}
+
+				// Formater le prix
+				$price = isset( $ticket['price_ticket'] ) ? floatval( $ticket['price_ticket'] ) : 0;
+				$price_formatted = el_get_price_format( $price );
+
+				// Limites de quantité
+				$min_qty = isset( $ticket['min_per_ticket'] ) ? intval( $ticket['min_per_ticket'] ) : 1;
+				$max_qty = isset( $ticket['max_per_ticket'] ) ? intval( $ticket['max_per_ticket'] ) : 10;
+				if ( $max_qty > $remaining ) {
+					$max_qty = $remaining;
+				}
+
+				$available_tickets[] = array(
+					'ticket_id'       => $ticket_id,
+					'name'            => isset( $ticket['name_ticket'] ) ? $ticket['name_ticket'] : '',
+					'description'     => isset( $ticket['desc_ticket'] ) ? $ticket['desc_ticket'] : '',
+					'price'           => $price,
+					'price_formatted' => $price_formatted,
+					'remaining'       => $remaining,
+					'min_qty'         => max( 1, $min_qty ),
+					'max_qty'         => $max_qty,
+				);
+			}
+		}
+
+		wp_send_json_success( array(
+			'event_id' => $event_id,
+			'slot_id'  => $slot_id,
+			'tickets'  => $available_tickets,
+		) );
 	}
 }
 

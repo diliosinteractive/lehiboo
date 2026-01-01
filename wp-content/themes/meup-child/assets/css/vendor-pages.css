@@ -517,12 +517,15 @@ button#el_coorg_add_btn {
     align-items: center;
     gap: 10px;
     position: relative;
-    background: linear-gradient(135deg, #FFF4EF 0%, #FFE4D6 100%) !important;
+    background: linear-gradient(135deg, #ed4500 0%, #ee865b 100%) !important;
     border-left: 3px solid #FF601F !important;
+    border-radius: 10px;
 }
-
+.vendor_wrap .vendor_sidebar ul.dashboard_nav li:hover a{
+        color: #f9e8e1;
+}
 .menu_vendor_onboarding a i {
-    color: #FF601F;
+    color: #ffffff;
 }
 
 /* Badge de progression onboarding - petit pill discret */
