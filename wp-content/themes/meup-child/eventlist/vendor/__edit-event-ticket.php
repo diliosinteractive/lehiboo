@@ -527,11 +527,13 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 
         <!-- Bouton Ajouter un billet -->
         <button type="button" class="btn_add_ticket el_btn_add">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+                <path d="M13 5v2"></path>
+                <path d="M13 17v2"></path>
+                <path d="M13 11v2"></path>
             </svg>
-            <span class="btn_text"><?php esc_html_e( 'Ajouter un autre billet', 'eventlist' ); ?></span>
+            <span class="btn_text"><?php esc_html_e( 'Ajouter un billet', 'eventlist' ); ?></span>
         </button>
 
         <!-- Modal Wizard Ajout Billet -->
@@ -2058,22 +2060,24 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     pointer-events: none;
 }
 
-/* Add Button - Outlined */
+/* Add Button - Outlined & Centered */
 .el_btn_add {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 14px 28px;
-    background: #fff;
+    gap: 12px;
+    padding: 18px 40px;
+    background: linear-gradient(135deg, #fff 0%, #fff8f5 100%);
     color: #FF6600;
-    border: 2px solid #FF6600;
-    border-radius: 10px;
-    font-size: 14px;
+    border: 2px dashed #FF6600;
+    border-radius: 14px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.25s ease;
-    margin-top: 20px;
+    transition: all 0.3s ease;
+    margin: 30px auto 0 auto;
+    max-width: 350px;
+    width: 100%;
 }
 
 .el_btn_add svg {
@@ -2082,19 +2086,20 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 }
 
 .el_btn_add:hover {
-    background: #FF6600;
+    background: linear-gradient(135deg, #FF6600 0%, #ff8533 100%);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.25);
-    transform: translateY(-1px);
+    border-style: solid;
+    box-shadow: 0 6px 20px rgba(255, 102, 0, 0.3);
+    transform: translateY(-2px);
 }
 
 .el_btn_add:hover svg {
-    transform: rotate(90deg);
+    transform: scale(1.1);
 }
 
 .el_btn_add:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.25);
+    box-shadow: 0 0 0 4px rgba(255, 102, 0, 0.2);
 }
 
 .el_btn_add:active {
