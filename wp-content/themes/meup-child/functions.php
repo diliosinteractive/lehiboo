@@ -316,8 +316,7 @@ function lehiboo_vendor_page_body_class( $classes ) {
 }
 
 /**
- * Injecter le header (logo + boutons) sur TOUTES les pages partenaires
- * via JavaScript pour fonctionner avec tous les templates
+ * Injecter le header (logo + icônes notifications) sur TOUTES les pages partenaires
  */
 add_action( 'wp_head', 'lehiboo_vendor_header_styles' );
 function lehiboo_vendor_header_styles() {
@@ -328,6 +327,8 @@ function lehiboo_vendor_header_styles() {
 		$home_url = home_url( '/' );
 		$my_account_url = function_exists( 'get_myaccount_page' ) ? get_myaccount_page() : home_url( '/member-account/' );
 		$create_event_url = add_query_arg( 'vendor', 'listing-edit', $my_account_url );
+		$messages_url = add_query_arg( 'vendor', 'messages', $my_account_url );
+		$bookings_url = add_query_arg( 'vendor', 'events', $my_account_url );
 
 		// Logo
 		$logo_url = get_theme_mod( 'logo', '' );
@@ -338,6 +339,17 @@ function lehiboo_vendor_header_styles() {
 			}
 		}
 		$site_name = get_bloginfo( 'name' );
+
+		// Compteurs de notifications
+		$user_id = get_current_user_id();
+		$messages_count = lehiboo_get_vendor_unread_messages_count( $user_id );
+		$bookings_count = lehiboo_get_vendor_new_bookings_count( $user_id );
+
+		// Statut du compte (validé ou non)
+		$account_valid = true;
+		if ( class_exists( 'LeHiboo_Vendor_Onboarding' ) ) {
+			$account_valid = LeHiboo_Vendor_Onboarding::can_vendor_publish( $user_id );
+		}
 		?>
 		<style type="text/css">
 			/* Cacher TOUS les headers originaux */
@@ -353,7 +365,7 @@ function lehiboo_vendor_header_styles() {
 				display: none !important;
 			}
 
-			/* Styles pour le header dans le bloc central */
+			/* Styles pour le header */
 			.vendor-content-header {
 				display: flex !important;
 				align-items: center;
@@ -375,7 +387,6 @@ function lehiboo_vendor_header_styles() {
 			.vendor-content-header .vendor-header-logo img {
 				max-height: 40px;
 				width: auto;
-				display: block !important;
 			}
 
 			.vendor-content-header .vendor-header-logo .site-name {
@@ -387,52 +398,114 @@ function lehiboo_vendor_header_styles() {
 			.vendor-content-header .vendor-header-nav {
 				display: flex !important;
 				align-items: center;
-				gap: 12px;
+				gap: 8px;
 			}
 
-			.vendor-content-header .vendor-header-nav a {
+			/* Icônes de notification */
+			.vendor-header-nav .notif-icon {
+				position: relative;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 42px;
+				height: 42px;
+				border-radius: 10px;
+				background: #f8f9fa;
+				border: 1px solid #e2e8f0;
+				color: #64748b;
+				text-decoration: none;
+				transition: all 0.25s ease;
+			}
+
+			.vendor-header-nav .notif-icon:hover {
+				background: #e9ecef;
+				border-color: #cbd5e1;
+				color: #2F4858;
+			}
+
+			.vendor-header-nav .notif-icon svg {
+				width: 20px;
+				height: 20px;
+			}
+
+			.vendor-header-nav .notif-icon .notif-badge {
+				position: absolute;
+				top: -4px;
+				right: -4px;
+				min-width: 18px;
+				height: 18px;
+				padding: 0 5px;
+				background: #ef4444;
+				color: #fff;
+				font-size: 11px;
+				font-weight: 700;
+				border-radius: 9px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			/* Icône statut compte */
+			.vendor-header-nav .account-status {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 42px;
+				height: 42px;
+				border-radius: 10px;
+				border: 1px solid;
+			}
+
+			.vendor-header-nav .account-status.valid {
+				background: #dcfce7;
+				border-color: #86efac;
+				color: #16a34a;
+			}
+
+			.vendor-header-nav .account-status.invalid {
+				background: #fef3c7;
+				border-color: #fcd34d;
+				color: #d97706;
+			}
+
+			.vendor-header-nav .account-status svg {
+				width: 20px;
+				height: 20px;
+			}
+
+			/* Bouton CTA */
+			.vendor-header-nav .btn-cta {
 				display: inline-flex !important;
 				align-items: center;
-				gap: 8px;
+				gap: 6px;
 				padding: 10px 18px;
 				border-radius: 10px;
 				font-size: 14px;
 				font-weight: 600;
 				text-decoration: none;
-				transition: all 0.25s ease;
-				color: #2F4858;
-				background: #f8f9fa;
-				border: 1px solid #e2e8f0;
-			}
-
-			.vendor-content-header .vendor-header-nav a:hover {
-				background: #e9ecef;
-				border-color: #cbd5e1;
-			}
-
-			.vendor-content-header .vendor-header-nav a.btn-cta {
 				background: #FF601F;
 				color: #ffffff;
-				border-color: #FF601F;
+				border: 1px solid #FF601F;
+				transition: all 0.25s ease;
+				margin-left: 8px;
 			}
 
-			.vendor-content-header .vendor-header-nav a.btn-cta:hover {
+			.vendor-header-nav .btn-cta:hover {
 				background: #e5561c;
 				border-color: #e5561c;
 			}
 		</style>
 		<script type="text/javascript">
 		document.addEventListener('DOMContentLoaded', function() {
-			// Ne pas ajouter si déjà présent
 			if (document.querySelector('.vendor-content-header')) return;
 
 			var contentsArea = document.querySelector('.vendor_wrap .contents');
 			if (!contentsArea) return;
 
-			// Créer le header
 			var header = document.createElement('div');
 			header.className = 'vendor-content-header';
-			header.innerHTML = '<a href="<?php echo esc_js( $home_url ); ?>" class="vendor-header-logo">' +
+			header.innerHTML =
+				'<a href="<?php echo esc_js( $home_url ); ?>" class="vendor-header-logo">' +
 				<?php if ( $logo_url ) : ?>
 				'<img src="<?php echo esc_js( $logo_url ); ?>" alt="<?php echo esc_js( $site_name ); ?>">' +
 				<?php else : ?>
@@ -440,16 +513,91 @@ function lehiboo_vendor_header_styles() {
 				<?php endif; ?>
 				'</a>' +
 				'<div class="vendor-header-nav">' +
-				'<a href="<?php echo esc_js( $my_account_url ); ?>">Mon compte</a>' +
-				'<a href="<?php echo esc_js( $create_event_url ); ?>" class="btn-cta">+ Créer mon événement</a>' +
+					// Icône Messages
+					'<a href="<?php echo esc_js( $messages_url ); ?>" class="notif-icon" title="Messages">' +
+						'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>' +
+						<?php if ( $messages_count > 0 ) : ?>
+						'<span class="notif-badge"><?php echo esc_js( $messages_count ); ?></span>' +
+						<?php endif; ?>
+					'</a>' +
+					// Icône Réservations
+					'<a href="<?php echo esc_js( $bookings_url ); ?>" class="notif-icon" title="Réservations">' +
+						'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 14l2 2 4-4"></path></svg>' +
+						<?php if ( $bookings_count > 0 ) : ?>
+						'<span class="notif-badge"><?php echo esc_js( $bookings_count ); ?></span>' +
+						<?php endif; ?>
+					'</a>' +
+					// Icône Statut compte
+					'<span class="account-status <?php echo $account_valid ? 'valid' : 'invalid'; ?>" title="<?php echo $account_valid ? 'Compte validé' : 'Compte en attente de validation'; ?>">' +
+						<?php if ( $account_valid ) : ?>
+						'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>' +
+						<?php else : ?>
+						'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>' +
+						<?php endif; ?>
+					'</span>' +
+					// Bouton CTA
+					'<a href="<?php echo esc_js( $create_event_url ); ?>" class="btn-cta">+ Créer mon événement</a>' +
 				'</div>';
 
-			// Insérer au début de .contents
 			contentsArea.insertBefore(header, contentsArea.firstChild);
 		});
 		</script>
 		<?php
 	}
+}
+
+/**
+ * Récupérer le nombre de messages non lus pour un vendor
+ */
+function lehiboo_get_vendor_unread_messages_count( $user_id ) {
+	// TODO: Implémenter la logique de comptage des messages non lus
+	// Pour l'instant, retourner 0 (pas de système de messages actif)
+	return 0;
+}
+
+/**
+ * Récupérer le nombre de nouvelles réservations pour un vendor
+ */
+function lehiboo_get_vendor_new_bookings_count( $user_id ) {
+	if ( ! $user_id ) return 0;
+
+	// Récupérer les événements du vendor
+	$events = get_posts( array(
+		'post_type'      => 'event',
+		'author'         => $user_id,
+		'posts_per_page' => -1,
+		'fields'         => 'ids',
+	) );
+
+	if ( empty( $events ) ) return 0;
+
+	// Compter les réservations "Pending" des 7 derniers jours
+	$args = array(
+		'post_type'      => 'el_bookings',
+		'post_status'    => 'publish',
+		'posts_per_page' => -1,
+		'date_query'     => array(
+			array(
+				'after' => '7 days ago',
+			),
+		),
+		'meta_query'     => array(
+			'relation' => 'AND',
+			array(
+				'key'     => 'el_mtb_id_event',
+				'value'   => $events,
+				'compare' => 'IN',
+			),
+			array(
+				'key'     => 'el_mtb_status',
+				'value'   => 'Completed',
+				'compare' => '=',
+			),
+		),
+	);
+
+	$bookings = new WP_Query( $args );
+	return $bookings->found_posts;
 }
 
 /**
