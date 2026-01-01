@@ -326,21 +326,42 @@ function lehiboo_move_menu_to_vendor_content() {
 	if ( ! empty( $vendor_page ) ) {
 		?>
 		<style type="text/css">
-			/* Cacher le header original de sa position initiale */
-			body.is-vendor-page .ovaheader {
+			/* Cacher TOUS les headers originaux de leur position initiale */
+			body.is-vendor-page .ovaheader,
+			body.is-vendor-page .elementor-element-717d424,
+			body.is-vendor-page .ova_menu_clasic,
+			body.is-vendor-page .ova_nav,
+			body.is-vendor-page .elementor-widget-ova_menu,
+			body.is-vendor-page header.ovatheme_header_default,
+			body.is-vendor-page .ovamenu_shrink,
+			body.is-vendor-page .ovamenu_shrink_mobile {
 				display: none !important;
+				position: static !important;
+				visibility: hidden !important;
+			}
+
+			/* Forcer le retrait du sticky/fixed sur tout header potentiel */
+			body.is-vendor-page .ovaheader *,
+			body.is-vendor-page [class*="header"] {
+				position: static !important;
 			}
 
 			/* Styles pour le header déplacé dans le bloc central */
 			body.is-vendor-page .vendor-header-moved {
 				display: block !important;
+				visibility: visible !important;
 				position: relative !important;
+				top: auto !important;
+				left: auto !important;
+				right: auto !important;
+				bottom: auto !important;
 				background: #ffffff;
 				border-radius: 8px;
 				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 				margin-bottom: 16px;
 				border: 1px solid #EBEBEB;
 				padding: 12px 24px;
+				z-index: 10;
 			}
 
 			/* Cacher le logo (déjà dans sidebar) et le breadcrumb */
@@ -383,10 +404,18 @@ function lehiboo_move_menu_to_vendor_content() {
 			body.is-vendor-page .vendor-header-moved .navbar-collapse {
 				display: flex !important;
 			}
+
+			/* Assurer que les éléments à l'intérieur ne sont pas sticky/fixed */
+			body.is-vendor-page .vendor-header-moved *,
+			body.is-vendor-page .vendor-header-moved header,
+			body.is-vendor-page .vendor-header-moved .ovatheme_header_default {
+				position: relative !important;
+				top: auto !important;
+			}
 		</style>
 		<script type="text/javascript">
 		document.addEventListener('DOMContentLoaded', function() {
-			// Récupérer le header original
+			// Récupérer le header original (plusieurs sélecteurs possibles)
 			var ovaheader = document.querySelector('.ovaheader');
 			var contentsArea = document.querySelector('.vendor_wrap .contents');
 
@@ -396,8 +425,26 @@ function lehiboo_move_menu_to_vendor_content() {
 				headerClone.classList.add('vendor-header-moved');
 				headerClone.classList.remove('ovaheader');
 
+				// Retirer les classes qui pourraient causer le sticky
+				headerClone.classList.remove('active_fixed');
+				headerClone.classList.remove('ovamenu_shrink');
+				headerClone.classList.remove('ovamenu_shrink_mobile');
+
+				// Retirer l'ID pour éviter les conflits
+				headerClone.removeAttribute('id');
+
 				// Insérer au début de .contents
 				contentsArea.insertBefore(headerClone, contentsArea.firstChild);
+
+				// Observer pour retirer active_fixed si ajouté dynamiquement
+				var observer = new MutationObserver(function(mutations) {
+					mutations.forEach(function(mutation) {
+						if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+							headerClone.classList.remove('active_fixed');
+						}
+					});
+				});
+				observer.observe(headerClone, { attributes: true });
 			}
 		});
 		</script>
