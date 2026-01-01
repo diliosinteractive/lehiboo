@@ -401,6 +401,52 @@ function lehiboo_vendor_header_styles() {
 				gap: 8px;
 			}
 
+			/* Tooltips personnalisés */
+			.vendor-header-nav [data-tooltip] {
+				position: relative;
+			}
+
+			.vendor-header-nav [data-tooltip]::before {
+				content: attr(data-tooltip);
+				position: absolute;
+				bottom: calc(100% + 8px);
+				left: 50%;
+				transform: translateX(-50%);
+				background: #1e293b;
+				color: #fff;
+				padding: 6px 12px;
+				border-radius: 6px;
+				font-size: 12px;
+				font-weight: 500;
+				white-space: nowrap;
+				opacity: 0;
+				visibility: hidden;
+				transition: all 0.2s ease;
+				pointer-events: none;
+				z-index: 100;
+			}
+
+			.vendor-header-nav [data-tooltip]::after {
+				content: '';
+				position: absolute;
+				bottom: calc(100% + 2px);
+				left: 50%;
+				transform: translateX(-50%);
+				border: 6px solid transparent;
+				border-top-color: #1e293b;
+				opacity: 0;
+				visibility: hidden;
+				transition: all 0.2s ease;
+				pointer-events: none;
+				z-index: 100;
+			}
+
+			.vendor-header-nav [data-tooltip]:hover::before,
+			.vendor-header-nav [data-tooltip]:hover::after {
+				opacity: 1;
+				visibility: visible;
+			}
+
 			/* Icônes de notification */
 			.vendor-header-nav .notif-icon {
 				position: relative;
@@ -447,6 +493,7 @@ function lehiboo_vendor_header_styles() {
 
 			/* Icône statut compte */
 			.vendor-header-nav .account-status {
+				position: relative;
 				display: flex;
 				align-items: center;
 				justify-content: center;
@@ -454,6 +501,7 @@ function lehiboo_vendor_header_styles() {
 				height: 42px;
 				border-radius: 10px;
 				border: 1px solid;
+				cursor: default;
 			}
 
 			.vendor-header-nav .account-status.valid {
@@ -514,21 +562,21 @@ function lehiboo_vendor_header_styles() {
 				'</a>' +
 				'<div class="vendor-header-nav">' +
 					// Icône Messages
-					'<a href="<?php echo esc_js( $messages_url ); ?>" class="notif-icon" title="Messages">' +
+					'<a href="<?php echo esc_js( $messages_url ); ?>" class="notif-icon" data-tooltip="Messages">' +
 						'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>' +
 						<?php if ( $messages_count > 0 ) : ?>
 						'<span class="notif-badge"><?php echo esc_js( $messages_count ); ?></span>' +
 						<?php endif; ?>
 					'</a>' +
 					// Icône Réservations
-					'<a href="<?php echo esc_js( $bookings_url ); ?>" class="notif-icon" title="Réservations">' +
+					'<a href="<?php echo esc_js( $bookings_url ); ?>" class="notif-icon" data-tooltip="Réservations">' +
 						'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 14l2 2 4-4"></path></svg>' +
 						<?php if ( $bookings_count > 0 ) : ?>
 						'<span class="notif-badge"><?php echo esc_js( $bookings_count ); ?></span>' +
 						<?php endif; ?>
 					'</a>' +
 					// Icône Statut compte
-					'<span class="account-status <?php echo $account_valid ? 'valid' : 'invalid'; ?>" title="<?php echo $account_valid ? 'Compte validé' : 'Compte en attente de validation'; ?>">' +
+					'<span class="account-status <?php echo $account_valid ? 'valid' : 'invalid'; ?>" data-tooltip="<?php echo $account_valid ? 'Compte validé' : 'Compte en attente de validation'; ?>">' +
 						<?php if ( $account_valid ) : ?>
 						'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>' +
 						<?php else : ?>
