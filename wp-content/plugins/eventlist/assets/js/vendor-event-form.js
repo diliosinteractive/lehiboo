@@ -512,17 +512,15 @@ jQuery(document).ready(function ($) {
                 var name = field.name;
                 var value = field.value;
 
-                // Handle fields with [] notation (arrays like select multiple)
-                if (name.endsWith('[]')) {
-                    // Remove the [] and store as array
-                    var cleanName = name.replace(/\[\]$/, '');
-                    if (!obj[cleanName]) {
-                        obj[cleanName] = [];
-                    }
-                    obj[cleanName].push(value);
+                // V1 Le Hiboo - Détecter si c'est un champ "array" (finit par [])
+                var isArrayField = name.endsWith('[]');
+                if (isArrayField) {
+                    // Retirer le [] final pour parser la structure
+                    name = name.replace(/\[\]$/, '');
                 }
-                // Handle array notation field[index][subfield]
-                else if (name.indexOf('[') !== -1) {
+
+                // Handle array notation field[index][subfield] ou simple field[]
+                if (name.indexOf('[') !== -1) {
                     var keys = name.split(/\[|\]\[|\]/).filter(function (k) { return k; });
                     var current = obj;
 
@@ -537,10 +535,23 @@ jQuery(document).ready(function ($) {
 
                     var lastKey = keys[keys.length - 1];
                     if (Array.isArray(current)) {
+                        // Le parent est déjà un tableau, push
                         current.push(value);
+                    } else if (isArrayField) {
+                        // V1 Le Hiboo - Ce champ est un tableau (finissait par [])
+                        if (!current[lastKey]) {
+                            current[lastKey] = [];
+                        }
+                        current[lastKey].push(value);
                     } else {
                         current[lastKey] = value;
                     }
+                } else if (isArrayField) {
+                    // Simple array field like "tags[]" sans structure imbriquée
+                    if (!obj[name]) {
+                        obj[name] = [];
+                    }
+                    obj[name].push(value);
                 } else {
                     obj[name] = value;
                 }
