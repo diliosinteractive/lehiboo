@@ -554,16 +554,18 @@ if ( ! $can_vendor_publish ) {
 <div id="publication_validation_modal" class="validation_modal_overlay" style="display: none;">
     <div class="validation_modal">
         <button type="button" class="validation_modal_close">&times;</button>
-        <div class="validation_modal_icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-            </svg>
-        </div>
         <div class="validation_modal_header">
-            <h3><?php esc_html_e( 'Informations manquantes', 'eventlist' ); ?></h3>
-            <p class="validation_modal_intro"><?php esc_html_e( 'Pour mettre votre activité en ligne, veuillez compléter les éléments suivants :', 'eventlist' ); ?></p>
+            <div class="validation_modal_icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <div class="validation_modal_header_text">
+                <h3><?php esc_html_e( 'Informations manquantes', 'eventlist' ); ?></h3>
+                <p class="validation_modal_intro"><?php esc_html_e( 'Pour mettre votre activité en ligne, veuillez compléter les éléments suivants :', 'eventlist' ); ?></p>
+            </div>
         </div>
         <div class="validation_modal_body">
             <div id="profile_errors_section" class="validation_section" style="display: none;">
@@ -572,7 +574,7 @@ if ( ! $can_vendor_publish ) {
                     <span><?php esc_html_e( 'Profil partenaire', 'eventlist' ); ?></span>
                 </div>
                 <ul id="profile_errors_list"></ul>
-                <a href="<?php echo esc_url( add_query_arg( 'vendor', 'profile', get_myaccount_page() ) ); ?>" class="validation_link">
+                <a href="<?php echo esc_url( add_query_arg( 'vendor', 'profile', get_myaccount_page() ) ); ?>" class="validation_link" target="_blank">
                     <?php esc_html_e( 'Compléter mon profil', 'eventlist' ); ?> <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
@@ -583,7 +585,7 @@ if ( ! $can_vendor_publish ) {
                     <span><?php esc_html_e( 'Documents', 'eventlist' ); ?></span>
                 </div>
                 <ul id="documents_errors_list"></ul>
-                <a href="<?php echo esc_url( add_query_arg( 'vendor', 'documents', get_myaccount_page() ) ); ?>" class="validation_link">
+                <a href="<?php echo esc_url( add_query_arg( 'vendor', 'documents', get_myaccount_page() ) ); ?>" class="validation_link" target="_blank">
                     <?php esc_html_e( 'Gérer mes documents', 'eventlist' ); ?> <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
@@ -623,7 +625,7 @@ if ( ! $can_vendor_publish ) {
 .validation_modal {
     background: #fff;
     border-radius: 16px;
-    max-width: 440px;
+    max-width: 460px;
     width: 100%;
     max-height: 85vh;
     overflow: hidden;
@@ -645,8 +647,8 @@ if ( ! $can_vendor_publish ) {
 
 .validation_modal_close {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 16px;
+    right: 16px;
     background: transparent;
     border: none;
     width: 28px;
@@ -668,29 +670,36 @@ if ( ! $can_vendor_publish ) {
     color: #6b7280;
 }
 
-.validation_modal_icon {
+/* Header avec icône à gauche */
+.validation_modal_header {
     display: flex;
-    justify-content: center;
-    padding: 28px 24px 12px;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.validation_modal_icon {
+    flex-shrink: 0;
 }
 
 .validation_modal_icon svg {
     color: #FF601F;
-    width: 56px;
-    height: 56px;
-    padding: 12px;
+    width: 48px;
+    height: 48px;
+    padding: 10px;
     background: #FFF5F0;
-    border-radius: 50%;
+    border-radius: 12px;
 }
 
-.validation_modal_header {
-    text-align: center;
-    padding: 0 24px 16px;
+.validation_modal_header_text {
+    flex: 1;
+    padding-right: 24px;
 }
 
-.validation_modal_header h3 {
-    margin: 0 0 6px;
-    font-size: 18px;
+.validation_modal_header_text h3 {
+    margin: 0 0 4px;
+    font-size: 17px;
     font-weight: 700;
     color: #111827;
 }
@@ -703,7 +712,7 @@ if ( ! $can_vendor_publish ) {
 }
 
 .validation_modal_body {
-    padding: 0 20px;
+    padding: 16px 20px;
     overflow-y: auto;
     max-height: 45vh;
 }
@@ -732,9 +741,9 @@ if ( ! $can_vendor_publish ) {
 
 .validation_section_header i {
     color: #FF601F;
-    font-size: 15px;
-    width: 28px;
-    height: 28px;
+    font-size: 14px;
+    width: 26px;
+    height: 26px;
     background: #FFF5F0;
     border-radius: 6px;
     display: flex;
@@ -790,7 +799,7 @@ if ( ! $can_vendor_publish ) {
 }
 
 .validation_modal_footer {
-    padding: 16px 20px 20px;
+    padding: 16px 20px 24px;
     text-align: center;
 }
 
@@ -798,14 +807,14 @@ if ( ! $can_vendor_publish ) {
     background: linear-gradient(135deg, #FF601F 0%, #e5561c 100%);
     color: #fff;
     border: none;
-    padding: 12px 28px;
+    padding: 12px 40px;
     border-radius: 8px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    width: 100%;
     box-shadow: 0 2px 8px rgba(255, 96, 31, 0.3);
+    display: inline-block;
 }
 
 .validation_modal_btn_close:hover {
@@ -837,12 +846,19 @@ if ( ! $can_vendor_publish ) {
         max-width: calc(100vw - 32px);
         border-radius: 12px;
     }
-    .validation_modal_icon svg {
-        width: 48px;
-        height: 48px;
-        padding: 10px;
+    .validation_modal_header {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
     }
-    .validation_modal_header h3 {
+    .validation_modal_header_text {
+        padding-right: 0;
+    }
+    .validation_modal_icon svg {
+        width: 44px;
+        height: 44px;
+    }
+    .validation_modal_header_text h3 {
         font-size: 16px;
     }
 }
