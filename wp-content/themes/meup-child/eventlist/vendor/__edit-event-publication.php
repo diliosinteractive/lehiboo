@@ -550,6 +550,213 @@ if ( ! $can_vendor_publish ) {
 }
 </style>
 
+<!-- Modal de validation -->
+<div id="publication_validation_modal" class="validation_modal_overlay" style="display: none;">
+    <div class="validation_modal">
+        <div class="validation_modal_header">
+            <h3><?php esc_html_e( 'Informations manquantes', 'eventlist' ); ?></h3>
+            <button type="button" class="validation_modal_close">&times;</button>
+        </div>
+        <div class="validation_modal_body">
+            <p class="validation_modal_intro"><?php esc_html_e( 'Pour mettre votre activité en ligne, veuillez compléter les informations suivantes :', 'eventlist' ); ?></p>
+
+            <div id="profile_errors_section" style="display: none;">
+                <h4><i class="fas fa-user"></i> <?php esc_html_e( 'Profil partenaire', 'eventlist' ); ?></h4>
+                <ul id="profile_errors_list"></ul>
+                <a href="<?php echo esc_url( add_query_arg( 'vendor', 'profile', get_myaccount_page() ) ); ?>" class="validation_link">
+                    <?php esc_html_e( 'Compléter mon profil', 'eventlist' ); ?> <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div id="documents_errors_section" style="display: none;">
+                <h4><i class="fas fa-folder"></i> <?php esc_html_e( 'Documents', 'eventlist' ); ?></h4>
+                <ul id="documents_errors_list"></ul>
+                <a href="<?php echo esc_url( add_query_arg( 'vendor', 'documents', get_myaccount_page() ) ); ?>" class="validation_link">
+                    <?php esc_html_e( 'Gérer mes documents', 'eventlist' ); ?> <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div id="activity_errors_section" style="display: none;">
+                <h4><i class="fas fa-calendar-alt"></i> <?php esc_html_e( 'Fiche activité', 'eventlist' ); ?></h4>
+                <ul id="activity_errors_list"></ul>
+            </div>
+        </div>
+        <div class="validation_modal_footer">
+            <button type="button" class="validation_modal_btn_close"><?php esc_html_e( 'Fermer', 'eventlist' ); ?></button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modal Validation */
+.validation_modal_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.validation_modal {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 550px;
+    width: 100%;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.validation_modal_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fef3c7;
+}
+
+.validation_modal_header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #92400e;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.validation_modal_header h3::before {
+    content: '⚠️';
+}
+
+.validation_modal_close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #92400e;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.validation_modal_close:hover {
+    opacity: 1;
+}
+
+.validation_modal_body {
+    padding: 24px;
+    overflow-y: auto;
+    max-height: 50vh;
+}
+
+.validation_modal_intro {
+    margin: 0 0 20px;
+    color: #4b5563;
+    font-size: 14px;
+}
+
+.validation_modal_body h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 20px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.validation_modal_body h4:first-of-type {
+    margin-top: 0;
+}
+
+.validation_modal_body h4 i {
+    color: #FF601F;
+    font-size: 14px;
+}
+
+.validation_modal_body ul {
+    margin: 0 0 12px;
+    padding: 0;
+    list-style: none;
+}
+
+.validation_modal_body ul li {
+    padding: 8px 0 8px 24px;
+    position: relative;
+    color: #dc2626;
+    font-size: 14px;
+}
+
+.validation_modal_body ul li::before {
+    content: '✕';
+    position: absolute;
+    left: 0;
+    color: #dc2626;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.validation_link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #FF601F;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 4px;
+}
+
+.validation_link:hover {
+    text-decoration: underline;
+}
+
+.validation_modal_footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e5e7eb;
+    text-align: right;
+}
+
+.validation_modal_btn_close {
+    background: #FF601F;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.validation_modal_btn_close:hover {
+    background: #e5561c;
+}
+</style>
+
 <script>
 jQuery(document).ready(function($) {
     // Variable globale pour savoir si le vendor peut publier
@@ -571,7 +778,13 @@ jQuery(document).ready(function($) {
 
             // Changement de statut en ligne/hors ligne
             $(document).on('change', '.status_radio', function() {
-                self.handleStatusChange($(this));
+                var value = $(this).val();
+                if (value === 'online') {
+                    // Valider avant de passer en ligne
+                    self.validateBeforeOnline($(this));
+                } else {
+                    self.handleStatusChange($(this));
+                }
             });
 
             // Toggle password visibility
@@ -590,29 +803,197 @@ jQuery(document).ready(function($) {
                 e.preventDefault();
                 self.toggleOnlineStatus();
             });
+
+            // Fermer le modal
+            $(document).on('click', '.validation_modal_close, .validation_modal_btn_close, .validation_modal_overlay', function(e) {
+                if (e.target === this) {
+                    self.closeModal();
+                }
+            });
+
+            // Empêcher la fermeture en cliquant sur le modal
+            $(document).on('click', '.validation_modal', function(e) {
+                e.stopPropagation();
+            });
         },
 
-        toggleOnlineStatus: function() {
-            // Si le vendor ne peut pas publier, ne pas permettre de passer en ligne
-            if (!canVendorPublish) {
-                var isCurrentlyOnline = $('input[name="event_online_status"]:checked').val() === 'online';
-                if (!isCurrentlyOnline) {
-                    // Afficher un message d'alerte
-                    alert('<?php echo esc_js( __( 'Vos documents doivent être validés avant de pouvoir mettre une activité en ligne.', 'eventlist' ) ); ?>');
-                    return;
+        validateBeforeOnline: function($radio) {
+            var self = this;
+            var activityErrors = this.validateActivityFields();
+
+            // Appel AJAX pour valider le profil
+            $.ajax({
+                url: ajax_object.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'lehiboo_validate_publication',
+                    nonce: $('input[name="el_edit_event_nonce"]').val()
+                },
+                success: function(response) {
+                    var profileErrors = [];
+                    var documentErrors = [];
+
+                    if (response.success && response.data.profile_errors) {
+                        response.data.profile_errors.forEach(function(err) {
+                            if (err.section === 'documents') {
+                                documentErrors.push(err);
+                            } else {
+                                profileErrors.push(err);
+                            }
+                        });
+                    }
+
+                    var hasErrors = profileErrors.length > 0 || documentErrors.length > 0 || activityErrors.length > 0;
+
+                    if (hasErrors) {
+                        self.showValidationModal(profileErrors, documentErrors, activityErrors);
+                        // Remettre sur "Hors ligne"
+                        $('input[name="event_online_status"][value="offline"]').prop('checked', true);
+                        $('.status_option').removeClass('selected');
+                        $('input[name="event_online_status"][value="offline"]').closest('.status_option').addClass('selected');
+                    } else {
+                        // Tout est OK, passer en ligne
+                        self.handleStatusChange($radio);
+                    }
+                },
+                error: function() {
+                    // En cas d'erreur AJAX, vérifier au moins les champs activité
+                    if (activityErrors.length > 0) {
+                        self.showValidationModal([], [], activityErrors);
+                        $('input[name="event_online_status"][value="offline"]').prop('checked', true);
+                        $('.status_option').removeClass('selected');
+                        $('input[name="event_online_status"][value="offline"]').closest('.status_option').addClass('selected');
+                    } else {
+                        self.handleStatusChange($radio);
+                    }
+                }
+            });
+        },
+
+        validateActivityFields: function() {
+            var errors = [];
+
+            // 1. Nom de l'activité
+            var name = $('input[name="name_event"]').val();
+            if (!name || name.trim() === '') {
+                errors.push({ field: "Nom de l'activité", message: "Le nom de l'activité est obligatoire" });
+            }
+
+            // 2. Catégorie
+            var category = $('select[name="event_cat"]').val();
+            if (!category || category === '' || category === '0') {
+                errors.push({ field: "Catégorie", message: "La catégorie est obligatoire" });
+            }
+
+            // 3. Type d'événement
+            var eventTag = $('select[name="event_tag[]"]').val();
+            if (!eventTag || eventTag.length === 0) {
+                errors.push({ field: "Type d'événement", message: "Le type d'événement est obligatoire" });
+            }
+
+            // 4. Public visé
+            var eventPublic = $('select[name="event_public[]"]').val();
+            if (!eventPublic || eventPublic.length === 0) {
+                errors.push({ field: "Public visé", message: "Le public visé est obligatoire" });
+            }
+
+            // 5. Type de lieu et adresse
+            var locationType = $('input[name="ova_mb_event_type_location"]:checked, input[name="type_location"]:checked').val();
+            if (locationType === 'has_location' || locationType === '1') {
+                var address = $('input[name="ova_mb_event_map_address"]').val() || $('input[name="map_address"]').val();
+                if (!address || address.trim() === '') {
+                    errors.push({ field: "Adresse", message: "L'adresse est obligatoire pour un lieu physique" });
                 }
             }
 
+            // 6. Au moins 1 créneau
+            var hasSlot = $('.calendar_item, .schedule-item, .ticket_item').length > 0;
+            var hasValidSlot = false;
+            $('.calendar_item, .ticket_item').each(function() {
+                var dateVal = $(this).find('input[type="date"], input[name*="date"]').val();
+                if (dateVal && dateVal.trim() !== '') {
+                    hasValidSlot = true;
+                    return false;
+                }
+            });
+            if (!hasValidSlot) {
+                errors.push({ field: "Créneau", message: "Au moins un créneau est obligatoire" });
+            }
+
+            // 7. Gratuit ou Payant - vérifier si un tarif existe
+            // On suppose que si des tickets existent, c'est OK
+
+            // 8. Description >= 100 caractères
+            var descContent = '';
+            if (typeof tinymce !== 'undefined' && tinymce.get('content_event')) {
+                descContent = tinymce.get('content_event').getContent({ format: 'text' });
+            } else {
+                descContent = $('#content_event').val() || '';
+                descContent = descContent.replace(/<[^>]*>/g, '');
+            }
+            descContent = descContent.replace(/\s+/g, ' ').trim();
+            if (descContent.length < 100) {
+                errors.push({ field: "Description", message: "La description doit contenir au moins 100 caractères (actuellement : " + descContent.length + ")" });
+            }
+
+            // 9. Image de présentation
+            var thumbnail = $('input[name="img_thumbnail"]').val();
+            if (!thumbnail || thumbnail === '' || thumbnail === '0') {
+                errors.push({ field: "Image de présentation", message: "L'image de présentation est obligatoire" });
+            }
+
+            return errors;
+        },
+
+        showValidationModal: function(profileErrors, documentErrors, activityErrors) {
+            // Réinitialiser les listes
+            $('#profile_errors_list, #documents_errors_list, #activity_errors_list').empty();
+            $('#profile_errors_section, #documents_errors_section, #activity_errors_section').hide();
+
+            // Afficher les erreurs profil
+            if (profileErrors.length > 0) {
+                profileErrors.forEach(function(err) {
+                    $('#profile_errors_list').append('<li>' + err.field + '</li>');
+                });
+                $('#profile_errors_section').show();
+            }
+
+            // Afficher les erreurs documents
+            if (documentErrors.length > 0) {
+                documentErrors.forEach(function(err) {
+                    $('#documents_errors_list').append('<li>' + err.message + '</li>');
+                });
+                $('#documents_errors_section').show();
+            }
+
+            // Afficher les erreurs activité
+            if (activityErrors.length > 0) {
+                activityErrors.forEach(function(err) {
+                    $('#activity_errors_list').append('<li>' + err.field + '</li>');
+                });
+                $('#activity_errors_section').show();
+            }
+
+            // Afficher le modal
+            $('#publication_validation_modal').fadeIn(200);
+            $('body').css('overflow', 'hidden');
+        },
+
+        closeModal: function() {
+            $('#publication_validation_modal').fadeOut(200);
+            $('body').css('overflow', '');
+        },
+
+        toggleOnlineStatus: function() {
+            var self = this;
             var isCurrentlyOnline = $('input[name="event_online_status"]:checked').val() === 'online';
 
             if (isCurrentlyOnline) {
-                // Passer hors ligne
+                // Passer hors ligne - pas besoin de validation
                 $('input[name="event_online_status"][value="offline"]').prop('checked', true).trigger('change');
             } else {
-                // Passer en ligne (seulement si autorisé)
-                if (canVendorPublish) {
-                    $('input[name="event_online_status"][value="online"]').prop('checked', true).trigger('change');
-                }
+                // Passer en ligne - déclencher la validation
+                $('input[name="event_online_status"][value="online"]').prop('checked', true).trigger('change');
             }
         },
 
@@ -703,11 +1084,6 @@ jQuery(document).ready(function($) {
         updateHeaderButton: function() {
             var isOnline = $('input[name="event_online_status"]:checked').val() === 'online';
             var $indicator = $('.event_status_indicator');
-
-            // Si le vendor ne peut pas publier, forcer l'affichage "Hors ligne"
-            if (!canVendorPublish) {
-                isOnline = false;
-            }
 
             if (isOnline) {
                 $indicator.removeClass('offline').addClass('online');

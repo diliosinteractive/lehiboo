@@ -2554,3 +2554,162 @@ function lehiboo_count_archived_events( $user_id = null ) {
 	$query = new WP_Query( $args );
 	return $query->found_posts;
 }
+
+// ========================================
+// VALIDATION PUBLICATION ACTIVITÉ
+// ========================================
+
+/**
+ * AJAX - Valider les prérequis pour mettre une activité en ligne
+ */
+add_action( 'wp_ajax_lehiboo_validate_publication', 'lehiboo_validate_publication_ajax' );
+function lehiboo_validate_publication_ajax() {
+	check_ajax_referer( 'el_edit_event_nonce', 'nonce' );
+
+	$user_id = get_current_user_id();
+	if ( ! $user_id ) {
+		wp_send_json_error( array( 'message' => 'Non connecté' ) );
+	}
+
+	$missing_profile = lehiboo_validate_profile_requirements( $user_id );
+
+	wp_send_json_success( array(
+		'profile_errors' => $missing_profile,
+		'can_publish' => empty( $missing_profile ),
+	) );
+}
+
+/**
+ * Valider les prérequis du profil partenaire
+ */
+function lehiboo_validate_profile_requirements( $user_id ) {
+	$errors = array();
+	$user = get_userdata( $user_id );
+
+	// 1. Prénom
+	$first_name = get_user_meta( $user_id, 'first_name', true );
+	if ( empty( $first_name ) ) {
+		$errors[] = array(
+			'section' => 'profil',
+			'field' => 'Prénom',
+			'message' => 'Le prénom est obligatoire',
+		);
+	}
+
+	// 2. Nom
+	$last_name = get_user_meta( $user_id, 'last_name', true );
+	if ( empty( $last_name ) ) {
+		$errors[] = array(
+			'section' => 'profil',
+			'field' => 'Nom',
+			'message' => 'Le nom est obligatoire',
+		);
+	}
+
+	// 3. Email vérifié - vérifier si l'utilisateur a confirmé son email
+	// On suppose que l'email est vérifié si le compte existe et a été activé
+	// Sinon, il faudrait adapter cette logique selon votre système
+
+	// 4. Nom de l'organisation
+	$org_name = get_user_meta( $user_id, 'org_name', true );
+	if ( empty( $org_name ) ) {
+		$errors[] = array(
+			'section' => 'profil',
+			'field' => 'Nom de l\'organisation',
+			'message' => 'Le nom de l\'organisation est obligatoire',
+		);
+	}
+
+	// 5. Nom à afficher
+	$org_display_name = get_user_meta( $user_id, 'org_display_name', true );
+	if ( empty( $org_display_name ) ) {
+		$errors[] = array(
+			'section' => 'profil',
+			'field' => 'Nom à afficher',
+			'message' => 'Le nom à afficher est obligatoire',
+		);
+	}
+
+	// 6. Type de structure
+	$org_structure_type = get_user_meta( $user_id, 'org_structure_type', true );
+	if ( empty( $org_structure_type ) ) {
+		$errors[] = array(
+			'section' => 'profil',
+			'field' => 'Type de structure',
+			'message' => 'Le type de structure est obligatoire',
+		);
+	}
+
+	// 7. Rôle de l'organisation
+	$org_role = get_user_meta( $user_id, 'org_role', true );
+	if ( empty( $org_role ) ) {
+		$errors[] = array(
+			'section' => 'profil',
+			'field' => 'Rôle de l\'organisation',
+			'message' => 'Le rôle de votre organisation est obligatoire',
+		);
+	}
+
+	// 8. Forme juridique
+	$org_legal_form = get_user_meta( $user_id, 'org_legal_form', true );
+	if ( empty( $org_legal_form ) ) {
+		$errors[] = array(
+			'section' => 'profil',
+			'field' => 'Forme juridique',
+			'message' => 'La forme juridique est obligatoire',
+		);
+	}
+
+	// 9. SIREN
+	$org_siren = get_user_meta( $user_id, 'org_siren', true );
+	if ( empty( $org_siren ) ) {
+		$errors[] = array(
+			'section' => 'profil',
+			'field' => 'SIREN',
+			'message' => 'Le numéro SIREN est obligatoire',
+		);
+	}
+
+	// 10. Siège de l'organisation
+	$org_address = get_user_meta( $user_id, 'org_address', true );
+	if ( empty( $org_address ) ) {
+		$errors[] = array(
+			'section' => 'profil',
+			'field' => 'Siège de l\'organisation',
+			'message' => 'L\'adresse du siège est obligatoire',
+		);
+	}
+
+	// 11 & 12. Documents validés
+	if ( class_exists( 'EL_Vendor_Documents' ) ) {
+		$doc_status = EL_Vendor_Documents::get_documents_status( $user_id );
+		$approved_count = 0;
+		$required_docs = array( 'kbis', 'rib' ); // Documents obligatoires
+
+		foreach ( $required_docs as $doc_type ) {
+			if ( isset( $doc_status[ $doc_type ] ) && $doc_status[ $doc_type ]['status'] === 'approved' ) {
+				$approved_count++;
+			}
+		}
+
+		if ( $approved_count < 2 ) {
+			$errors[] = array(
+				'section' => 'documents',
+				'field' => 'Documents',
+				'message' => 'Vos 2 documents obligatoires doivent être validés (KBIS et RIB)',
+			);
+		}
+	} elseif ( class_exists( 'LeHiboo_Vendor_Onboarding' ) ) {
+		// Fallback: utiliser le système d'onboarding
+		$can_publish = LeHiboo_Vendor_Onboarding::can_vendor_publish( $user_id );
+		if ( ! $can_publish ) {
+			$errors[] = array(
+				'section' => 'documents',
+				'field' => 'Documents',
+				'message' => 'Vos documents doivent être validés avant de publier',
+			);
+		}
+	}
+
+	return $errors;
+}
