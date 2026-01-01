@@ -2481,12 +2481,20 @@ if( !class_exists( 'El_Ajax' ) ){
 					if (!is_array($value)) {
 						continue;
 					}
-					if (!isset($value['calendar_id']) || $value['calendar_id'] == '') {
-						$post_data_sanitize[$_prefix.'calendar'][$key]['calendar_id'] = FLOOR(microtime(true)) + $k;
-						$k++;
-					}
 					if (!isset($value['date']) || $value['date'] == '') {
 						unset($post_data_sanitize[$_prefix.'calendar'][$key]);
+						continue;
+					}
+					// Générer un calendar_id déterministe basé sur date/heure (même logique que el_generate_slot_id)
+					if (!isset($value['calendar_id']) || $value['calendar_id'] == '') {
+						$cal_date = isset($value['date']) ? $value['date'] : '';
+						$cal_start = isset($value['start_time']) ? $value['start_time'] : '';
+						$cal_end = isset($value['end_time']) ? $value['end_time'] : '';
+						$base = $cal_date . '_' . $cal_start;
+						if ( ! empty( $cal_end ) ) {
+							$base .= '_' . $cal_end;
+						}
+						$post_data_sanitize[$_prefix.'calendar'][$key]['calendar_id'] = 'slot_' . substr( md5( $base ), 0, 12 );
 					}
 				}
 			}

@@ -1509,8 +1509,8 @@ if ( ! function_exists( 'el_generate_slot_id' ) ) {
 		if ( ! empty( $end_time ) ) {
 			$base .= '_' . $end_time;
 		}
-		// Génère un hash court mais unique
-		return 'slot_' . substr( md5( $base . wp_generate_uuid4() ), 0, 12 );
+		// Génère un hash déterministe basé sur date/heure (pas de random!)
+		return 'slot_' . substr( md5( $base ), 0, 12 );
 	}
 }
 
