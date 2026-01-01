@@ -3838,6 +3838,7 @@ jQuery(document).ready(function($) {
         currentStep: 1,
         totalSteps: 4,
         prefix: '<?php echo esc_js( $_prefix ); ?>',
+        availableSlots: availableSlots,
 
         init: function() {
             this.bindEvents();
