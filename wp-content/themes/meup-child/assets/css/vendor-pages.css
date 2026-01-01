@@ -430,6 +430,25 @@ button#el_coorg_add_btn {
 }
 
 /* ========================================
+   GALERIE D'IMAGES - BOUTON EN HAUT
+   ======================================== */
+
+.event_gallery_wrapper .gallery_header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
+.event_gallery_wrapper .gallery_header .gallery_add_btn {
+    margin: 0;
+}
+
+/* Masquer le bouton du bas quand celui du haut existe */
+.event_gallery_wrapper > .gallery_add_btn {
+    display: none;
+}
+
+/* ========================================
    MENU VERROUILLÉ - BADGE PROCHAINEMENT
    ======================================== */
 

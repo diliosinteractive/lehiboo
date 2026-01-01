@@ -128,7 +128,7 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
         <!-- Gallery -->
         <div id="mb_gallery" class="el_col_6 vendor_field">
             <label>
-                <?php esc_html_e( 'Image Galerie', 'eventlist' ); ?>
+                <?php esc_html_e( 'Galerie', 'eventlist' ); ?>
             </label>
             <p class="field_hint"><?php esc_html_e( 'Taille recommandée: 710x480px', 'eventlist' ); ?></p>
 
@@ -143,8 +143,8 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
 
     <!-- Video -->
     <div class="vendor_field">
-        <label for="event_video"><?php esc_html_e( 'Lien URL d'une vidéo sur une plateforme streaming.', 'eventlist' ); ?></label>
-        <p class="field_hint"><?php esc_html_e( 'La vidéo sera visible dans la galerie d'image.', 'eventlist' ); ?></p>
+        <label for="event_video"><?php esc_html_e( "Lien URL d'une vidéo sur une plateforme streaming.", 'eventlist' ); ?></label>
+        <p class="field_hint"><?php esc_html_e( "La vidéo sera visible dans la galerie d'image.", 'eventlist' ); ?></p>
         <input type="url" id="event_video" name="<?php echo esc_attr( $_prefix.'event_video' ); ?>" value="<?php echo esc_url( $event_video ); ?>" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
     </div>
 
