@@ -316,24 +316,91 @@ function lehiboo_vendor_page_body_class( $classes ) {
 }
 
 /**
- * Cache le menu principal (Listing, Page, Blog) sur les pages partenaires
- * Le menu est généralement dans .ova_menu_clasic ou .ova_nav
+ * Déplacer le menu principal dans le bloc central sur les pages partenaires
+ * Le menu sera injecté dans .contents via JavaScript
  */
-add_action( 'wp_head', 'lehiboo_hide_menu_on_vendor_pages' );
-function lehiboo_hide_menu_on_vendor_pages() {
+add_action( 'wp_head', 'lehiboo_move_menu_to_vendor_content' );
+function lehiboo_move_menu_to_vendor_content() {
 	$vendor_page = isset( $_GET['vendor'] ) ? sanitize_text_field( $_GET['vendor'] ) : '';
-	
+
 	if ( ! empty( $vendor_page ) ) {
 		?>
 		<style type="text/css">
-			/* Masquer le menu principal (Listing, Page, Blog) sur les pages partenaires */
-			body.is-vendor-page .elementor-element-717d424,
-			body.is-vendor-page .ova_menu_clasic,
-			body.is-vendor-page .ova_nav,
-			body.is-vendor-page .elementor-widget-ova_menu {
+			/* Cacher le header original de sa position initiale */
+			body.is-vendor-page .ovaheader {
 				display: none !important;
 			}
+
+			/* Styles pour le header déplacé dans le bloc central */
+			body.is-vendor-page .vendor-header-moved {
+				display: block !important;
+				position: relative !important;
+				background: #ffffff;
+				border-radius: 8px;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+				margin-bottom: 16px;
+				border: 1px solid #EBEBEB;
+				padding: 12px 24px;
+			}
+
+			/* Cacher le logo (déjà dans sidebar) et le breadcrumb */
+			body.is-vendor-page .vendor-header-moved .navbar-brand,
+			body.is-vendor-page .vendor-header-moved .ovatheme_breadcrumbs {
+				display: none !important;
+			}
+
+			/* Centrer la navigation à droite */
+			body.is-vendor-page .vendor-header-moved .navbar {
+				justify-content: flex-end;
+				padding: 0;
+			}
+
+			body.is-vendor-page .vendor-header-moved .navbar-collapse {
+				flex-grow: 0 !important;
+			}
+
+			/* Style des éléments de navigation */
+			body.is-vendor-page .vendor-header-moved .navbar-nav {
+				display: flex !important;
+				align-items: center;
+				gap: 12px;
+				flex-direction: row;
+			}
+
+			body.is-vendor-page .vendor-header-moved .navbar-nav > li > a {
+				padding: 10px 18px !important;
+				border-radius: 10px !important;
+				font-size: 14px !important;
+				font-weight: 600 !important;
+			}
+
+			/* Cacher le toggle hamburger */
+			body.is-vendor-page .vendor-header-moved .navbar-toggler {
+				display: none !important;
+			}
+
+			/* Forcer l'affichage du menu collapse */
+			body.is-vendor-page .vendor-header-moved .navbar-collapse {
+				display: flex !important;
+			}
 		</style>
+		<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', function() {
+			// Récupérer le header original
+			var ovaheader = document.querySelector('.ovaheader');
+			var contentsArea = document.querySelector('.vendor_wrap .contents');
+
+			if (ovaheader && contentsArea) {
+				// Cloner le header
+				var headerClone = ovaheader.cloneNode(true);
+				headerClone.classList.add('vendor-header-moved');
+				headerClone.classList.remove('ovaheader');
+
+				// Insérer au début de .contents
+				contentsArea.insertBefore(headerClone, contentsArea.firstChild);
+			}
+		});
+		</script>
 		<?php
 	}
 }
