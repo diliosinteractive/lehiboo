@@ -23,6 +23,7 @@ $messages_query = new WP_Query( $args );
 	<?php echo el_get_template( '/vendor/sidebar.php' ); ?>
 
 	<div class="contents">
+		<?php echo lehiboo_render_vendor_header_menu(); ?>
 		<?php echo el_get_template( '/vendor/heading.php' ); ?>
 
 		<div class="el-notify" id="message-notification" style="display:none;">

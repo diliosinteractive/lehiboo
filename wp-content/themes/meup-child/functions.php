@@ -316,17 +316,17 @@ function lehiboo_vendor_page_body_class( $classes ) {
 }
 
 /**
- * Déplacer le menu principal dans le bloc central sur les pages partenaires
- * Le menu sera injecté dans .contents via JavaScript
+ * Cacher le header principal sur les pages partenaires
+ * Le menu sera rendu directement dans le template via lehiboo_render_vendor_header_menu()
  */
-add_action( 'wp_head', 'lehiboo_move_menu_to_vendor_content' );
-function lehiboo_move_menu_to_vendor_content() {
+add_action( 'wp_head', 'lehiboo_hide_header_on_vendor_pages' );
+function lehiboo_hide_header_on_vendor_pages() {
 	$vendor_page = isset( $_GET['vendor'] ) ? sanitize_text_field( $_GET['vendor'] ) : '';
 
 	if ( ! empty( $vendor_page ) ) {
 		?>
 		<style type="text/css">
-			/* Cacher TOUS les headers originaux de leur position initiale */
+			/* Cacher TOUS les headers originaux */
 			body.is-vendor-page .ovaheader,
 			body.is-vendor-page .elementor-element-717d424,
 			body.is-vendor-page .ova_menu_clasic,
@@ -336,120 +336,105 @@ function lehiboo_move_menu_to_vendor_content() {
 			body.is-vendor-page .ovamenu_shrink,
 			body.is-vendor-page .ovamenu_shrink_mobile {
 				display: none !important;
-				position: static !important;
-				visibility: hidden !important;
 			}
 
-			/* Forcer le retrait du sticky/fixed sur tout header potentiel */
-			body.is-vendor-page .ovaheader *,
-			body.is-vendor-page [class*="header"] {
-				position: static !important;
-			}
-
-			/* Styles pour le header déplacé dans le bloc central */
-			body.is-vendor-page .vendor-header-moved {
-				display: block !important;
-				visibility: visible !important;
-				position: relative !important;
-				top: auto !important;
-				left: auto !important;
-				right: auto !important;
-				bottom: auto !important;
+			/* Styles pour le menu dans le bloc central */
+			body.is-vendor-page .vendor-content-header {
+				display: flex;
+				align-items: center;
+				justify-content: flex-end;
 				background: #ffffff;
 				border-radius: 8px;
 				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 				margin-bottom: 16px;
 				border: 1px solid #EBEBEB;
 				padding: 12px 24px;
-				z-index: 10;
+				gap: 12px;
 			}
 
-			/* Cacher le logo (déjà dans sidebar) et le breadcrumb */
-			body.is-vendor-page .vendor-header-moved .navbar-brand,
-			body.is-vendor-page .vendor-header-moved .ovatheme_breadcrumbs {
-				display: none !important;
-			}
-
-			/* Centrer la navigation à droite */
-			body.is-vendor-page .vendor-header-moved .navbar {
-				justify-content: flex-end;
+			body.is-vendor-page .vendor-content-header .menu {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				list-style: none;
+				margin: 0;
 				padding: 0;
 			}
 
-			body.is-vendor-page .vendor-header-moved .navbar-collapse {
-				flex-grow: 0 !important;
+			body.is-vendor-page .vendor-content-header .menu li {
+				margin: 0;
 			}
 
-			/* Style des éléments de navigation */
-			body.is-vendor-page .vendor-header-moved .navbar-nav {
-				display: flex !important;
+			body.is-vendor-page .vendor-content-header .menu li a {
+				display: inline-flex;
 				align-items: center;
-				gap: 12px;
-				flex-direction: row;
+				gap: 8px;
+				padding: 10px 18px;
+				border-radius: 10px;
+				font-size: 14px;
+				font-weight: 600;
+				text-decoration: none;
+				transition: all 0.25s ease;
+				color: #2F4858;
+				background: #f8f9fa;
+				border: 1px solid #e2e8f0;
 			}
 
-			body.is-vendor-page .vendor-header-moved .navbar-nav > li > a {
-				padding: 10px 18px !important;
-				border-radius: 10px !important;
-				font-size: 14px !important;
-				font-weight: 600 !important;
+			body.is-vendor-page .vendor-content-header .menu li a:hover {
+				background: #e9ecef;
+				border-color: #cbd5e1;
 			}
 
-			/* Cacher le toggle hamburger */
-			body.is-vendor-page .vendor-header-moved .navbar-toggler {
+			/* Style spécial pour le bouton CTA (créer événement) */
+			body.is-vendor-page .vendor-content-header .menu li.menu-item-cta a,
+			body.is-vendor-page .vendor-content-header .menu li.ova-btn a {
+				background: #FF601F;
+				color: #ffffff;
+				border-color: #FF601F;
+			}
+
+			body.is-vendor-page .vendor-content-header .menu li.menu-item-cta a:hover,
+			body.is-vendor-page .vendor-content-header .menu li.ova-btn a:hover {
+				background: #e5561c;
+				border-color: #e5561c;
+			}
+
+			/* Cacher les sous-menus */
+			body.is-vendor-page .vendor-content-header .menu .sub-menu,
+			body.is-vendor-page .vendor-content-header .menu .dropdown-menu {
 				display: none !important;
 			}
-
-			/* Forcer l'affichage du menu collapse */
-			body.is-vendor-page .vendor-header-moved .navbar-collapse {
-				display: flex !important;
-			}
-
-			/* Assurer que les éléments à l'intérieur ne sont pas sticky/fixed */
-			body.is-vendor-page .vendor-header-moved *,
-			body.is-vendor-page .vendor-header-moved header,
-			body.is-vendor-page .vendor-header-moved .ovatheme_header_default {
-				position: relative !important;
-				top: auto !important;
-			}
 		</style>
-		<script type="text/javascript">
-		document.addEventListener('DOMContentLoaded', function() {
-			// Récupérer le header original (plusieurs sélecteurs possibles)
-			var ovaheader = document.querySelector('.ovaheader');
-			var contentsArea = document.querySelector('.vendor_wrap .contents');
-
-			if (ovaheader && contentsArea) {
-				// Cloner le header
-				var headerClone = ovaheader.cloneNode(true);
-				headerClone.classList.add('vendor-header-moved');
-				headerClone.classList.remove('ovaheader');
-
-				// Retirer les classes qui pourraient causer le sticky
-				headerClone.classList.remove('active_fixed');
-				headerClone.classList.remove('ovamenu_shrink');
-				headerClone.classList.remove('ovamenu_shrink_mobile');
-
-				// Retirer l'ID pour éviter les conflits
-				headerClone.removeAttribute('id');
-
-				// Insérer au début de .contents
-				contentsArea.insertBefore(headerClone, contentsArea.firstChild);
-
-				// Observer pour retirer active_fixed si ajouté dynamiquement
-				var observer = new MutationObserver(function(mutations) {
-					mutations.forEach(function(mutation) {
-						if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-							headerClone.classList.remove('active_fixed');
-						}
-					});
-				});
-				observer.observe(headerClone, { attributes: true });
-			}
-		});
-		</script>
 		<?php
 	}
+}
+
+/**
+ * Rendre le menu header dans le bloc central des pages partenaires
+ * À appeler depuis les templates vendor
+ */
+function lehiboo_render_vendor_header_menu() {
+	$vendor_page = isset( $_GET['vendor'] ) ? sanitize_text_field( $_GET['vendor'] ) : '';
+
+	if ( empty( $vendor_page ) ) {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<div class="vendor-content-header">
+		<?php
+		wp_nav_menu( array(
+			'theme_location' => 'primary',
+			'container'      => false,
+			'menu_class'     => 'menu',
+			'depth'          => 1,
+			'fallback_cb'    => false,
+		) );
+		?>
+	</div>
+	<?php
+	return ob_get_clean();
 }
 
 // ========================================

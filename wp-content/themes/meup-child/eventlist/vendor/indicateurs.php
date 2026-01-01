@@ -16,6 +16,7 @@ if ( !defined( 'ABSPATH' ) ) exit();
     <?php echo el_get_template( 'vendor/sidebar.php' ); ?>
 
     <div class="contents">
+        <?php echo lehiboo_render_vendor_header_menu(); ?>
         <div class="vendor_indicateurs_teaser">
             
             <!-- Header -->

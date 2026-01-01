@@ -16,6 +16,8 @@ $_prefix = OVA_METABOX_EVENT;
 
 	<div class="contents">
 
+		<?php echo lehiboo_render_vendor_header_menu(); ?>
+
 		<?php echo el_get_template( '/vendor/heading.php' ); ?>
 
 		<div class="vendor_listing el-events-listing el-archived-events">

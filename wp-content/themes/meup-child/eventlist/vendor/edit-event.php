@@ -318,6 +318,9 @@ var el_save_btn_texts = {
     <!-- 2. Main Content Wrapper -->
     <div class="contents">
 
+        <!-- Menu Header (Non-sticky, dans le bloc central) -->
+        <?php echo lehiboo_render_vendor_header_menu(); ?>
+
         <!-- Sticky Header/Bar (Placed here to span full width of content area) -->
         <div class="profile_sticky_bar">
             <div class="sticky_bar_inner">

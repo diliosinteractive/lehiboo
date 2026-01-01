@@ -23,6 +23,7 @@ $progress = $onboarding_status['progress_percent'];
 	<?php echo el_get_template( 'vendor/sidebar.php' ); ?>
 
 	<div class="contents">
+		<?php echo lehiboo_render_vendor_header_menu(); ?>
 		<div class="onboarding_page">
 
 			<!-- Header avec message de bienvenue -->
