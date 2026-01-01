@@ -2482,8 +2482,12 @@ if( !class_exists( 'El_Ajax' ) ){
 						continue;
 					}
 					if (!isset($value['calendar_id']) || $value['calendar_id'] == '') {
-						$post_data_sanitize[$_prefix.'calendar'][$key]['calendar_id'] = FLOOR(microtime(true)) + $k;
-						$k++;
+						// V1 Le Hiboo - Générer un ID déterministe basé sur date/heure
+						// pour garantir la cohérence avec les IDs affichés dans le formulaire billetterie
+						$cal_date = isset( $value['date'] ) ? $value['date'] : '';
+						$cal_start = isset( $value['start_time'] ) ? $value['start_time'] : '';
+						$cal_end = isset( $value['end_time'] ) ? $value['end_time'] : '';
+						$post_data_sanitize[$_prefix.'calendar'][$key]['calendar_id'] = 'slot_' . substr( md5( $cal_date . $cal_start . $cal_end ), 0, 12 );
 					}
 					if (!isset($value['date']) || $value['date'] == '') {
 						unset($post_data_sanitize[$_prefix.'calendar'][$key]);
