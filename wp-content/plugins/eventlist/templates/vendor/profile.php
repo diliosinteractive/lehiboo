@@ -1487,3 +1487,38 @@ $user_meta_field = get_option( 'ova_register_form' );
 
 	</div> <!-- End contents -->
 </div> <!-- End vendor_wrap -->
+
+<script>
+/**
+ * Ajoute les indications "Requis pour publier une activité" sous les champs obligatoires
+ */
+jQuery(document).ready(function($) {
+    // Sélectionner uniquement les champs avec symbol-required dans les sections profil et organisation
+    // Exclure les sections mot de passe
+    var sectionsToTarget = [
+        '#section_info',           // Mes informations professionnelles
+        '#section_organisation',   // Mon Organisation
+        '#section_localisation'    // Localisation
+    ];
+
+    sectionsToTarget.forEach(function(sectionId) {
+        $(sectionId).find('.symbol-required').each(function() {
+            var $label = $(this).closest('label');
+            var $vendorField = $label.closest('.vendor_field');
+
+            // Vérifier si le hint n'existe pas déjà
+            if ($vendorField.length && !$vendorField.find('.publication_required_hint').length) {
+                // Ajouter le hint après le dernier élément du champ (input, select, ou small existant)
+                var $lastChild = $vendorField.children().last();
+
+                // Si c'est déjà un small.form-text, ajouter le hint après
+                if ($lastChild.is('small.form-text')) {
+                    $lastChild.after('<span class="publication_required_hint"><i class="fas fa-info-circle"></i><?php esc_html_e( "Requis pour publier une activité", "eventlist" ); ?></span>');
+                } else {
+                    $vendorField.append('<span class="publication_required_hint"><i class="fas fa-info-circle"></i><?php esc_html_e( "Requis pour publier une activité", "eventlist" ); ?></span>');
+                }
+            }
+        });
+    });
+});
+</script>

@@ -1355,3 +1355,24 @@
         width: 100%;
     }
 }
+/* ==========================================================================
+   Publication Required Hint
+   ========================================================================== */
+
+.publication_required_hint {
+    display: block;
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.publication_required_hint i {
+    margin-right: 4px;
+    font-size: 10px;
+}
+
+/* Ne pas afficher sur les champs mot de passe */
+.section_password .publication_required_hint {
+    display: none;
+}

@@ -534,3 +534,63 @@ var el_save_btn_texts = {
     </div> <!-- End .contents -->
 
 </div> <!-- End .vendor_wrap -->
+
+<script>
+/**
+ * Ajoute les indications "Requis pour publier" sous les champs obligatoires de l'activité
+ */
+jQuery(document).ready(function($) {
+    var hintText = '<?php esc_html_e( "Requis pour publier l\'activité", "eventlist" ); ?>';
+    var hintHtml = '<span class="publication_required_hint"><i class="fas fa-info-circle"></i>' + hintText + '</span>';
+
+    // Liste des champs obligatoires pour la publication
+    var requiredFields = [
+        { selector: 'input[name="name_event"]', label: "Nom de l'activité" },
+        { selector: 'select[name="event_cat"]', label: "Catégorie" },
+        { selector: 'select[name="event_tag"], select[name="event_tag[]"]', label: "Type d'événement" },
+        { selector: 'select[name="event_public"], select[name="event_public[]"]', label: "Public visé" },
+        { selector: 'input[name="img_thumbnail"]', label: "Image de présentation" }
+    ];
+
+    requiredFields.forEach(function(field) {
+        var $field = $(field.selector).first();
+        if ($field.length) {
+            var $vendorField = $field.closest('.vendor_field, .wrap_name_event, .wrap_cat');
+            if ($vendorField.length && !$vendorField.find('.publication_required_hint').length) {
+                $vendorField.append(hintHtml);
+            }
+        }
+    });
+
+    // Ajouter le hint pour la description (TinyMCE)
+    var $descriptionWrapper = $('#wp-content_event-wrap').closest('.vendor_field');
+    if ($descriptionWrapper.length && !$descriptionWrapper.find('.publication_required_hint').length) {
+        $descriptionWrapper.append('<span class="publication_required_hint"><i class="fas fa-info-circle"></i><?php esc_html_e( "Minimum 100 caractères pour publier", "eventlist" ); ?></span>');
+    }
+
+    // Hint pour l'adresse (conditionnelle selon le type de lieu)
+    var $addressField = $('input[name="ova_mb_event_map_address"], input[name="map_address"]').first();
+    if ($addressField.length) {
+        var $addressWrapper = $addressField.closest('.vendor_field');
+        if ($addressWrapper.length && !$addressWrapper.find('.publication_required_hint').length) {
+            $addressWrapper.append('<span class="publication_required_hint"><i class="fas fa-info-circle"></i><?php esc_html_e( "Requis si lieu physique", "eventlist" ); ?></span>');
+        }
+    }
+});
+</script>
+
+<style>
+/* Publication Required Hint - Activity Form */
+.el-vendor-event-form-wrapper .publication_required_hint {
+    display: block;
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 6px;
+    font-style: italic;
+}
+
+.el-vendor-event-form-wrapper .publication_required_hint i {
+    margin-right: 4px;
+    font-size: 10px;
+}
+</style>
