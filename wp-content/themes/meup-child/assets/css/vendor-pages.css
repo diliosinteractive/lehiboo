@@ -525,7 +525,7 @@ button#el_coorg_add_btn {
         color: #f9e8e1;
 }
 .menu_vendor_onboarding a i {
-    color: #ffffff;
+    color: #ffffff!important;
 }
 
 /* Badge de progression onboarding - petit pill discret */
