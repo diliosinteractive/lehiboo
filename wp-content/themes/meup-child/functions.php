@@ -2631,8 +2631,8 @@ function lehiboo_validate_profile_requirements( $user_id ) {
 	}
 
 	// 6. Type de structure
-	$org_structure_type = get_user_meta( $user_id, 'org_structure_type', true );
-	if ( empty( $org_structure_type ) ) {
+	$org_type_structure = get_user_meta( $user_id, 'org_type_structure', true );
+	if ( empty( $org_type_structure ) ) {
 		$errors[] = array(
 			'section' => 'profil',
 			'field' => 'Type de structure',
@@ -2650,13 +2650,13 @@ function lehiboo_validate_profile_requirements( $user_id ) {
 		);
 	}
 
-	// 8. Forme juridique
-	$org_legal_form = get_user_meta( $user_id, 'org_legal_form', true );
-	if ( empty( $org_legal_form ) ) {
+	// 8. Forme juridique (Statut juridique)
+	$org_forme_juridique = get_user_meta( $user_id, 'org_forme_juridique', true );
+	if ( empty( $org_forme_juridique ) ) {
 		$errors[] = array(
 			'section' => 'profil',
-			'field' => 'Forme juridique',
-			'message' => 'La forme juridique est obligatoire',
+			'field' => 'Statut juridique',
+			'message' => 'Le statut juridique est obligatoire',
 		);
 	}
 
@@ -2670,13 +2670,15 @@ function lehiboo_validate_profile_requirements( $user_id ) {
 		);
 	}
 
-	// 10. Siège de l'organisation
-	$org_address = get_user_meta( $user_id, 'org_address', true );
-	if ( empty( $org_address ) ) {
+	// 10. Siège de l'organisation (adresse complète)
+	$user_address_line1 = get_user_meta( $user_id, 'user_address_line1', true );
+	$user_city = get_user_meta( $user_id, 'user_city', true );
+	$user_postcode = get_user_meta( $user_id, 'user_postcode', true );
+	if ( empty( $user_address_line1 ) || empty( $user_city ) || empty( $user_postcode ) ) {
 		$errors[] = array(
 			'section' => 'profil',
 			'field' => 'Siège de l\'organisation',
-			'message' => 'L\'adresse du siège est obligatoire',
+			'message' => 'L\'adresse du siège est obligatoire (adresse, ville, code postal)',
 		);
 	}
 
