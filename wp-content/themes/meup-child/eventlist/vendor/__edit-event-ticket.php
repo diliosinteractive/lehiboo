@@ -530,15 +530,17 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
         </div>
 
         <!-- Bouton Ajouter un billet -->
-        <button type="button" class="btn_add_ticket el_btn_add">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
-                <path d="M13 5v2"></path>
-                <path d="M13 17v2"></path>
-                <path d="M13 11v2"></path>
-            </svg>
-            <span class="btn_text"><?php esc_html_e( 'Ajouter un billet', 'eventlist' ); ?></span>
-        </button>
+        <div class="btn_add_ticket_wrapper">
+            <button type="button" class="btn_add_ticket">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+                    <path d="M13 5v2"></path>
+                    <path d="M13 17v2"></path>
+                    <path d="M13 11v2"></path>
+                </svg>
+                <span class="btn_text"><?php esc_html_e( 'Ajouter un billet', 'eventlist' ); ?></span>
+            </button>
+        </div>
 
         <!-- Modal Wizard Ajout Billet -->
         <div class="ticket_wizard_overlay" style="display: none;">
@@ -2069,23 +2071,72 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     pointer-events: none;
 }
 
-/* Add Button - Orange & Centered */
-.el_btn_add {
+/* Add Button Wrapper - Centered */
+.btn_add_ticket_wrapper {
     display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    margin-top: 20px;
+}
+
+/* Add Button - Orange, Centered & Large */
+.btn_add_ticket {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    padding: 22px 48px;
+    gap: 14px;
+    padding: 20px 50px;
     background: linear-gradient(135deg, #FF6600 0%, #ff8533 100%);
-    color: #fff;
+    color: #fff !important;
     border: none;
     border-radius: 14px;
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin: 30px auto 0 auto;
-    box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(255, 102, 0, 0.35);
+}
+
+.btn_add_ticket svg {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.btn_add_ticket:hover {
+    background: linear-gradient(135deg, #e55a00 0%, #FF6600 100%);
+    box-shadow: 0 6px 30px rgba(255, 102, 0, 0.45);
+    transform: translateY(-3px);
+}
+
+.btn_add_ticket:hover svg {
+    transform: scale(1.15);
+}
+
+.btn_add_ticket:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 102, 0, 0.3);
+}
+
+.btn_add_ticket:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Legacy - keep for compatibility */
+.el_btn_add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 20px 50px;
+    background: linear-gradient(135deg, #FF6600 0%, #ff8533 100%);
+    color: #fff !important;
+    border: none;
+    border-radius: 14px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(255, 102, 0, 0.35);
 }
 
 .el_btn_add svg {
@@ -2095,8 +2146,8 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 
 .el_btn_add:hover {
     background: linear-gradient(135deg, #e55a00 0%, #FF6600 100%);
-    box-shadow: 0 6px 25px rgba(255, 102, 0, 0.4);
-    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(255, 102, 0, 0.45);
+    transform: translateY(-3px);
 }
 
 .el_btn_add:hover svg {
