@@ -430,22 +430,50 @@ button#el_coorg_add_btn {
 }
 
 /* ========================================
-   GALERIE D'IMAGES - BOUTON EN HAUT
+   GALERIE D'IMAGES - BOUTON INLINE
    ======================================== */
 
-.event_gallery_wrapper .gallery_header {
+/* Titre et bouton sur la même ligne */
+.gallery_title_row {
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 12px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
 }
 
-.event_gallery_wrapper .gallery_header .gallery_add_btn {
+.gallery_title_row label {
     margin: 0;
 }
 
-/* Masquer le bouton du bas quand celui du haut existe */
-.event_gallery_wrapper > .gallery_add_btn {
-    display: none;
+/* Bouton inline orange */
+.gallery_add_btn_inline {
+    background: #FF601F !important;
+    border-color: #FF601F !important;
+    color: #fff !important;
+    padding: 6px 14px !important;
+    font-size: 13px !important;
+    border-radius: 6px !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.gallery_add_btn_inline:hover {
+    background: #e5561c !important;
+    border-color: #e5561c !important;
+}
+
+.gallery_add_btn_inline i {
+    font-size: 11px;
+}
+
+/* Masquer les autres boutons de galerie */
+.event_gallery_wrapper .gallery_header,
+.event_gallery_wrapper > .gallery_add_btn,
+.event_gallery_wrapper .gallery_add_btn:not(.gallery_add_btn_inline) {
+    display: none !important;
 }
 
 /* ========================================

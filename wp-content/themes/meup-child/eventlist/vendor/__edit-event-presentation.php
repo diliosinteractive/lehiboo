@@ -127,9 +127,14 @@ $event_video = get_post_meta( $post_id, $_prefix.'event_video', true) ? get_post
 
         <!-- Gallery -->
         <div id="mb_gallery" class="el_col_6 vendor_field">
-            <label>
-                <?php esc_html_e( 'Galerie', 'eventlist' ); ?>
-            </label>
+            <div class="gallery_title_row">
+                <label>
+                    <?php esc_html_e( 'Galerie', 'eventlist' ); ?>
+                </label>
+                <button type="button" class="el_button btn_pick_gallery_images gallery_add_btn_inline">
+                    <i class="fa fa-plus"></i> <?php esc_html_e( 'Ajouter des images', 'eventlist' ); ?>
+                </button>
+            </div>
             <p class="field_hint"><?php esc_html_e( 'Taille recommandée: 710x480px', 'eventlist' ); ?></p>
 
             <?php echo el_get_template( '/vendor/__edit-event-gallery.php', array('post_id' => $post_id) ); ?>
