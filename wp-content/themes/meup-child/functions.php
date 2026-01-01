@@ -2682,21 +2682,32 @@ function lehiboo_validate_profile_requirements( $user_id ) {
 
 	// 11 & 12. Documents validés
 	if ( class_exists( 'EL_Vendor_Documents' ) ) {
-		$doc_status = EL_Vendor_Documents::get_documents_status( $user_id );
-		$approved_count = 0;
-		$required_docs = array( 'kbis', 'rib' ); // Documents obligatoires
+		// Utiliser la méthode vendor_has_all_required_approved
+		$all_approved = EL_Vendor_Documents::vendor_has_all_required_approved( $user_id );
 
-		foreach ( $required_docs as $doc_type ) {
-			if ( isset( $doc_status[ $doc_type ] ) && $doc_status[ $doc_type ]['status'] === 'approved' ) {
-				$approved_count++;
+		if ( ! $all_approved ) {
+			// Récupérer les documents manquants pour un message détaillé
+			$missing_docs = EL_Vendor_Documents::get_missing_required_documents( $user_id );
+			$missing_names = array();
+
+			foreach ( $missing_docs as $doc ) {
+				$status_text = '';
+				if ( $doc->doc_status === 'missing' ) {
+					$status_text = ' (non uploadé)';
+				} elseif ( $doc->doc_status === 'pending' ) {
+					$status_text = ' (en attente)';
+				} elseif ( $doc->doc_status === 'rejected' ) {
+					$status_text = ' (rejeté)';
+				}
+				$missing_names[] = $doc->name . $status_text;
 			}
-		}
 
-		if ( $approved_count < 2 ) {
 			$errors[] = array(
 				'section' => 'documents',
-				'field' => 'Documents',
-				'message' => 'Vos 2 documents obligatoires doivent être validés (KBIS et RIB)',
+				'field' => 'Documents obligatoires',
+				'message' => ! empty( $missing_names )
+					? 'Documents : ' . implode( ', ', $missing_names )
+					: 'Vos documents obligatoires doivent être validés',
 			);
 		}
 	} elseif ( class_exists( 'LeHiboo_Vendor_Onboarding' ) ) {

@@ -603,15 +603,16 @@ if ( ! $can_vendor_publish ) {
 </div>
 
 <style>
-/* Modal Validation - Nouveau design */
+/* Modal Validation - Design amélioré */
 .validation_modal_overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(15, 23, 42, 0.7);
+    background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     z-index: 99999;
     display: flex;
     align-items: center;
@@ -621,20 +622,20 @@ if ( ! $can_vendor_publish ) {
 
 .validation_modal {
     background: #fff;
-    border-radius: 20px;
-    max-width: 480px;
+    border-radius: 16px;
+    max-width: 440px;
     width: 100%;
     max-height: 85vh;
     overflow: hidden;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    animation: modalSlideIn 0.25s ease-out;
     position: relative;
 }
 
 @keyframes modalSlideIn {
     from {
         opacity: 0;
-        transform: scale(0.95) translateY(-10px);
+        transform: scale(0.96) translateY(-8px);
     }
     to {
         opacity: 1;
@@ -644,74 +645,75 @@ if ( ! $can_vendor_publish ) {
 
 .validation_modal_close {
     position: absolute;
-    top: 16px;
-    right: 16px;
-    background: #f1f5f9;
+    top: 12px;
+    right: 12px;
+    background: transparent;
     border: none;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    font-size: 20px;
-    color: #64748b;
+    font-size: 22px;
+    color: #9ca3af;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
     z-index: 10;
+    line-height: 1;
 }
 
 .validation_modal_close:hover {
-    background: #e2e8f0;
-    color: #334155;
+    background: #f3f4f6;
+    color: #6b7280;
 }
 
 .validation_modal_icon {
     display: flex;
     justify-content: center;
-    padding: 32px 24px 16px;
+    padding: 28px 24px 12px;
 }
 
 .validation_modal_icon svg {
-    color: #f59e0b;
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.05); opacity: 0.8; }
+    color: #FF601F;
+    width: 56px;
+    height: 56px;
+    padding: 12px;
+    background: #FFF5F0;
+    border-radius: 50%;
 }
 
 .validation_modal_header {
     text-align: center;
-    padding: 0 24px 20px;
+    padding: 0 24px 16px;
 }
 
 .validation_modal_header h3 {
-    margin: 0 0 8px;
-    font-size: 20px;
+    margin: 0 0 6px;
+    font-size: 18px;
     font-weight: 700;
-    color: #1e293b;
+    color: #111827;
 }
 
 .validation_modal_intro {
     margin: 0;
-    color: #64748b;
-    font-size: 14px;
+    color: #6b7280;
+    font-size: 13px;
     line-height: 1.5;
 }
 
 .validation_modal_body {
-    padding: 0 24px;
+    padding: 0 20px;
     overflow-y: auto;
-    max-height: 40vh;
+    max-height: 45vh;
 }
 
 .validation_section {
-    background: #fafafa;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 12px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
 }
 
 .validation_section:last-child {
@@ -722,27 +724,34 @@ if ( ! $can_vendor_publish ) {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 12px;
-    font-size: 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
     font-weight: 600;
-    color: #334155;
+    color: #374151;
 }
 
 .validation_section_header i {
     color: #FF601F;
-    font-size: 16px;
+    font-size: 15px;
+    width: 28px;
+    height: 28px;
+    background: #FFF5F0;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .validation_modal_body ul {
-    margin: 0 0 12px;
+    margin: 0 0 10px;
     padding: 0;
     list-style: none;
 }
 
 .validation_modal_body ul li {
-    padding: 6px 0 6px 20px;
+    padding: 5px 0 5px 18px;
     position: relative;
-    color: #dc2626;
+    color: #ef4444;
     font-size: 13px;
     font-weight: 500;
 }
@@ -753,71 +762,89 @@ if ( ! $can_vendor_publish ) {
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 6px;
-    height: 6px;
-    background: #dc2626;
+    width: 5px;
+    height: 5px;
+    background: #ef4444;
     border-radius: 50%;
 }
 
 .validation_link {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     color: #FF601F;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     text-decoration: none;
-    padding: 6px 0;
+    padding: 4px 0;
     transition: gap 0.2s;
 }
 
 .validation_link:hover {
-    gap: 10px;
+    gap: 8px;
     text-decoration: none;
 }
 
 .validation_link i {
-    font-size: 11px;
+    font-size: 10px;
 }
 
 .validation_modal_footer {
-    padding: 20px 24px 24px;
+    padding: 16px 20px 20px;
     text-align: center;
 }
 
 .validation_modal_btn_close {
-    background: #FF601F;
+    background: linear-gradient(135deg, #FF601F 0%, #e5561c 100%);
     color: #fff;
     border: none;
-    padding: 14px 32px;
-    border-radius: 10px;
-    font-size: 15px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
     width: 100%;
+    box-shadow: 0 2px 8px rgba(255, 96, 31, 0.3);
 }
 
 .validation_modal_btn_close:hover {
-    background: #e5561c;
+    background: linear-gradient(135deg, #e5561c 0%, #d14a10 100%);
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 96, 31, 0.4);
 }
 
 /* Champs avec erreur de validation */
 .validation_field_error {
-    border-color: #dc2626 !important;
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
 }
 
 .validation_field_error + .select2-container .select2-selection,
 .select2-container--default .select2-selection.validation_field_error {
-    border-color: #dc2626 !important;
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
 }
 
 /* Label avec erreur */
 .validation_label_error {
-    color: #dc2626 !important;
+    color: #ef4444 !important;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .validation_modal {
+        max-width: calc(100vw - 32px);
+        border-radius: 12px;
+    }
+    .validation_modal_icon svg {
+        width: 48px;
+        height: 48px;
+        padding: 10px;
+    }
+    .validation_modal_header h3 {
+        font-size: 16px;
+    }
 }
 </style>
 
