@@ -564,3 +564,9 @@ padding: 20px 10px!important;
     border-radius: 10px;
     margin-left: 5px;
 }
+
+
+.vendor_sidebar ul.dashboard_nav li a {
+    padding: 20px 10px;
+}
+
