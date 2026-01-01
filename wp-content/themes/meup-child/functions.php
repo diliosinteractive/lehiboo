@@ -338,34 +338,33 @@ function lehiboo_hide_header_on_vendor_pages() {
 				display: none !important;
 			}
 
-			/* Styles pour le menu dans le bloc central */
+			/* Styles pour le header dans le bloc central */
 			body.is-vendor-page .vendor-content-header {
 				display: flex;
 				align-items: center;
-				justify-content: flex-end;
+				justify-content: space-between;
 				background: #ffffff;
 				border-radius: 8px;
 				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 				margin-bottom: 16px;
 				border: 1px solid #EBEBEB;
 				padding: 12px 24px;
-				gap: 12px;
 			}
 
-			body.is-vendor-page .vendor-content-header .menu {
+			/* Logo à gauche */
+			body.is-vendor-page .vendor-content-header .vendor-header-logo img {
+				max-height: 40px;
+				width: auto;
+			}
+
+			/* Navigation à droite */
+			body.is-vendor-page .vendor-content-header .vendor-header-nav {
 				display: flex;
 				align-items: center;
 				gap: 12px;
-				list-style: none;
-				margin: 0;
-				padding: 0;
 			}
 
-			body.is-vendor-page .vendor-content-header .menu li {
-				margin: 0;
-			}
-
-			body.is-vendor-page .vendor-content-header .menu li a {
+			body.is-vendor-page .vendor-content-header .vendor-header-nav a {
 				display: inline-flex;
 				align-items: center;
 				gap: 8px;
@@ -380,29 +379,21 @@ function lehiboo_hide_header_on_vendor_pages() {
 				border: 1px solid #e2e8f0;
 			}
 
-			body.is-vendor-page .vendor-content-header .menu li a:hover {
+			body.is-vendor-page .vendor-content-header .vendor-header-nav a:hover {
 				background: #e9ecef;
 				border-color: #cbd5e1;
 			}
 
-			/* Style spécial pour le bouton CTA (créer événement) */
-			body.is-vendor-page .vendor-content-header .menu li.menu-item-cta a,
-			body.is-vendor-page .vendor-content-header .menu li.ova-btn a {
+			/* Bouton CTA orange */
+			body.is-vendor-page .vendor-content-header .vendor-header-nav a.btn-cta {
 				background: #FF601F;
 				color: #ffffff;
 				border-color: #FF601F;
 			}
 
-			body.is-vendor-page .vendor-content-header .menu li.menu-item-cta a:hover,
-			body.is-vendor-page .vendor-content-header .menu li.ova-btn a:hover {
+			body.is-vendor-page .vendor-content-header .vendor-header-nav a.btn-cta:hover {
 				background: #e5561c;
 				border-color: #e5561c;
-			}
-
-			/* Cacher les sous-menus */
-			body.is-vendor-page .vendor-content-header .menu .sub-menu,
-			body.is-vendor-page .vendor-content-header .menu .dropdown-menu {
-				display: none !important;
 			}
 		</style>
 		<?php
@@ -410,7 +401,7 @@ function lehiboo_hide_header_on_vendor_pages() {
 }
 
 /**
- * Rendre le menu header dans le bloc central des pages partenaires
+ * Rendre le header (logo + boutons) dans le bloc central des pages partenaires
  * À appeler depuis les templates vendor
  */
 function lehiboo_render_vendor_header_menu() {
@@ -420,18 +411,35 @@ function lehiboo_render_vendor_header_menu() {
 		return '';
 	}
 
+	// URLs
+	$home_url = home_url( '/' );
+	$my_account_url = function_exists( 'get_myaccount_page' ) ? get_myaccount_page() : home_url( '/member-account/' );
+	$create_event_url = add_query_arg( 'vendor', 'listing-edit', $my_account_url );
+
+	// Logo
+	$logo_url = get_theme_mod( 'logo', '' );
+
 	ob_start();
 	?>
 	<div class="vendor-content-header">
-		<?php
-		wp_nav_menu( array(
-			'theme_location' => 'primary',
-			'container'      => false,
-			'menu_class'     => 'menu',
-			'depth'          => 1,
-			'fallback_cb'    => false,
-		) );
-		?>
+		<!-- Logo à gauche -->
+		<a href="<?php echo esc_url( $home_url ); ?>" class="vendor-header-logo">
+			<?php if ( $logo_url ) : ?>
+				<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php bloginfo( 'name' ); ?>">
+			<?php else : ?>
+				<span class="site-name"><?php bloginfo( 'name' ); ?></span>
+			<?php endif; ?>
+		</a>
+
+		<!-- Navigation à droite -->
+		<div class="vendor-header-nav">
+			<a href="<?php echo esc_url( $my_account_url ); ?>">
+				<?php esc_html_e( 'Mon compte', 'meup-child' ); ?>
+			</a>
+			<a href="<?php echo esc_url( $create_event_url ); ?>" class="btn-cta">
+				+ <?php esc_html_e( 'Créer mon événement', 'meup-child' ); ?>
+			</a>
+		</div>
 	</div>
 	<?php
 	return ob_get_clean();
