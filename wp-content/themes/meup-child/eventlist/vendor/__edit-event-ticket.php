@@ -1715,16 +1715,17 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 }
 
 .slot_checkbox_item .slot_checkbox_mark {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border: 2px solid #cbd5e1;
-    border-radius: 4px;
+    border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
     flex-shrink: 0;
     background: #fff;
+    position: relative;
 }
 
 .slot_checkbox_item.is_checked .slot_checkbox_mark {
@@ -1733,11 +1734,15 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 }
 
 .slot_checkbox_item.is_checked .slot_checkbox_mark::after {
-    content: '\f00c';
-    font-family: 'Font Awesome 5 Free';
-    font-weight: 900;
-    font-size: 10px;
-    color: #fff;
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+    top: 2px;
+    left: 6px;
 }
 
 .slot_checkbox_label {
