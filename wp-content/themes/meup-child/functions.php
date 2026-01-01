@@ -2726,3 +2726,142 @@ function lehiboo_validate_profile_requirements( $user_id ) {
 
 	return $errors;
 }
+
+/**
+ * Custom footer for vendor dashboard pages (Partner SaaS)
+ * Bypasses Elementor footer completely on vendor pages
+ */
+function lehiboo_custom_vendor_footer( $footer_content ) {
+	// Check if we're on a vendor dashboard page
+	if ( ! is_page() ) {
+		return $footer_content;
+	}
+
+	// Check if page uses vendor shortcode or is myaccount page with vendor parameter
+	global $post;
+	$is_vendor_page = false;
+
+	if ( $post ) {
+		// Check for vendor-related shortcodes in content
+		if ( has_shortcode( $post->post_content, 'el_vendor' ) ||
+		     has_shortcode( $post->post_content, 'el_myaccount' ) ) {
+			$is_vendor_page = true;
+		}
+	}
+
+	// Also check URL parameter for vendor pages
+	if ( isset( $_GET['vendor'] ) || isset( $_REQUEST['vendor'] ) ) {
+		$is_vendor_page = true;
+	}
+
+	if ( ! $is_vendor_page ) {
+		return $footer_content;
+	}
+
+	// Get the current year
+	$current_year = date( 'Y' );
+	$copyright_year = ( $current_year > 2025 ) ? "2025 - {$current_year}" : "2025";
+
+	// Build custom vendor footer - bypassing Elementor completely
+	ob_start();
+	?>
+	<footer class="lehiboo-vendor-footer">
+		<div class="vendor-footer-inner">
+			<div class="vendor-footer-brand">
+				<span class="vendor-footer-copyright">&copy; <?php echo esc_html( $copyright_year ); ?> Le Hiboo</span>
+				<span class="vendor-footer-separator">|</span>
+				<span class="vendor-footer-company">Une marque du startup Studio Dilios Interactive</span>
+			</div>
+			<div class="vendor-footer-links">
+				<a href="<?php echo esc_url( get_privacy_policy_url() ); ?>">Confidentialité</a>
+				<a href="/mentions-legales">Mentions légales</a>
+				<a href="/cgv">CGV</a>
+				<a href="/cgu">CGU</a>
+			</div>
+			<div class="vendor-footer-trust">
+				<span class="trust-item"><i class="fas fa-shield-alt"></i> Paiement sécurisé</span>
+				<span class="trust-item"><i class="fas fa-headset"></i> Support dédié</span>
+			</div>
+		</div>
+	</footer>
+	<style>
+	.lehiboo-vendor-footer {
+		background: #1a1a2e;
+		padding: 20px 30px;
+		margin-top: auto;
+		border-top: 1px solid rgba(255, 255, 255, 0.08);
+	}
+	.vendor-footer-inner {
+		max-width: 1200px;
+		margin: 0 auto;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: center;
+		gap: 15px;
+	}
+	.vendor-footer-brand {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+	.vendor-footer-copyright {
+		color: #a0a0a0;
+		font-size: 13px;
+		font-weight: 500;
+	}
+	.vendor-footer-separator {
+		color: #4a4a5e;
+		font-size: 13px;
+	}
+	.vendor-footer-company {
+		color: #6b6b80;
+		font-size: 12px;
+	}
+	.vendor-footer-links {
+		display: flex;
+		gap: 20px;
+		flex-wrap: wrap;
+	}
+	.vendor-footer-links a {
+		color: #8b8ba0;
+		font-size: 12px;
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+	.vendor-footer-links a:hover {
+		color: #fff;
+	}
+	.vendor-footer-trust {
+		display: flex;
+		gap: 20px;
+		flex-wrap: wrap;
+	}
+	.vendor-footer-trust .trust-item {
+		color: #6b6b80;
+		font-size: 11px;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.vendor-footer-trust .trust-item i {
+		color: #5a67d8;
+		font-size: 12px;
+	}
+	@media (max-width: 768px) {
+		.vendor-footer-inner {
+			flex-direction: column;
+			text-align: center;
+		}
+		.vendor-footer-brand,
+		.vendor-footer-links,
+		.vendor-footer-trust {
+			justify-content: center;
+		}
+	}
+	</style>
+	<?php
+	return ob_get_clean();
+}
+add_filter( 'meup_render_footer', 'lehiboo_custom_vendor_footer', 100 );

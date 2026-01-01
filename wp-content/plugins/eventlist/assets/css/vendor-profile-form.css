@@ -1376,3 +1376,17 @@
 .section_password .publication_required_hint {
     display: none;
 }
+
+/* ==========================================================================
+   Vendor Sidebar Shadow Enhancement
+   ========================================================================== */
+
+.vendor_wrap .vendor_sidebar {
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 10;
+}
+
+.vendor_sidebar_inner {
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.05);
+}
