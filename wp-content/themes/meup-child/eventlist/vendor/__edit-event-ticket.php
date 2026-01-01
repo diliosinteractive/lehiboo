@@ -87,10 +87,10 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
             $end_time = isset( $slot['end_time'] ) ? $slot['end_time'] : '';
 
             // Utiliser le calendar_id existant ou générer un ID déterministe basé sur date/heure
-            // IMPORTANT: Ne pas utiliser el_generate_slot_id() car il utilise un UUID aléatoire
-            // ce qui causerait une régression où les créneaux sauvegardés ne seraient plus reconnus
+            // IMPORTANT: Toujours caster en string pour garantir la cohérence des comparaisons
+            // (les anciens calendar_id peuvent être des entiers/timestamps)
             $slot_id = isset( $slot['calendar_id'] ) && ! empty( $slot['calendar_id'] )
-                ? $slot['calendar_id']
+                ? (string) $slot['calendar_id']
                 : 'slot_' . substr( md5( $date . $start_time . $end_time ), 0, 12 );
 
             // Formater le label d'affichage
@@ -260,7 +260,10 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 
                 // V1 Le Hiboo - Mapping Ticket ↔ Créneau
                 $ticket_slots_mode = isset( $ticket['slots_mode'] ) ? $ticket['slots_mode'] : 'all';
-                $ticket_slots = isset( $ticket['slots'] ) && is_array( $ticket['slots'] ) ? $ticket['slots'] : array();
+                // Caster tous les IDs en string pour garantir la comparaison stricte
+                $ticket_slots = isset( $ticket['slots'] ) && is_array( $ticket['slots'] )
+                    ? array_map( 'strval', $ticket['slots'] )
+                    : array();
             ?>
                 <div class="ticket_form_item" data-index="<?php echo esc_attr( $key ); ?>">
                     <div class="ticket_form_content">
