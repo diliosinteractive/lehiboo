@@ -528,7 +528,7 @@ button#el_coorg_add_btn {
     color: #ffffff!important;
 }
 .menu_vendor_onboarding.active a{
-padding: 0 10px;
+padding: 20px 10px!important;
 }
 .menu_vendor_onboarding.active a{
         color: #ffffff!important;
