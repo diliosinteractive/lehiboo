@@ -86,12 +86,11 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
             $start_time = isset( $slot['start_time'] ) ? $slot['start_time'] : '';
             $end_time = isset( $slot['end_time'] ) ? $slot['end_time'] : '';
 
-            // Utiliser le calendar_id existant ou générer un ID déterministe basé sur date/heure
-            // IMPORTANT: Toujours caster en string pour garantir la cohérence des comparaisons
-            // (les anciens calendar_id peuvent être des entiers/timestamps)
+            // Utiliser le calendar_id existant ou en générer un
+            // Note: On cast en string pour la comparaison avec les slots sauvegardés
             $slot_id = isset( $slot['calendar_id'] ) && ! empty( $slot['calendar_id'] )
                 ? (string) $slot['calendar_id']
-                : 'slot_' . substr( md5( $date . $start_time . $end_time ), 0, 12 );
+                : ( function_exists( 'el_generate_slot_id' ) ? el_generate_slot_id( $date, $start_time, $end_time ) : md5( $date . $start_time . $end_time ) );
 
             // Formater le label d'affichage
             $label = date_i18n( 'D j M Y', strtotime( $date ) );
