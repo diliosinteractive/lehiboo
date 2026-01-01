@@ -86,10 +86,12 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
             $start_time = isset( $slot['start_time'] ) ? $slot['start_time'] : '';
             $end_time = isset( $slot['end_time'] ) ? $slot['end_time'] : '';
 
-            // Utiliser le calendar_id existant ou en générer un
+            // Utiliser le calendar_id existant ou générer un ID déterministe basé sur date/heure
+            // IMPORTANT: Ne pas utiliser el_generate_slot_id() car il utilise un UUID aléatoire
+            // ce qui causerait une régression où les créneaux sauvegardés ne seraient plus reconnus
             $slot_id = isset( $slot['calendar_id'] ) && ! empty( $slot['calendar_id'] )
                 ? $slot['calendar_id']
-                : ( function_exists( 'el_generate_slot_id' ) ? el_generate_slot_id( $date, $start_time, $end_time ) : md5( $date . $start_time . $end_time ) );
+                : 'slot_' . substr( md5( $date . $start_time . $end_time ), 0, 12 );
 
             // Formater le label d'affichage
             $label = date_i18n( 'D j M Y', strtotime( $date ) );
@@ -2065,24 +2067,23 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
     pointer-events: none;
 }
 
-/* Add Button - Outlined & Centered */
+/* Add Button - Orange & Centered */
 .el_btn_add {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
-    padding: 18px 40px;
-    background: linear-gradient(135deg, #fff 0%, #fff8f5 100%);
-    color: #FF6600;
-    border: 2px dashed #FF6600;
+    padding: 22px 48px;
+    background: linear-gradient(135deg, #FF6600 0%, #ff8533 100%);
+    color: #fff;
+    border: none;
     border-radius: 14px;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     margin: 30px auto 0 auto;
-    max-width: 350px;
-    width: 100%;
+    box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
 }
 
 .el_btn_add svg {
@@ -2091,20 +2092,18 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 }
 
 .el_btn_add:hover {
-    background: linear-gradient(135deg, #FF6600 0%, #ff8533 100%);
-    color: #fff;
-    border-style: solid;
-    box-shadow: 0 6px 20px rgba(255, 102, 0, 0.3);
+    background: linear-gradient(135deg, #e55a00 0%, #FF6600 100%);
+    box-shadow: 0 6px 25px rgba(255, 102, 0, 0.4);
     transform: translateY(-2px);
 }
 
 .el_btn_add:hover svg {
-    transform: scale(1.1);
+    transform: scale(1.15);
 }
 
 .el_btn_add:focus {
     outline: none;
-    box-shadow: 0 0 0 4px rgba(255, 102, 0, 0.2);
+    box-shadow: 0 0 0 4px rgba(255, 102, 0, 0.3);
 }
 
 .el_btn_add:active {
