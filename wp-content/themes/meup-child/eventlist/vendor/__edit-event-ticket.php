@@ -3237,7 +3237,8 @@ if ( ! empty( $calendar_data ) && is_array( $calendar_data ) ) {
 <script>
 jQuery(document).ready(function($) {
     // V1 Le Hiboo - Slots disponibles pour le formulaire
-    var availableSlots = <?php echo json_encode( $event_slots ); ?>;
+    // Assurer que tous les IDs sont des strings pour la comparaison JavaScript
+    var availableSlots = <?php echo json_encode( $event_slots, JSON_UNESCAPED_UNICODE ); ?>;
 
     var BilletterieManager = {
         prefix: '<?php echo esc_js( $_prefix ); ?>',
@@ -4163,8 +4164,11 @@ jQuery(document).ready(function($) {
             if (this.availableSlots && this.availableSlots.length > 0) {
                 // Générer les checkboxes pour chaque slot
                 var slotsCheckboxesHtml = '';
+                // Convertir tous les IDs en string pour garantir la comparaison
+                var slotsAsStrings = data.slots.map(function(id) { return String(id); });
                 this.availableSlots.forEach(function(slot) {
-                    var isChecked = data.slots.indexOf(slot.id) > -1;
+                    var slotIdStr = String(slot.id);
+                    var isChecked = slotsAsStrings.indexOf(slotIdStr) > -1;
                     var checkedClass = isChecked ? 'is_checked' : '';
                     var checkedAttr = isChecked ? 'checked' : '';
                     slotsCheckboxesHtml += '<label class="slot_checkbox_item ' + checkedClass + '" data-slot-date="' + slot.date + '">' +
