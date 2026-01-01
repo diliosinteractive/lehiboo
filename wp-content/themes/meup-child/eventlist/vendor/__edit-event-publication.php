@@ -556,11 +556,7 @@ if ( ! $can_vendor_publish ) {
         <button type="button" class="validation_modal_close">&times;</button>
         <div class="validation_modal_header">
             <div class="validation_modal_icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
+                <i class="fas fa-exclamation-circle"></i>
             </div>
             <div class="validation_modal_header_text">
                 <h3><?php esc_html_e( 'Informations manquantes', 'eventlist' ); ?></h3>
@@ -670,26 +666,30 @@ if ( ! $can_vendor_publish ) {
     color: #6b7280;
 }
 
-/* Header avec icône à gauche */
+/* Header avec icône à gauche et fond orange pâle */
 .validation_modal_header {
     display: flex;
     align-items: flex-start;
     gap: 16px;
-    padding: 24px 24px 20px;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 20px 24px;
+    background: #FFF8F5;
+    border-bottom: 1px solid #FFE8DE;
 }
 
 .validation_modal_icon {
     flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    background: #FF601F;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.validation_modal_icon svg {
-    color: #FF601F;
-    width: 48px;
-    height: 48px;
-    padding: 10px;
-    background: #FFF5F0;
-    border-radius: 12px;
+.validation_modal_icon i {
+    color: #fff;
+    font-size: 22px;
 }
 
 .validation_modal_header_text {
@@ -850,13 +850,17 @@ if ( ! $can_vendor_publish ) {
         flex-direction: column;
         gap: 12px;
         text-align: center;
+        align-items: center;
     }
     .validation_modal_header_text {
         padding-right: 0;
     }
-    .validation_modal_icon svg {
-        width: 44px;
-        height: 44px;
+    .validation_modal_icon {
+        width: 40px;
+        height: 40px;
+    }
+    .validation_modal_icon i {
+        font-size: 20px;
     }
     .validation_modal_header_text h3 {
         font-size: 16px;
